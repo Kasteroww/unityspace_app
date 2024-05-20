@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:unityspace/screens/account_screen/account_screen.dart';
 import 'package:unityspace/screens/widgets/common/paddings.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:unityspace/utils/constants.dart';
 
 PreferredSizeWidget getCustomAppBar(
     {required AppLocalizations localization,
@@ -36,7 +37,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           leading: GestureDetector(
             onTap: () => Scaffold.of(context).openDrawer(),
             child: SvgPicture.asset(
-              'assets/icons/menu.svg',
+              ConstantIcons.menu,
               width: 20,
               height: 20,
               theme: const SvgTheme(currentColor: Color(0xFF4D4D4D)),

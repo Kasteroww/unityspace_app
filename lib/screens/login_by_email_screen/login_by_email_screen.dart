@@ -64,7 +64,6 @@ class LoginByEmailScreen extends WStoreWidget<LoginByEmailScreenStore> {
 
   @override
   Widget build(BuildContext context, LoginByEmailScreenStore store) {
-    final localization = LocalizationHelper.getLocalizations(context);
     return Scaffold(
       backgroundColor: const Color(0xFF111012),
       body: SafeArea(

@@ -5,9 +5,11 @@ import 'package:unityspace/screens/widgets/main_form/main_form_text_button_widge
 import 'package:unityspace/screens/widgets/main_form/main_form_text_title_widget.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_widget.dart';
 import 'package:unityspace/store/auth_store.dart';
+import 'package:unityspace/utils/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wstore/wstore.dart';
 import 'package:unityspace/utils/localization_helper.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class RegisterScreenStore extends WStore {
   WStoreStatus status = WStoreStatus.init;
@@ -22,7 +24,7 @@ class RegisterScreenStore extends WStore {
     });
   }
 
-  void register() {
+  void register(AppLocalizations localizations) {
     if (status == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -38,17 +40,15 @@ class RegisterScreenStore extends WStore {
         });
       },
       onError: (error, __) {
-        String errorText =
-            'При создании учетной записи возникла проблема, пожалуйста, попробуйте ещё раз';
-        if (error == 'User already exists') {
-          errorText = 'Такой email уже зарегистрирован!';
+        String errorText = localizations.create_account_error;
+        if (error == ConstantStrings.existUser) {
+          errorText = localizations.exist_email_error;
         }
-        if (error == 'non-exist Email') {
-          errorText = 'Некорректный email';
+        if (error == ConstantStrings.nonExistEmail) {
+          errorText = localizations.incorrect_email_error;
         }
-        if (error == 'too many messages') {
-          errorText =
-              'Почтовый сервис перегружен, попробуйте повторить попытку через 15 минут';
+        if (error == ConstantStrings.tooManyMessages) {
+          errorText = localizations.overloaded_service_error;
         }
         setStore(() {
           status = WStoreStatus.error;
@@ -138,7 +138,7 @@ class RegisterByEmailForm extends StatelessWidget {
       onSubmit: () {
         FocusScope.of(context).unfocus();
         // загрузка и вход
-        context.wstore<RegisterScreenStore>().register();
+        context.wstore<RegisterScreenStore>().register(localization);
       },
       submittingNow: loading,
       children: (submit) => [
@@ -146,7 +146,7 @@ class RegisterByEmailForm extends StatelessWidget {
           enabled: !loading,
           autofocus: true,
           labelText: localization.your_email,
-          iconAssetName: 'assets/icons/email.svg',
+          iconAssetName: ConstantIcons.email,
           textInputAction: TextInputAction.next,
           keyboardType: TextInputType.emailAddress,
           autocorrect: false,
@@ -170,8 +170,8 @@ class RegisterByEmailForm extends StatelessWidget {
               labelText:
                   '${localization.come_up_with_a_new_password} (${localization.at_least_8_characters})',
               iconAssetName: showPassword
-                  ? 'assets/icons/password_hide.svg'
-                  : 'assets/icons/password_show.svg',
+                  ? ConstantIcons.passwordHide
+                  : ConstantIcons.passwordShow,
               textInputAction: TextInputAction.done,
               keyboardType: TextInputType.visiblePassword,
               obscureText: !showPassword,
@@ -204,7 +204,7 @@ class RegisterByEmailForm extends StatelessWidget {
           child: MainFormTextButtonWidget(
             text: localization.by_registering_accept_privacy_policy,
             onPressed: () async {
-              final url = Uri.parse('https://www.unityspace.ru/privacy-policy');
+              final url = Uri.parse(ConstantStrings.privacyPolicyUrl);
               await launchUrl(url, mode: LaunchMode.externalApplication);
             },
           ),

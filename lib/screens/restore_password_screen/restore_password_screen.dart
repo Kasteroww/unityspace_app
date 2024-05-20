@@ -5,8 +5,10 @@ import 'package:unityspace/screens/widgets/main_form/main_form_text_subtitle_wid
 import 'package:unityspace/screens/widgets/main_form/main_form_text_title_widget.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_widget.dart';
 import 'package:unityspace/store/auth_store.dart';
+import 'package:unityspace/utils/constants.dart';
 import 'package:wstore/wstore.dart';
 import 'package:unityspace/utils/localization_helper.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class RestorePasswordScreenStore extends WStore {
   WStoreStatus status = WStoreStatus.init;
@@ -21,7 +23,7 @@ class RestorePasswordScreenStore extends WStore {
     });
   }
 
-  void restore() {
+  void restore(AppLocalizations localizations) {
     if (status == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -37,10 +39,9 @@ class RestorePasswordScreenStore extends WStore {
         });
       },
       onError: (error, __) {
-        String errorText =
-            'При восстановлении пароля возникла проблема, пожалуйста, попробуйте ещё раз';
-        if (error == 'Incorrect user name') {
-          errorText = 'Такого аккаунта не существует';
+        String errorText = localizations.restore_password_error;
+        if (error == ConstantStrings.incorrectUserName) {
+          errorText = localizations.nonexistent_account;
         }
         setStore(() {
           status = WStoreStatus.error;
@@ -125,7 +126,7 @@ class RestorePasswordForm extends StatelessWidget {
       onSubmit: () {
         FocusScope.of(context).unfocus();
         // загрузка и вход
-        context.wstore<RestorePasswordScreenStore>().restore();
+        context.wstore<RestorePasswordScreenStore>().restore(localization);
       },
       submittingNow: loading,
       children: (submit) => [
@@ -137,7 +138,7 @@ class RestorePasswordForm extends StatelessWidget {
           enabled: !loading,
           autofocus: true,
           labelText: localization.your_email,
-          iconAssetName: 'assets/icons/email.svg',
+          iconAssetName: ConstantIcons.email,
           textInputAction: TextInputAction.next,
           keyboardType: TextInputType.emailAddress,
           autocorrect: false,

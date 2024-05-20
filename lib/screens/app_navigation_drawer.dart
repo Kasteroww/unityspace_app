@@ -7,6 +7,7 @@ import 'package:unityspace/screens/dialogs/add_space_dialog.dart';
 import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/user_store.dart';
+import 'package:unityspace/utils/constants.dart';
 import 'package:wstore/wstore.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 
@@ -141,7 +142,7 @@ class AppNavigationDrawer extends WStoreWidget<AppNavigationDrawerStore> {
           child: Column(
             children: [
               NavigatorMenuItem(
-                iconAssetName: 'assets/icons/navigator_main.svg',
+                iconAssetName: ConstantIcons.navigatorMain,
                 title: localization.main,
                 selected: currentRoute == '/home',
                 favorite: false,
@@ -153,7 +154,7 @@ class AppNavigationDrawer extends WStoreWidget<AppNavigationDrawerStore> {
                 },
               ),
               NavigatorMenuItem(
-                iconAssetName: 'assets/icons/navigator_notifications.svg',
+                iconAssetName: ConstantIcons.navigatorNotifications,
                 title: localization.notifications,
                 selected: currentRoute == '/notifications',
                 favorite: false,
@@ -185,7 +186,7 @@ class AppNavigationDrawer extends WStoreWidget<AppNavigationDrawerStore> {
                             ),
                           ...store.allSortedSpaces.map(
                             (space) => NavigatorMenuItem(
-                              iconAssetName: 'assets/icons/navigator_space.svg',
+                              iconAssetName: ConstantIcons.navigatorSpace,
                               title: space.name,
                               selected: currentRoute == '/space' &&
                                   currentArguments == space.id,
@@ -357,7 +358,7 @@ class AddSpaceButtonWidget extends StatelessWidget {
       child: Row(
         children: [
           SvgPicture.asset(
-            'assets/icons/navigator_plus.svg',
+            ConstantIcons.navigatorPlus,
             width: 32,
             height: 32,
             fit: BoxFit.scaleDown,
@@ -444,7 +445,7 @@ class NavigatorMenuItem extends StatelessWidget {
       ),
       trailing: favorite
           ? SvgPicture.asset(
-              'assets/icons/navigator_favorite.svg',
+              ConstantIcons.navigatorFavorite,
               width: 12,
               height: 12,
               fit: BoxFit.scaleDown,
@@ -498,7 +499,7 @@ class NavigatorMenuCurrentUser extends StatelessWidget {
       ),
       trailing: license
           ? SvgPicture.asset(
-              'assets/icons/navigator_license.svg',
+              ConstantIcons.navigatorLicense,
               width: 24,
               height: 24,
               fit: BoxFit.scaleDown,

@@ -14,6 +14,7 @@ import 'package:unityspace/screens/widgets/tabs_list/tab_button.dart';
 import 'package:unityspace/screens/widgets/tabs_list/tabs_list_row.dart';
 import 'package:unityspace/store/auth_store.dart';
 import 'package:unityspace/store/user_store.dart';
+import 'package:unityspace/utils/constants.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
@@ -51,7 +52,7 @@ class AccountScreenStore extends WStore {
     selectTab(AccountScreenTab.values.byName(tabName));
   }
 
-  void signOut() {
+  void signOut(String logoutError) {
     if (statusExiting == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -67,12 +68,10 @@ class AccountScreenStore extends WStore {
         });
       },
       onError: (error, stack) {
-        String errorText =
-            'При выходе из учетной записи возникла проблема, пожалуйста, попробуйте ещё раз';
         logger.d('AccountScreenStore.signOut error: $error stack: $stack');
         setStore(() {
           statusExiting = WStoreStatus.error;
-          exitingError = errorText;
+          exitingError = logoutError;
         });
       },
     );
@@ -90,7 +89,7 @@ enum AccountScreenTab {
   members(title: 'Участники организации', adminOnly: true),
   tariff(
     title: 'Оплата и тарифы',
-    iconAsset: 'assets/icons/tab_license.svg',
+    iconAsset: ConstantIcons.tabLicense,
     adminOnly: true,
   );
 
@@ -132,7 +131,7 @@ class AccountScreen extends WStoreWidget<AccountScreenStore> {
             builder: (context, status) {
               final loading = status == WStoreStatus.loading;
               return SignOutIconButton(
-                onPressed: () => store.signOut(),
+                onPressed: () => store.signOut(localization.logout_error),
                 loading: loading,
               );
             },
@@ -216,7 +215,7 @@ class SignOutIconButton extends StatelessWidget {
               ),
             )
           : SvgPicture.asset(
-              'assets/icons/sign_out.svg',
+              ConstantIcons.signOut,
               width: 20,
               height: 20,
               theme: SvgTheme(currentColor: currentColor),
