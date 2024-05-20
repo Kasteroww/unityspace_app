@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_button_widget.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_text_button_widget.dart';
+import 'package:unityspace/screens/widgets/main_form/main_form_text_title_widget.dart';
 
 class MainFormWidget extends StatefulWidget {
   final String submitButtonText;
@@ -46,29 +47,29 @@ class _MainFormWidgetState extends State<MainFormWidget> {
             child: ListView(
               shrinkWrap: true,
               children: [
+                const SizedBox(height: 6),
                 ...widget.children(submit),
+                MainFormButtonWidget(
+                  loading: widget.submittingNow,
+                  text: widget.submitButtonText,
+                  onPressed: submit,
+                ),
+                if (widget.onAdditionalButton != null &&
+                    widget.additionalButtonText.isNotEmpty)
+                  const SizedBox(height: 4),
+                if (widget.onAdditionalButton != null &&
+                    widget.additionalButtonText.isNotEmpty)
+                  SizedBox(
+                    width: double.infinity,
+                    child: MainFormTextButtonWidget(
+                      text: widget.additionalButtonText,
+                      onPressed: widget.onAdditionalButton!,
+                    ),
+                  ),
               ],
             ),
           ),
-          const SizedBox(height: 12),
-          MainFormButtonWidget(
-            loading: widget.submittingNow,
-            text: widget.submitButtonText,
-            onPressed: submit,
-          ),
-          if (widget.onAdditionalButton != null &&
-              widget.additionalButtonText.isNotEmpty)
-            const SizedBox(height: 4),
-          if (widget.onAdditionalButton != null &&
-              widget.additionalButtonText.isNotEmpty)
-            SizedBox(
-              width: double.infinity,
-              child: MainFormTextButtonWidget(
-                text: widget.additionalButtonText,
-                onPressed: widget.onAdditionalButton!,
-              ),
-            ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 24),
         ],
       ),
     );

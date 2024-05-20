@@ -74,9 +74,7 @@ class LoginByEmailScreen extends WStoreWidget<LoginByEmailScreenStore> {
             children: [
               const SizedBox(height: 60),
               const MainFormLogoWidget(),
-              const SizedBox(height: 32),
-              MainFormTextTitleWidget(text: localization.login_by_email),
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
               Expanded(
                 child: WStoreStatusBuilder(
                   store: store,
@@ -126,6 +124,9 @@ class LoginByEmailForm extends StatelessWidget {
       },
       submittingNow: loading,
       children: (submit) => [
+        Center(
+            child: MainFormTextTitleWidget(text: localization.login_by_email)),
+        const SizedBox(height: 32),
         MainFormInputField(
           enabled: !loading,
           autofocus: true,
@@ -145,7 +146,7 @@ class LoginByEmailForm extends StatelessWidget {
             context.wstore<LoginByEmailScreenStore>().email = value;
           },
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 16),
         WStoreValueBuilder<LoginByEmailScreenStore, bool>(
           watch: (store) => store.showPassword,
           builder: (context, showPassword) {
