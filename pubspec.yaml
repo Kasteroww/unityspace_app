@@ -87,6 +87,7 @@ flutter_launcher_icons:
     generate: true
   windows: 
     generate: true
+  remove_alpha_ios: true
   image_path: assets/images/unityspace_logo.png
 
 flutter_native_splash:
