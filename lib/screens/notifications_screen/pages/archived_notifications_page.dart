@@ -4,7 +4,7 @@ import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/utils/constants.dart';
 import 'package:unityspace/utils/errors.dart';
-import 'package:unityspace/screens/notifications_screen/widgets/notifications_list.dart';
+import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/notifications_list.dart';
 import 'package:unityspace/store/notifications_store.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
@@ -154,21 +154,21 @@ class ArchivedNotificationsPage
       builder: (context, _) {
         return Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                InkWell(
-                    onTap: () {
-                      context
-                          .wstore<ArchivedNotificationPageStore>()
-                          .deleteAllNotifications();
-                    },
-                    child: Text(localization.delete_all)),
-                const SizedBox(
-                  width: 10,
-                ),
-              ],
-            ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.end,
+            //   children: [
+            //     InkWell(
+            //         onTap: () {
+            //           context
+            //               .wstore<ArchivedNotificationPageStore>()
+            //               .deleteAllNotifications();
+            //         },
+            //         child: Text(localization.delete_all)),
+            //     const SizedBox(
+            //       width: 10,
+            //     ),
+            //   ],
+            // ),
             Expanded(
                 child: NotificationListener<ScrollEndNotification>(
               onNotification: (notification) {
@@ -188,18 +188,18 @@ class ArchivedNotificationsPage
                         store.notifications;
                     return NotificationsList(
                       items: notifications,
-                      onArchiveButtonTap: (List<NotificationModel> list) {
-                        context
-                            .wstore<ArchivedNotificationPageStore>()
-                            .changeArchiveStatusNotifications(
-                                list, list.any((element) => element.archived));
-                      },
-                      onOptionalButtonTap: (List<NotificationModel> list) {
+                      onDismissEvent: (List<NotificationModel> list) {
                         context
                             .wstore<ArchivedNotificationPageStore>()
                             .deleteNotifications(
                               list,
                             );
+                      },
+                      onLongPressButtonTap: (List<NotificationModel> list) {
+                        context
+                            .wstore<ArchivedNotificationPageStore>()
+                            .changeArchiveStatusNotifications(
+                                list, list.any((element) => element.archived));
                       },
                     );
                   }),

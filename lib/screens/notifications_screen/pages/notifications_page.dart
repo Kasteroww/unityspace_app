@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:unityspace/models/user_models.dart';
-import 'package:unityspace/screens/notifications_screen/widgets/notifications_list.dart';
+import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/notifications_list.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/constants.dart';
 import 'package:wstore/wstore.dart';
@@ -163,31 +163,31 @@ class NotificationsPage extends WStoreWidget<NotificationPageStore> {
       builderLoaded: (context) {
         return Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                InkWell(
-                    onTap: () {
-                      context
-                          .wstore<NotificationPageStore>()
-                          .archiveAllNotifications();
-                    },
-                    child: Text(localization.archive_all)),
-                const SizedBox(
-                  width: 10,
-                ),
-                InkWell(
-                    onTap: () {
-                      context
-                          .wstore<NotificationPageStore>()
-                          .readAllNotifications();
-                    },
-                    child: Text(localization.read_all)),
-                const SizedBox(
-                  width: 10,
-                ),
-              ],
-            ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.end,
+            //   children: [
+            //     InkWell(
+            //         onTap: () {
+            //           context
+            //               .wstore<NotificationPageStore>()
+            //               .archiveAllNotifications();
+            //         },
+            //         child: Text(localization.archive_all)),
+            //     const SizedBox(
+            //       width: 10,
+            //     ),
+            //     InkWell(
+            //         onTap: () {
+            //           context
+            //               .wstore<NotificationPageStore>()
+            //               .readAllNotifications();
+            //         },
+            //         child: Text(localization.read_all)),
+            //     const SizedBox(
+            //       width: 10,
+            //     ),
+            //   ],
+            // ),
             Expanded(
                 child: NotificationListener<ScrollEndNotification>(
               onNotification: (notification) {
@@ -207,11 +207,11 @@ class NotificationsPage extends WStoreWidget<NotificationPageStore> {
                         store.notifications;
                     return NotificationsList(
                       items: notifications,
-                      onOptionalButtonTap: (List<NotificationModel> list) {
+                      onLongPressButtonTap: (List<NotificationModel> list) {
                         store.changeReadStatusNotification(
                             list, list.any((element) => element.unread));
                       },
-                      onArchiveButtonTap: (List<NotificationModel> list) {
+                      onDismissEvent: (List<NotificationModel> list) {
                         store.changeArchiveStatusNotifications(
                             list, list.any((element) => element.archived));
                       },

@@ -102,7 +102,7 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
               return ListView.builder(
                   itemCount: store.projects.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return Card(child: Text('${store.projects[index].name}'));
+                    return Card(child: Text(store.projects[index].name));
                   });
             });
       },

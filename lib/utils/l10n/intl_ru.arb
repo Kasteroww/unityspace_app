@@ -337,5 +337,7 @@
   "task": "Задача:",
   "in_work_status": "В работе",
   "done_status": "Выполнено",
-  "rejected_status": "Отклонено"
+  "rejected_status": "Отклонено",
+  "mark_as_read": "Отметить прочитанным",
+  "mark_as_unread":"Отметить непрочитанным"
 }

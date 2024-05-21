@@ -51,13 +51,13 @@ class NotificationHelper {
           int userId =
               int.parse(notification.text.substring('add responsible '.length));
           final member = findMemberById(organizationMembers, userId);
-          return 'Установил(а) исполнителя: $member';
+          return 'Установил(а) исполнителя: ${member?.name ?? ''}';
         }
         if (notification.text.startsWith('change responsible ')) {
           int userId = int.parse(
               notification.text.substring('change responsible '.length));
           final member = findMemberById(organizationMembers, userId);
-          return 'Сменил(а) исполнителя на: $member';
+          return 'Сменил(а) исполнителя на: ${member?.name ?? ''}';
         }
         return ('Сменил(а) исполнителя на: ${notification.text.substring('Новый исполнитель '.length)}');
       }
