@@ -6,6 +6,7 @@ import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
 import 'package:unityspace/utils/localization_helper.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<void> showUserChangeNameDialog(
   BuildContext context,
@@ -30,7 +31,7 @@ class UserChangeNameDialogStore extends WStore {
     });
   }
 
-  void changeName() {
+  void changeName(AppLocalizations localizations) {
     if (statusChangeName == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -40,7 +41,7 @@ class UserChangeNameDialogStore extends WStore {
     //
     if (name.isEmpty) {
       setStore(() {
-        changeNameError = 'Имя не может быть пустым';
+        changeNameError = localizations.empty_name_error;
         statusChangeName = WStoreStatus.error;
       });
       return;
@@ -62,13 +63,11 @@ class UserChangeNameDialogStore extends WStore {
         });
       },
       onError: (error, stack) {
-        String errorText =
-            'При смене имени возникла проблема, пожалуйста, попробуйте ещё раз';
         logger.d(
             'UserChangeNameDialogStore.changeName error: $error stack: $stack');
         setStore(() {
           statusChangeName = WStoreStatus.error;
-          changeNameError = errorText;
+          changeNameError = localizations.change_name_error;
         });
       },
     );
@@ -107,7 +106,7 @@ class UserChangeNameDialog extends WStoreWidget<UserChangeNameDialogStore> {
           primaryButtonText: localization.save,
           onPrimaryButtonPressed: () {
             FocusScope.of(context).unfocus();
-            store.changeName();
+            store.changeName(localization);
           },
           primaryButtonLoading: loading,
           secondaryButtonText: '',
@@ -122,7 +121,7 @@ class UserChangeNameDialog extends WStoreWidget<UserChangeNameDialogStore> {
               },
               onEditingComplete: () {
                 FocusScope.of(context).unfocus();
-                store.changeName();
+                store.changeName(localization);
               },
               labelText: localization.enter_a_new_name,
             ),

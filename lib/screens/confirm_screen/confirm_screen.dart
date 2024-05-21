@@ -4,15 +4,17 @@ import 'package:unityspace/screens/widgets/main_form/main_form_logo_widget.dart'
 import 'package:unityspace/screens/widgets/main_form/main_form_text_subtitle_widget.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_widget.dart';
 import 'package:unityspace/store/auth_store.dart';
+import 'package:unityspace/utils/constants.dart';
 import 'package:wstore/wstore.dart';
 import 'package:unityspace/utils/localization_helper.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ConfirmScreenStore extends WStore {
   WStoreStatus status = WStoreStatus.init;
   String confirmError = '';
   String code = '';
 
-  void confirm() {
+  void confirm(AppLocalizations localizations) {
     if (status == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -28,10 +30,9 @@ class ConfirmScreenStore extends WStore {
         });
       },
       onError: (error, __) {
-        String errorText =
-            'При подтверждении почты возникла проблема, пожалуйста, попробуйте ещё раз';
-        if (error == 'Error while entering code') {
-          errorText = 'Введен неверный код';
+        String errorText = localizations.confirm_email_error;
+        if (error == ConstantStrings.incorrectCodeError) {
+          errorText = localizations.incorrect_code_error;
         }
         setStore(() {
           status = WStoreStatus.error;
@@ -118,7 +119,7 @@ class ConfirmForm extends StatelessWidget {
       onSubmit: () {
         FocusScope.of(context).unfocus();
         // загрузка и вход
-        context.wstore<ConfirmScreenStore>().confirm();
+        context.wstore<ConfirmScreenStore>().confirm(localization);
       },
       submittingNow: loading,
       children: (submit) => [
@@ -126,7 +127,7 @@ class ConfirmForm extends StatelessWidget {
           enabled: !loading,
           autofocus: true,
           labelText: localization.enter_code,
-          iconAssetName: 'assets/icons/code.svg',
+          iconAssetName: ConstantIcons.code,
           textInputAction: TextInputAction.done,
           keyboardType: TextInputType.number,
           autocorrect: false,

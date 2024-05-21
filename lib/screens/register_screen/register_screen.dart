@@ -188,7 +188,7 @@ class RegisterByEmailForm extends StatelessWidget {
                   return localization.the_field_is_not_filled_in;
                 }
                 if (text.length < 8) {
-                  return '${localization.password_must_be_at_least} 8 ${localization.characters}';
+                  return '${localization.password_must_be} ${localization.at_least_8_characters}';
                 }
                 return '';
               },

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_primary_button.dart';
 import 'package:unityspace/store/spaces_store.dart';
+import 'package:unityspace/utils/constants.dart';
 import 'package:wstore/wstore.dart';
 import 'package:unityspace/utils/localization_helper.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<int?> showAddSpaceDialog(BuildContext context) async {
   return showDialog<int?>(
@@ -20,7 +22,7 @@ class AddSpaceDialogStore extends WStore {
   String addError = '';
   int newSpaceId = 0;
 
-  void addSpace() {
+  void addSpace(AppLocalizations localizations) {
     if (status == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -33,7 +35,7 @@ class AddSpaceDialogStore extends WStore {
     if (title.isEmpty) {
       setStore(() {
         status = WStoreStatus.error;
-        addError = 'Название пространства не может быть пустым';
+        addError = localizations.empty_space_error;
       });
       return;
     }
@@ -48,11 +50,9 @@ class AddSpaceDialogStore extends WStore {
         });
       },
       onError: (error, __) {
-        String errorText =
-            'При создании пространства возникла проблема, пожалуйста, попробуйте ещё раз';
-        if (error == 'paid tariff') {
-          errorText =
-              'Для создания еще одного пространства нужно перейти на платный тариф';
+        String errorText = localizations.create_space_error;
+        if (error == ConstantStrings.paidTariffError) {
+          errorText = localizations.paid_tariff_error;
         }
         setStore(() {
           status = WStoreStatus.error;
@@ -93,7 +93,7 @@ class AddSpaceDialog extends WStoreWidget<AddSpaceDialogStore> {
             final loading = status == WStoreStatus.loading;
             return AppDialogPrimaryButton(
               onPressed: () {
-                store.addSpace();
+                store.addSpace(localization);
               },
               text: localization.add_space,
               loading: loading,
@@ -119,7 +119,7 @@ class AddSpaceDialog extends WStoreWidget<AddSpaceDialogStore> {
           textCapitalization: TextCapitalization.sentences,
           controller: store.textEditingController,
           onEditingComplete: () {
-            store.addSpace();
+            store.addSpace(localization);
           },
         ),
         WStoreValueBuilder(

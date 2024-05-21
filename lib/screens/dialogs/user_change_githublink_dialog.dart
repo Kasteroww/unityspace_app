@@ -6,6 +6,7 @@ import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
 import 'package:unityspace/utils/localization_helper.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<void> showUserChangeGitHubLinkDialog(
   BuildContext context,
@@ -30,7 +31,7 @@ class UserChangeGitHubLinkDialogStore extends WStore {
     });
   }
 
-  void changeGitHubLink() {
+  void changeGitHubLink(AppLocalizations localizations) {
     if (statusChangeGitHubLink == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -45,7 +46,7 @@ class UserChangeGitHubLinkDialogStore extends WStore {
       }
       if (!isLinkValid(formattedLink)) {
         setStore(() {
-          changeGitHubLinkError = 'Неверная ссылка';
+          changeGitHubLinkError = localizations.invalid_link_error;
           statusChangeGitHubLink = WStoreStatus.error;
         });
         return;
@@ -68,8 +69,7 @@ class UserChangeGitHubLinkDialogStore extends WStore {
         });
       },
       onError: (error, stack) {
-        String errorText =
-            'При смене ссылки возникла проблема, пожалуйста, попробуйте ещё раз';
+        String errorText = localizations.change_link_error;
         logger.d(
             'UserChangeGitHubLinkDialogStore.changeGitHubLink error: $error stack: $stack');
         setStore(() {
@@ -115,7 +115,7 @@ class UserChangeGitHubLinkDialog
           primaryButtonText: localization.save,
           onPrimaryButtonPressed: () {
             FocusScope.of(context).unfocus();
-            store.changeGitHubLink();
+            store.changeGitHubLink(localization);
           },
           primaryButtonLoading: loading,
           secondaryButtonText: '',
@@ -132,7 +132,7 @@ class UserChangeGitHubLinkDialog
               },
               onEditingComplete: () {
                 FocusScope.of(context).unfocus();
-                store.changeGitHubLink();
+                store.changeGitHubLink(localization);
               },
               labelText: localization.link_on_name_profile,
             ),

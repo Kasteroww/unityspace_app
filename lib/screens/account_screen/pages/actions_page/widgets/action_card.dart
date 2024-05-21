@@ -87,11 +87,11 @@ class ActionCard extends WStoreWidget<ActionCardStore> {
         String statusString = '';
         switch (history.state) {
           case '0':
-            statusString = '"В работе"';
+            statusString = localizations.in_work_status;
           case '1':
-            statusString = '"Выполнено"';
+            statusString = localizations.done_status;
           case '2':
-            statusString = '"Отклонено"';
+            statusString = localizations.rejected_status;
         }
 
         return localizations.changeStatus(statusString);
@@ -159,7 +159,7 @@ class ActionCard extends WStoreWidget<ActionCardStore> {
               children: [
                 Flexible(
                   child: Text(
-                    'Задача: ${getTaskNameString(data)}',
+                    '${localizations.task} ${getTaskNameString(data)}',
                     overflow: TextOverflow.ellipsis,
                     style: textTheme.labelMedium!.copyWith(
                       color: ColorConstants.grey04,

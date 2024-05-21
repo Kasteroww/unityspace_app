@@ -6,6 +6,7 @@ import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
 import 'package:unityspace/utils/localization_helper.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<void> showUserChangeTgLinkDialog(
   BuildContext context,
@@ -30,7 +31,7 @@ class UserChangeTgLinkDialogStore extends WStore {
     });
   }
 
-  void changeTgLink() {
+  void changeTgLink(AppLocalizations localizations) {
     if (statusChangeLink == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -45,7 +46,7 @@ class UserChangeTgLinkDialogStore extends WStore {
       }
       if (!isLinkValid(formattedLink)) {
         setStore(() {
-          changeLinkError = 'Неверная ссылка';
+          changeLinkError = localizations.invalid_link_error;
           statusChangeLink = WStoreStatus.error;
         });
         return;
@@ -69,8 +70,7 @@ class UserChangeTgLinkDialogStore extends WStore {
         });
       },
       onError: (error, stack) {
-        String errorText =
-            'При смене ссылки возникла проблема, пожалуйста, попробуйте ещё раз';
+        String errorText = localizations.change_link_error;
         logger.d(
             'UserChangeTgLinkDialogStore.changeTgLink error: $error stack: $stack');
         setStore(() {
@@ -113,7 +113,7 @@ class UserChangeTgLinkDialog extends WStoreWidget<UserChangeTgLinkDialogStore> {
           primaryButtonText: localization.save,
           onPrimaryButtonPressed: () {
             FocusScope.of(context).unfocus();
-            store.changeTgLink();
+            store.changeTgLink(localization);
           },
           primaryButtonLoading: loading,
           secondaryButtonText: '',
@@ -130,7 +130,7 @@ class UserChangeTgLinkDialog extends WStoreWidget<UserChangeTgLinkDialogStore> {
               },
               onEditingComplete: () {
                 FocusScope.of(context).unfocus();
-                store.changeTgLink();
+                store.changeTgLink(localization);
               },
               labelText: localization.link_on_name_profile,
             ),

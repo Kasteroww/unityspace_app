@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/models/user_models.dart';
+import 'package:unityspace/utils/constants.dart';
 import 'package:unityspace/utils/errors.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list.dart';
 import 'package:unityspace/store/notifications_store.dart';
@@ -16,6 +17,7 @@ class ArchivedNotificationPageStore extends WStore {
       {NotificationsStore? notificationsStore, UserStore? userStore})
       : notificationsStore = notificationsStore ?? NotificationsStore(),
         userStore = userStore ?? UserStore();
+
   //
   bool isArchived = true;
   NotificationErrors error = NotificationErrors.none;
@@ -24,6 +26,7 @@ class ArchivedNotificationPageStore extends WStore {
   int currentPage = 1;
   NotificationsStore notificationsStore;
   UserStore userStore;
+
   List<NotificationModel> get notifications => computedFromStore(
         store: notificationsStore,
         getValue: (store) => store.notifications,
@@ -142,7 +145,7 @@ class ArchivedNotificationsPage
       builderLoading: (context) {
         return Center(
           child: Lottie.asset(
-            'assets/animations/main_loader.json',
+            ConstantIcons.mainLoader,
             width: 200,
             height: 200,
           ),

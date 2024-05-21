@@ -3,9 +3,11 @@ import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.da
 
 import 'package:flutter/material.dart';
 import 'package:unityspace/store/user_store.dart';
+import 'package:unityspace/utils/constants.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
 import 'package:unityspace/utils/localization_helper.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<void> showUserChangePasswordDialog(
   BuildContext context,
@@ -43,7 +45,7 @@ class UserChangePasswordDialogStore extends WStore {
     });
   }
 
-  void changePassword() {
+  void changePassword(AppLocalizations localizations) {
     if (statusChange == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -53,7 +55,7 @@ class UserChangePasswordDialogStore extends WStore {
     //
     if (oldPassword.isEmpty || newPassword.isEmpty) {
       setStore(() {
-        changePasswordError = 'Пароль не может быть пустым';
+        changePasswordError = localizations.empty_password_error;
         statusChange = WStoreStatus.error;
       });
       return;
@@ -61,7 +63,7 @@ class UserChangePasswordDialogStore extends WStore {
     //
     if (newPassword.length < 8) {
       setStore(() {
-        changePasswordError = 'Пароль должен быть не менее 8 символов';
+        changePasswordError = localizations.at_least_8_characters_error;
         statusChange = WStoreStatus.error;
       });
       return;
@@ -69,7 +71,7 @@ class UserChangePasswordDialogStore extends WStore {
     //
     if (confirmPassword != newPassword) {
       setStore(() {
-        changePasswordError = 'Пароли не совпадают';
+        changePasswordError = localizations.match_password_error;
         statusChange = WStoreStatus.error;
       });
       return;
@@ -77,7 +79,7 @@ class UserChangePasswordDialogStore extends WStore {
     //
     if (oldPassword == newPassword) {
       setStore(() {
-        changePasswordError = 'Новый пароль должен отличаться от старого';
+        changePasswordError = localizations.new_password_equal_old_error;
         statusChange = WStoreStatus.error;
       });
       return;
@@ -92,10 +94,9 @@ class UserChangePasswordDialogStore extends WStore {
         });
       },
       onError: (error, stack) {
-        String errorText =
-            'При смене пароля возникла проблема, пожалуйста, попробуйте ещё раз';
-        if (error == 'Incorrect old password') {
-          errorText = 'Старый пароль введен некорректно';
+        String errorText = localizations.change_password_error;
+        if (error == ConstantStrings.incorrectOldPassword) {
+          errorText = localizations.incorrect_old_password_error;
         } else {
           logger.d(
               'UserChangePasswordDialogStore.changePassword error: $error stack: $stack');
@@ -140,7 +141,7 @@ class UserChangePasswordDialog
           primaryButtonText: localization.save,
           onPrimaryButtonPressed: () {
             FocusScope.of(context).unfocus();
-            store.changePassword();
+            store.changePassword(localization);
           },
           primaryButtonLoading: loading,
           secondaryButtonText: '',
@@ -179,7 +180,7 @@ class UserChangePasswordDialog
               },
               onEditingComplete: () {
                 FocusScope.of(context).unfocus();
-                store.changePassword();
+                store.changePassword(localization);
               },
               labelText: localization.repeat_new_password,
             ),

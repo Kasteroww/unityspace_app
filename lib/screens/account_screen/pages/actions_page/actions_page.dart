@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/screens/account_screen/pages/actions_page/widgets/action_card.dart';
+import 'package:unityspace/utils/constants.dart';
 import 'package:unityspace/utils/errors.dart';
 import 'package:unityspace/screens/widgets/common/paddings.dart';
 import 'package:unityspace/store/tasks_store.dart';
@@ -17,13 +18,16 @@ class ActionsPageStore extends WStore {
   ActionsErrors error = ActionsErrors.none;
   int maxPagesCount = 1;
   int currentPage = 1;
+
   @override
   ActionsPage get widget => super.widget as ActionsPage;
+
   List<TaskHistory>? get history => computedFromStore(
         store: TasksStore(),
         getValue: (store) => store.history,
         keyName: 'history',
       );
+
   void nextPage() {
     if (currentPage < maxPagesCount) {
       setStore(() {
@@ -97,12 +101,12 @@ class ActionsPage extends WStoreWidget<ActionsPageStore> {
         },
         builderLoading: (context) {
           return Center(
-            child: Lottie.asset('assets/animations/main_loader.json',
-                width: 200, height: 200),
+            child:
+                Lottie.asset(ConstantIcons.mainLoader, width: 200, height: 200),
           );
         },
         builderError: (context) {
-          return const Text('error');
+          return const Text(ConstantStrings.error);
         },
       ),
     );

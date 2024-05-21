@@ -3,6 +3,7 @@ import 'package:lottie/lottie.dart';
 import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list.dart';
 import 'package:unityspace/store/user_store.dart';
+import 'package:unityspace/utils/constants.dart';
 import 'package:wstore/wstore.dart';
 import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/utils/errors.dart';
@@ -150,7 +151,7 @@ class NotificationsPage extends WStoreWidget<NotificationPageStore> {
       builderLoading: (context) {
         return Center(
           child: Lottie.asset(
-            'assets/animations/main_loader.json',
+            ConstantIcons.mainLoader,
             width: 200,
             height: 200,
           ),

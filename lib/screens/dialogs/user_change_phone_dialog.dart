@@ -26,7 +26,7 @@ class UserChangePhoneDialogStore extends WStore {
   bool phoneValid = true;
   WStoreStatus statusChange = WStoreStatus.init;
 
-  void setPhone(String value) {
+  void setPhone(String value, String incorrectPhoneError) {
     setStore(() {
       phone = value;
     });
@@ -40,7 +40,7 @@ class UserChangePhoneDialogStore extends WStore {
       setStore(() {
         phoneValid = false;
         statusChange = WStoreStatus.error;
-        changeError = 'Введите корректный номер телефона';
+        changeError = incorrectPhoneError;
       });
     }
   }
@@ -55,7 +55,7 @@ class UserChangePhoneDialogStore extends WStore {
     return false;
   }
 
-  void changePhone() {
+  void changePhone(String changePhoneError) {
     if (statusChange == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -79,13 +79,11 @@ class UserChangePhoneDialogStore extends WStore {
         });
       },
       onError: (error, stack) {
-        String errorText =
-            'При смене номера телефона возникла проблема, пожалуйста, попробуйте ещё раз';
         logger.d(
             'UserChangePhoneDialogStore.changePhone error: $error stack: $stack');
         setStore(() {
           statusChange = WStoreStatus.error;
-          changeError = errorText;
+          changeError = changePhoneError;
         });
       },
     );
@@ -125,7 +123,7 @@ class UserChangePhoneDialog extends WStoreWidget<UserChangePhoneDialogStore> {
           onPrimaryButtonPressed: store.phoneValid
               ? () {
                   FocusScope.of(context).unfocus();
-                  store.changePhone();
+                  store.changePhone(localization.change_phone_error);
                 }
               : null,
           primaryButtonLoading: loading,
@@ -137,11 +135,11 @@ class UserChangePhoneDialog extends WStoreWidget<UserChangePhoneDialogStore> {
               textInputAction: TextInputAction.done,
               keyboardType: TextInputType.phone,
               onChanged: (value) {
-                store.setPhone(value);
+                store.setPhone(value, localization.incorrect_phone_error);
               },
               onEditingComplete: () {
                 FocusScope.of(context).unfocus();
-                store.changePhone();
+                store.changePhone(localization.change_phone_error);
               },
               labelText: localization.enter_phone_number,
             ),

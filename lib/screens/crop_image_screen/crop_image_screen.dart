@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:crop_your_image/crop_your_image.dart';
 import 'package:flutter/material.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_primary_button.dart';
+import 'package:unityspace/utils/errors.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
 import 'package:unityspace/utils/localization_helper.dart';
@@ -19,7 +20,7 @@ class CropImageScreenStore extends WStore {
 
   bool get hasImage => imageData != null && imageData!.isNotEmpty;
 
-  void loadImageData() {
+  void loadImageData(String loadImageError) {
     if (statusLoadData != WStoreStatus.init) return;
     //
     setStore(() {
@@ -30,7 +31,7 @@ class CropImageScreenStore extends WStore {
       Future(() async {
         final file = File(widget.imageFilePath);
         final imageData = await file.readAsBytes();
-        if (imageData.isEmpty) throw 'Картинка пустая';
+        if (imageData.isEmpty) throw ImageErrors.imageIsEmpty;
         return imageData;
       }),
       id: 1,
@@ -42,10 +43,9 @@ class CropImageScreenStore extends WStore {
       },
       onError: (e, stack) {
         logger.d('CropImageScreenStore loadImageData error=$e\nstack=$stack');
-        String errorText = 'Не удалось загрузить картинку, попробуйте другую';
         setStore(() {
           statusLoadData = WStoreStatus.error;
-          error = errorText;
+          error = loadImageError;
         });
       },
     );
@@ -71,12 +71,12 @@ class CropImageScreen extends WStoreWidget<CropImageScreenStore> {
   });
 
   @override
-  CropImageScreenStore createWStore() =>
-      CropImageScreenStore()..loadImageData();
+  CropImageScreenStore createWStore() => CropImageScreenStore();
 
   @override
   Widget build(BuildContext context, CropImageScreenStore store) {
     final localization = LocalizationHelper.getLocalizations(context);
+    store.loadImageData(localization.load_image_error);
     return Scaffold(
       appBar: AppBar(
         title: Text(localization.change_avatar),

@@ -30,7 +30,7 @@ class UserChangeJobDialogStore extends WStore {
     });
   }
 
-  void changeJobTitle() {
+  void changeJobTitle(String changeJobError) {
     if (statusChange == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -54,13 +54,11 @@ class UserChangeJobDialogStore extends WStore {
         });
       },
       onError: (error, stack) {
-        String errorText =
-            'При смене должности возникла проблема, пожалуйста, попробуйте ещё раз';
         logger.d(
             'UserChangeJobDialogStore.changeJobTitle error: $error stack: $stack');
         setStore(() {
           statusChange = WStoreStatus.error;
-          changeError = errorText;
+          changeError = changeJobError;
         });
       },
     );
@@ -99,7 +97,7 @@ class UserChangeJobDialog extends WStoreWidget<UserChangeJobDialogStore> {
           primaryButtonText: localization.save,
           onPrimaryButtonPressed: () {
             FocusScope.of(context).unfocus();
-            store.changeJobTitle();
+            store.changeJobTitle(localization.change_job_error);
           },
           primaryButtonLoading: loading,
           secondaryButtonText: '',
@@ -115,7 +113,7 @@ class UserChangeJobDialog extends WStoreWidget<UserChangeJobDialogStore> {
               },
               onEditingComplete: () {
                 FocusScope.of(context).unfocus();
-                store.changeJobTitle();
+                store.changeJobTitle(localization.change_job_error);
               },
               labelText: localization.enter_work_position,
             ),

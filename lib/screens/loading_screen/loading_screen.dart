@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:unityspace/utils/constants.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:unityspace/screens/widgets/color_button_widget.dart';
 import 'package:unityspace/store/spaces_store.dart';
@@ -11,7 +12,7 @@ class LoadingScreenStore extends WStore {
   WStoreStatus status = WStoreStatus.init;
   String error = '';
 
-  void loadData() {
+  void loadData(String loadError) {
     if (status == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -33,11 +34,9 @@ class LoadingScreenStore extends WStore {
       },
       onError: (e, stack) {
         logger.d('LoadingScreenStore loadData error=$e\nstack=$stack');
-        String errorText =
-            'При загрузке данных возникла проблема, пожалуйста, попробуйте ещё раз';
         setStore(() {
           status = WStoreStatus.error;
-          error = errorText;
+          error = loadError;
         });
       },
     );
@@ -53,11 +52,12 @@ class LoadingScreen extends WStoreWidget<LoadingScreenStore> {
   });
 
   @override
-  LoadingScreenStore createWStore() => LoadingScreenStore()..loadData();
+  LoadingScreenStore createWStore() => LoadingScreenStore();
 
   @override
   Widget build(BuildContext context, LoadingScreenStore store) {
     final localization = LocalizationHelper.getLocalizations(context);
+    store.loadData(localization.load_error);
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F0),
       body: SafeArea(
@@ -84,7 +84,7 @@ class LoadingScreen extends WStoreWidget<LoadingScreenStore> {
                     ColorButtonWidget(
                       width: double.infinity,
                       onPressed: () {
-                        store.loadData();
+                        store.loadData(localization.load_error);
                       },
                       text: localization.replay,
                       loading: false,
@@ -97,7 +97,7 @@ class LoadingScreen extends WStoreWidget<LoadingScreenStore> {
             },
             builderLoading: (context) {
               return Lottie.asset(
-                'assets/animations/main_loader.json',
+                ConstantIcons.mainLoader,
                 width: 200,
                 height: 200,
               );

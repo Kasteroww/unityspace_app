@@ -14,6 +14,8 @@ import 'package:unityspace/screens/dialogs/user_change_phone_dialog.dart';
 import 'package:unityspace/screens/dialogs/user_change_tg_link_dialog.dart';
 import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
 import 'package:unityspace/store/user_store.dart';
+import 'package:unityspace/utils/constants.dart';
+import 'package:unityspace/utils/errors.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wstore/wstore.dart';
@@ -88,7 +90,7 @@ class AccountPageStore extends WStore {
         keyName: 'currentUserGithub',
       );
 
-  void clearAvatar() {
+  void clearAvatar(String deleteAvatarError) {
     if (statusAvatar == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -107,14 +109,13 @@ class AccountPageStore extends WStore {
         logger.e('removeUserAvatar error', error: error, stackTrace: stack);
         setStore(() {
           statusAvatar = WStoreStatus.error;
-          message =
-              'При удалении аватара возникла проблема, пожалуйста, попробуйте ещё раз';
+          message = deleteAvatarError;
         });
       },
     );
   }
 
-  void setAvatar(Uint8List avatarImage) {
+  void setAvatar(Uint8List avatarImage, String loadAvatarError) {
     if (statusAvatar == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -133,14 +134,14 @@ class AccountPageStore extends WStore {
         logger.e('setUserAvatar error', error: error, stackTrace: stack);
         setStore(() {
           statusAvatar = WStoreStatus.error;
-          message =
-              'При загрузке аватара возникла проблема, пожалуйста, попробуйте ещё раз';
+          message = loadAvatarError;
         });
       },
     );
   }
 
-  void copy(final String text, final String successMessage) {
+  void copy(
+      final String text, final String successMessage, final String copyError) {
     listenFuture(
       _copyToClipboard(text),
       id: 1,
@@ -152,13 +153,13 @@ class AccountPageStore extends WStore {
       onError: (error, stack) {
         logger.e('copyToClipboard error', error: error, stackTrace: stack);
         setStore(() {
-          message = 'Не удалось скопировать данные';
+          message = copyError;
         });
       },
     );
   }
 
-  void open(final String link) {
+  void open(final String link, final String openLinkError) {
     listenFuture(
       _gotoLink(link),
       id: 2,
@@ -166,26 +167,26 @@ class AccountPageStore extends WStore {
       onError: (error, stack) {
         logger.e('gotoLink error', error: error, stackTrace: stack);
         setStore(() {
-          message = 'Не удалось открыть ссылку';
+          message = openLinkError;
         });
       },
     );
   }
 
   Future<void> _copyToClipboard(final String text) async {
-    if (text.isEmpty) throw 'Empty text';
+    if (text.isEmpty) throw TextErrors.textIsEmpty;
     final data = ClipboardData(text: text);
     await Clipboard.setData(data);
   }
 
   Future<void> _gotoLink(final String link) async {
-    if (link.isEmpty) throw 'Empty link';
+    if (link.isEmpty) throw LinkErrors.linkIsEmpty;
     final url = Uri.parse(link);
     bool result = await launchUrl(url, mode: LaunchMode.externalApplication);
-    if (!result) throw 'Could not launch $link';
+    if (!result) throw '${LinkErrors.couldNotLaunch} $link';
   }
 
-  void pickAvatar() async {
+  void pickAvatar(String pickAvatarError) async {
     setStore(() {
       statusAvatar = WStoreStatus.loading;
     });
@@ -204,14 +205,13 @@ class AccountPageStore extends WStore {
         logger.e('pickAvatar error', error: error, stackTrace: stack);
         setStore(() {
           statusAvatar = WStoreStatus.error;
-          message =
-              'При выборе из галереи возникла проблема, пожалуйста, попробуйте ещё раз';
+          message = pickAvatarError;
         });
       },
     );
   }
 
-  void pickPhoto() async {
+  void pickPhoto(String pickPhotoError) async {
     setStore(() {
       statusAvatar = WStoreStatus.loading;
     });
@@ -230,8 +230,7 @@ class AccountPageStore extends WStore {
         logger.e('pickPhoto error', error: error, stackTrace: stack);
         setStore(() {
           statusAvatar = WStoreStatus.error;
-          message =
-              'При установке фото с камеры возникла проблема, пожалуйста, попробуйте ещё раз';
+          message = pickPhotoError;
         });
       },
     );
@@ -295,7 +294,8 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                                 imageFilePath: imageFilePath,
                               )));
                   if (avatarImage != null) {
-                    store.setAvatar(avatarImage);
+                    store.setAvatar(
+                        avatarImage, localization.load_avatar_error);
                   }
                 },
                 child: WStoreValueBuilder(
@@ -304,13 +304,13 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                   builder: (context, hasAvatar) => AccountAvatarWidget(
                     hasAvatar: hasAvatar,
                     onChangeAvatar: () {
-                      store.pickAvatar();
+                      store.pickAvatar(localization.change_avatar_error);
                     },
                     onChangePhoto: () {
-                      store.pickPhoto();
+                      store.pickPhoto(localization.pick_photo_error);
                     },
                     onClearAvatar: () {
-                      store.clearAvatar();
+                      store.clearAvatar(localization.delete_avatar_error);
                     },
                   ),
                 ),
@@ -322,7 +322,7 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                   builder: (context, name) => AccountItemWidget(
                     text: localization.name,
                     value: name.isNotEmpty ? name : localization.not_specified,
-                    iconAssetName: 'assets/icons/account_name.svg',
+                    iconAssetName: ConstantIcons.accountName,
                     onTapChange: () {
                       showUserChangeNameDialog(context, name);
                     },
@@ -330,6 +330,7 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                         ? () => store.copy(
                               name,
                               localization.name_copied_to_clipboard,
+                              localization.copy_error,
                             )
                         : null,
                   ),
@@ -342,7 +343,7 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                     value: birthday.isNotEmpty
                         ? birthday
                         : localization.not_specified,
-                    iconAssetName: 'assets/icons/account_birthday.svg',
+                    iconAssetName: ConstantIcons.accountBirthday,
                     onTapChange: () {
                       showUserChangeBirthdayDialog(
                         context,
@@ -353,6 +354,7 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                         ? () => store.copy(
                               birthday,
                               localization.date_of_birth_copied_to_clipboard,
+                              localization.copy_error,
                             )
                         : null,
                   ),
@@ -361,15 +363,16 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                   store: store,
                   watch: (store) => store.currentUserEmail,
                   builder: (context, email) => AccountItemWidget(
-                    text: 'Email',
+                    text: localization.email,
                     value:
                         email.isNotEmpty ? email : localization.not_specified,
-                    iconAssetName: 'assets/icons/account_email.svg',
+                    iconAssetName: ConstantIcons.accountEmail,
                     onTapChange: () {},
                     onTapValue: email.isNotEmpty
                         ? () => store.copy(
                               email,
                               localization.email_copied_to_clipboard,
+                              localization.copy_error,
                             )
                         : null,
                   ),
@@ -381,7 +384,7 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                     text: localization.phone,
                     value:
                         phone.isNotEmpty ? phone : localization.not_specified,
-                    iconAssetName: 'assets/icons/account_phone.svg',
+                    iconAssetName: ConstantIcons.accountPhone,
                     onTapChange: () {
                       showUserChangePhoneDialog(context, phone);
                     },
@@ -389,6 +392,7 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                         ? () => store.copy(
                               phone,
                               localization.phone_copied_to_clipboard,
+                              localization.copy_error,
                             )
                         : null,
                   ),
@@ -401,7 +405,7 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                     value: jobTitle.isNotEmpty
                         ? jobTitle
                         : localization.not_specified,
-                    iconAssetName: 'assets/icons/account_job.svg',
+                    iconAssetName: ConstantIcons.accountJob,
                     onTapChange: () {
                       showUserChangeJobDialog(context, jobTitle);
                     },
@@ -409,6 +413,7 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                         ? () => store.copy(
                               jobTitle,
                               localization.work_position_copied_to_clipboard,
+                              localization.copy_error,
                             )
                         : null,
                   ),
@@ -421,16 +426,19 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                     value: telegram.isNotEmpty
                         ? telegram
                         : localization.not_specified,
-                    iconAssetName: 'assets/icons/account_telegram.svg',
+                    iconAssetName: ConstantIcons.accountTelegram,
                     onTapChange: () {
                       showUserChangeTgLinkDialog(context, telegram);
                     },
-                    onTapValue:
-                        telegram.isNotEmpty ? () => store.open(telegram) : null,
+                    onTapValue: telegram.isNotEmpty
+                        ? () =>
+                            store.open(telegram, localization.open_link_error)
+                        : null,
                     onLongTapValue: telegram.isNotEmpty
                         ? () => store.copy(
                               telegram,
                               localization.link_copied_to_clipboard,
+                              localization.copy_error,
                             )
                         : null,
                   ),
@@ -442,24 +450,26 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                     text: localization.profile_in_github,
                     value:
                         github.isNotEmpty ? github : localization.not_specified,
-                    iconAssetName: 'assets/icons/account_github.svg',
+                    iconAssetName: ConstantIcons.accountGithub,
                     onTapChange: () {
                       showUserChangeGitHubLinkDialog(context, github);
                     },
-                    onTapValue:
-                        github.isNotEmpty ? () => store.open(github) : null,
+                    onTapValue: github.isNotEmpty
+                        ? () => store.open(github, localization.open_link_error)
+                        : null,
                     onLongTapValue: github.isNotEmpty
                         ? () => store.copy(
                               github,
                               localization.link_copied_to_clipboard,
+                              localization.copy_error,
                             )
                         : null,
                   ),
                 ),
                 AccountItemWidget(
                   text: localization.password,
-                  value: '********',
-                  iconAssetName: 'assets/icons/account_password.svg',
+                  value: ConstantStrings.hiddenPassword,
+                  iconAssetName: ConstantIcons.accountPassword,
                   onTapChange: () {
                     showUserChangePasswordDialog(context);
                   },

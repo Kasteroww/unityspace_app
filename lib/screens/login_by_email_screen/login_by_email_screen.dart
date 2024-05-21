@@ -5,8 +5,10 @@ import 'package:unityspace/screens/widgets/main_form/main_form_text_button_widge
 import 'package:unityspace/screens/widgets/main_form/main_form_text_title_widget.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_widget.dart';
 import 'package:unityspace/store/auth_store.dart';
+import 'package:unityspace/utils/constants.dart';
 import 'package:wstore/wstore.dart';
 import 'package:unityspace/utils/localization_helper.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LoginByEmailScreenStore extends WStore {
   WStoreStatus status = WStoreStatus.init;
@@ -21,7 +23,7 @@ class LoginByEmailScreenStore extends WStore {
     });
   }
 
-  void login() {
+  void login(AppLocalizations localizations) {
     if (status == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -38,9 +40,9 @@ class LoginByEmailScreenStore extends WStore {
       },
       onError: (error, __) {
         String errorText =
-            'При входе возникла проблема, пожалуйста, попробуйте ещё раз';
-        if (error == 'Incorrect user name or password') {
-          errorText = 'Неправильный email или пароль!';
+            localizations.login_error;
+        if (error == ConstantStrings.invalidEmailOrPassword) {
+          errorText = localizations.invalid_email_or_password;
         }
         setStore(() {
           status = WStoreStatus.error;
@@ -119,7 +121,7 @@ class LoginByEmailForm extends StatelessWidget {
       onSubmit: () {
         FocusScope.of(context).unfocus();
         // загрузка и вход
-        context.wstore<LoginByEmailScreenStore>().login();
+        context.wstore<LoginByEmailScreenStore>().login(localization);
       },
       submittingNow: loading,
       children: (submit) => [
@@ -130,7 +132,7 @@ class LoginByEmailForm extends StatelessWidget {
           enabled: !loading,
           autofocus: true,
           labelText: localization.your_email,
-          iconAssetName: 'assets/icons/email.svg',
+          iconAssetName: ConstantIcons.email,
           textInputAction: TextInputAction.next,
           keyboardType: TextInputType.emailAddress,
           autocorrect: false,
@@ -154,8 +156,8 @@ class LoginByEmailForm extends StatelessWidget {
               labelText:
                   '${localization.password} (${localization.at_least_8_characters})',
               iconAssetName: showPassword
-                  ? 'assets/icons/password_hide.svg'
-                  : 'assets/icons/password_show.svg',
+                  ? ConstantIcons.passwordHide
+                  : ConstantIcons.passwordShow,
               textInputAction: TextInputAction.done,
               keyboardType: TextInputType.visiblePassword,
               obscureText: !showPassword,
@@ -172,7 +174,7 @@ class LoginByEmailForm extends StatelessWidget {
                   return localization.the_field_is_not_filled_in;
                 }
                 if (text.length < 8) {
-                  return '${localization.password_must_be_at_least} 8 ${localization.characters}';
+                  return '${localization.password_must_be} ${localization.at_least_8_characters}';
                 }
                 return '';
               },

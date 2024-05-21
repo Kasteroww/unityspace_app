@@ -19,7 +19,7 @@ Future<void> showUserChangeBirthdayDialog(
 
 class UserChangeBirthdayDialogStore extends WStore {
   DateTime? date;
-  String changeBirthdayError = '';
+  String changeError = '';
   WStoreStatus statusChangeBirthday = WStoreStatus.init;
 
   void setDate(DateTime? newDate) {
@@ -28,12 +28,12 @@ class UserChangeBirthdayDialogStore extends WStore {
     });
   }
 
-  void changeBirthday() {
+  void changeBirthday(String changeBirthdayError) {
     if (statusChangeBirthday == WStoreStatus.loading) return;
     //
     setStore(() {
       statusChangeBirthday = WStoreStatus.loading;
-      changeBirthdayError = '';
+      changeError = '';
     });
     //
     if (date == widget.date) {
@@ -52,13 +52,11 @@ class UserChangeBirthdayDialogStore extends WStore {
         });
       },
       onError: (error, stack) {
-        String errorText =
-            'При смене даты рождения возникла проблема, пожалуйста, попробуйте ещё раз';
         logger.d(
             'UserChangeBirthdayDialogStore.changeBirthday error: $error stack: $stack');
         setStore(() {
           statusChangeBirthday = WStoreStatus.error;
-          changeBirthdayError = errorText;
+          changeError = changeBirthdayError;
         });
       },
     );
@@ -98,13 +96,13 @@ class UserChangeBirthdayDialog
           title: localization.change_the_date_of_birth,
           primaryButtonText: localization.save,
           onPrimaryButtonPressed: () {
-            store.changeBirthday();
+            store.changeBirthday(localization.change_birthday_error);
           },
           primaryButtonLoading: loading,
           secondaryButtonText: localization.clear,
           onSecondaryButtonPressed: () {
             store.setDate(null);
-            store.changeBirthday();
+            store.changeBirthday(localization.change_birthday_error);
           },
           secondaryButtonLoading: loading,
           children: [
@@ -121,7 +119,7 @@ class UserChangeBirthdayDialog
             ),
             if (error)
               Text(
-                store.changeBirthdayError,
+                store.changeError,
                 style: const TextStyle(
                   color: Color(0xFFD83400),
                 ),
