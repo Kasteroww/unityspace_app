@@ -43,11 +43,10 @@ class HttpPlugin {
     _headers['Authorization'] = authorization;
   }
 
-  Future<http.Response> post(
-    final String url, [
-    final Map<String, dynamic>? data,
-  ]) {
-    return send('POST', url, data);
+  Future<http.Response> post(final String url,
+      [final Map<String, dynamic>? data,
+      Map<String, dynamic>? queryParameters]) {
+    return send('POST', url, data, queryParameters);
   }
 
   Future<http.Response> patch(

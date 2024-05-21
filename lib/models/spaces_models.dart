@@ -280,4 +280,18 @@ class SpaceMember {
   String toString() {
     return 'SpaceMember{id: $id, email: $email, name: $name, avatarLink: $avatarLink}';
   }
+
+  SpaceMember copyWith({
+    int? id,
+    String? email,
+    String? name,
+    String? avatarLink,
+  }) {
+    return SpaceMember(
+      id: id ?? this.id,
+      email: email ?? this.email,
+      name: name ?? this.name,
+      avatarLink: avatarLink ?? this.avatarLink,
+    );
+  }
 }

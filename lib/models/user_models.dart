@@ -86,6 +86,32 @@ class User {
   String toString() {
     return 'User{id: $id, globalId: $globalId, name: $name, email: $email, avatarLink: $avatarLink, phoneNumber: $phoneNumber, telegramLink: $telegramLink, githubLink: $githubLink, birthDate: $birthDate, jobTitle: $jobTitle}';
   }
+
+  User copyWith({
+    int? id,
+    int? globalId,
+    String? name,
+    String? email,
+    String? avatarLink,
+    String? phoneNumber,
+    String? telegramLink,
+    String? githubLink,
+    DateTime? birthDate,
+    String? jobTitle,
+  }) {
+    return User(
+      id: id ?? this.id,
+      globalId: globalId ?? this.globalId,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      avatarLink: avatarLink ?? this.avatarLink,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      telegramLink: telegramLink ?? this.telegramLink,
+      githubLink: githubLink ?? this.githubLink,
+      birthDate: birthDate ?? this.birthDate,
+      jobTitle: jobTitle ?? this.jobTitle,
+    );
+  }
 }
 
 class OrganizationResponse {
@@ -298,5 +324,29 @@ class OrganizationMember {
   @override
   String toString() {
     return 'OrganizationMember{id: $id, avatarLink: $avatarLink, email: $email, name: $name, phoneNumber: $phoneNumber, telegramLink: $telegramLink, githubLink: $githubLink, birthDate: $birthDate jobTitle: $jobTitle}';
+  }
+
+  OrganizationMember copyWith({
+    int? id,
+    String? avatarLink,
+    String? email,
+    String? name,
+    String? phoneNumber,
+    String? telegramLink,
+    String? githubLink,
+    DateTime? birthDate,
+    String? jobTitle,
+  }) {
+    return OrganizationMember(
+      id: id ?? this.id,
+      avatarLink: avatarLink ?? this.avatarLink,
+      email: email ?? this.email,
+      name: name ?? this.name,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      telegramLink: telegramLink ?? this.telegramLink,
+      githubLink: githubLink ?? this.githubLink,
+      birthDate: birthDate ?? this.birthDate,
+      jobTitle: jobTitle ?? this.jobTitle,
+    );
   }
 }

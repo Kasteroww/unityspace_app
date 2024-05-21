@@ -104,3 +104,48 @@ Future<UserResponse> setUserBirthday(final String? date) async {
   final result = UserResponse.fromJson(jsonData);
   return result;
 }
+
+Future<String?> requestEmailVerification({
+  required String email,
+  required bool isChangeEmail,
+}) async {
+  try {
+    final response = await HttpPlugin().post(
+        '/auth/request-email-verification/',
+        {'email': email},
+        {'change': isChangeEmail.toString()});
+    return response.body;
+  } catch (e) {
+    if (e is HttpPluginException) {
+      if (e.message == 'User is already exists') {
+        return 'User already exists';
+      } else if (e.message == 'Cannot process its email') {
+        return 'Cannot process this email';
+      } else {
+        throw Exception(e.message);
+      }
+    }
+    rethrow;
+  }
+}
+
+Future confirmUserEmail(
+    {required String email,
+    required String code,
+    required int userGlobalId,
+    required int userId}) async {
+  try {
+    final response = await HttpPlugin().post('/auth/verify-email-change', {
+      "email": email,
+      "code": code,
+      "userGlobalId": userGlobalId,
+      "userId": userId
+    });
+    return response.body;
+  } catch (e) {
+    if (e is HttpPluginException) {
+      return 'Code is incorrect';
+    }
+    rethrow;
+  }
+}
