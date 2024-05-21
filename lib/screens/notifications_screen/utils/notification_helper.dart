@@ -160,49 +160,131 @@ class NotificationHelper {
     });
   }
 
+  /// Группировка Списка уведомлений по дням
+  ///
+  /// Если уведомления произоши в один день, то они будут в одном списке
   List<List<NotificationModel>> groupNotificationsByDay(
       List<NotificationModel> notifications) {
-    // Создание мапы для группировки уведомлений по дате
-    Map<String, List<NotificationModel>> groupedNotifications = {};
+    // Словарь для хранения уведомлений, сгруппированных по дате
+    Map<String, List<NotificationModel>> groupedByDay = {};
 
-    // Группировка уведомлений по дате
     for (var notification in notifications) {
-      String dateString = notification.createdAt.toString().split('T').first;
-      if (!groupedNotifications.containsKey(dateString)) {
-        groupedNotifications[dateString] = [];
+      // Преобразование даты в строку в формате yyyy-MM-dd
+      String day =
+          '${notification.createdAt.year}-${notification.createdAt.month}-${notification.createdAt.day}';
+
+      // Если такого дня еще нет в словаре, добавляем
+      if (!groupedByDay.containsKey(day)) {
+        groupedByDay[day] = [];
       }
-      groupedNotifications[dateString]!.add(notification);
-    }
-    List<String> sortedKeys = groupedNotifications.keys.toList();
-    // Создание списка уведомлений для каждого дня
-    List<List<NotificationModel>> groupedByDay = [];
-    for (var key in sortedKeys) {
-      groupedByDay.add(groupedNotifications[key]!);
+
+      // Добавляем уведомление в соответствующий список
+      groupedByDay[day]!.add(notification);
     }
 
-    return groupedByDay;
-  }
-
-  List<List<NotificationModel>> groupNotificationsByParentType(
-      {required List<NotificationModel> notifications}) {
-    // Группируем уведомления по parentType
-    var groupedNotifications = groupBy(notifications,
-        (NotificationModel notification) => notification.parentType);
-
-    // Преобразуем группы в список списков
-    var result = groupedNotifications.values.toList();
-
-    return result;
+    // Возвращаем значения словаря как список списков
+    return groupedByDay.values.toList();
   }
 
   List<OrganizationMember> getOrganizationMembers() {
     return userStore.organization?.members ?? [];
   }
 
-  String extractTime(String dateTimeString) {
-    var parts = dateTimeString.split('T')[1].split(':');
-    var hours = parts[0];
-    var minutes = parts[1];
-    return '$hours:$minutes';
+  List<NotificationsGroup> groupNotificationsByObject(
+    List<NotificationModel> notifications,
+  ) {
+    List<NotificationsGroup> groups = [];
+    Map<String, NotificationsGroup> groupsMap = {};
+
+    for (var notification in notifications) {
+      String groupId = '';
+      if (notification.parentType == 'TASK') {
+        groupId = 'task-${notification.parentId}';
+        if (groupsMap.containsKey(groupId)) {
+          groupsMap[groupId]!.notifications.add(notification);
+        } else {
+          NotificationsGroup newGroup = NotificationsGroup(
+            groupId: groupId,
+            locations: notification.locations,
+            createdAt: notification.createdAt,
+            title: notification.taskName ?? '',
+            type: 'task',
+            notifications: [notification],
+            showNotifications: true,
+          );
+          groups.add(newGroup);
+          groupsMap[newGroup.groupId] = newGroup;
+        }
+      } else if (notification.parentType == 'REGLAMENT') {
+        groupId = 'reglament-${notification.parentId}';
+        if (groupsMap.containsKey(groupId)) {
+          groupsMap[groupId]!.notifications.add(notification);
+        } else {
+          String reglamentName =
+              //TODO: сделать ReglamentStore
+              //reglamentsStore[notification.parentId]?.name ??
+              notification.text;
+          NotificationsGroup newGroup = NotificationsGroup(
+            groupId: groupId,
+            locations: notification.locations,
+            createdAt: notification.createdAt,
+            title: reglamentName,
+            type: 'reglament',
+            notifications: [notification],
+            showNotifications: true,
+          );
+          groups.add(newGroup);
+          groupsMap[newGroup.groupId] = newGroup;
+        }
+      } else if (notification.parentType == 'MEMBER') {
+        groupId = 'space-${notification.locations[0].spaceId}';
+        if (groupsMap.containsKey(groupId)) {
+          groupsMap[groupId]!.notifications.add(notification);
+        } else {
+          String spaceName =
+              //TODO: отобразить корректное имя пространства
+              //spacesStore.spaces?[notification.locations[0].spaceId].name ??
+              notification.text;
+          NotificationsGroup newGroup = NotificationsGroup(
+            groupId: groupId,
+            locations: [],
+            createdAt: notification.createdAt,
+            title: spaceName,
+            type: 'space',
+            notifications: [notification],
+            showNotifications: true,
+          );
+          groups.add(newGroup);
+          groupsMap[newGroup.groupId] = newGroup;
+        }
+      } else if (notification.parentType == 'ACHIEVEMENT') {
+        groupId = 'achievement-${notification.id}';
+        NotificationsGroup newGroup = NotificationsGroup(
+          groupId: groupId,
+          locations: [],
+          createdAt: notification.createdAt,
+          title: notification.text,
+          type: 'achievement',
+          notifications: [notification],
+          showNotifications: false,
+        );
+        groups.add(newGroup);
+        groupsMap[newGroup.groupId] = newGroup;
+      } else {
+        groupId = 'other-${notification.id}';
+        NotificationsGroup newGroup = NotificationsGroup(
+          groupId: groupId,
+          locations: [],
+          createdAt: notification.createdAt,
+          title: notification.text,
+          type: 'other',
+          notifications: [notification],
+          showNotifications: false,
+        );
+        groups.add(newGroup);
+        groupsMap[newGroup.groupId] = newGroup;
+      }
+    }
+    return groups;
   }
 }

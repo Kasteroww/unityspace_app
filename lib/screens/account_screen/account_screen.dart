@@ -123,7 +123,7 @@ class AccountScreen extends WStoreWidget<AccountScreenStore> {
     return Scaffold(
       drawer: const AppNavigationDrawer(),
       appBar: CustomAppBar(
-        localization: localization,
+        titleText: localization.my_profile,
         actions: [
           WStoreStatusBuilder(
             store: store,

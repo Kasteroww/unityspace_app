@@ -1,30 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:unityspace/screens/account_screen/account_screen.dart';
 import 'package:unityspace/screens/widgets/common/paddings.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unityspace/utils/constants.dart';
-
-PreferredSizeWidget getCustomAppBar(
-    {required AppLocalizations localization,
-    required AccountScreenStore store}) {
-  return CustomAppBar(
-    localization: localization,
-  );
-}
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({
     super.key,
-    required this.localization,
     this.actions,
+    required this.titleText,
   });
 
-  final AppLocalizations localization;
+  final String titleText;
 
   final List<Widget>? actions;
 
-  final double _height = 45;
+  final double _height = 55;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +23,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       child: PaddingTop(
         22,
         child: AppBar(
-          title: Text(localization.my_profile),
+          title: Text(titleText),
           leading: GestureDetector(
             onTap: () => Scaffold.of(context).openDrawer(),
             child: SvgPicture.asset(

@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:string_validator/string_validator.dart';
 import 'package:unityspace/utils/errors.dart';
 import 'package:unityspace/utils/http_plugin.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 
 String? makeAvatarUrl(final String? avatar) {
@@ -34,32 +33,6 @@ bool isLinkValid(final String url) {
 
 Duration getDifference(DateTime dateTime) {
   return DateTime.now().difference(dateTime);
-}
-
-String timeAgo({
-  required String date,
-  required AppLocalizations localizations,
-}) {
-  DateTime dateTime = dateFromDateString(date);
-  Duration diff = getDifference(dateTime);
-
-  if (diff.inDays >= 365) {
-    final years = (diff.inDays / 365).floor();
-    return localizations.yearsAgo(years, years);
-  } else if (diff.inDays >= 30) {
-    final months = (diff.inDays / 30).floor();
-    return localizations.monthsAgo(months, months);
-  } else if (diff.inDays >= 7) {
-    final weeks = (diff.inDays / 7).floor();
-    return localizations.weeksAgo(weeks, weeks);
-  } else if (diff.inDays >= 2) {
-    final days = diff.inDays.toInt();
-    return localizations.daysAgo(days, days);
-  } else if (diff.inDays >= 1) {
-    return localizations.yesterday;
-  } else {
-    return localizations.today;
-  }
 }
 
 DateTime dateFromDateString(String date) {

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:unityspace/screens/app_navigation_drawer.dart';
 import 'package:unityspace/screens/notifications_screen/pages/archived_notifications_page.dart';
 import 'package:unityspace/screens/notifications_screen/pages/notifications_page.dart';
+import 'package:unityspace/screens/widgets/common/appbar.dart';
 import 'package:unityspace/screens/widgets/tabs_list/tab_button.dart';
 import 'package:unityspace/screens/widgets/tabs_list/tabs_list_row.dart';
 import 'package:wstore/wstore.dart';
@@ -37,8 +39,16 @@ class NotificationsScreen extends WStoreWidget<NotificationsScreenStore> {
     final localization = LocalizationHelper.getLocalizations(context);
     return Scaffold(
       drawer: const AppNavigationDrawer(),
-      appBar: AppBar(
-        title: Text(localization.notifications),
+      appBar: CustomAppBar(
+        titleText: localization.notifications,
+        actions: [
+          InkWell(
+            child: SizedBox(
+              height: 55,
+              width: 55,
+              child: SvgPicture.asset('assets/icons/settings.svg')),
+          )
+        ],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

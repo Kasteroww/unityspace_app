@@ -1,4 +1,5 @@
 import 'package:unityspace/models/i_base_model.dart';
+import 'package:unityspace/utils/date_time_converter.dart';
 
 class InitiatorAndRecipient {
   int id;
@@ -117,7 +118,7 @@ class NotificationModel implements BaseModel {
   @override
   final int id;
   final bool archived;
-  final String createdAt;
+  final DateTime createdAt;
   final int initiatorId;
   final List<NotificationLocation> locations;
   final int? message;
@@ -148,9 +149,11 @@ class NotificationModel implements BaseModel {
   });
 
   factory NotificationModel.fromResponse(final NotificationResponse data) {
+    DateTime createdAt =
+        DateTimeConverter.convertStringToDateTime(data.createdAt);
     return NotificationModel(
       archived: data.archived,
-      createdAt: data.createdAt,
+      createdAt: createdAt.toLocal(),
       id: data.id,
       initiatorId: data.initiatorId,
       locations: data.locations,
@@ -169,7 +172,7 @@ class NotificationModel implements BaseModel {
   NotificationModel copyWith({
     int? id,
     bool? archived,
-    String? createdAt,
+    DateTime? createdAt,
     int? initiatorId,
     List<NotificationLocation>? locations,
     int? message,
@@ -199,4 +202,24 @@ class NotificationModel implements BaseModel {
       unread: unread ?? this.unread,
     );
   }
+}
+
+class NotificationsGroup {
+  final String groupId;
+  final List<NotificationLocation> locations;
+  final DateTime createdAt;
+  final String title;
+  final String type;
+  final List<NotificationModel> notifications;
+  final bool showNotifications;
+
+  NotificationsGroup({
+    required this.groupId,
+    required this.locations,
+    required this.createdAt,
+    required this.title,
+    required this.type,
+    required this.notifications,
+    required this.showNotifications,
+  });
 }

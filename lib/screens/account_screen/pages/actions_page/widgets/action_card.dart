@@ -184,7 +184,7 @@ class ActionCard extends WStoreWidget<ActionCardStore> {
                 final taskNumber = data.history.taskId.toString();
                 if (type == TaskChangesTypes.changeColor) {
                   if (state != null && state != '') {
-                    final Color? color = _getColor(state!);
+                    final Color? color = _getColor(state);
                     return Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
