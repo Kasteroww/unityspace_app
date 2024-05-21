@@ -8,6 +8,13 @@ enum UserAuthErrors { none, incorrectOldPassword, noAccessToken }
 
 enum PaidTariffErrors { none, paidTariffError }
 
+enum EmailErrors {
+  none,
+  incorrectEmailAddress,
+  emailAlreadyExists,
+  cannotSendEmail
+}
+
 enum ImageErrors { none, imageIsEmpty }
 
 enum TextErrors { none, textIsEmpty }

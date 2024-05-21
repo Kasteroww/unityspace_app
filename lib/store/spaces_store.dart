@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/utils/errors.dart';
 import 'package:unityspace/utils/helpers.dart';
@@ -41,10 +42,27 @@ class SpacesStore extends GStore {
       });
       return newSpace.id;
     } on HttpPluginException catch (e) {
-      if (e.message == 'Cannot add more spaces, check paid tariff or remove spaces') {
+      if (e.message ==
+          'Cannot add more spaces, check paid tariff or remove spaces') {
         throw PaidTariffErrors.paidTariffError;
       }
       rethrow;
+    }
+  }
+
+  changeSpaceMemberEmailLocally(
+      {required int userId, required String newEmail}) {
+    if (spaces != null && spaces!.isNotEmpty) {
+      for (final space in spaces!) {
+        final member = space.members.firstWhereOrNull((m) => m.id == userId);
+        if (member != null) {
+          SpaceMember updatedMember = member.copyWith(email: newEmail);
+          final memberIndex = space.members.indexOf(member);
+          setStore(() {
+            space.members[memberIndex] = updatedMember;
+          });
+        }
+      }
     }
   }
 

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:unityspace/models/user_models.dart';
+import 'package:unityspace/screens/account_screen/pages/account_page/widgets/account_content.dart';
+import 'package:unityspace/screens/account_screen/pages/account_page/widgets/account_item.dart';
+import 'package:unityspace/screens/account_screen/pages/account_page/widgets/dialogs.dart';
 import 'package:unityspace/screens/crop_image_screen/crop_image_screen.dart';
 import 'package:unityspace/screens/dialogs/user_change_birthday_dialog.dart';
 import 'package:unityspace/screens/dialogs/user_change_githublink_dialog.dart';
@@ -13,6 +15,7 @@ import 'package:unityspace/screens/dialogs/user_change_password_dialog.dart';
 import 'package:unityspace/screens/dialogs/user_change_phone_dialog.dart';
 import 'package:unityspace/screens/dialogs/user_change_tg_link_dialog.dart';
 import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
+import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/constants.dart';
 import 'package:unityspace/utils/errors.dart';
@@ -26,8 +29,19 @@ class AccountPageStore extends WStore {
   String message = '';
   WStoreStatus statusAvatar = WStoreStatus.init;
 
+  WStoreStatus statusEmail = WStoreStatus.init;
+  EmailErrors emailError = EmailErrors.none;
+  bool isChangeEmail = false;
+  bool isEmailButtonDisabled = false;
+  bool isShowChangeEmail = false;
+  bool isShowConfirm = false;
+  String newEmail = '';
+
+  UserStore userStore = UserStore();
+  SpacesStore spacesStore = SpacesStore();
+
   User? get currentUser => computedFromStore(
-        store: UserStore(),
+        store: userStore,
         getValue: (store) => store.user,
         keyName: 'currentUser',
       );
@@ -36,6 +50,12 @@ class AccountPageStore extends WStore {
         getValue: () => currentUser?.id ?? 0,
         watch: () => [currentUser],
         keyName: 'currentUserId',
+      );
+
+  int get currentUserGlobalId => computed(
+        getValue: () => currentUser?.globalId ?? 0,
+        watch: () => [currentUser],
+        keyName: 'currentUserGlobalId',
       );
 
   bool get currentUserHasAvatar => computed(
@@ -236,6 +256,75 @@ class AccountPageStore extends WStore {
     );
   }
 
+  confirmEmail({required String email, required String code}) async {
+    if (currentUser == null) return;
+    await userStore.confirmEmail(
+        email: email,
+        code: code,
+        userGlobalId: currentUserGlobalId,
+        userId: currentUserId);
+    if (currentUser != null) {
+      _updateEmailLocally(email: email, userId: currentUserId);
+    }
+    setStore(() {
+      isShowConfirm = true;
+    });
+  }
+
+  _updateEmailLocally({required String email, required int userId}) {
+    userStore.changeEmailLocally(userId: userId, newEmail: email);
+    userStore.changeMemberEmailLocally(userId: userId, newEmail: email);
+    spacesStore.changeSpaceMemberEmailLocally(newEmail: email, userId: userId);
+  }
+
+  Future<void> changeUserEmail(String email) async {
+    if (isChangeEmail) return;
+    setStore(() {
+      isChangeEmail = true;
+      isEmailButtonDisabled = true;
+      statusEmail = WStoreStatus.loading;
+    });
+    final requestEmailVerify = await UserStore()
+        .requestEmailVerification(email: email, isChangeEmail: true);
+    switch (requestEmailVerify) {
+      case null:
+        setStore(() {
+          isChangeEmail = false;
+          isEmailButtonDisabled = false;
+          statusEmail = WStoreStatus.error;
+          emailError = EmailErrors.incorrectEmailAddress;
+        });
+        break;
+      case "User already exists":
+        setStore(() {
+          isChangeEmail = false;
+          isEmailButtonDisabled = false;
+          isShowConfirm = false;
+          statusEmail = WStoreStatus.error;
+          emailError = EmailErrors.emailAlreadyExists;
+        });
+        break;
+      case "Cannot process this email":
+        setStore(() {
+          isChangeEmail = false;
+          isEmailButtonDisabled = false;
+          isShowConfirm = false;
+          statusEmail = WStoreStatus.error;
+          emailError = EmailErrors.cannotSendEmail;
+        });
+      default:
+        setStore(() {
+          isChangeEmail = false;
+          isEmailButtonDisabled = false;
+          statusEmail = WStoreStatus.loaded;
+          isShowChangeEmail = false;
+          isShowConfirm = true;
+          emailError = EmailErrors.none;
+          newEmail = email;
+        });
+    }
+  }
+
   Future<String?> _pickImage() async {
     final xFile = await ImagePicker().pickImage(source: ImageSource.gallery);
     return xFile?.path;
@@ -249,6 +338,8 @@ class AccountPageStore extends WStore {
   @override
   AccountPage get widget => super.widget as AccountPage;
 }
+
+class SpaceStore {}
 
 class AccountPage extends WStoreWidget<AccountPageStore> {
   const AccountPage({
@@ -366,8 +457,17 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                     text: localization.email,
                     value:
                         email.isNotEmpty ? email : localization.not_specified,
-                    iconAssetName: ConstantIcons.accountEmail,
-                    onTapChange: () {},
+                    iconAssetName: 'assets/icons/account_email.svg',
+                    onTapChange: () async {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return ChangeEmailDialog(
+                              oldEmail: email,
+                              store: store,
+                            );
+                          });
+                    },
                     onTapValue: email.isNotEmpty
                         ? () => store.copy(
                               email,
@@ -483,95 +583,6 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
   }
 }
 
-class AccountItemWidget extends StatelessWidget {
-  final String text;
-  final String value;
-  final String iconAssetName;
-  final VoidCallback onTapChange;
-  final VoidCallback? onTapValue;
-  final VoidCallback? onLongTapValue;
-
-  const AccountItemWidget({
-    super.key,
-    required this.text,
-    required this.value,
-    required this.iconAssetName,
-    required this.onTapChange,
-    this.onTapValue,
-    this.onLongTapValue,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final localization = LocalizationHelper.getLocalizations(context);
-    const titleColor = Color(0x99111012);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            const SizedBox(width: 12),
-            SvgPicture.asset(
-              iconAssetName,
-              width: 18,
-              height: 18,
-              theme: const SvgTheme(currentColor: titleColor),
-            ),
-            const SizedBox(width: 4),
-            Expanded(
-              child: Text(
-                text,
-                style: const TextStyle(
-                  color: titleColor,
-                  fontSize: 16,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            const SizedBox(width: 8),
-            TextButton(
-              style: ButtonStyle(
-                minimumSize: WidgetStateProperty.all(const Size(40, 40)),
-              ),
-              onPressed: onTapChange,
-              child: Text(
-                localization.change,
-              ),
-            ),
-          ],
-        ),
-        TextButton(
-          style: ButtonStyle(
-            minimumSize: WidgetStateProperty.all(
-              const Size(double.infinity, 40),
-            ),
-            padding: WidgetStateProperty.all<EdgeInsets>(
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            ),
-            alignment: Alignment.centerLeft,
-          ),
-          onPressed: onTapValue,
-          onLongPress: onLongTapValue,
-          child: FittedBox(
-            child: Text(
-              value,
-              style: const TextStyle(
-                color: Color(0xCC111012),
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
-                height: 32 / 20,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class AccountAvatarWidget extends StatelessWidget {
   final VoidCallback onChangeAvatar;
   final VoidCallback onChangePhoto;
@@ -651,79 +662,6 @@ class AccountAvatarWidget extends StatelessWidget {
           },
         ),
       ],
-    );
-  }
-}
-
-class AccountContentWidget extends StatelessWidget {
-  final Widget avatar;
-  final List<Widget> children;
-
-  const AccountContentWidget({
-    super.key,
-    required this.avatar,
-    required this.children,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (constraints.maxWidth < 496) {
-          return Column(
-            children: [
-              avatar,
-              const SizedBox(height: 16),
-              const Divider(
-                height: 1,
-                thickness: 1,
-                color: Color(0xFFE5E7EB),
-                indent: 12,
-                endIndent: 12,
-              ),
-              ...children.expand(
-                (child) => [
-                  const SizedBox(height: 16),
-                  child,
-                ],
-              ),
-            ],
-          );
-        }
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(width: 12),
-            avatar,
-            const SizedBox(width: 32),
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.only(left: 16),
-                decoration: const BoxDecoration(
-                  border: Border(
-                    left: BorderSide(
-                      color: Color(0xFFE5E7EB),
-                    ),
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    if (children.isNotEmpty)
-                      ...children
-                          .expand(
-                            (child) => [
-                              child,
-                              const SizedBox(height: 16),
-                            ],
-                          )
-                          .take(children.length * 2 - 1),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        );
-      },
     );
   }
 }

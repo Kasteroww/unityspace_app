@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:collection/collection.dart';
 import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/service/user_service.dart' as api;
 import 'package:unityspace/store/auth_store.dart';
@@ -78,6 +79,42 @@ class UserStore extends GStore {
     final userData = await api.setUserName(userName);
     final user = User.fromResponse(userData);
     _updateUserAtStore(user);
+  }
+
+  Future<String?> requestEmailVerification(
+      {required String email, required bool isChangeEmail}) async {
+    return await api.requestEmailVerification(
+        email: email, isChangeEmail: isChangeEmail);
+  }
+
+  confirmEmail(
+      {required String email,
+      required String code,
+      required int userGlobalId,
+      required int userId}) async {
+    await api.confirmUserEmail(
+        email: email, code: code, userGlobalId: userGlobalId, userId: userId);
+  }
+
+  changeEmailLocally({required int userId, required String newEmail}) {
+    if (user != null) {
+      setStore(() {
+        user = user!.copyWith(email: newEmail);
+      });
+    }
+    //TODO: add error handling
+  }
+
+  changeMemberEmailLocally({required int userId, required String newEmail}) {
+    if (organizationMembers.isEmpty) return;
+    final member =
+        organization?.members.firstWhereOrNull((m) => m.id == userId);
+    if (member != null) {
+      final updatedMember = member.copyWith(email: newEmail);
+      setStore(() {
+        organizationMembers[userId] = updatedMember;
+      });
+    }
   }
 
   Future<void> setUserPassword(
