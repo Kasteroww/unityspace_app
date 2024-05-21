@@ -77,7 +77,7 @@ class ActionCard extends WStoreWidget<ActionCardStore> {
         }
         return localizations.changeDateRemoved;
       case TaskChangesTypes.changeColor:
-        if (history.state != null) {
+        if (history.state != null && history.state != '') {
           return localizations.changeColorSet;
         }
         return localizations.changeColorRemoved;
@@ -183,24 +183,39 @@ class ActionCard extends WStoreWidget<ActionCardStore> {
                     data: data, localizations: localizations);
                 final taskNumber = data.history.taskId.toString();
                 if (type == TaskChangesTypes.changeColor) {
-                  return Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ActionText(
-                        '$text ',
-                      ),
-                      state != null
-                          ? Container(
-                              width: 20,
-                              height: 20,
-                              decoration: BoxDecoration(
-                                  color: HexColor.fromHex(state),
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(4))),
-                            )
-                          : const SizedBox.shrink(),
-                    ],
-                  );
+                  if (state != null && state != '') {
+                    final Color? color = _getColor(state!);
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ActionText(
+                          '$text ',
+                        ),
+                        color != null
+                            ? Container(
+                                width: 20,
+                                height: 20,
+                                decoration: BoxDecoration(
+                                    color: color,
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(4))),
+                              )
+                            : Container(
+                                width: 20,
+                                height: 20,
+                                decoration: BoxDecoration(
+                                    color: Colors.transparent,
+                                    border: Border.all(
+                                        color: ColorConstants.grey03),
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(4)))),
+                      ],
+                    );
+                  } else {
+                    return ActionText(
+                      '$text ',
+                    );
+                  }
                 }
                 if (type == TaskChangesTypes.createTask) {
                   return Row(
@@ -237,6 +252,10 @@ class ActionCard extends WStoreWidget<ActionCardStore> {
         ),
       ),
     );
+  }
+
+  Color? _getColor(String state) {
+    return HexColor.fromHex(state);
   }
 }
 

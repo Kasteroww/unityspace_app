@@ -2,7 +2,7 @@ enum NotificationErrors { none, loadingDataError }
 
 enum ActionsErrors { none, loadingDataError }
 
-enum FormatErrors { none, incorrectDateFormat }
+enum FormatErrors { none, incorrectDateFormat, incorrectColorFormat }
 
 enum UserAuthErrors { none, incorrectOldPassword }
 
