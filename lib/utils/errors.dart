@@ -15,6 +15,11 @@ enum EmailErrors {
   cannotSendEmail
 }
 
+enum CodeConfimationErrors {
+  none,
+  incorrectCode,
+}
+
 enum ImageErrors { none, imageIsEmpty }
 
 enum TextErrors { none, textIsEmpty }

@@ -1,4 +1,9 @@
 {
+  "change_email": "Изменить Email",
+  "enter_new_email": "Введите новый Email",
+  "confirm_email": "Подтвердите электронную почту", 
+  "code_has_been_send_to": "Текстовое сообщение с кодом проверки отправлено на ",
+
   "taskNumberCopied": "Номер задачи скопирован",
   "@@locale": "ru",
   "yearsAgo": "{count, plural, one{1 год назад} few{{count} года назад} other{{count} лет назад}}",

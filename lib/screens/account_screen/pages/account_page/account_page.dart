@@ -5,8 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/screens/account_screen/pages/account_page/widgets/account_content.dart';
 import 'package:unityspace/screens/account_screen/pages/account_page/widgets/account_item.dart';
-import 'package:unityspace/screens/account_screen/pages/account_page/widgets/dialogs.dart';
 import 'package:unityspace/screens/crop_image_screen/crop_image_screen.dart';
+import 'package:unityspace/screens/dialogs/change_email_dialog.dart';
 import 'package:unityspace/screens/dialogs/user_change_birthday_dialog.dart';
 import 'package:unityspace/screens/dialogs/user_change_githublink_dialog.dart';
 import 'package:unityspace/screens/dialogs/user_change_job_dialog.dart';
@@ -15,7 +15,6 @@ import 'package:unityspace/screens/dialogs/user_change_password_dialog.dart';
 import 'package:unityspace/screens/dialogs/user_change_phone_dialog.dart';
 import 'package:unityspace/screens/dialogs/user_change_tg_link_dialog.dart';
 import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
-import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/constants.dart';
 import 'package:unityspace/utils/errors.dart';
@@ -29,16 +28,7 @@ class AccountPageStore extends WStore {
   String message = '';
   WStoreStatus statusAvatar = WStoreStatus.init;
 
-  WStoreStatus statusEmail = WStoreStatus.init;
-  EmailErrors emailError = EmailErrors.none;
-  bool isChangeEmail = false;
-  bool isEmailButtonDisabled = false;
-  bool isShowChangeEmail = false;
-  bool isShowConfirm = false;
-  String newEmail = '';
-
   UserStore userStore = UserStore();
-  SpacesStore spacesStore = SpacesStore();
 
   User? get currentUser => computedFromStore(
         store: userStore,
@@ -256,75 +246,6 @@ class AccountPageStore extends WStore {
     );
   }
 
-  confirmEmail({required String email, required String code}) async {
-    if (currentUser == null) return;
-    await userStore.confirmEmail(
-        email: email,
-        code: code,
-        userGlobalId: currentUserGlobalId,
-        userId: currentUserId);
-    if (currentUser != null) {
-      _updateEmailLocally(email: email, userId: currentUserId);
-    }
-    setStore(() {
-      isShowConfirm = true;
-    });
-  }
-
-  _updateEmailLocally({required String email, required int userId}) {
-    userStore.changeEmailLocally(userId: userId, newEmail: email);
-    userStore.changeMemberEmailLocally(userId: userId, newEmail: email);
-    spacesStore.changeSpaceMemberEmailLocally(newEmail: email, userId: userId);
-  }
-
-  Future<void> changeUserEmail(String email) async {
-    if (isChangeEmail) return;
-    setStore(() {
-      isChangeEmail = true;
-      isEmailButtonDisabled = true;
-      statusEmail = WStoreStatus.loading;
-    });
-    final requestEmailVerify = await UserStore()
-        .requestEmailVerification(email: email, isChangeEmail: true);
-    switch (requestEmailVerify) {
-      case null:
-        setStore(() {
-          isChangeEmail = false;
-          isEmailButtonDisabled = false;
-          statusEmail = WStoreStatus.error;
-          emailError = EmailErrors.incorrectEmailAddress;
-        });
-        break;
-      case "User already exists":
-        setStore(() {
-          isChangeEmail = false;
-          isEmailButtonDisabled = false;
-          isShowConfirm = false;
-          statusEmail = WStoreStatus.error;
-          emailError = EmailErrors.emailAlreadyExists;
-        });
-        break;
-      case "Cannot process this email":
-        setStore(() {
-          isChangeEmail = false;
-          isEmailButtonDisabled = false;
-          isShowConfirm = false;
-          statusEmail = WStoreStatus.error;
-          emailError = EmailErrors.cannotSendEmail;
-        });
-      default:
-        setStore(() {
-          isChangeEmail = false;
-          isEmailButtonDisabled = false;
-          statusEmail = WStoreStatus.loaded;
-          isShowChangeEmail = false;
-          isShowConfirm = true;
-          emailError = EmailErrors.none;
-          newEmail = email;
-        });
-    }
-  }
-
   Future<String?> _pickImage() async {
     final xFile = await ImagePicker().pickImage(source: ImageSource.gallery);
     return xFile?.path;
@@ -459,14 +380,7 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                         email.isNotEmpty ? email : localization.not_specified,
                     iconAssetName: 'assets/icons/account_email.svg',
                     onTapChange: () async {
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return ChangeEmailDialog(
-                              oldEmail: email,
-                              store: store,
-                            );
-                          });
+                      showChangeEmailDialog(context);
                     },
                     onTapValue: email.isNotEmpty
                         ? () => store.copy(

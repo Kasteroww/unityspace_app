@@ -96,7 +96,7 @@ class UserStore extends GStore {
         email: email, code: code, userGlobalId: userGlobalId, userId: userId);
   }
 
-  changeEmailLocally({required int userId, required String newEmail}) {
+  changeEmailLocally({required String newEmail}) {
     if (user != null) {
       setStore(() {
         user = user!.copyWith(email: newEmail);
