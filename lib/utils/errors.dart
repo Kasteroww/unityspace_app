@@ -9,10 +9,15 @@ enum UserAuthErrors { none, incorrectOldPassword, noAccessToken }
 enum PaidTariffErrors { none, paidTariffError }
 
 enum EmailErrors {
-  none,
-  incorrectEmailAddress,
-  emailAlreadyExists,
-  cannotSendEmail
+  none(''),
+  incorrectEmailAddress('Некорректная почта'),
+  emailAlreadyExists('Такая почта уже зарегистрирована'),
+  cannotSendEmail('Ошибка отправки, попробуйте позже'),
+  ;
+
+  final String localization;
+
+  const EmailErrors(this.localization);
 }
 
 enum CodeConfimationErrors {

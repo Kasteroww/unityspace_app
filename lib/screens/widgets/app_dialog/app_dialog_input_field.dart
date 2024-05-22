@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class AddDialogInputField extends StatefulWidget {
+  final GlobalKey? fieldKey;
   final String labelText;
   final String? initialValue;
   final String? iconAssetName;
@@ -22,6 +23,7 @@ class AddDialogInputField extends StatefulWidget {
   const AddDialogInputField({
     super.key,
     required this.labelText,
+    this.fieldKey,
     this.initialValue,
     this.iconAssetName,
     this.onIconTap,
@@ -57,6 +59,7 @@ class _AddDialogInputFieldState extends State<AddDialogInputField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      key: widget.fieldKey,
       focusNode: myFocusNode,
       initialValue: widget.initialValue,
       autofocus: widget.autofocus,
@@ -131,7 +134,7 @@ class _AddDialogInputFieldState extends State<AddDialogInputField> {
         ),
         contentPadding: EdgeInsets.symmetric(
           horizontal: 16,
-          vertical:  widget.iconAssetName == null ? 8 : 4,
+          vertical: widget.iconAssetName == null ? 8 : 4,
         ),
       ),
     );

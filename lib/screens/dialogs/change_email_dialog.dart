@@ -72,6 +72,12 @@ class ChangeEmailDialogStore extends WStore {
           statusEmail = WStoreStatus.error;
           emailError = EmailErrors.cannotSendEmail;
         });
+      case "Incorrect email format":
+        setStore(() {
+          isChangeEmail = false;
+          statusEmail = WStoreStatus.error;
+          emailError = EmailErrors.incorrectEmailAddress;
+        });
       default:
         setStore(() {
           isChangeEmail = false;
@@ -97,6 +103,7 @@ class ChangeEmailDialog extends WStoreWidget<ChangeEmailDialogStore> {
   @override
   Widget build(BuildContext context, ChangeEmailDialogStore store) {
     final localization = LocalizationHelper.getLocalizations(context);
+    final fieldKey = GlobalKey<FormFieldState>();
     return WStoreStatusBuilder<ChangeEmailDialogStore>(
       store: store,
       watch: (store) => store.statusEmail,
@@ -122,18 +129,34 @@ class ChangeEmailDialog extends WStoreWidget<ChangeEmailDialogStore> {
             secondaryButtonText: '',
             children: [
               AddDialogInputField(
+                fieldKey: fieldKey,
                 labelText: localization.enter_new_email,
                 autofocus: true,
                 initialValue: store.currentUserEmail,
+                keyboardType: TextInputType.emailAddress,
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Введите email';
+                  } else if (!isValidEmail(value)) {
+                    return 'Некорректный формат';
+                  } else if (value == store.currentUserEmail) {
+                    return 'Почты совпадают';
+                  }
+                  return '';
+                },
                 onChanged: (value) => store.setNewEmail(value),
                 onEditingComplete: () {
-                  FocusScope.of(context).unfocus();
-                  store.changeUserEmail(store.newEmail);
+                  final bool isValidated =
+                      fieldKey.currentState?.validate() ?? false;
+                  if (isValidated) {
+                    FocusScope.of(context).unfocus();
+                    store.changeUserEmail(store.newEmail);
+                  }
                 },
               ),
               if (error)
                 Text(
-                  store.emailError.name,
+                  store.emailError.localization,
                   style: const TextStyle(
                     color: Color(0xFFD83400),
                   ),
@@ -141,6 +164,10 @@ class ChangeEmailDialog extends WStoreWidget<ChangeEmailDialogStore> {
             ]);
       },
     );
+  }
+
+  bool isValidEmail(String email) {
+    return RegExp(r'\S+@\S+\.\S+').hasMatch(email);
   }
 }
 
@@ -248,6 +275,7 @@ class ConfirmEmailDialog extends WStoreWidget<ConfirmEmailDialogStore> {
       builder: (context, status) {
         final loading = status == WStoreStatus.loading;
         final error = status == WStoreStatus.error;
+        final fieldKey = GlobalKey<FormFieldState>();
         return AppDialogWithButtons(
             title: localization.confirm_email,
             primaryButtonText: localization.confirm,
@@ -272,12 +300,29 @@ class ConfirmEmailDialog extends WStoreWidget<ConfirmEmailDialogStore> {
                   ])),
               const PaddingTop(16),
               AddDialogInputField(
+                fieldKey: fieldKey,
                 labelText: localization.enter_code,
                 autofocus: true,
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Введите код';
+                  } else if (value.length != 4) {
+                    return 'Длина кода должна быть 4';
+                  } else if (int.tryParse(value) == null) {
+                    return 'Разрешены только числа';
+                  }
+                  return '';
+                },
                 onChanged: (value) => store.setCode(value),
                 onEditingComplete: () {
-                  FocusScope.of(context).unfocus();
-                  store.confirmEmail(email: newEmail, code: store.code.trim());
+                  final bool isValidated =
+                      fieldKey.currentState?.validate() ?? false;
+                  if (isValidated) {
+                    FocusScope.of(context).unfocus();
+                    store.confirmEmail(
+                        email: newEmail, code: store.code.trim());
+                  }
                 },
               ),
               if (error)

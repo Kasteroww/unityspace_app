@@ -121,6 +121,8 @@ Future<String?> requestEmailVerification({
         return 'User already exists';
       } else if (e.message == 'Cannot process its email') {
         return 'Cannot process this email';
+      } else if (e.message == 'email must be an email') {
+        return 'Incorrect email format';
       } else {
         throw Exception(e.message);
       }

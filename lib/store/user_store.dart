@@ -102,7 +102,6 @@ class UserStore extends GStore {
         user = user!.copyWith(email: newEmail);
       });
     }
-    //TODO: add error handling
   }
 
   changeMemberEmailLocally({required int userId, required String newEmail}) {
