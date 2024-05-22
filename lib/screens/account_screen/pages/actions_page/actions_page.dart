@@ -3,6 +3,7 @@ import 'package:lottie/lottie.dart';
 import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/screens/account_screen/pages/actions_page/widgets/action_card.dart';
 import 'package:unityspace/utils/constants.dart';
+import 'package:unityspace/utils/date_time_converter.dart';
 import 'package:unityspace/utils/errors.dart';
 import 'package:unityspace/screens/widgets/common/paddings.dart';
 import 'package:unityspace/store/tasks_store.dart';
@@ -147,15 +148,16 @@ class ActionsList extends StatelessWidget {
                   children: [
                     LayoutBuilder(builder: (context, _) {
                       if (index == 0 ||
-                          (dateFromDateString(action.updateDate) !=
-                              dateFromDateString(
+                          (dateFromDateTime(action.updateDate) !=
+                              dateFromDateTime(
                                   history[index - 1].updateDate))) {
                         return Column(
                           children: [
                             const PaddingTop(12),
                             Text(
-                                formatDateEEEEdMMMM(
-                                    dateString: action.updateDate,
+                                DateTimeConverter.formatDateEEEEdMMMM(
+                                    date: action.updateDate,
+                                    localizations: localizations,
                                     locale: localizations.localeName),
                                 style: textTheme.bodyMedium!.copyWith(
                                     color: ColorConstants.grey04,

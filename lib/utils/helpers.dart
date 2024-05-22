@@ -35,36 +35,12 @@ Duration getDifference(DateTime dateTime) {
   return DateTime.now().difference(dateTime);
 }
 
-DateTime dateFromDateString(String date) {
-  final dateString = date.split('T')[0];
-  final dateList = dateString.split('-');
-  return DateTime(
-    int.parse(dateList[0]),
-    int.parse(dateList[1]),
-    int.parse(dateList[2]),
-  );
+DateTime dateFromDateTime(DateTime date) {
+  return DateTime(date.year, date.month, date.day);
 }
 
-String timeFromDateString(String date) {
-  final timeString = date.split('T')[1];
-  final timeList = timeString.split(':');
-  return '${timeList[0].padLeft(2, '0')}:${timeList[1].padRight(2, '0')}';
-}
-
-String formatDateEEEEdMMMM(
-    {required String dateString, required String locale}) {
-  DateTime date = DateTime.parse(dateString);
-  DateFormat formatter = DateFormat('EEEE, d MMMM', locale);
-  String formattedDate = formatter.format(date);
-  Duration diff = getDifference(date);
-  String formattedDateCapitalized = formattedDate.capitalizeWords();
-  if (diff.inDays == 1) {
-    return 'Вчера, $formattedDateCapitalized';
-  } else if (diff.inDays == 0) {
-    return 'Сегодня, $formattedDateCapitalized';
-  } else {
-    return formattedDateCapitalized;
-  }
+String timeFromDateString(DateTime date) {
+  return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padRight(2, '0')}';
 }
 
 String formatDateddMMyyyy(

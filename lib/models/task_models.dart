@@ -1,6 +1,7 @@
 import 'dart:core';
 
 import 'package:unityspace/models/i_base_model.dart';
+import 'package:unityspace/utils/date_time_converter.dart';
 
 enum TaskChangesTypes {
   // Вы создали задачу #291039
@@ -287,7 +288,7 @@ class TaskHistory implements BaseModel {
   final String? state;
   final int taskId;
   final TaskChangesTypes type;
-  final String updateDate;
+  final DateTime updateDate;
   final int userId;
   final String? projectName;
   final String? taskName;
@@ -313,7 +314,8 @@ class TaskHistory implements BaseModel {
       type: TaskChangesTypes.values.firstWhere(
           (type) => type.value == response.type,
           orElse: () => TaskChangesTypes.defaultValue),
-      updateDate: response.updateDate,
+      updateDate: DateTimeConverter.convertStringToDateTime(response.updateDate)
+          .toLocal(),
       userId: response.userId,
       projectName: response.projectName,
       taskName: response.taskName,

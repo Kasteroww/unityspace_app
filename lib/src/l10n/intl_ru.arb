@@ -46,11 +46,11 @@
       }
     }
   },
-  "yesterday": "вчера",
+  "yesterday": "Вчера",
   "@yesterday": {
     "description": "The 'yesterday' String"
   },
-  "today": "сегодня",
+  "today": "Сегодня",
   "@today": {
     "description": "The 'today' String"
   },
