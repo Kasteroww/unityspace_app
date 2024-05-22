@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/screens/app_navigation_drawer.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/project_page.dart';
 import 'package:unityspace/screens/space_screen/pages/regulations_page/regulations_page.dart';
@@ -27,10 +28,12 @@ class SpaceScreenStore extends WStore {
 
 class SpaceScreen extends WStoreWidget<SpaceScreenStore> {
   final int spaceId;
+  final List<SpaceColumn> listColumns;
 
   const SpaceScreen({
     super.key,
     required this.spaceId,
+    required this.listColumns,
   });
 
   @override
@@ -71,7 +74,8 @@ class SpaceScreen extends WStoreWidget<SpaceScreenStore> {
                 watch: (store) => store.selectedTab,
                 builder: (context, selectedTab) {
                   return switch (selectedTab) {
-                    SpacesScreenTab.projects => ProjectsPage(spaceId: spaceId),
+                    SpacesScreenTab.projects =>
+                      ProjectsPage(spaceId: spaceId, listColumns: listColumns),
                     SpacesScreenTab.tasks => const TasksPage(),
                     SpacesScreenTab.regulations => const RegulationsPage(),
                   };

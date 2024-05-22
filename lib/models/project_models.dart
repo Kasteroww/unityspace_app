@@ -10,6 +10,7 @@ class ProjectResponse {
   final String order;
   final List<ProjectStagesResponse> stages;
   final int taskCount;
+  final String memo;
 
   const ProjectResponse({
     required this.id,
@@ -21,6 +22,7 @@ class ProjectResponse {
     required this.order,
     required this.stages,
     required this.taskCount,
+    required this.memo,
   });
 
   factory ProjectResponse.fromJson(Map<String, dynamic> map) {
@@ -37,6 +39,7 @@ class ProjectResponse {
           .map((stages) => ProjectStagesResponse.fromJson(stages))
           .toList(),
       taskCount: map['taskCount'] as int,
+      memo: map['memo'] as String,
     );
   }
 }
@@ -75,6 +78,7 @@ class Project implements BaseModel {
   final String order;
   final List<ProjectStages> stages;
   final int taskCount;
+  final String memo;
 
   Project({
     required this.id,
@@ -86,6 +90,7 @@ class Project implements BaseModel {
     required this.order,
     required this.stages,
     required this.taskCount,
+    required this.memo,
   });
 
   factory Project.fromResponse(final ProjectResponse data) {
@@ -99,6 +104,7 @@ class Project implements BaseModel {
       order: data.order,
       stages: data.stages.map(ProjectStages.fromResponse).toList(),
       taskCount: data.taskCount,
+      memo: data.memo,
     );
   }
 }

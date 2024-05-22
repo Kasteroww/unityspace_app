@@ -1,6 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:unityspace/models/project_models.dart';
+import 'package:unityspace/models/spaces_models.dart';
+import 'package:unityspace/screens/widgets/columns_list/column_button.dart';
+import 'package:unityspace/screens/widgets/columns_list/columns_list_row.dart';
 import 'package:unityspace/store/project_store.dart';
 import 'package:unityspace/utils/constants.dart';
 import 'package:unityspace/utils/errors.dart';
@@ -12,11 +17,18 @@ class ProjectsPageStore extends WStore {
   ProjectErrors error = ProjectErrors.none;
   WStoreStatus status = WStoreStatus.init;
   ProjectStore projectStore;
+  late SpaceColumn selectedColumn;
 
   ProjectsPageStore({ProjectStore? projectStore})
       : projectStore = projectStore ?? ProjectStore();
 
-  Future<void> loadData(int spaceId) async {
+  void selectColumn(final SpaceColumn column) {
+    setStore(() {
+      selectedColumn = column;
+    });
+  }
+
+  Future<void> loadData(int spaceId, List<SpaceColumn> listColumns) async {
     if (status == WStoreStatus.loading) return;
     setStore(() {
       status = WStoreStatus.loading;
@@ -25,6 +37,7 @@ class ProjectsPageStore extends WStore {
     try {
       await projectStore.getProjectsData(spaceId);
       setStore(() {
+        selectedColumn = listColumns.first;
         status = WStoreStatus.loaded;
       });
     } catch (e, stack) {
@@ -35,6 +48,12 @@ class ProjectsPageStore extends WStore {
         error = ProjectErrors.loadingDataError;
       });
     }
+  }
+
+  getProjects(int id) {
+    return projectStore.projects
+        .where((el) => el.columnId == selectedColumn.id)
+        .toList();
   }
 
   List<Project> get projects => computedFromStore(
@@ -49,14 +68,17 @@ class ProjectsPageStore extends WStore {
 
 class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
   final int spaceId;
+  final List<SpaceColumn> listColumns;
 
   const ProjectsPage({
     super.key,
     required this.spaceId,
+    required this.listColumns,
   });
 
   @override
-  ProjectsPageStore createWStore() => ProjectsPageStore()..loadData(spaceId);
+  ProjectsPageStore createWStore() =>
+      ProjectsPageStore()..loadData(spaceId, listColumns);
 
   @override
   Widget build(BuildContext context, ProjectsPageStore store) {
@@ -96,15 +118,83 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
       },
       builderLoaded: (BuildContext context) {
         return WStoreBuilder<ProjectsPageStore>(
-            watch: (store) => [store.projects],
-            store: context.wstore<ProjectsPageStore>(),
-            builder: (context, store) {
-              return ListView.builder(
-                  itemCount: store.projects.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Card(child: Text(store.projects[index].name));
-                  });
-            });
+          watch: (store) => [store.selectedColumn],
+          store: context.wstore<ProjectsPageStore>(),
+          builder: (context, store) {
+            final listProjects = store.getProjects(store.selectedColumn.id);
+            return Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.only(top: 10),
+                  constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height * 0.04,
+                      maxWidth: (Platform.isAndroid || Platform.isIOS)
+                          ? MediaQuery.of(context).size.width * 0.95
+                          : MediaQuery.of(context).size.width * 0.75),
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      ColumnsListRow(
+                        children: [
+                          ...listColumns.map(
+                            (column) => ColumnButton(
+                              title: column.name,
+                              onPressed: () {
+                                store.selectColumn(column);
+                              },
+                              selected: column == store.selectedColumn,
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: Container(
+                        width: 300,
+                        height: 600,
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: Colors.white,
+                        ),
+                        constraints: BoxConstraints(
+                            maxWidth: (Platform.isAndroid || Platform.isIOS)
+                                ? MediaQuery.of(context).size.width * 0.95
+                                : MediaQuery.of(context).size.width * 0.75),
+                        child: ListView.separated(
+                          itemCount: listProjects.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return ListTile(
+                              title: Text(
+                                listProjects[index].name,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                              subtitle: listProjects[index].memo.isNotEmpty
+                                  ? Text(
+                                      listProjects[index].memo,
+                                      overflow: TextOverflow.ellipsis,
+                                    )
+                                  : null,
+                            );
+                          },
+                          separatorBuilder: (BuildContext context, int index) =>
+                              const Divider(),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
       },
     );
   }

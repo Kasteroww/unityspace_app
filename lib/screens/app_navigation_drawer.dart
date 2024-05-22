@@ -197,7 +197,10 @@ class AppNavigationDrawer extends WStoreWidget<AppNavigationDrawerStore> {
                                     currentArguments != space.id) {
                                   Navigator.of(context).pushReplacementNamed(
                                     '/space',
-                                    arguments: space.id,
+                                    arguments: {
+                                      'spaceId': space.id,
+                                      'listColumns': space.columns
+                                    },
                                   );
                                 }
                               },
