@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/notifications_list.dart';
+import 'package:unityspace/screens/notifications_screen/widgets/skeleton_listview/skeleton_listview.dart';
 import 'package:unityspace/store/user_store.dart';
-import 'package:unityspace/utils/constants.dart';
 import 'package:wstore/wstore.dart';
 import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/utils/errors.dart';
@@ -140,13 +139,7 @@ class NotificationsPage extends WStoreWidget<NotificationPageStore> {
         );
       },
       builderLoading: (context) {
-        return Center(
-          child: Lottie.asset(
-            ConstantIcons.mainLoader,
-            width: 200,
-            height: 200,
-          ),
-        );
+        return const SkeletonListView();
       },
       builder: (context, _) {
         return const SizedBox.shrink();

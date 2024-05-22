@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/screens/notifications_screen/utils/notification_helper.dart';
+import 'package:unityspace/screens/notifications_screen/widgets/notification_bottom_sheet.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/parts/dismissible_background.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/parts/notifications_day_text.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/parts/notifications_info_card.dart';
@@ -61,7 +62,15 @@ class NotificationsList extends StatelessWidget {
                                 list: notificationsGroup.notifications,
                                 localization: localization);
                           },
-                          onTap: () {},
+                          onTap: () {
+                            showModalBottomSheet(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return NotificationBottomSheet(
+                                    notificationsGroup: notificationsGroup);
+                              },
+                            );
+                          },
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: Dismissible(
