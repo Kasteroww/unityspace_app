@@ -8,7 +8,7 @@ import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/errors.dart';
 import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/localization_helper.dart';
-import 'package:unityspace/utils/theme.dart';
+import 'package:unityspace/src/theme/theme.dart';
 import 'package:wstore/wstore.dart';
 import 'package:collection/collection.dart';
 

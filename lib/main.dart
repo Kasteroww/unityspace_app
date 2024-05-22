@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:unityspace/utils/theme.dart';
+import 'package:unityspace/src/theme/theme.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:wstore/wstore.dart';
 import 'package:intl/date_symbol_data_local.dart';

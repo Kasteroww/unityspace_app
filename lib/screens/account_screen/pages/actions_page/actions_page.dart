@@ -10,7 +10,7 @@ import 'package:unityspace/utils/helpers.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
-import 'package:unityspace/utils/theme.dart';
+import 'package:unityspace/src/theme/theme.dart';
 import 'package:wstore/wstore.dart';
 
 class ActionsPageStore extends WStore {

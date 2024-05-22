@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:unityspace/utils/theme.dart';
+import 'package:unityspace/src/theme/theme.dart';
 
 class TabButton extends StatelessWidget {
   final String? iconAsset;
