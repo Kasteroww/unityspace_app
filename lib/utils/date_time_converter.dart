@@ -4,7 +4,7 @@ import 'package:unityspace/utils/helpers.dart';
 
 class DateTimeConverter {
   const DateTimeConverter();
-  
+
   static DateTime convertStringToDateTime(String dateString) {
     try {
       return DateTime.parse(dateString);
@@ -32,7 +32,7 @@ class DateTimeConverter {
     required AppLocalizations localizations,
     required String locale,
   }) {
-    DateFormat formatter = DateFormat('EEEE, d MMMM', locale);
+    DateFormat formatter = DateFormat('EEEE d MMMM', locale);
     String formattedDate = formatter.format(date);
     DateTime now = DateTime.now();
     DateTime today = DateTime(now.year, now.month, now.day);

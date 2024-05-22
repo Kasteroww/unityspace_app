@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/screens/notifications_screen/utils/notification_helper.dart';
+import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/parts/dismissible_background.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/parts/notifications_day_text.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/parts/notifications_info_card.dart';
 import 'package:unityspace/utils/localization_helper.dart';
@@ -35,26 +36,29 @@ class NotificationsList extends StatelessWidget {
 
           /// Виджет с содержимым одного дня уведомлений
           return Padding(
-            padding: const EdgeInsets.fromLTRB(10, 0, 10, 15),
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 NotificationsDayText(
                     localization: localization, date: dayList.first.createdAt),
+                const SizedBox(
+                  height: 16,
+                ),
                 ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: typeList.length,
                     itemBuilder: (BuildContext context, int index) {
-                      NotificationsGroup notificationGroup = typeList[index];
+                      NotificationsGroup notificationsGroup = typeList[index];
                       return Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.only(bottom: 12),
                         child: GestureDetector(
                           onLongPressStart: (LongPressStartDetails details) {
                             showCustomMenu(
                                 context: context,
                                 position: details.globalPosition,
-                                list: notificationGroup.notifications,
+                                list: notificationsGroup.notifications,
                                 localization: localization);
                           },
                           onTap: () {},
@@ -64,20 +68,13 @@ class NotificationsList extends StatelessWidget {
                               key: Key(UniqueKey().toString()),
                               direction: DismissDirection.endToStart,
                               onDismissed: (direction) {
-                                onDismissEvent(notificationGroup.notifications);
+                                onDismissEvent(
+                                    notificationsGroup.notifications);
                               },
-                              background: Container(
-                                color: const Color.fromRGBO(230, 230, 230, 1),
-                                alignment: Alignment.centerRight,
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 20),
-                                child: const Icon(
-                                  Icons.delete,
-                                  color: Colors.white,
-                                ),
-                              ),
+                              background: DismissibleBackground(
+                                  notificationsGroup: notificationsGroup),
                               child: NotificationsInfoCard(
-                                  notificationGroup: notificationGroup),
+                                  notificationGroup: notificationsGroup),
                             ),
                           ),
                         ),
@@ -99,23 +96,32 @@ class NotificationsList extends StatelessWidget {
         Overlay.of(context).context.findRenderObject() as RenderBox;
 
     await showMenu(
+      elevation: 1,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      color: Colors.white,
       context: context,
       position: RelativeRect.fromRect(
         position & const Size(40, 40), // размер и позиция меню
         Offset.zero & overlay.size,
       ),
-      items: <PopupMenuEntry<String>>[
-        PopupMenuItem<String>(
-          child: InkWell(
-              onTap: () {
-                onLongPressButtonTap(list);
-                Navigator.pop(context);
-              },
-              child: Text(list.any((element) => element.archived)
-                  ? localization.restore_from_archive
-                  : list.any((element) => element.unread)
-                      ? localization.mark_as_read
-                      : localization.mark_as_unread)),
+      items: [
+        PopupMenuItem(
+          onTap: () {
+            onLongPressButtonTap(list);
+          },
+          child: Text(
+            list.any((element) => element.archived)
+                ? localization.restore_from_archive
+                : list.any((element) => element.unread)
+                    ? localization.mark_as_read
+                    : localization.mark_as_unread,
+            style: const TextStyle(
+                color: Color.fromRGBO(51, 51, 51, 1),
+                fontWeight: FontWeight.w400,
+                fontSize: 12),
+          ),
         ),
       ],
     ).then((value) {});

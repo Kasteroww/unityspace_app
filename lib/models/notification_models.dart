@@ -209,7 +209,7 @@ class NotificationsGroup {
   final List<NotificationLocation> locations;
   final DateTime createdAt;
   final String title;
-  final String type;
+  final NotificationType type;
   final List<NotificationModel> notifications;
   final bool showNotifications;
 
@@ -222,4 +222,12 @@ class NotificationsGroup {
     required this.notifications,
     required this.showNotifications,
   });
+}
+
+enum NotificationType {
+  task,
+  space,
+  reglament,
+  achievement,
+  other,
 }

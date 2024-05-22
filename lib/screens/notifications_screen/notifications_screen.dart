@@ -1,23 +1,44 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:unityspace/screens/app_navigation_drawer.dart';
 import 'package:unityspace/screens/notifications_screen/pages/archived_notifications_page.dart';
 import 'package:unityspace/screens/notifications_screen/pages/notifications_page.dart';
+import 'package:unityspace/screens/notifications_screen/widgets/pop_up_notifications_button.dart';
 import 'package:unityspace/screens/widgets/common/appbar.dart';
 import 'package:unityspace/screens/widgets/tabs_list/tab_button.dart';
 import 'package:unityspace/screens/widgets/tabs_list/tabs_list_row.dart';
+import 'package:unityspace/store/notifications_store.dart';
 import 'package:wstore/wstore.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 
 enum NotificationErrors { none, loadingDataError }
 
 class NotificationsScreenStore extends WStore {
+  NotificationsScreenStore({
+    NotificationsStore? notificationsStore,
+  }) : notificationsStore = notificationsStore ?? NotificationsStore();
+
+  NotificationsStore notificationsStore;
   NotificationsScreenTab selectedTab = NotificationsScreenTab.current;
 
   void selectTab(final NotificationsScreenTab tab) {
     setStore(() {
       selectedTab = tab;
     });
+  }
+
+  ///Удаляет все уведомления из архива
+  void deleteAllNotifications() {
+    notificationsStore.deleteAllNotifications();
+  }
+
+  ///Архивирует все уведомления
+  void archiveAllNotifications() {
+    notificationsStore.archiveAllNotifications();
+  }
+
+  ///Читает все уведомления
+  void readAllNotifications() {
+    notificationsStore.readAllNotifications();
   }
 
   List<NotificationsScreenTab> get currentUserTabs =>
@@ -41,14 +62,7 @@ class NotificationsScreen extends WStoreWidget<NotificationsScreenStore> {
       drawer: const AppNavigationDrawer(),
       appBar: CustomAppBar(
         titleText: localization.notifications,
-        actions: [
-          InkWell(
-            child: SizedBox(
-              height: 55,
-              width: 55,
-              child: SvgPicture.asset('assets/icons/settings.svg')),
-          )
-        ],
+        actions: const [PopUpNotificationsButton()],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,7 +92,7 @@ class NotificationsScreen extends WStoreWidget<NotificationsScreenStore> {
                 builder: (context, selectedTab) {
                   return switch (selectedTab) {
                     NotificationsScreenTab.current => const NotificationsPage(),
-                    NotificationsScreenTab.achievements =>
+                    NotificationsScreenTab.archived =>
                       const ArchivedNotificationsPage(),
                   };
                 }),
@@ -93,7 +107,7 @@ enum NotificationsScreenTab {
   current(
     title: 'Текущие',
   ),
-  achievements(
+  archived(
     title: 'Архив',
   );
 

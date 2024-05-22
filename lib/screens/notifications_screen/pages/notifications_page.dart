@@ -51,7 +51,7 @@ class NotificationPageStore extends WStore {
     }
   }
 
-  ///Изменяет статус архивирования уведомления
+  ///Изменяет статус архивирования уведомлений из списка
   void changeArchiveStatusNotifications(
       List<NotificationModel> notificationList, bool archived) {
     final notificationIds =
@@ -60,7 +60,7 @@ class NotificationPageStore extends WStore {
         notificationIds, archived);
   }
 
-  ///Изменяет статус прочтения уведомления
+  ///Изменяет статус прочтения уведомлений из спика
   void changeReadStatusNotification(
       List<NotificationModel> notificationList, bool unread) {
     final notificationIds =
@@ -68,16 +68,7 @@ class NotificationPageStore extends WStore {
     notificationsStore.changeReadStatusNotification(notificationIds, unread);
   }
 
-  ///Архивирует все уведомления
-  void archiveAllNotifications() {
-    notificationsStore.archiveAllNotifications();
-  }
-
-  ///Читает все уведомления
-  void readAllNotifications() {
-    notificationsStore.readAllNotifications();
-  }
-
+  ///Загрузка уведомлений
   Future<void> loadData() async {
     if (status == WStoreStatus.loading) return;
     setStore(() {
@@ -163,31 +154,6 @@ class NotificationsPage extends WStoreWidget<NotificationPageStore> {
       builderLoaded: (context) {
         return Column(
           children: [
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.end,
-            //   children: [
-            //     InkWell(
-            //         onTap: () {
-            //           context
-            //               .wstore<NotificationPageStore>()
-            //               .archiveAllNotifications();
-            //         },
-            //         child: Text(localization.archive_all)),
-            //     const SizedBox(
-            //       width: 10,
-            //     ),
-            //     InkWell(
-            //         onTap: () {
-            //           context
-            //               .wstore<NotificationPageStore>()
-            //               .readAllNotifications();
-            //         },
-            //         child: Text(localization.read_all)),
-            //     const SizedBox(
-            //       width: 10,
-            //     ),
-            //   ],
-            // ),
             Expanded(
                 child: NotificationListener<ScrollEndNotification>(
               onNotification: (notification) {

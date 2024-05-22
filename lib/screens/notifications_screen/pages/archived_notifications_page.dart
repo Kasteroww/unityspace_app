@@ -49,7 +49,7 @@ class ArchivedNotificationPageStore extends WStore {
     }
   }
 
-  ///Изменяет статус архивирования уведомления
+  ///Изменяет статус архивирования уведомлений из списка
   void changeArchiveStatusNotifications(
       List<NotificationModel> notificationList, bool archived) {
     final notificationIds =
@@ -58,23 +58,14 @@ class ArchivedNotificationPageStore extends WStore {
         notificationIds, archived);
   }
 
-  ///Архивирует все уведомления
-  void archiveAllNotifications() {
-    notificationsStore.archiveAllNotifications();
-  }
-
-  ///Удаляет уведомления
+  ///Удаляет уведомления из списка
   void deleteNotifications(List<NotificationModel> notificationList) {
     final notificationIds =
         notificationList.map((notification) => notification.id).toList();
     notificationsStore.deleteNotifications(notificationIds);
   }
 
-  ///Удаляет все уведомления из архива
-  void deleteAllNotifications() {
-    notificationsStore.deleteAllNotifications();
-  }
-
+  ///Загрузка уведомлений
   Future<void> loadData() async {
     if (status == WStoreStatus.loading) return;
     setStore(() {
@@ -154,21 +145,6 @@ class ArchivedNotificationsPage
       builder: (context, _) {
         return Column(
           children: [
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.end,
-            //   children: [
-            //     InkWell(
-            //         onTap: () {
-            //           context
-            //               .wstore<ArchivedNotificationPageStore>()
-            //               .deleteAllNotifications();
-            //         },
-            //         child: Text(localization.delete_all)),
-            //     const SizedBox(
-            //       width: 10,
-            //     ),
-            //   ],
-            // ),
             Expanded(
                 child: NotificationListener<ScrollEndNotification>(
               onNotification: (notification) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/screens/notifications_screen/utils/notification_helper.dart';
@@ -66,18 +67,33 @@ class NotificationsInfoCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(
-                height: 5,
+                height: 4,
               ),
-              Text(
-                notificationGroup.title,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: Color.fromRGBO(102, 102, 102, 1)),
+              Row(
+                children: [
+                  SizedBox(
+                    height: 14,
+                    width: 14,
+                    child: SvgPicture.asset(notificationHelper
+                        .getPictureAssetByType(notificationGroup)),
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  Expanded(
+                    child: Text(
+                      notificationGroup.title,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: Color.fromRGBO(102, 102, 102, 1)),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(
-                height: 5,
+                height: 4,
               ),
               ListView.builder(
                   shrinkWrap: true,
@@ -116,6 +132,7 @@ class NotificationsInfoCard extends StatelessWidget {
                                     26,
                                     1,
                                   ),
+                                  height: 16.41 / 14,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400),
                             ),
