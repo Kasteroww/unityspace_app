@@ -43,13 +43,12 @@ class NotificationPageStore extends WStore {
       );
 
   /// Переход на следующую страницу уведомлений
-  void nextPage() {
-    if (currentPage < maxPageCount) {
-      setStore(() {
-        currentPage += 1;
-      });
-      loadData();
-    }
+  Future<void> nextPage() async {
+    maxPageCount =
+        await notificationsStore.getNotificationsData(page: currentPage);
+    setStore(() {
+      currentPage += 1;
+    });
   }
 
   ///Изменяет статус архивирования уведомлений из списка
