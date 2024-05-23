@@ -43,9 +43,7 @@ String timeFromDateString(DateTime date) {
   return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padRight(2, '0')}';
 }
 
-String formatDateddMMyyyy(
-    {required String dateString, required String locale}) {
-  DateTime date = DateTime.parse(dateString);
+String formatDateddMMyyyy({required DateTime date, required String locale}) {
   return DateFormat('dd.MM.yyyy', locale).format(date);
 }
 

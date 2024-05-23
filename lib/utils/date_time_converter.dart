@@ -20,6 +20,12 @@ class DateTimeConverter {
     return formatter.format(dateTime);
   }
 
+  /// Использует convertToDateTime и конвертирует строку в локализованный
+  /// DateTime
+  static DateTime stringToLocalDateTime(String date) {
+    return DateTimeConverter.convertStringToDateTime(date).toLocal();
+  }
+
   ///Отображение времени в виде формата EEEEdMMMM, например:
   ///
   ///Если сегодня: сегодня, вторник 21 мая

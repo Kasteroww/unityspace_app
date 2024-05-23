@@ -1,4 +1,5 @@
 import 'package:unityspace/models/i_base_model.dart';
+import 'package:unityspace/utils/date_time_converter.dart';
 
 class ProjectResponse {
   final int id;
@@ -70,8 +71,8 @@ class ProjectStagesResponse {
 class Project implements BaseModel {
   @override
   final int id;
-  final String createdAt;
-  final String updatedAt;
+  final DateTime createdAt;
+  final DateTime updatedAt;
   final String name;
   final int creatorId;
   final int columnId;
@@ -96,8 +97,8 @@ class Project implements BaseModel {
   factory Project.fromResponse(final ProjectResponse data) {
     return Project(
       id: data.id,
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt,
+      createdAt: DateTimeConverter.stringToLocalDateTime(data.createdAt),
+      updatedAt: DateTimeConverter.stringToLocalDateTime(data.updatedAt),
       name: data.name,
       creatorId: data.creatorId,
       columnId: data.columnId,

@@ -66,16 +66,16 @@ class Task implements BaseModel {
   final String name;
   final List<TaskStages> stages;
   final String? color;
-  final String createdAt;
+  final DateTime createdAt;
   final int creatorId;
   final List<int> tags;
   final List<int> responsibleUsersId;
   final bool hasMessages;
   final bool hasDescription;
   final int status;
-  final String? dateBegin;
-  final String? dateEnd;
-  final String dateMove;
+  final DateTime? dateBegin;
+  final DateTime? dateEnd;
+  final DateTime dateMove;
   final TaskImportance importance;
   final String? dateStatusChanged;
   final String? blockReason;
@@ -110,16 +110,20 @@ class Task implements BaseModel {
         name: response.name,
         stages: response.stages,
         color: response.color,
-        createdAt: response.createdAt,
+        createdAt: DateTimeConverter.stringToLocalDateTime(response.createdAt),
         creatorId: response.creatorId,
         tags: response.tags,
         responsibleUsersId: response.responsibleUserId,
         hasMessages: response.hasMessages,
         hasDescription: response.hasDescription,
         status: response.status,
-        dateBegin: response.dateBegin,
-        dateEnd: response.dateEnd,
-        dateMove: response.dateMove ?? '',
+        dateBegin: response.dateBegin != null
+            ? DateTimeConverter.stringToLocalDateTime(response.dateBegin!)
+            : null,
+        dateEnd: response.dateEnd != null
+            ? DateTimeConverter.stringToLocalDateTime(response.dateEnd!)
+            : null,
+        dateMove: DateTimeConverter.stringToLocalDateTime(response.dateMove!),
         importance: response.importance,
         dateStatusChanged: response.dateStatusChanged,
         blockReason: response.blockReason,
@@ -314,8 +318,7 @@ class TaskHistory implements BaseModel {
       type: TaskChangesTypes.values.firstWhere(
           (type) => type.value == response.type,
           orElse: () => TaskChangesTypes.defaultValue),
-      updateDate: DateTimeConverter.convertStringToDateTime(response.updateDate)
-          .toLocal(),
+      updateDate: DateTimeConverter.stringToLocalDateTime(response.updateDate),
       userId: response.userId,
       projectName: response.projectName,
       taskName: response.taskName,

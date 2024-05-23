@@ -149,11 +149,9 @@ class NotificationModel implements BaseModel {
   });
 
   factory NotificationModel.fromResponse(final NotificationResponse data) {
-    DateTime createdAt =
-        DateTimeConverter.convertStringToDateTime(data.createdAt);
     return NotificationModel(
       archived: data.archived,
-      createdAt: createdAt.toLocal(),
+      createdAt: DateTimeConverter.stringToLocalDateTime(data.createdAt),
       id: data.id,
       initiatorId: data.initiatorId,
       locations: data.locations,

@@ -40,9 +40,10 @@ class ActionCard extends WStoreWidget<ActionCardStore> {
       {required String dateString, required String locale}) {
     List<String> dates = dateString.split('/');
     if (dates.length == 1) {
-      return formatDateddMMyyyy(dateString: dateString, locale: locale);
+      return formatDateddMMyyyy(
+          date: DateTime.parse(dateString), locale: locale);
     } else if (dates.length == 2) {
-      return '${formatDateddMMyyyy(dateString: dates[0], locale: locale)} - ${formatDateddMMyyyy(dateString: dates[1], locale: locale)}';
+      return '${formatDateddMMyyyy(date: DateTime.parse(dates[0]), locale: locale)} - ${formatDateddMMyyyy(date: DateTime.parse(dates[1]), locale: locale)}';
     } else {
       throw FormatErrors.incorrectDateFormat;
     }
