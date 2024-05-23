@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/notifications_list.dart';
-import 'package:unityspace/screens/notifications_screen/widgets/skeleton_listview/skeleton_listview.dart';
+import 'package:unityspace/screens/notifications_screen/widgets/skeleton_listview/notification_skeleton_card.dart';
+import 'package:unityspace/screens/widgets/common/paddings.dart';
+import 'package:unityspace/screens/widgets/common/skeleton/skeleton_listview.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:wstore/wstore.dart';
 import 'package:unityspace/models/notification_models.dart';
@@ -70,6 +72,7 @@ class NotificationPageStore extends WStore {
   ///Загрузка уведомлений
   Future<void> loadData() async {
     if (status == WStoreStatus.loading) return;
+
     setStore(() {
       status = WStoreStatus.loading;
       error = NotificationErrors.none;
@@ -139,7 +142,12 @@ class NotificationsPage extends WStoreWidget<NotificationPageStore> {
         );
       },
       builderLoading: (context) {
-        return const SkeletonListView();
+        return const PaddingHorizontal(
+          20,
+          child: SkeletonListView(
+            skeletonCard: NotificationSkeletonCard(),
+          ),
+        );
       },
       builder: (context, _) {
         return const SizedBox.shrink();

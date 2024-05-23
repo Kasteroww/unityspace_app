@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/screens/account_screen/pages/actions_page/widgets/action_card.dart';
+import 'package:unityspace/screens/account_screen/pages/actions_page/widgets/action_skeleton_card.dart';
+import 'package:unityspace/screens/widgets/common/skeleton/skeleton_listview.dart';
 import 'package:unityspace/utils/constants.dart';
 import 'package:unityspace/utils/date_time_converter.dart';
 import 'package:unityspace/utils/errors.dart';
@@ -55,7 +56,6 @@ class ActionsPageStore extends WStore {
       status = WStoreStatus.loading;
       error = ActionsErrors.none;
     });
-
     try {
       final int pages = await TasksStore().getTasksHistory(currentPage);
       setStore(() {
@@ -90,7 +90,7 @@ class ActionsPage extends WStoreWidget<ActionsPageStore> {
   @override
   Widget build(BuildContext context, ActionsPageStore store) {
     return PaddingHorizontal(
-      12,
+      20,
       child: WStoreStatusBuilder(
         store: store,
         watch: (store) => store.status,
@@ -101,9 +101,8 @@ class ActionsPage extends WStoreWidget<ActionsPageStore> {
           return const ActionsList();
         },
         builderLoading: (context) {
-          return Center(
-            child:
-                Lottie.asset(ConstantIcons.mainLoader, width: 200, height: 200),
+          return const SkeletonListView(
+            skeletonCard: ActionSkeletonCard(),
           );
         },
         builderError: (context) {

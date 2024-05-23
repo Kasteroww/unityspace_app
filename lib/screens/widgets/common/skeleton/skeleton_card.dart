@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
 class SkeletonCard extends StatelessWidget {
-  const SkeletonCard({super.key});
+  const SkeletonCard({
+    super.key,
+    this.children = const [],
+  });
+
+  final List<Widget> children;
 
   @override
   Widget build(BuildContext context) {
@@ -12,27 +17,11 @@ class SkeletonCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         child: Container(
           color: Colors.white,
-          child: const Padding(
-            padding: EdgeInsets.all(12),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SkeletonBox(height: 14, width: 126),
-                SizedBox(height: 8),
-                Row(
-                  children: [
-                    SkeletonBox(height: 16, width: 16),
-                    SizedBox(width: 8),
-                    SkeletonBox(height: 16, width: 84),
-                  ],
-                ),
-                SizedBox(height: 8),
-                SkeletonBox(
-                  height: 32,
-                  width: double.infinity,
-                  color: Color.fromRGBO(204, 204, 204, 1),
-                ),
-              ],
+              children: children,
             ),
           ),
         ),

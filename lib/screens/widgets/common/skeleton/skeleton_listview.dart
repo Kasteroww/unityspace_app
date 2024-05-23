@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:unityspace/screens/notifications_screen/widgets/skeleton_listview/skeleton_card.dart';
+import 'package:unityspace/screens/notifications_screen/widgets/skeleton_listview/notification_skeleton_card.dart';
 
 class SkeletonListView extends StatelessWidget {
   const SkeletonListView({
     super.key,
+    required this.skeletonCard,
   });
+
+  final Widget skeletonCard;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 20, left: 20, top: 12),
+      padding: const EdgeInsets.only(top: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -26,7 +29,7 @@ class SkeletonListView extends StatelessWidget {
           Expanded(
             child: ListView.builder(
                 itemBuilder: (BuildContext context, int index) {
-              return const SkeletonCard();
+              return const NotificationSkeletonCard();
             }),
           ),
         ],

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/models/user_models.dart';
-import 'package:unityspace/screens/notifications_screen/widgets/skeleton_listview/skeleton_listview.dart';
+import 'package:unityspace/screens/notifications_screen/widgets/skeleton_listview/notification_skeleton_card.dart';
+import 'package:unityspace/screens/widgets/common/paddings.dart';
+import 'package:unityspace/screens/widgets/common/skeleton/skeleton_listview.dart';
 import 'package:unityspace/utils/errors.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/notifications_list.dart';
 import 'package:unityspace/store/notifications_store.dart';
@@ -133,7 +135,12 @@ class ArchivedNotificationsPage
         );
       },
       builderLoading: (context) {
-        return const SkeletonListView();
+        return const PaddingHorizontal(
+          20,
+          child: SkeletonListView(
+            skeletonCard: NotificationSkeletonCard(),
+          ),
+        );
       },
       builder: (context, _) {
         return Column(
