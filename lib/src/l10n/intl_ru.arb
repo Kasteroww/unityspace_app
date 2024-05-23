@@ -360,6 +360,8 @@
   "projects_in_archive":"Проектов в архиве",
   "exit_from_archive":"Выйти из архива",
   "an_archive":"Архив",
+  "to_archive":"Отправть в архив",
+  "from_archive":"Восстановить из архива",
   "tasks": "Задачи",
   "reglaments":"Регламенты",
   "other":"Другое"

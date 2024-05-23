@@ -18,3 +18,19 @@ Future<List<ProjectResponse>> getProjects({required int spaceId}) async {
     rethrow;
   }
 }
+
+Future<List<ProjectResponse>> getAllProjects() async {
+  final response = await HttpPlugin().get('/projects/all-projects');
+  final jsonDataList = json.decode(response.body) as List<dynamic>;
+  final result =
+      jsonDataList.map((data) => ProjectResponse.fromJson(data)).toList();
+  return result;
+}
+
+Future<List<ProjectResponse>> archiveProject(
+    {required List<int> projectIds, required int archiveColumnId}) async {
+  final response = await HttpPlugin().patch(
+      '/projects/changeColumn/$archiveColumnId', {"projectIds": projectIds});
+  final List jsonData = json.decode(response.body);
+  return jsonData.map((element) => ProjectResponse.fromJson(element)).toList();
+}

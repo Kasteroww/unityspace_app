@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:unityspace/store/project_store.dart';
 import 'package:unityspace/utils/constants.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:unityspace/screens/widgets/color_button_widget.dart';
@@ -26,6 +27,7 @@ class LoadingScreenStore extends WStore {
         UserStore().getUserData(),
         UserStore().getOrganizationData(),
         SpacesStore().getSpacesData(),
+        ProjectStore().getAllProjects(),
       ]),
       onData: (_) {
         setStore(() {

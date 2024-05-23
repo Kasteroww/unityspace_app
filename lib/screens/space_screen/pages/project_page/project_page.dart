@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/models/spaces_models.dart';
+import 'package:unityspace/screens/space_screen/widgets/pop_up_projects_button.dart';
 import 'package:unityspace/screens/widgets/columns_list/column_button.dart';
 import 'package:unityspace/screens/widgets/columns_list/columns_list_row.dart';
 import 'package:unityspace/store/project_store.dart';
@@ -19,6 +20,7 @@ class ProjectsPageStore extends WStore {
   ProjectStore projectStore;
   bool isArchivedPage = false;
   int archiveProjectsCount = 0;
+  int archiveColumnId = 0;
 
   late SpaceColumn selectedColumn;
 
@@ -37,6 +39,18 @@ class ProjectsPageStore extends WStore {
     });
   }
 
+  void archiveProject(List<int> projectIds, int archiveColumnId) {
+    projectStore.archiveProject(projectIds, archiveColumnId);
+  }
+
+  void unarchiveProject(int projectId) {
+    projectStore.unarchiveProject(projectId);
+  }
+
+  void selectFirstColumn(List<SpaceColumn> listColumns) {
+    selectedColumn = listColumns.first;
+  }
+
   Future<void> loadData(int spaceId, List<SpaceColumn> listColumns) async {
     if (status == WStoreStatus.loading) return;
     setStore(() {
@@ -44,9 +58,8 @@ class ProjectsPageStore extends WStore {
       error = ProjectErrors.none;
     });
     try {
-      await projectStore.getProjectsData(spaceId);
+      await projectStore.getProjectsBySpaceId(spaceId);
       setStore(() {
-        selectedColumn = listColumns.first;
         status = WStoreStatus.loaded;
       });
     } catch (e, stack) {
@@ -60,20 +73,25 @@ class ProjectsPageStore extends WStore {
   }
 
   List<Project> getProjectsByColumnId(int id) {
-    return projectStore.projects.where((el) => el.columnId == id).toList();
+    final list = projects.where((el) => el.columnId == id).toList();
+    return list;
   }
 
-  int getArchiveProjects(
-      List<Project> listProjects, List<SpaceColumn> listColumns) {
+  int getArchiveColumnId(List<SpaceColumn> listColumns) {
     final setColumnsIds = listColumns.map((elem) => elem.id).toSet();
-    final setProjectIds = listProjects.map((elem) => elem.columnId).toSet();
-    return setProjectIds.difference(setColumnsIds).first;
+    final setProjectIds = projects.map((elem) => elem.columnId).toSet();
+    setStore(() {
+      archiveColumnId = setProjectIds.difference(setColumnsIds).first;
+    });
+    return archiveColumnId;
   }
 
-  int getArchiveProjectsCount(
-      List<Project> listProjects, List<SpaceColumn> listColumns) {
-    return getProjectsByColumnId(getArchiveProjects(listProjects, listColumns))
-        .length;
+  int getArchiveProjectsCount(List<SpaceColumn> listColumns) {
+    setStore(() {
+      archiveColumnId = getArchiveColumnId(listColumns);
+      archiveProjectsCount = getProjectsByColumnId(archiveColumnId).length;
+    });
+    return archiveProjectsCount;
   }
 
   List<Project> get projects => computedFromStore(
@@ -97,12 +115,14 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
   });
 
   @override
-  ProjectsPageStore createWStore() =>
-      ProjectsPageStore()..loadData(spaceId, listColumns);
+  ProjectsPageStore createWStore() => ProjectsPageStore()
+    ..loadData(spaceId, listColumns)
+    ..selectFirstColumn(listColumns);
 
   @override
   Widget build(BuildContext context, ProjectsPageStore store) {
     final localization = LocalizationHelper.getLocalizations(context);
+
     return WStoreStatusBuilder(
       store: store,
       watch: (store) => store.status,
@@ -138,13 +158,15 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
       },
       builderLoaded: (BuildContext context) {
         return WStoreBuilder<ProjectsPageStore>(
-          watch: (store) => [store.selectedColumn, store.isArchivedPage],
-          store: context.wstore<ProjectsPageStore>(),
+          watch: (store) =>
+              [store.selectedColumn, store.isArchivedPage, store.projects],
+          store: context.wstore(),
           builder: (context, store) {
-            List<Project> listProjects = store.isArchivedPage
-                ? store.getProjectsByColumnId(
-                    store.getArchiveProjects(store.projects, listColumns))
-                : store.getProjectsByColumnId(store.selectedColumn.id);
+            store.getArchiveProjectsCount(listColumns);
+            List<Project> listProjects = store.getProjectsByColumnId(
+                store.isArchivedPage
+                    ? store.archiveColumnId
+                    : store.selectedColumn.id);
             return Column(
               children: [
                 store.isArchivedPage
@@ -196,9 +218,16 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
                       onPressed: () {
                         store.selectArchive();
                       },
-                      child: Text(store.isArchivedPage
-                          ? localization.exit_from_archive
-                          : '${localization.projects_in_archive}: ${store.getArchiveProjectsCount(store.projects, listColumns)}'),
+                      child: WStoreBuilder<ProjectsPageStore>(
+                          watch: (store) => [
+                                store.archiveProjectsCount,
+                              ],
+                          store: context.wstore(),
+                          builder: (context, store) {
+                            return Text(store.isArchivedPage
+                                ? localization.exit_from_archive
+                                : '${localization.projects_in_archive} ${store.archiveProjectsCount}');
+                          }),
                     ),
                   ),
                 ),
@@ -251,6 +280,8 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
                                                 overflow: TextOverflow.ellipsis,
                                               )
                                             : null,
+                                    trailing: PopUpProjectsButton(
+                                        id: listProjects[index].id),
                                   );
                                 },
                                 separatorBuilder:

@@ -11,9 +11,36 @@ class ProjectStore extends GStore {
 
   List<Project> projects = [];
 
-  Future<void> getProjectsData(int spaceId) async {
+  Future<void> getProjectsBySpaceId(int spaceId) async {
     final projectsData = await api.getProjects(spaceId: spaceId);
     final projects = projectsData.map(Project.fromResponse).toList();
+    setStore(() {
+      this.projects = projects;
+    });
+  }
+
+  Future<void> getAllProjects() async {
+    final projectsData = await api.getAllProjects();
+    final projects = projectsData.map(Project.fromResponse).toList();
+    setStore(() {
+      this.projects = projects;
+    });
+  }
+
+  Future<void> archiveProject(List<int> projectIds, int archiveColumnId) async {
+    final projectsData = await api.archiveProject(
+        projectIds: projectIds, archiveColumnId: archiveColumnId);
+    final project = projectsData.map(Project.fromResponse).toList();
+    final projectId = projects.indexWhere((el) => el.id == project.first.id);
+    final projectsNew = projects
+      ..removeAt(projectId)
+      ..add(project.first);
+    setStore(() {
+      projects = [...projectsNew];
+    });
+  }
+
+  Future<void> unarchiveProject(int projectId) async {
     setStore(() {
       this.projects = projects;
     });
