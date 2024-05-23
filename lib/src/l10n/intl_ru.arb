@@ -344,5 +344,8 @@
   "done_status": "Выполнено",
   "rejected_status": "Отклонено",
   "mark_as_read": "Отметить прочитанным",
-  "mark_as_unread":"Отметить непрочитанным"
+  "mark_as_unread":"Отметить непрочитанным",
+  "projects_in_archive":"Проектов в архиве:",
+  "exit_from_archive":"Выйти из архива",
+  "an_archive":"Архив"
 }

@@ -17,6 +17,9 @@ class ProjectsPageStore extends WStore {
   ProjectErrors error = ProjectErrors.none;
   WStoreStatus status = WStoreStatus.init;
   ProjectStore projectStore;
+  bool isArchivedPage = false;
+  int archiveProjectsCount = 0;
+
   late SpaceColumn selectedColumn;
 
   ProjectsPageStore({ProjectStore? projectStore})
@@ -25,6 +28,12 @@ class ProjectsPageStore extends WStore {
   void selectColumn(final SpaceColumn column) {
     setStore(() {
       selectedColumn = column;
+    });
+  }
+
+  void selectArchive() {
+    setStore(() {
+      isArchivedPage = !isArchivedPage;
     });
   }
 
@@ -50,10 +59,21 @@ class ProjectsPageStore extends WStore {
     }
   }
 
-  getProjects(int id) {
-    return projectStore.projects
-        .where((el) => el.columnId == selectedColumn.id)
-        .toList();
+  List<Project> getProjectsByColumnId(int id) {
+    return projectStore.projects.where((el) => el.columnId == id).toList();
+  }
+
+  int getArchiveProjects(
+      List<Project> listProjects, List<SpaceColumn> listColumns) {
+    final setColumnsIds = listColumns.map((elem) => elem.id).toSet();
+    final setProjectIds = listProjects.map((elem) => elem.columnId).toSet();
+    return setProjectIds.difference(setColumnsIds).first;
+  }
+
+  int getArchiveProjectsCount(
+      List<Project> listProjects, List<SpaceColumn> listColumns) {
+    return getProjectsByColumnId(getArchiveProjects(listProjects, listColumns))
+        .length;
   }
 
   List<Project> get projects => computedFromStore(
@@ -118,36 +138,68 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
       },
       builderLoaded: (BuildContext context) {
         return WStoreBuilder<ProjectsPageStore>(
-          watch: (store) => [store.selectedColumn],
+          watch: (store) => [store.selectedColumn, store.isArchivedPage],
           store: context.wstore<ProjectsPageStore>(),
           builder: (context, store) {
-            final listProjects = store.getProjects(store.selectedColumn.id);
+            List<Project> listProjects = store.isArchivedPage
+                ? store.getProjectsByColumnId(
+                    store.getArchiveProjects(store.projects, listColumns))
+                : store.getProjectsByColumnId(store.selectedColumn.id);
             return Column(
               children: [
-                Container(
-                  padding: const EdgeInsets.only(top: 10),
-                  constraints: BoxConstraints(
-                      maxHeight: MediaQuery.of(context).size.height * 0.04,
-                      maxWidth: (Platform.isAndroid || Platform.isIOS)
-                          ? MediaQuery.of(context).size.width * 0.95
-                          : MediaQuery.of(context).size.width * 0.75),
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: [
-                      ColumnsListRow(
-                        children: [
-                          ...listColumns.map(
-                            (column) => ColumnButton(
-                              title: column.name,
-                              onPressed: () {
-                                store.selectColumn(column);
-                              },
-                              selected: column == store.selectedColumn,
+                store.isArchivedPage
+                    ? Container()
+                    : Container(
+                        padding: const EdgeInsets.only(top: 10),
+                        constraints: BoxConstraints(
+                            maxHeight:
+                                MediaQuery.of(context).size.height * 0.04,
+                            maxWidth: (Platform.isAndroid || Platform.isIOS)
+                                ? MediaQuery.of(context).size.width * 0.95
+                                : MediaQuery.of(context).size.width * 0.75),
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: [
+                            ColumnsListRow(
+                              children: [
+                                ...listColumns.map(
+                                  (column) => ColumnButton(
+                                    title: column.name,
+                                    onPressed: () {
+                                      store.selectColumn(column);
+                                    },
+                                    selected: column == store.selectedColumn,
+                                  ),
+                                )
+                              ],
                             ),
-                          )
-                        ],
+                          ],
+                        ),
                       ),
-                    ],
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Container(
+                    padding: EdgeInsets.only(
+                        top: 10,
+                        right: MediaQuery.of(context).size.width * 0.1),
+                    constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.height * 0.04,
+                        maxWidth: (Platform.isAndroid || Platform.isIOS)
+                            ? MediaQuery.of(context).size.width * 0.95
+                            : MediaQuery.of(context).size.width * 0.75),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        foregroundColor: Colors.black,
+                        elevation: 0,
+                      ),
+                      onPressed: () {
+                        store.selectArchive();
+                      },
+                      child: Text(store.isArchivedPage
+                          ? localization.exit_from_archive
+                          : '${localization.projects_in_archive} ${store.getArchiveProjectsCount(store.projects, listColumns)}'),
+                    ),
                   ),
                 ),
                 Expanded(
@@ -156,8 +208,8 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
                     child: Align(
                       alignment: Alignment.topCenter,
                       child: Container(
-                        width: 300,
-                        height: 600,
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height,
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
@@ -167,25 +219,46 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
                             maxWidth: (Platform.isAndroid || Platform.isIOS)
                                 ? MediaQuery.of(context).size.width * 0.95
                                 : MediaQuery.of(context).size.width * 0.75),
-                        child: ListView.separated(
-                          itemCount: listProjects.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return ListTile(
-                              title: Text(
-                                listProjects[index].name,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(fontSize: 18),
-                              ),
-                              subtitle: listProjects[index].memo.isNotEmpty
-                                  ? Text(
-                                      listProjects[index].memo,
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Align(
+                                  alignment: Alignment.topLeft,
+                                  child: Text(
+                                    store.isArchivedPage
+                                        ? localization.an_archive
+                                        : store.selectedColumn.name,
+                                    style: const TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold),
+                                  )),
+                            ),
+                            Expanded(
+                              child: ListView.separated(
+                                itemCount: listProjects.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return ListTile(
+                                    title: Text(
+                                      listProjects[index].name,
                                       overflow: TextOverflow.ellipsis,
-                                    )
-                                  : null,
-                            );
-                          },
-                          separatorBuilder: (BuildContext context, int index) =>
-                              const Divider(),
+                                      style: const TextStyle(fontSize: 18),
+                                    ),
+                                    subtitle:
+                                        listProjects[index].memo.isNotEmpty
+                                            ? Text(
+                                                listProjects[index].memo,
+                                                overflow: TextOverflow.ellipsis,
+                                              )
+                                            : null,
+                                  );
+                                },
+                                separatorBuilder:
+                                    (BuildContext context, int index) =>
+                                        const Divider(),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
