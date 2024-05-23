@@ -222,6 +222,22 @@ class NotificationsGroup {
   });
 }
 
+class LocationGroup {
+  final String key;
+  final int? spaceId;
+  final String spaceName;
+  final int? projectId;
+  final String projectName;
+
+  LocationGroup({
+    required this.key,
+    this.spaceId,
+    required this.spaceName,
+    this.projectId,
+    required this.projectName,
+  });
+}
+
 enum NotificationType {
   task,
   space,

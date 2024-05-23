@@ -6,6 +6,7 @@ import 'package:unityspace/screens/notifications_screen/widgets/notification_bot
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/parts/dismissible_background.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/parts/notifications_day_text.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/parts/notifications_info_card.dart';
+import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -21,7 +22,7 @@ class NotificationsList extends StatelessWidget {
     required this.onLongPressButtonTap,
   });
 
-  final notificationHelper = NotificationHelper();
+  final notificationHelper = NotificationHelper(userStore: UserStore());
   @override
   Widget build(BuildContext context) {
     final localization = LocalizationHelper.getLocalizations(context);
@@ -84,7 +85,7 @@ class NotificationsList extends StatelessWidget {
                               background: DismissibleBackground(
                                   notificationsGroup: notificationsGroup),
                               child: NotificationsInfoCard(
-                                  notificationGroup: notificationsGroup),
+                                  notificationsGroup: notificationsGroup),
                             ),
                           ),
                         ),

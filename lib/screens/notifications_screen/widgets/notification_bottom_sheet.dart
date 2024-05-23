@@ -37,7 +37,6 @@ class NotificationBottomSheet extends StatelessWidget {
                 child: Text(
                   notificationsGroup.title,
                   style: const TextStyle(
-                    fontFamily: 'roboto',
                     fontWeight: FontWeight.w500,
                     fontSize: 20,
                     height: 23.44 / 20,

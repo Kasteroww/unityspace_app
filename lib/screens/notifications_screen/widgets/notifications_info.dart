@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/screens/notifications_screen/utils/notification_helper.dart';
+import 'package:unityspace/screens/notifications_screen/utils/notifications_strings.dart';
 import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
+import 'package:unityspace/store/user_store.dart';
 
 class NotificationInfo extends StatelessWidget {
   NotificationInfo({
@@ -11,7 +13,8 @@ class NotificationInfo extends StatelessWidget {
 
   final NotificationsGroup notificationGroup;
 
-  final notificationHelper = NotificationHelper();
+  final notificationHelper = NotificationHelper(userStore: UserStore());
+  final notificationStrings = NotificationsStrings(userStore: UserStore());
   @override
   Widget build(BuildContext context) {
     final notifications = notificationGroup.notifications;
@@ -21,7 +24,7 @@ class NotificationInfo extends StatelessWidget {
         itemCount: notificationGroup.notifications.length,
         itemBuilder: (BuildContext context, int index) {
           final notification = notifications[index];
-          final member = notificationHelper.findMemberById(
+          final member = NotificationHelper.findMemberById(
               notificationHelper.getOrganizationMembers(),
               notification.initiatorId);
           return Container(
@@ -42,7 +45,7 @@ class NotificationInfo extends StatelessWidget {
                   ),
                 Expanded(
                   child: Text(
-                    notificationHelper.notificationText(notification),
+                    notificationStrings.notificationText(notification),
                     maxLines: 2, // Ограничиваем текст двумя строками
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(

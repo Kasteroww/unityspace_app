@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:string_validator/string_validator.dart';
+import 'package:unityspace/models/i_base_model.dart';
 import 'package:unityspace/utils/http_plugin.dart';
 
 String? makeAvatarUrl(final String? avatar) {
@@ -41,4 +42,24 @@ String timeFromDateString(DateTime date) {
 
 String formatDateddMMyyyy({required DateTime date, required String locale}) {
   return DateFormat('dd.MM.yyyy', locale).format(date);
+}
+
+extension StringExtension on String {
+  String capitalizeWords() {
+    List<String> words = split(' ');
+
+    return words
+        .map((word) => '${word[0].toUpperCase()}${word.substring(1)}')
+        .join(' ');
+  }
+}
+
+Map<int, T?> createMapById<T extends BaseModel>(List<T>? list) {
+  if (list == null) {
+    return {};
+  }
+  return list.fold<Map<int, T?>>({}, (acc, item) {
+    acc[item.id] = item;
+    return acc;
+  });
 }

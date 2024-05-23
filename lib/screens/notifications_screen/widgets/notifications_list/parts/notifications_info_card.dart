@@ -4,22 +4,24 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/screens/notifications_screen/utils/notification_helper.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_info.dart';
+import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/parts/locations.dart';
+import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/date_time_converter.dart';
 
 class NotificationsInfoCard extends StatelessWidget {
   NotificationsInfoCard({
     super.key,
-    required this.notificationGroup,
+    required this.notificationsGroup,
   });
 
-  final NotificationsGroup notificationGroup;
+  final NotificationsGroup notificationsGroup;
 
-  final notificationHelper = NotificationHelper();
+  final notificationHelper = NotificationHelper(userStore: UserStore());
 
   @override
   Widget build(BuildContext context) {
     final notifications =
-        _sortNotificationsByDateTime(notificationGroup.notifications);
+        _sortNotificationsByDateTime(notificationsGroup.notifications);
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: Container(
@@ -31,12 +33,10 @@ class NotificationsInfoCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Expanded(
-                    child: Text('Разработка Spaces/Регламенты',
-                        style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
-                            color: Color.fromRGBO(102, 102, 102, 1))),
+                  Expanded(
+                    child: Locations(
+                      notificationsGroup: notificationsGroup,
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -50,7 +50,7 @@ class NotificationsInfoCard extends StatelessWidget {
                     ),
                   ),
                   if (_checkIfUnreadAndNotInArchive(
-                      notificationGroup.notifications))
+                      notificationsGroup.notifications))
                     Container(
                       width: 10,
                       height: 10,
@@ -75,14 +75,14 @@ class NotificationsInfoCard extends StatelessWidget {
                     height: 14,
                     width: 14,
                     child: SvgPicture.asset(notificationHelper
-                        .getPictureAssetByType(notificationGroup)),
+                        .getPictureAssetByType(notificationsGroup)),
                   ),
                   const SizedBox(
                     width: 5,
                   ),
                   Expanded(
                     child: Text(
-                      notificationGroup.title,
+                      notificationsGroup.title,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                           fontSize: 14,
@@ -95,7 +95,7 @@ class NotificationsInfoCard extends StatelessWidget {
               const SizedBox(
                 height: 4,
               ),
-              NotificationInfo(notificationGroup: notificationGroup)
+              NotificationInfo(notificationGroup: notificationsGroup)
             ],
           ),
         ),

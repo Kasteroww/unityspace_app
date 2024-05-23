@@ -359,5 +359,8 @@
   "mark_as_unread":"Отметить непрочитанным",
   "projects_in_archive":"Проектов в архиве",
   "exit_from_archive":"Выйти из архива",
-  "an_archive":"Архив"
+  "an_archive":"Архив",
+  "tasks": "Задачи",
+  "reglaments":"Регламенты",
+  "other":"Другое"
 }
