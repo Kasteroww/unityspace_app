@@ -26,57 +26,57 @@ class PopUpNotificationsButton extends StatelessWidget {
       itemBuilder: (BuildContext context) {
         return <PopupMenuEntry<String>>[
           if (store.selectedTab == NotificationsScreenTab.current) ...[
-            _buildMenuItem(
-              context,
-              iconPath: 'assets/icons/notifications/visible.svg',
-              text: localization.read_all,
+            PopupMenuItem<String>(
               onTap: store.readAllNotifications,
+              child: PopupMenuItemChild(
+                  iconPath: 'assets/icons/notifications/visible.svg',
+                  text: localization.read_all),
             ),
-            _buildMenuItem(
-              context,
-              iconPath: 'assets/icons/notifications/download_box_1.svg',
-              text: localization.archive_all,
+            PopupMenuItem<String>(
               onTap: store.archiveAllNotifications,
+              child: PopupMenuItemChild(
+                  iconPath: 'assets/icons/notifications/download_box_1.svg',
+                  text: localization.archive_all),
             ),
           ] else if (store.selectedTab == NotificationsScreenTab.archived) ...[
-            _buildMenuItem(
-              context,
-              iconPath: 'assets/icons/notifications/recycle_bin_2.svg',
-              text: localization.delete_all,
+            PopupMenuItem<String>(
               onTap: store.deleteAllNotifications,
+              child: PopupMenuItemChild(
+                  iconPath: 'assets/icons/notifications/recycle_bin_2.svg',
+                  text: localization.delete_all),
             ),
           ],
         ];
       },
     );
   }
+}
 
-  PopupMenuItem<String> _buildMenuItem(
-    BuildContext context, {
-    required String iconPath,
-    required String text,
-    required void Function() onTap,
-  }) {
-    return PopupMenuItem<String>(
-      onTap: onTap,
-      child: Row(
-        children: [
-          SizedBox(
-            height: 16,
-            width: 16,
-            child: SvgPicture.asset(iconPath),
-          ),
-          const SizedBox(width: 12),
-          Text(
-            text,
-            style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                height: 16.41 / 14,
-                color: Color.fromRGBO(77, 77, 77, 1)),
-          ),
-        ],
-      ),
+class PopupMenuItemChild extends StatelessWidget {
+  final String iconPath;
+  final String text;
+  const PopupMenuItemChild(
+      {super.key, required this.iconPath, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        SizedBox(
+          height: 16,
+          width: 16,
+          child: SvgPicture.asset(iconPath),
+        ),
+        const SizedBox(width: 12),
+        Text(
+          text,
+          style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              height: 16.41 / 14,
+              color: Color.fromRGBO(77, 77, 77, 1)),
+        ),
+      ],
     );
   }
 }

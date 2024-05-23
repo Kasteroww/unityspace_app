@@ -42,7 +42,7 @@ class ProjectStore extends GStore {
 
   Future<void> unarchiveProject(int projectId) async {
     setStore(() {
-      this.projects = projects;
+      projects = projects;
     });
   }
 
@@ -50,7 +50,7 @@ class ProjectStore extends GStore {
   void clear() {
     super.clear();
     setStore(() {
-      projects.clear();
+      projects = [];
     });
   }
 }

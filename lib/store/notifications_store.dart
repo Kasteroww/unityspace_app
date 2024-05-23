@@ -154,7 +154,7 @@ class NotificationsStore extends GStore {
   void clear() {
     super.clear();
     setStore(() {
-      notifications.clear();
+      notifications = [];
     });
   }
 }
