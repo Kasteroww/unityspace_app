@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_primary_button.dart';
+import 'package:unityspace/service/service_exceptions.dart';
 import 'package:unityspace/store/spaces_store.dart';
-import 'package:unityspace/utils/constants.dart';
 import 'package:wstore/wstore.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -51,7 +51,7 @@ class AddSpaceDialogStore extends WStore {
       },
       onError: (error, __) {
         String errorText = localizations.create_space_error;
-        if (error == ConstantStrings.paidTariffError) {
+        if (error is SpacesCannotAddPaidTariffException) {
           errorText = localizations.paid_tariff_error;
         }
         setStore(() {

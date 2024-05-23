@@ -2,107 +2,199 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:unityspace/models/auth_models.dart';
+import 'package:unityspace/service/service_exceptions.dart';
 import 'package:unityspace/service/files_service.dart' as api_files;
 
 import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/utils/http_plugin.dart';
 
 Future<UserResponse> getUserData() async {
-  final response = await HttpPlugin().get('/user/me');
-  final jsonData = json.decode(response.body);
-  final result = UserResponse.fromJson(jsonData);
-  return result;
+  try {
+    final response = await HttpPlugin().get('/user/me');
+    final jsonData = json.decode(response.body);
+    final result = UserResponse.fromJson(jsonData);
+    return result;
+  } catch (e) {
+    if (e is HttpPluginException) {
+      if (e.statusCode == 401) {
+        throw UserUnauthorizedException();
+      }
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
 }
 
 Future<OrganizationResponse> getOrganizationData() async {
-  final response = await HttpPlugin().get('/user/organization');
-  final jsonData = json.decode(response.body);
-  final result = OrganizationResponse.fromJson(jsonData);
-  return result;
+  try {
+    final response = await HttpPlugin().get('/user/organization');
+    final jsonData = json.decode(response.body);
+    final result = OrganizationResponse.fromJson(jsonData);
+    return result;
+  } catch (e) {
+    if (e is HttpPluginException) {
+      if (e.statusCode == 401) {
+        throw UserUnauthorizedException();
+      }
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
 }
 
 Future<UserResponse> removeUserAvatar() async {
-  final response = await HttpPlugin().patch('/user/removeAvatar');
-  final jsonData = json.decode(response.body);
-  final result = UserResponse.fromJson(jsonData);
-  return result;
+  try {
+    final response = await HttpPlugin().patch('/user/removeAvatar');
+    final jsonData = json.decode(response.body);
+    final result = UserResponse.fromJson(jsonData);
+    return result;
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
 }
 
 Future<UserResponse> setUserAvatar(final Uint8List avatarImage) async {
-  final key = await api_files.uploadAvatarByChunks(file: avatarImage);
-  final response = await HttpPlugin().post('/user/avatar', {
-    'key': key,
-  });
-  final jsonData = json.decode(response.body);
-  final result = UserResponse.fromJson(jsonData);
-  return result;
+  try {
+    final key = await api_files.uploadAvatarByChunks(file: avatarImage);
+    final response = await HttpPlugin().post('/user/avatar', {
+      'key': key,
+    });
+    final jsonData = json.decode(response.body);
+    final result = UserResponse.fromJson(jsonData);
+    return result;
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
 }
 
 Future<UserResponse> setUserName(final String userName) async {
-  final response = await HttpPlugin().patch('/user/name', {
-    'name': userName,
-  });
-  final jsonData = json.decode(response.body);
-  final result = UserResponse.fromJson(jsonData);
-  return result;
+  try {
+    final response = await HttpPlugin().patch('/user/name', {
+      'name': userName,
+    });
+    final jsonData = json.decode(response.body);
+    final result = UserResponse.fromJson(jsonData);
+    return result;
+  } catch (e) {
+    if (e is HttpPluginException) {
+      if (e.statusCode == 401) {
+        throw UserUnauthorizedException();
+      } else if (e.statusCode == 400 && e.message == 'name must be a string') {
+        throw UserNameIsNotAStringException();
+      }
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
 }
 
 Future<OnlyTokensResponse> setUserPassword(
   final String oldPassword,
   final String newPassword,
 ) async {
-  final response = await HttpPlugin().patch('/user/password', {
-    'oldPassword': oldPassword,
-    'password': newPassword,
-  });
-  final jsonData = json.decode(response.body);
-  final result = OnlyTokensResponse.fromJson(jsonData);
-  return result;
+  try {
+    final response = await HttpPlugin().patch('/user/password', {
+      'oldPassword': oldPassword,
+      'password': newPassword,
+    });
+    final jsonData = json.decode(response.body);
+    final result = OnlyTokensResponse.fromJson(jsonData);
+    return result;
+  } catch (e) {
+    if (e is HttpPluginException) {
+      if (e.message == 'Credentials incorrect') {
+        throw UserIncorrectOldPasswordException();
+      }
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
 }
 
 Future<UserResponse> setJobTitle(final String jobTitle) async {
-  final response = await HttpPlugin().patch('/user/job-title', {
-    'jobTitle': jobTitle,
-  });
-  final jsonData = json.decode(response.body);
-  final result = UserResponse.fromJson(jsonData);
-  return result;
+  try {
+    final response = await HttpPlugin().patch('/user/job-title', {
+      'jobTitle': jobTitle,
+    });
+    final jsonData = json.decode(response.body);
+    final result = UserResponse.fromJson(jsonData);
+    return result;
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
 }
 
 Future<UserResponse> setPhone(final String phone) async {
-  final response = await HttpPlugin().patch('/user/phoneNumber', {
-    'phoneNumber': phone,
-  });
-  final jsonData = json.decode(response.body);
-  final result = UserResponse.fromJson(jsonData);
-  return result;
+  try {
+    final response = await HttpPlugin().patch('/user/phoneNumber', {
+      'phoneNumber': phone,
+    });
+    final jsonData = json.decode(response.body);
+    final result = UserResponse.fromJson(jsonData);
+    return result;
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
 }
 
 Future<UserResponse> setUserGitHubLink(final String githubLink) async {
-  final response = await HttpPlugin().patch('/user/github-link', {
-    'githubLink': githubLink,
-  });
-  final jsonData = json.decode(response.body);
-  final result = UserResponse.fromJson(jsonData);
-  return result;
+  try {
+    final response = await HttpPlugin().patch('/user/github-link', {
+      'githubLink': githubLink,
+    });
+    final jsonData = json.decode(response.body);
+    final result = UserResponse.fromJson(jsonData);
+    return result;
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
 }
 
 Future<UserResponse> setUserTelegramLink(final String link) async {
-  final response = await HttpPlugin().patch('/user/link', {
-    'link': link,
-  });
-  final jsonData = json.decode(response.body);
-  final result = UserResponse.fromJson(jsonData);
-  return result;
+  try {
+    final response = await HttpPlugin().patch('/user/link', {
+      'link': link,
+    });
+    final jsonData = json.decode(response.body);
+    final result = UserResponse.fromJson(jsonData);
+    return result;
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
 }
 
 Future<UserResponse> setUserBirthday(final String? date) async {
-  final response = await HttpPlugin().patch('/user/edit-birthdate', {
-    'birthDate': date,
-  });
-  final jsonData = json.decode(response.body);
-  final result = UserResponse.fromJson(jsonData);
-  return result;
+  try {
+    final response = await HttpPlugin().patch('/user/edit-birthdate', {
+      'birthDate': date,
+    });
+    final jsonData = json.decode(response.body);
+    final result = UserResponse.fromJson(jsonData);
+    return result;
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
 }
 
 Future<String?> requestEmailVerification({
@@ -118,13 +210,13 @@ Future<String?> requestEmailVerification({
   } catch (e) {
     if (e is HttpPluginException) {
       if (e.message == 'User is already exists') {
-        return 'User already exists';
+        throw UserEmailAlreadyExistsException();
       } else if (e.message == 'Cannot process its email') {
-        return 'Cannot process this email';
+        throw UserCannotProcessEmailException();
       } else if (e.message == 'email must be an email') {
-        return 'Incorrect email format';
+        throw UserIncorrectEmailFormatException();
       } else {
-        throw Exception(e.message);
+        throw ServiceException(e.message);
       }
     }
     rethrow;
@@ -146,7 +238,10 @@ Future confirmUserEmail(
     return response.body;
   } catch (e) {
     if (e is HttpPluginException) {
-      return 'Code is incorrect';
+      if (e.statusCode == 400 && e.message == 'Error while verifying email') {
+        throw UserIncorrectConfirmationCodeException();
+      }
+      throw ServiceException(e.message);
     }
     rethrow;
   }

@@ -2,8 +2,8 @@ import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dar
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
 
 import 'package:flutter/material.dart';
+import 'package:unityspace/service/service_exceptions.dart';
 import 'package:unityspace/store/user_store.dart';
-import 'package:unityspace/utils/constants.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
 import 'package:unityspace/utils/localization_helper.dart';
@@ -95,7 +95,7 @@ class UserChangePasswordDialogStore extends WStore {
       },
       onError: (error, stack) {
         String errorText = localizations.change_password_error;
-        if (error == ConstantStrings.incorrectOldPassword) {
+        if (error is UserIncorrectOldPasswordException) {
           errorText = localizations.incorrect_old_password_error;
         } else {
           logger.d(

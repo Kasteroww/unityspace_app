@@ -3,6 +3,7 @@ import 'package:unityspace/screens/widgets/main_form/main_form_input_field.dart'
 import 'package:unityspace/screens/widgets/main_form/main_form_logo_widget.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_text_subtitle_widget.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_widget.dart';
+import 'package:unityspace/service/service_exceptions.dart';
 import 'package:unityspace/store/auth_store.dart';
 import 'package:unityspace/utils/constants.dart';
 import 'package:wstore/wstore.dart';
@@ -31,7 +32,7 @@ class ConfirmScreenStore extends WStore {
       },
       onError: (error, __) {
         String errorText = localizations.confirm_email_error;
-        if (error == ConstantStrings.incorrectCodeError) {
+        if (error is AuthIncorrectConfirmationCodeException) {
           errorText = localizations.incorrect_code_error;
         }
         setStore(() {

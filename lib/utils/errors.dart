@@ -13,7 +13,7 @@ enum EmailErrors {
   incorrectEmailAddress('Некорректная почта'),
   emailAlreadyExists('Такая почта уже зарегистрирована'),
   cannotSendEmail('Ошибка отправки, попробуйте позже'),
-  ;
+  unknown('Неизвестная ошибка, попробуйте позже');
 
   final String localization;
 
@@ -21,8 +21,13 @@ enum EmailErrors {
 }
 
 enum CodeConfimationErrors {
-  none,
-  incorrectCode,
+  none(''),
+  incorrectCode('Неверный код'),
+  unknown('Неизвестная ошибка, попробуйте позже');
+
+  final String localization;
+
+  const CodeConfimationErrors(this.localization);
 }
 
 enum ImageErrors { none, imageIsEmpty }

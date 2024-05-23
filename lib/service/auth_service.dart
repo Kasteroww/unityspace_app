@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:unityspace/models/auth_models.dart';
+import 'package:unityspace/service/service_exceptions.dart';
 import 'package:unityspace/utils/http_plugin.dart';
 
 Future<RegisterResponse> register({
@@ -18,14 +19,15 @@ Future<RegisterResponse> register({
   } catch (e) {
     if (e is HttpPluginException) {
       if (e.message == 'User is already exists') {
-        throw 'User already exists';
+        throw AuthUserAlreadyExistsException();
       }
       if (e.message == 'incorrect or non-exist Email') {
-        throw 'non-exist Email';
+        throw AuthIncorrectEmailException();
       }
       if (e.statusCode == 500 && e.message.contains('554')) {
-        throw 'too many messages';
+        throw AuthTooManyMessagesException();
       }
+      throw ServiceException(e.message);
     }
     rethrow;
   }
@@ -48,8 +50,9 @@ Future<OnlyTokensResponse> confirmEmail({
   } catch (e) {
     if (e is HttpPluginException) {
       if (e.message == 'Error while verifying email') {
-        throw 'Error while entering code';
+        throw AuthIncorrectConfirmationCodeException();
       }
+      throw ServiceException(e.message);
     }
     rethrow;
   }
@@ -70,8 +73,9 @@ Future<OnlyTokensResponse> login({
   } catch (e) {
     if (e is HttpPluginException) {
       if (e.message == 'Credentials incorrect') {
-        throw 'Incorrect user name or password';
+        throw AuthIncorrectCredentialsException();
       }
+      throw ServiceException(e.message);
     }
     rethrow;
   }
@@ -81,43 +85,53 @@ Future<void> signOut({
   required final String refreshToken,
   required final int globalUserId,
 }) async {
-  await HttpPlugin().patch('/auth/logout', {
-    'refreshToken': refreshToken,
-    'userId': globalUserId,
-  });
+  try {
+    await HttpPlugin().patch('/auth/logout', {
+      'refreshToken': refreshToken,
+      'userId': globalUserId,
+    });
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
 }
 
 Future<OnlyTokensResponse> refreshAccessToken({
   required final String refreshToken,
 }) async {
-  final response = await HttpPlugin().get('/auth/refresh', {
-    'refreshToken': refreshToken,
-  });
-  final jsonData = json.decode(response.body);
-  final result = OnlyTokensResponse.fromJson(jsonData);
-  return result;
+  try {
+    final response = await HttpPlugin().get('/auth/refresh', {
+      'refreshToken': refreshToken,
+    });
+    final jsonData = json.decode(response.body);
+    final result = OnlyTokensResponse.fromJson(jsonData);
+    return result;
+  } catch (e) {
+    if (e is HttpPluginException) {
+      if (e.statusCode == 401) {
+        throw AuthUnauthorizedException();
+      }
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
 }
 
 Future<void> restorePasswordByEmail({
   required final String email,
 }) async {
   try {
-    final response = await HttpPlugin().post('/auth/reset-password', {
+    await HttpPlugin().post('/auth/reset-password', {
       'email': email,
     });
-    final jsonData = json.decode(response.body);
-    final result = ResetPasswordResponse.fromJson(jsonData);
-    if (result.status != 'ok') {
-      if (result.message == 'Credentials incorrect') {
-        throw 'Incorrect user name';
-      }
-      throw '${result.status}: ${result.message}';
-    }
   } catch (e) {
     if (e is HttpPluginException) {
       if (e.message == 'Credentials incorrect') {
-        throw 'Incorrect user name';
+        throw AuthIncorrectCredentialsException();
       }
+      throw ServiceException(e.message);
     }
     rethrow;
   }
@@ -125,12 +139,19 @@ Future<void> restorePasswordByEmail({
 
 Future<GoogleAuthResponse> googleAuth(
     {required final String credential}) async {
-  final response = await HttpPlugin().post('/google/auth', {
-    'credential': credential,
-    'inviteToken': '',
-    'referrer': null,
-  });
-  final jsonData = json.decode(response.body);
-  final result = GoogleAuthResponse.fromJson(jsonData);
-  return result;
+  try {
+    final response = await HttpPlugin().post('/google/auth', {
+      'credential': credential,
+      'inviteToken': '',
+      'referrer': null,
+    });
+    final jsonData = json.decode(response.body);
+    final result = GoogleAuthResponse.fromJson(jsonData);
+    return result;
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
 }

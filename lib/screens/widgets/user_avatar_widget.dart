@@ -152,7 +152,6 @@ class UserAvatar extends StatefulWidget {
 }
 
 class _UserAvatarState extends State<UserAvatar> {
-  
   String userNameFirstLetter(OrganizationMember member) {
     if (member.avatarLink != null) return '';
     final name = member.name.trim();

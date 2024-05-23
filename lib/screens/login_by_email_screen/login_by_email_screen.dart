@@ -4,6 +4,7 @@ import 'package:unityspace/screens/widgets/main_form/main_form_logo_widget.dart'
 import 'package:unityspace/screens/widgets/main_form/main_form_text_button_widget.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_text_title_widget.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_widget.dart';
+import 'package:unityspace/service/service_exceptions.dart';
 import 'package:unityspace/store/auth_store.dart';
 import 'package:unityspace/utils/constants.dart';
 import 'package:wstore/wstore.dart';
@@ -39,9 +40,8 @@ class LoginByEmailScreenStore extends WStore {
         });
       },
       onError: (error, __) {
-        String errorText =
-            localizations.login_error;
-        if (error == ConstantStrings.invalidEmailOrPassword) {
+        String errorText = localizations.login_error;
+        if (error is AuthIncorrectCredentialsException) {
           errorText = localizations.invalid_email_or_password;
         }
         setStore(() {

@@ -4,8 +4,6 @@ import 'package:collection/collection.dart';
 import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/service/user_service.dart' as api;
 import 'package:unityspace/store/auth_store.dart';
-import 'package:unityspace/utils/errors.dart';
-import 'package:unityspace/utils/http_plugin.dart';
 import 'package:wstore/wstore.dart';
 
 class UserStore extends GStore {
@@ -120,15 +118,8 @@ class UserStore extends GStore {
     final String oldPassword,
     final String newPassword,
   ) async {
-    try {
-      final tokens = await api.setUserPassword(oldPassword, newPassword);
-      await AuthStore().setUserTokens(tokens.accessToken, tokens.refreshToken);
-    } on HttpPluginException catch (e) {
-      if (e.message == 'Credentials incorrect') {
-        throw UserAuthErrors.incorrectOldPassword;
-      }
-      rethrow;
-    }
+    final tokens = await api.setUserPassword(oldPassword, newPassword);
+    await AuthStore().setUserTokens(tokens.accessToken, tokens.refreshToken);
   }
 
   Future<void> setJobTitle(final String jobTitle) async {

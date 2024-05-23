@@ -3,6 +3,7 @@ import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
 import 'package:unityspace/screens/widgets/common/paddings.dart';
+import 'package:unityspace/service/service_exceptions.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/errors.dart';
@@ -43,48 +44,42 @@ class ChangeEmailDialogStore extends WStore {
     });
   }
 
+  _setErrorChangeUserEmail(EmailErrors error) {
+    setStore(() {
+      isChangeEmail = false;
+      statusEmail = WStoreStatus.error;
+      emailError = error;
+    });
+  }
+
   Future<void> changeUserEmail(String email) async {
     if (isChangeEmail) return;
     setStore(() {
       isChangeEmail = true;
       statusEmail = WStoreStatus.loading;
     });
-    final requestEmailVerify = await UserStore()
-        .requestEmailVerification(email: email, isChangeEmail: true);
-    switch (requestEmailVerify) {
-      case null:
-        setStore(() {
-          isChangeEmail = false;
-          statusEmail = WStoreStatus.error;
-          emailError = EmailErrors.incorrectEmailAddress;
-        });
-        break;
-      case "User already exists":
-        setStore(() {
-          isChangeEmail = false;
-          statusEmail = WStoreStatus.error;
-          emailError = EmailErrors.emailAlreadyExists;
-        });
-        break;
-      case "Cannot process this email":
-        setStore(() {
-          isChangeEmail = false;
-          statusEmail = WStoreStatus.error;
-          emailError = EmailErrors.cannotSendEmail;
-        });
-      case "Incorrect email format":
-        setStore(() {
-          isChangeEmail = false;
-          statusEmail = WStoreStatus.error;
-          emailError = EmailErrors.incorrectEmailAddress;
-        });
-      default:
-        setStore(() {
-          isChangeEmail = false;
-          statusEmail = WStoreStatus.loaded;
-          emailError = EmailErrors.none;
-          newEmail = email;
-        });
+    try {
+      final requestEmailVerify = await UserStore()
+          .requestEmailVerification(email: email, isChangeEmail: true);
+      if (requestEmailVerify == null) {
+        _setErrorChangeUserEmail(EmailErrors.incorrectEmailAddress);
+      }
+      setStore(() {
+        isChangeEmail = false;
+        statusEmail = WStoreStatus.loaded;
+        emailError = EmailErrors.none;
+        newEmail = email;
+      });
+    } catch (e) {
+      if (e is UserEmailAlreadyExistsException) {
+        _setErrorChangeUserEmail(EmailErrors.emailAlreadyExists);
+      } else if (e is UserCannotProcessEmailException) {
+        _setErrorChangeUserEmail(EmailErrors.cannotSendEmail);
+      } else if (e is UserIncorrectEmailFormatException) {
+        _setErrorChangeUserEmail(EmailErrors.incorrectEmailAddress);
+      } else if (e is ServiceException) {
+        _setErrorChangeUserEmail(EmailErrors.unknown);
+      }
     }
   }
 
@@ -233,9 +228,15 @@ class ConfirmEmailDialogStore extends WStore {
         isShowConfirm = true;
       });
     } catch (e) {
+      if (e is UserIncorrectConfirmationCodeException) {
+        setStore(() {
+          codeStatus = WStoreStatus.error;
+          codeError = CodeConfimationErrors.incorrectCode;
+        });
+      }
       setStore(() {
         codeStatus = WStoreStatus.error;
-        codeError = CodeConfimationErrors.incorrectCode;
+        codeError = CodeConfimationErrors.unknown;
       });
     }
   }
@@ -327,7 +328,7 @@ class ConfirmEmailDialog extends WStoreWidget<ConfirmEmailDialogStore> {
               ),
               if (error)
                 Text(
-                  store.codeError.name,
+                  store.codeError.localization,
                   style: const TextStyle(
                     color: Color(0xFFD83400),
                   ),
