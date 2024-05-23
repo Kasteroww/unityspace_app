@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/project_page.dart';
+import 'package:unityspace/screens/space_screen/widgets/pop_up_projects_item.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
 
@@ -28,47 +29,22 @@ class PopUpProjectsButton extends StatelessWidget {
       itemBuilder: (BuildContext context) {
         return <PopupMenuEntry<String>>[
           if (!store.isArchivedPage) ...[
-            _buildMenuItem(
-              context,
-              text: localization.to_archive,
+            PopupMenuItem(
               onTap: () => store.archiveProject([id], store.archiveColumnId),
+              child: PopupProjectsItem(
+                text: localization.to_archive,
+              ),
             ),
           ] else ...[
-            _buildMenuItem(
-              context,
-              text: localization.from_archive,
+            PopupMenuItem(
               onTap: null,
+              child: PopupProjectsItem(
+                text: localization.from_archive,
+              ),
             ),
           ],
         ];
       },
-    );
-  }
-
-  PopupMenuItem<String> _buildMenuItem(
-    BuildContext context, {
-    required String text,
-    required void Function()? onTap,
-  }) {
-    return PopupMenuItem<String>(
-      onTap: onTap,
-      child: Row(
-        children: [
-          const SizedBox(
-            height: 16,
-            width: 16,
-          ),
-          const SizedBox(width: 12),
-          Text(
-            text,
-            style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                height: 16.41 / 14,
-                color: Color.fromRGBO(77, 77, 77, 1)),
-          ),
-        ],
-      ),
     );
   }
 }
