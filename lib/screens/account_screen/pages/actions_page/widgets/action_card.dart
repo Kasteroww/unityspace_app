@@ -6,6 +6,7 @@ import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/screens/widgets/common/paddings.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/errors.dart';
+import 'package:unityspace/utils/extensions/color_extension.dart';
 import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/src/theme/theme.dart';

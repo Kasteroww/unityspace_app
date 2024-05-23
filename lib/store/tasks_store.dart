@@ -1,7 +1,7 @@
 import 'dart:collection';
 
 import 'package:unityspace/models/task_models.dart';
-import 'package:unityspace/store/gstore_extension.dart';
+import 'package:unityspace/utils/extensions/gstore_extension.dart';
 import 'package:wstore/wstore.dart';
 import 'package:unityspace/service/task_service.dart' as api;
 import 'package:collection/collection.dart';
