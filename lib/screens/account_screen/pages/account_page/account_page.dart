@@ -6,7 +6,7 @@ import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/screens/account_screen/pages/account_page/widgets/account_content.dart';
 import 'package:unityspace/screens/account_screen/pages/account_page/widgets/account_item.dart';
 import 'package:unityspace/screens/crop_image_screen/crop_image_screen.dart';
-import 'package:unityspace/screens/dialogs/change_email_dialog.dart';
+import 'package:unityspace/screens/dialogs/user_change_email_dialog.dart';
 import 'package:unityspace/screens/dialogs/user_change_birthday_dialog.dart';
 import 'package:unityspace/screens/dialogs/user_change_githublink_dialog.dart';
 import 'package:unityspace/screens/dialogs/user_change_job_dialog.dart';

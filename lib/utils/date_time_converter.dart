@@ -35,7 +35,7 @@ class DateTimeConverter {
   ///Если более 2х дней назад: пятница, 17 мая
   static String formatDateEEEEdMMMM({
     required DateTime date,
-    required AppLocalizations localizations,
+    required AppLocalizations localization,
     required String locale,
   }) {
     DateFormat formatter = DateFormat('EEEE d MMMM', locale);
@@ -47,9 +47,9 @@ class DateTimeConverter {
     String formattedDateCapitalized = formattedDate.capitalizeWords();
 
     if (dateWithoutTime == yesterday) {
-      return '${localizations.yesterday}, $formattedDateCapitalized';
+      return '${localization.yesterday}, $formattedDateCapitalized';
     } else if (dateWithoutTime == today) {
-      return '${localizations.today}, $formattedDateCapitalized';
+      return '${localization.today}, $formattedDateCapitalized';
     } else {
       return formattedDateCapitalized;
     }

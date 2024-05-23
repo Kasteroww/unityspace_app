@@ -45,7 +45,7 @@ class UserChangePasswordDialogStore extends WStore {
     });
   }
 
-  void changePassword(AppLocalizations localizations) {
+  void changePassword(AppLocalizations localization) {
     if (statusChange == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -55,7 +55,7 @@ class UserChangePasswordDialogStore extends WStore {
     //
     if (oldPassword.isEmpty || newPassword.isEmpty) {
       setStore(() {
-        changePasswordError = localizations.empty_password_error;
+        changePasswordError = localization.empty_password_error;
         statusChange = WStoreStatus.error;
       });
       return;
@@ -63,7 +63,7 @@ class UserChangePasswordDialogStore extends WStore {
     //
     if (newPassword.length < 8) {
       setStore(() {
-        changePasswordError = localizations.at_least_8_characters_error;
+        changePasswordError = localization.at_least_8_characters_error;
         statusChange = WStoreStatus.error;
       });
       return;
@@ -71,7 +71,7 @@ class UserChangePasswordDialogStore extends WStore {
     //
     if (confirmPassword != newPassword) {
       setStore(() {
-        changePasswordError = localizations.match_password_error;
+        changePasswordError = localization.match_password_error;
         statusChange = WStoreStatus.error;
       });
       return;
@@ -79,7 +79,7 @@ class UserChangePasswordDialogStore extends WStore {
     //
     if (oldPassword == newPassword) {
       setStore(() {
-        changePasswordError = localizations.new_password_equal_old_error;
+        changePasswordError = localization.new_password_equal_old_error;
         statusChange = WStoreStatus.error;
       });
       return;
@@ -94,9 +94,9 @@ class UserChangePasswordDialogStore extends WStore {
         });
       },
       onError: (error, stack) {
-        String errorText = localizations.change_password_error;
+        String errorText = localization.change_password_error;
         if (error is UserIncorrectOldPasswordException) {
-          errorText = localizations.incorrect_old_password_error;
+          errorText = localization.incorrect_old_password_error;
         } else {
           logger.d(
               'UserChangePasswordDialogStore.changePassword error: $error stack: $stack');

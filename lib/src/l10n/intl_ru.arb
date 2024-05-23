@@ -1,13 +1,25 @@
 {
+  "email_cannot_be_empty": "Email не может быть пустым",
+  "incorrect_email_format": "Некорректный формат",
+  "emails_are_the_same": "Почты совпадают",
+  "email_is_incorrect": "Некорректная почта",
+  "this_email_already_exists": "Такая почта уже зарегистрирована",
+  "error_while_sending_try_later": "Ошибка отправки, попробуйте позже", 
+  "unknown_error_try_later": "Неизвестная ошибка, попробуйте позже",
+
+  "code_length_must_be_4": "Длина кода должна быть 4",
+  "only_numbers_allowed": "Разрешены только числа",
+  "incorrect_code": "Неверный код",
+
   "change_email": "Изменить Email",
   "enter_new_email": "Введите новый Email",
   "confirm_email": "Подтвердите электронную почту", 
   "code_has_been_send_to": "Текстовое сообщение с кодом проверки отправлено на ",
 
-  "taskNumberCopied": "Номер задачи скопирован",
+  "task_number_copied": "Номер задачи скопирован",
   "@@locale": "ru",
-  "yearsAgo": "{count, plural, one{1 год назад} few{{count} года назад} other{{count} лет назад}}",
-  "@yearsAgo": {
+  "years_ago": "{count, plural, one{1 год назад} few{{count} года назад} other{{count} лет назад}}",
+  "@years_ago": {
     "description": "The 'years ago' String with a parameter",
     "placeholders": {
       "yearsCount": {
@@ -16,8 +28,8 @@
       }
     }
   },
-  "monthsAgo": "{count, plural, one{1 месяц назад} few{{count} месяца назад} other{{count} месяцев назад}}",
-  "@monthsAgo": {
+  "months_ago": "{count, plural, one{1 месяц назад} few{{count} месяца назад} other{{count} месяцев назад}}",
+  "@months_ago": {
     "description": "The 'months ago' String with a parameter",
     "placeholders": {
       "monthsCount": {
@@ -26,8 +38,8 @@
       }
     }
   },
-  "weeksAgo": "{count, plural, one{1 неделю назад} few{{count} недели назад} other{{count} недель назад}}",
-  "@weeksAgo": {
+  "weeks_ago": "{count, plural, one{1 неделю назад} few{{count} недели назад} other{{count} недель назад}}",
+  "@weeks_ago": {
     "description": "The 'weeks ago' String with a parameter",
     "placeholders": {
       "weeksCount": {
@@ -36,8 +48,8 @@
       }
     }
   },
-  "daysAgo": "{count, plural, one{1 день назад} few{{count} дня назад} other{{count} дней назад}}",
-  "@daysAgo": {
+  "days_ago": "{count, plural, one{1 день назад} few{{count} дня назад} other{{count} дней назад}}",
+  "@days_ago": {
     "description": "The 'days ago' String with a parameter",
     "placeholders": {
       "daysCount": {
@@ -54,10 +66,10 @@
   "@today": {
     "description": "The 'today' String"
   },
-  "createTask": "Вы создали задачу",
-  "changeDescription": "Вы изменили описание задачи",
-  "changeName": "Вы изменили название задачи на {name}",
-  "@changeName": {
+  "create_task": "Вы создали задачу",
+  "change_description": "Вы изменили описание задачи",
+  "change_task_name": "Вы изменили название задачи на {name}",
+  "@change_task_name": {
     "placeholders": {
       "name": {
         "type": "String",
@@ -65,8 +77,8 @@
       }
     }
   },
-  "changeBlockReasonSet": "Вы установили задаче статус \"Требует внимания\" {statusReason}",
-  "@changeBlockReasonSet": {
+  "change_block_reason_set": "Вы установили задаче статус \"Требует внимания\" {statusReason}",
+  "@change_block_reason_set": {
     "placeholders": {
       "statusReason": {
         "type": "String",
@@ -74,11 +86,11 @@
       }
     }
   },
-  "changeBlockReasonRemoved": "Вы сняли с задачи статус \"Требует внимания\"",
-  "overdueTaskNoResponsible": "Задача просрочена и на ней нет исполнителя!",
-  "overdueTaskWithResponsible": "Задача просрочена",
-  "changeDateSet": "Вы перенесли задачу на новую дату {dateEnd}",
-  "@changeDateSet": {
+  "change_block_reason_removed": "Вы сняли с задачи статус \"Требует внимания\"",
+  "overdue_task_no_responsible": "Задача просрочена и на ней нет исполнителя!",
+  "overdue_task_with_responsible": "Задача просрочена",
+  "change_data_set": "Вы перенесли задачу на новую дату {dateEnd}",
+  "@change_data_set": {
     "placeholders": {
       "dateEnd": {
         "type": "String",
@@ -86,12 +98,12 @@
       }
     }
   },
-  "changeDateRemoved": "Вы убрали дату у задачи",
-  "changeColorSet": "Вы изменили цвет задачи на ",
-  "changeColorRemoved": "Вы убрали цвет с задачи",
-  "changeResponsible": "Вы изменили исполнителя на задаче -",
-  "changeStatus": "Вы изменили статус задачи на {status}",
-  "@changeStatus": {
+  "change_data_removed": "Вы убрали дату у задачи",
+  "change_color_set": "Вы изменили цвет задачи на ",
+  "change_color_removed": "Вы убрали цвет с задачи",
+  "change_responsible": "Вы изменили исполнителя на задаче",
+  "change_status": "Вы изменили статус задачи на {status}",
+  "@change_status": {
     "placeholders": {
       "status": {
         "type": "String",
@@ -99,8 +111,8 @@
       }
     }
   },
-  "changeStageArchived": "Вы отправили задачу в архив в проекте \"{projectName}\"",
-  "@changeStageArchived": {
+  "change_stage_archived": "Вы отправили задачу в архив в проекте \"{projectName}\"",
+  "@change_stage_archived": {
     "placeholders": {
       "projectName": {
         "type": "String",
@@ -108,8 +120,8 @@
       }
     }
   },
-  "changeStageColumn": "Вы переместили задачу в колонку \"{column}\" в проекте \"{projectName}\"",
-  "@changeStageColumn": {
+  "change_stage_column": "Вы переместили задачу в колонку \"{column}\" в проекте \"{projectName}\"",
+  "@change_stage_column": {
     "placeholders": {
       "column": {
         "type": "String",
@@ -121,8 +133,8 @@
       }
     }
   },
-  "addTag": "Вы добавили к задаче ярлык {tag}",
-  "@addTag": {
+  "add_tag": "Вы добавили к задаче ярлык {tag}",
+  "@add_tag": {
     "placeholders": {
       "tag": {
         "type": "String",
@@ -130,8 +142,8 @@
       }
     }
   },
-  "deleteTag": "Вы удалили у задачи ярлык {tag}",
-  "@deleteTag": {
+  "delete_tag": "Вы удалили у задачи ярлык {tag}",
+  "@delete_tag": {
     "placeholders": {
       "tag": {
         "type": "String",
@@ -139,8 +151,8 @@
       }
     }
   },
-  "sendMessage": "Вы оставили комментарий {comment}",
-  "@sendMessage": {
+  "send_message": "Вы оставили комментарий {comment}",
+  "@send_message": {
     "placeholders": {
       "comment": {
         "type": "String",
@@ -148,11 +160,11 @@
       }
     }
   },
-  "deleteTask": "Вы удалили задачу",
-  "addCover": "Вы изменили обложку у задачи",
-  "deleteCover": "Вы удалили обложку задачи",
-  "changeImportance": "Вы изменили важность задачи на {importance}",
-  "@changeImportance": {
+  "delete_task": "Вы удалили задачу",
+  "add_cover": "Вы изменили обложку у задачи",
+  "delete_cover": "Вы удалили обложку задачи",
+  "change_importance": "Вы изменили важность задачи на {importance}",
+  "@change_importance": {
     "placeholders": {
       "importance": {
         "type": "String",
@@ -169,8 +181,8 @@
       }
     }
   },
-  "addStage": "Вы добавили задачу в проект {projectName} в колонку {columnName}",
-  "@addStage": {
+  "add_stage": "Вы добавили задачу в проект {projectName} в колонку {columnName}",
+  "@add_stage": {
     "placeholders": {
       "projectName": {
         "type": "String",
@@ -182,8 +194,8 @@
       }
     }
   },
-  "deleteStage": "Вы убрали задачу из проекта {projectName}",
-  "@deleteStage": {
+  "delete_stage": "Вы убрали задачу из проекта {projectName}",
+  "@delete_stage": {
     "placeholders": {
       "projectName": {
         "type": "String",
@@ -191,11 +203,11 @@
       }
     }
   },
-  "removeMember": "Вы исключили члена пространства -",
-  "addResponsible": "Вы добавили исполнителя к задаче -",
-  "removeResponsible": "Вы убрали исполнителя с задачи -",
-  "unhandledType": "Такой тип истории не определен :( #{userId}",
-  "@unhandledType": {
+  "remove_member": "Вы исключили члена пространства -",
+  "add_responsible": "Вы добавили исполнителя к задаче -",
+  "remove_responsible": "Вы убрали исполнителя с задачи -",
+  "unhandled_type": "Такой тип истории не определен :( #{userId}",
+  "@unhandled_type": {
     "placeholders": {
       "userId": {
         "type": "String",
@@ -339,13 +351,13 @@
   "change_avatar_error": "При выборе из галереи возникла проблема, пожалуйста, попробуйте ещё раз",
   "pick_photo_error": "При установке фото с камеры возникла проблема, пожалуйста, попробуйте ещё раз",
   "email": "Email",
-  "task": "Задача:",
+  "task": "Задача",
   "in_work_status": "В работе",
   "done_status": "Выполнено",
   "rejected_status": "Отклонено",
   "mark_as_read": "Отметить прочитанным",
   "mark_as_unread":"Отметить непрочитанным",
-  "projects_in_archive":"Проектов в архиве:",
+  "projects_in_archive":"Проектов в архиве",
   "exit_from_archive":"Выйти из архива",
   "an_archive":"Архив"
 }

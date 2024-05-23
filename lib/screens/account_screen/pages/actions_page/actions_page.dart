@@ -121,7 +121,7 @@ class ActionsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AppLocalizations localizations =
+    final AppLocalizations localization =
         LocalizationHelper.getLocalizations(context);
     return NotificationListener<ScrollEndNotification>(
       onNotification: (notification) {
@@ -157,8 +157,8 @@ class ActionsList extends StatelessWidget {
                             Text(
                                 DateTimeConverter.formatDateEEEEdMMMM(
                                     date: action.updateDate,
-                                    localizations: localizations,
-                                    locale: localizations.localeName),
+                                    localization: localization,
+                                    locale: localization.localeName),
                                 style: textTheme.bodyMedium!.copyWith(
                                     color: ColorConstants.grey04,
                                     fontWeight: FontWeight.w400)),

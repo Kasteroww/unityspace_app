@@ -10,7 +10,7 @@ class MainFormLogoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = LocalizationHelper.getLocalizations(context);
+    final localization = LocalizationHelper.getLocalizations(context);
     return Row(
       children: [
         const Spacer(),
@@ -21,7 +21,7 @@ class MainFormLogoWidget extends StatelessWidget {
         ),
         const SizedBox(width: 10),
         Text(
-          localizations.spaces,
+          localization.spaces,
           style: TextStyle(
             fontSize: 24,
             color: Colors.white.withOpacity(0.9),

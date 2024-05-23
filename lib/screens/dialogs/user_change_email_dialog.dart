@@ -131,11 +131,11 @@ class ChangeEmailDialog extends WStoreWidget<ChangeEmailDialogStore> {
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
                   if (value.isEmpty) {
-                    return 'Введите email';
+                    return localization.email_cannot_be_empty;
                   } else if (!isValidEmail(value)) {
-                    return 'Некорректный формат';
+                    return localization.incorrect_email_format;
                   } else if (value == store.currentUserEmail) {
-                    return 'Почты совпадают';
+                    return localization.emails_are_the_same;
                   }
                   return '';
                 },
@@ -151,7 +151,16 @@ class ChangeEmailDialog extends WStoreWidget<ChangeEmailDialogStore> {
               ),
               if (error)
                 Text(
-                  store.emailError.localization,
+                  switch (store.emailError) {
+                    EmailErrors.incorrectEmailAddress =>
+                      localization.email_is_incorrect,
+                    EmailErrors.emailAlreadyExists =>
+                      localization.this_email_already_exists,
+                    EmailErrors.cannotSendEmail =>
+                      localization.error_while_sending_try_later,
+                    EmailErrors.unknown => localization.unknown_error_try_later,
+                    EmailErrors.none => '',
+                  },
                   style: const TextStyle(
                     color: Color(0xFFD83400),
                   ),
@@ -307,11 +316,11 @@ class ConfirmEmailDialog extends WStoreWidget<ConfirmEmailDialogStore> {
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value.isEmpty) {
-                    return 'Введите код';
+                    return localization.enter_code;
                   } else if (value.length != 4) {
-                    return 'Длина кода должна быть 4';
+                    return localization.code_length_must_be_4;
                   } else if (int.tryParse(value) == null) {
-                    return 'Разрешены только числа';
+                    return localization.only_numbers_allowed;
                   }
                   return '';
                 },
@@ -328,7 +337,13 @@ class ConfirmEmailDialog extends WStoreWidget<ConfirmEmailDialogStore> {
               ),
               if (error)
                 Text(
-                  store.codeError.localization,
+                  switch (store.codeError) {
+                    CodeConfimationErrors.incorrectCode =>
+                      localization.incorrect_code,
+                    CodeConfimationErrors.unknown =>
+                      localization.unknown_error_try_later,
+                    CodeConfimationErrors.none => '',
+                  },
                   style: const TextStyle(
                     color: Color(0xFFD83400),
                   ),

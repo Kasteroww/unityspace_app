@@ -31,7 +31,7 @@ class UserChangeGitHubLinkDialogStore extends WStore {
     });
   }
 
-  void changeGitHubLink(AppLocalizations localizations) {
+  void changeGitHubLink(AppLocalizations localization) {
     if (statusChangeGitHubLink == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -46,7 +46,7 @@ class UserChangeGitHubLinkDialogStore extends WStore {
       }
       if (!isLinkValid(formattedLink)) {
         setStore(() {
-          changeGitHubLinkError = localizations.invalid_link_error;
+          changeGitHubLinkError = localization.invalid_link_error;
           statusChangeGitHubLink = WStoreStatus.error;
         });
         return;
@@ -69,7 +69,7 @@ class UserChangeGitHubLinkDialogStore extends WStore {
         });
       },
       onError: (error, stack) {
-        String errorText = localizations.change_link_error;
+        String errorText = localization.change_link_error;
         logger.d(
             'UserChangeGitHubLinkDialogStore.changeGitHubLink error: $error stack: $stack');
         setStore(() {

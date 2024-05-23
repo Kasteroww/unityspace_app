@@ -31,7 +31,7 @@ class UserChangeTgLinkDialogStore extends WStore {
     });
   }
 
-  void changeTgLink(AppLocalizations localizations) {
+  void changeTgLink(AppLocalizations localization) {
     if (statusChangeLink == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -46,7 +46,7 @@ class UserChangeTgLinkDialogStore extends WStore {
       }
       if (!isLinkValid(formattedLink)) {
         setStore(() {
-          changeLinkError = localizations.invalid_link_error;
+          changeLinkError = localization.invalid_link_error;
           statusChangeLink = WStoreStatus.error;
         });
         return;
@@ -70,7 +70,7 @@ class UserChangeTgLinkDialogStore extends WStore {
         });
       },
       onError: (error, stack) {
-        String errorText = localizations.change_link_error;
+        String errorText = localization.change_link_error;
         logger.d(
             'UserChangeTgLinkDialogStore.changeTgLink error: $error stack: $stack');
         setStore(() {

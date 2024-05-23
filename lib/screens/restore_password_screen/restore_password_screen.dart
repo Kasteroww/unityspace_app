@@ -24,7 +24,7 @@ class RestorePasswordScreenStore extends WStore {
     });
   }
 
-  void restore(AppLocalizations localizations) {
+  void restore(AppLocalizations localization) {
     if (status == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -40,9 +40,9 @@ class RestorePasswordScreenStore extends WStore {
         });
       },
       onError: (error, __) {
-        String errorText = localizations.restore_password_error;
+        String errorText = localization.restore_password_error;
         if (error is AuthIncorrectCredentialsException) {
-          errorText = localizations.nonexistent_account;
+          errorText = localization.nonexistent_account;
         }
         setStore(() {
           status = WStoreStatus.error;

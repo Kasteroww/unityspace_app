@@ -22,7 +22,7 @@ class AddSpaceDialogStore extends WStore {
   String addError = '';
   int newSpaceId = 0;
 
-  void addSpace(AppLocalizations localizations) {
+  void addSpace(AppLocalizations localization) {
     if (status == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -35,7 +35,7 @@ class AddSpaceDialogStore extends WStore {
     if (title.isEmpty) {
       setStore(() {
         status = WStoreStatus.error;
-        addError = localizations.empty_space_error;
+        addError = localization.empty_space_error;
       });
       return;
     }
@@ -50,9 +50,9 @@ class AddSpaceDialogStore extends WStore {
         });
       },
       onError: (error, __) {
-        String errorText = localizations.create_space_error;
+        String errorText = localization.create_space_error;
         if (error is SpacesCannotAddPaidTariffException) {
-          errorText = localizations.paid_tariff_error;
+          errorText = localization.paid_tariff_error;
         }
         setStore(() {
           status = WStoreStatus.error;

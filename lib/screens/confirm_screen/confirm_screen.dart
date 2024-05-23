@@ -15,7 +15,7 @@ class ConfirmScreenStore extends WStore {
   String confirmError = '';
   String code = '';
 
-  void confirm(AppLocalizations localizations) {
+  void confirm(AppLocalizations localization) {
     if (status == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -31,9 +31,9 @@ class ConfirmScreenStore extends WStore {
         });
       },
       onError: (error, __) {
-        String errorText = localizations.confirm_email_error;
+        String errorText = localization.confirm_email_error;
         if (error is AuthIncorrectConfirmationCodeException) {
-          errorText = localizations.incorrect_code_error;
+          errorText = localization.incorrect_code_error;
         }
         setStore(() {
           status = WStoreStatus.error;

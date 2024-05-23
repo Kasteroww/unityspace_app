@@ -31,7 +31,7 @@ class UserChangeNameDialogStore extends WStore {
     });
   }
 
-  void changeName(AppLocalizations localizations) {
+  void changeName(AppLocalizations localization) {
     if (statusChangeName == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -41,7 +41,7 @@ class UserChangeNameDialogStore extends WStore {
     //
     if (name.isEmpty) {
       setStore(() {
-        changeNameError = localizations.empty_name_error;
+        changeNameError = localization.empty_name_error;
         statusChangeName = WStoreStatus.error;
       });
       return;
@@ -67,7 +67,7 @@ class UserChangeNameDialogStore extends WStore {
             'UserChangeNameDialogStore.changeName error: $error stack: $stack');
         setStore(() {
           statusChangeName = WStoreStatus.error;
-          changeNameError = localizations.change_name_error;
+          changeNameError = localization.change_name_error;
         });
       },
     );

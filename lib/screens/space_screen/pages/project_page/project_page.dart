@@ -198,7 +198,7 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
                       },
                       child: Text(store.isArchivedPage
                           ? localization.exit_from_archive
-                          : '${localization.projects_in_archive} ${store.getArchiveProjectsCount(store.projects, listColumns)}'),
+                          : '${localization.projects_in_archive}: ${store.getArchiveProjectsCount(store.projects, listColumns)}'),
                     ),
                   ),
                 ),

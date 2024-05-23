@@ -51,87 +51,87 @@ class ActionCard extends WStoreWidget<ActionCardStore> {
 
   String taskChangesTypesToString(
       {required ({TaskHistory history, String? taskName}) data,
-      required AppLocalizations localizations}) {
+      required AppLocalizations localization}) {
     final history = data.history;
     final type = history.type;
     switch (type) {
       case TaskChangesTypes.createTask:
-        return localizations.createTask;
+        return localization.create_task;
       case TaskChangesTypes.changeDescription:
-        return localizations.changeDescription;
+        return localization.change_description;
       case TaskChangesTypes.changeName:
-        return localizations
-            .changeName(data.taskName ?? history.taskName ?? '');
+        return localization
+            .change_task_name(data.taskName ?? history.taskName ?? '');
       case TaskChangesTypes.changeBlockReason:
         if (history.state != null) {
-          return localizations.changeBlockReasonSet(history.state ?? '');
+          return localization.change_block_reason_set(history.state ?? '');
         }
-        return localizations.changeBlockReasonRemoved;
+        return localization.change_block_reason_removed;
       case TaskChangesTypes.overdueTaskNoResponsible:
-        return localizations.overdueTaskNoResponsible;
+        return localization.overdue_task_no_responsible;
       case TaskChangesTypes.overdueTaskWithResponsible:
-        return localizations.overdueTaskWithResponsible;
+        return localization.overdue_task_with_responsible;
       case TaskChangesTypes.changeDate:
         if (history.state != null) {
-          return localizations.changeDateSet(formatHistoryUpdateDate(
-              dateString: history.state!, locale: localizations.localeName));
+          return localization.change_data_set(formatHistoryUpdateDate(
+              dateString: history.state!, locale: localization.localeName));
         }
-        return localizations.changeDateRemoved;
+        return localization.change_data_removed;
       case TaskChangesTypes.changeColor:
         if (history.state != null && history.state != '') {
-          return localizations.changeColorSet;
+          return localization.change_color_set;
         }
-        return localizations.changeColorRemoved;
+        return localization.change_color_removed;
       case TaskChangesTypes.changeResponsible:
-        return localizations.changeResponsible;
+        return localization.change_responsible;
       case TaskChangesTypes.changeStatus:
         String statusString = '';
         switch (history.state) {
           case '0':
-            statusString = localizations.in_work_status;
+            statusString = localization.in_work_status;
           case '1':
-            statusString = localizations.done_status;
+            statusString = localization.done_status;
           case '2':
-            statusString = localizations.rejected_status;
+            statusString = localization.rejected_status;
         }
 
-        return localizations.changeStatus(statusString);
+        return localization.change_status(statusString);
       case TaskChangesTypes.changeStage:
         if (history.state == 'archive_tasks') {
-          return localizations.changeStageArchived(history.projectName ?? '');
+          return localization.change_stage_archived(history.projectName ?? '');
         }
-        return localizations.changeStageColumn(
+        return localization.change_stage_column(
             history.state ?? '', history.projectName ?? '');
       case TaskChangesTypes.addTag:
-        return localizations.addTag(history.state ?? '');
+        return localization.add_tag(history.state ?? '');
       case TaskChangesTypes.deleteTag:
-        return localizations.deleteTag(history.state ?? '');
+        return localization.delete_tag(history.state ?? '');
       case TaskChangesTypes.sendMessage:
-        return localizations.sendMessage(history.state ?? '');
+        return localization.send_message(history.state ?? '');
       case TaskChangesTypes.deleteTask:
-        return localizations.deleteTask;
+        return localization.delete_task;
       case TaskChangesTypes.addCover:
-        return localizations.addCover;
+        return localization.add_cover;
       case TaskChangesTypes.deleteCover:
-        return localizations.deleteCover;
+        return localization.delete_cover;
       case TaskChangesTypes.changeImportance:
-        return localizations.changeImportance(history.state ?? '');
+        return localization.change_importance(history.state ?? '');
       case TaskChangesTypes.commit:
-        return localizations.commit(history.commitName ?? '');
+        return localization.commit(history.commitName ?? '');
       case TaskChangesTypes.addStage:
-        return localizations.addStage(
+        return localization.add_stage(
             history.projectName ?? '', history.state ?? '');
       case TaskChangesTypes.deleteStage:
-        return localizations.deleteStage(history.projectName ?? '');
+        return localization.delete_stage(history.projectName ?? '');
       case TaskChangesTypes.removeMember:
-        return localizations.removeMember;
+        return localization.remove_member;
       case TaskChangesTypes.addResponsible:
-        return localizations.addResponsible;
+        return localization.add_responsible;
       case TaskChangesTypes.removeResponsible:
-        return localizations.removeResponsible;
+        return localization.remove_responsible;
       case TaskChangesTypes.defaultValue:
       default:
-        return localizations.unhandledType(history.state ?? '');
+        return localization.unhandled_type(history.state ?? '');
     }
   }
 
@@ -140,7 +140,7 @@ class ActionCard extends WStoreWidget<ActionCardStore> {
 
   @override
   Widget build(BuildContext context, ActionCardStore store) {
-    final AppLocalizations localizations =
+    final AppLocalizations localization =
         LocalizationHelper.getLocalizations(context);
     return Container(
       decoration: BoxDecoration(
@@ -160,7 +160,7 @@ class ActionCard extends WStoreWidget<ActionCardStore> {
               children: [
                 Flexible(
                   child: Text(
-                    '${localizations.task} ${getTaskNameString(data)}',
+                    '${localization.task}: ${getTaskNameString(data)}',
                     overflow: TextOverflow.ellipsis,
                     style: textTheme.labelMedium!.copyWith(
                       color: ColorConstants.grey04,
@@ -181,7 +181,7 @@ class ActionCard extends WStoreWidget<ActionCardStore> {
                 final type = data.history.type;
                 final state = data.history.state;
                 final text = taskChangesTypesToString(
-                    data: data, localizations: localizations);
+                    data: data, localization: localization);
                 final taskNumber = data.history.taskId.toString();
                 if (type == TaskChangesTypes.changeColor) {
                   if (state != null && state != '') {
@@ -239,9 +239,9 @@ class ActionCard extends WStoreWidget<ActionCardStore> {
                       ? context
                           .wstore<ActionCardStore>()
                           .getUserNameById(int.parse(state))
-                      : '???';
+                      : '';
                   return ActionText(
-                    '$text $name',
+                    '$text - $name',
                   );
                 }
                 return ActionText(
@@ -303,13 +303,13 @@ class _TapToCopyTextState extends State<TapToCopyText> {
 
   @override
   Widget build(BuildContext context) {
-    final AppLocalizations localizations =
+    final AppLocalizations localization =
         LocalizationHelper.getLocalizations(context);
     return GestureDetector(
       onTap: () {
         Clipboard.setData(ClipboardData(text: widget.text));
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(localizations.taskNumberCopied)));
+            SnackBar(content: Text(localization.task_number_copied)));
       },
       child: MouseRegion(
         onHover: (_) => setIsHovered(true),

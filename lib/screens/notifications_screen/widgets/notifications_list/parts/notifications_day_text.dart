@@ -19,7 +19,7 @@ class NotificationsDayText extends StatelessWidget {
       DateTimeConverter.formatDateEEEEdMMMM(
           locale: localization.localeName,
           date: date,
-          localizations: localization),
+          localization: localization),
       style: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w400,

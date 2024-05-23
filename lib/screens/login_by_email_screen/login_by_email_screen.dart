@@ -24,7 +24,7 @@ class LoginByEmailScreenStore extends WStore {
     });
   }
 
-  void login(AppLocalizations localizations) {
+  void login(AppLocalizations localization) {
     if (status == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -40,9 +40,9 @@ class LoginByEmailScreenStore extends WStore {
         });
       },
       onError: (error, __) {
-        String errorText = localizations.login_error;
+        String errorText = localization.login_error;
         if (error is AuthIncorrectCredentialsException) {
-          errorText = localizations.invalid_email_or_password;
+          errorText = localization.invalid_email_or_password;
         }
         setStore(() {
           status = WStoreStatus.error;

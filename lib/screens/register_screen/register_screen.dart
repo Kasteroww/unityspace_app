@@ -25,7 +25,7 @@ class RegisterScreenStore extends WStore {
     });
   }
 
-  void register(AppLocalizations localizations) {
+  void register(AppLocalizations localization) {
     if (status == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -41,15 +41,15 @@ class RegisterScreenStore extends WStore {
         });
       },
       onError: (error, __) {
-        String errorText = localizations.create_account_error;
+        String errorText = localization.create_account_error;
         if (error is AuthUserAlreadyExistsException) {
-          errorText = localizations.exist_email_error;
+          errorText = localization.exist_email_error;
         }
         if (error is AuthIncorrectEmailException) {
-          errorText = localizations.incorrect_email_error;
+          errorText = localization.incorrect_email_error;
         }
         if (error is AuthTooManyMessagesException) {
-          errorText = localizations.overloaded_service_error;
+          errorText = localization.overloaded_service_error;
         }
         setStore(() {
           status = WStoreStatus.error;
