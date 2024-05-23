@@ -64,6 +64,7 @@ class NotificationsList extends StatelessWidget {
                           },
                           onTap: () {
                             showModalBottomSheet(
+                              backgroundColor: Colors.white,
                               context: context,
                               builder: (BuildContext context) {
                                 return NotificationBottomSheet(
