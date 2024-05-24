@@ -9,7 +9,6 @@ import 'package:unityspace/utils/errors.dart';
 import 'package:unityspace/screens/widgets/common/paddings.dart';
 import 'package:unityspace/store/tasks_store.dart';
 import 'package:unityspace/utils/helpers.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:unityspace/src/theme/theme.dart';
@@ -30,8 +29,14 @@ class ActionsPageStore extends WStore {
         keyName: 'history',
       );
 
+  bool get needToLoadNextPage => computed<bool>(
+        watch: () => [currentPage, maxPagesCount],
+        getValue: () => currentPage < maxPagesCount,
+        keyName: 'needToLoadNextPage',
+      );
+
   void nextPage() {
-    if (currentPage < maxPagesCount) {
+    if (needToLoadNextPage) {
       setStore(() {
         currentPage += 1;
       });
@@ -113,78 +118,105 @@ class ActionsPage extends WStoreWidget<ActionsPageStore> {
   }
 }
 
-class ActionsList extends StatelessWidget {
+class ActionsList extends StatefulWidget {
   const ActionsList({
     super.key,
   });
 
   @override
+  State<ActionsList> createState() => _ActionsListState();
+}
+
+class _ActionsListState extends State<ActionsList> {
+  late ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      _loadMoreItems();
+    }
+  }
+
+  Future<void> _loadMoreItems() async {
+    if (context.wstore<ActionsPageStore>().needToLoadNextPage) {
+      debugPrint('Load more items');
+      context.wstore<ActionsPageStore>().nextPage();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final AppLocalizations localization =
-        LocalizationHelper.getLocalizations(context);
-    return NotificationListener<ScrollEndNotification>(
-      onNotification: (notification) {
-        if (notification.metrics.atEdge) {
-          // if have scrolled to the bottom
-          if (notification.metrics.pixels != 0) {
-            context.wstore<ActionsPageStore>().nextPage();
-          }
-        }
-        return true;
-      },
-      child: WStoreValueBuilder<ActionsPageStore, List<TaskHistory>>(
-        watch: (store) => store.history ?? [],
-        store: context.wstore<ActionsPageStore>(),
-        builder: (context, history) {
-          return ListView.builder(
-              itemCount: history.length,
-              itemBuilder: (context, index) {
-                final action = history[index];
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    LayoutBuilder(builder: (context, _) {
-                      if (index == 0 ||
-                          (dateFromDateTime(action.updateDate) !=
-                              dateFromDateTime(
-                                  history[index - 1].updateDate))) {
-                        return Column(
-                          children: [
-                            const PaddingTop(12),
-                            Text(
-                                DateTimeConverter.formatDateEEEEdMMMM(
-                                    date: action.updateDate,
-                                    localization: localization,
-                                    locale: localization.localeName),
-                                style: textTheme.bodyMedium!.copyWith(
-                                    color: ColorConstants.grey04,
-                                    fontWeight: FontWeight.w400)),
-                            const PaddingTop(12),
-                          ],
-                        );
-                      } else {
-                        return const SizedBox.shrink();
-                      }
-                    }),
-                    PaddingBottom(
-                      12,
-                      child: ActionCard(
-                        isSelected: false,
-                        data: (
-                          history: action,
-                          taskName: context
-                              .wstore<ActionsPageStore>()
-                              .getTaskNameById(action.id)
-                        ),
+    final localization = LocalizationHelper.getLocalizations(context);
+    return WStoreBuilder<ActionsPageStore>(
+      watch: (store) => [store.history, store.needToLoadNextPage],
+      store: context.wstore<ActionsPageStore>(),
+      builder: (context, store) {
+        List<TaskHistory> history = store.history ?? [];
+        return ListView.builder(
+            controller: _scrollController,
+            itemCount:
+                store.needToLoadNextPage ? history.length + 1 : history.length,
+            itemBuilder: (context, index) {
+              if (index == history.length) {
+                return const ActionSkeletonCard();
+              }
+              final action = history[index];
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  LayoutBuilder(builder: (context, _) {
+                    if (index == 0 ||
+                        (dateFromDateTime(action.updateDate) !=
+                            dateFromDateTime(history[index - 1].updateDate))) {
+                      return Column(
+                        children: [
+                          const PaddingTop(12),
+                          Text(
+                              DateTimeConverter.formatDateEEEEdMMMM(
+                                  date: action.updateDate,
+                                  localization: localization,
+                                  locale: localization.localeName),
+                              style: textTheme.bodyMedium!.copyWith(
+                                  color: ColorConstants.grey04,
+                                  fontWeight: FontWeight.w400)),
+                          const PaddingTop(12),
+                        ],
+                      );
+                    } else {
+                      return const SizedBox.shrink();
+                    }
+                  }),
+                  PaddingBottom(
+                    12,
+                    child: ActionCard(
+                      isSelected: false,
+                      data: (
+                        history: action,
+                        taskName: context
+                            .wstore<ActionsPageStore>()
+                            .getTaskNameById(action.id)
                       ),
                     ),
-                  ],
-                );
-              });
-        },
-      ),
+                  ),
+                ],
+              );
+            });
+      },
     );
   }
 }

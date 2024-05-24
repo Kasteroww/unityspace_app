@@ -40,13 +40,21 @@ class ArchivedNotificationPageStore extends WStore {
         keyName: 'organization_members',
       );
 
+  bool get needToLoadNextPage => computed<bool>(
+        watch: () => [currentPage, maxPageCount],
+        getValue: () => currentPage < maxPageCount,
+        keyName: 'needToLoadNextPage',
+      );
+
   /// Переход на следующую страницу уведомлений
   Future<void> nextPage() async {
-    maxPageCount =
-        await notificationsStore.getNotificationsData(page: currentPage);
-    setStore(() {
-      currentPage += 1;
-    });
+    if (needToLoadNextPage) {
+      setStore(() {
+        currentPage += 1;
+      });
+      maxPageCount = await notificationsStore.getNotificationsData(
+          page: currentPage, isArchived: isArchived);
+    }
   }
 
   ///Изменяет статус архивирования уведомлений из списка
@@ -142,45 +150,31 @@ class ArchivedNotificationsPage
         );
       },
       builder: (context, _) {
-        return Column(
-          children: [
-            Expanded(
-                child: NotificationListener<ScrollEndNotification>(
-              onNotification: (notification) {
-                if (notification.metrics.atEdge) {
-                  if (notification.metrics.pixels != 0) {
-                    debugPrint('scrolled down');
-                    context.wstore<ArchivedNotificationPageStore>().nextPage();
-                  }
-                }
-                return true;
-              },
-              child: WStoreBuilder<ArchivedNotificationPageStore>(
-                  watch: (store) => [store.notifications],
-                  store: context.wstore<ArchivedNotificationPageStore>(),
-                  builder: (context, store) {
-                    final List<NotificationModel> notifications =
-                        store.notifications;
-                    return NotificationsList(
-                      items: notifications,
-                      onDismissEvent: (List<NotificationModel> list) {
-                        context
-                            .wstore<ArchivedNotificationPageStore>()
-                            .deleteNotifications(
-                              list,
-                            );
-                      },
-                      onLongPressButtonTap: (List<NotificationModel> list) {
-                        context
-                            .wstore<ArchivedNotificationPageStore>()
-                            .changeArchiveStatusNotifications(
-                                list, list.any((element) => element.archived));
-                      },
-                    );
-                  }),
-            )),
-          ],
-        );
+        return WStoreBuilder<ArchivedNotificationPageStore>(
+            watch: (store) => [store.notifications],
+            store: context.wstore<ArchivedNotificationPageStore>(),
+            builder: (context, store) {
+              final List<NotificationModel> notifications = store.notifications;
+              return NotificationsList(
+                needToLoadNextPage: store.needToLoadNextPage,
+                items: notifications,
+                onDismissEvent: (List<NotificationModel> list) {
+                  context
+                      .wstore<ArchivedNotificationPageStore>()
+                      .deleteNotifications(
+                        list,
+                      );
+                },
+                onLongPressButtonTap: (List<NotificationModel> list) {
+                  context
+                      .wstore<ArchivedNotificationPageStore>()
+                      .changeArchiveStatusNotifications(
+                          list, list.any((element) => element.archived));
+                },
+                onScrolledDown:
+                    context.wstore<ArchivedNotificationPageStore>().nextPage,
+              );
+            });
       },
     );
   }

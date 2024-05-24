@@ -29,18 +29,12 @@ class Locations extends StatelessWidget {
         fontWeight: FontWeight.w400,
         color: Color.fromRGBO(102, 102, 102, 1));
     final location = locationGroups.first;
-    return Row(
-      children: [
-        if (location.spaceName.isNotEmpty)
-          Text('${location.spaceName} / ', style: textStyle),
-        if (location.projectName.isNotEmpty)
-          Text('${location.projectName} / ', style: textStyle),
-        Text(
-          groupName,
-          style: textStyle,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ],
+    return Text(
+      '${location.spaceName.isNotEmpty ? '${location.spaceName} / ' : ''}'
+      '${location.projectName.isNotEmpty ? '${location.projectName} / ' : ''}'
+      '$groupName',
+      style: textStyle,
+      overflow: TextOverflow.ellipsis,
     );
   }
 }

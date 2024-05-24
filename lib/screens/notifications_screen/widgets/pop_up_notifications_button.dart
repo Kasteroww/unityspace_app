@@ -26,12 +26,14 @@ class PopUpNotificationsButton extends StatelessWidget {
       itemBuilder: (BuildContext context) {
         return <PopupMenuEntry<String>>[
           if (store.selectedTab == NotificationsScreenTab.current) ...[
+            //Прочитать все
             PopupMenuItem<String>(
               onTap: store.readAllNotifications,
               child: PopupMenuItemChild(
                   iconPath: 'assets/icons/notifications/visible.svg',
                   text: localization.read_all),
             ),
+            //Архивировать все
             PopupMenuItem<String>(
               onTap: store.archiveAllNotifications,
               child: PopupMenuItemChild(
@@ -39,6 +41,7 @@ class PopUpNotificationsButton extends StatelessWidget {
                   text: localization.archive_all),
             ),
           ] else if (store.selectedTab == NotificationsScreenTab.archived) ...[
+            //Удалить все
             PopupMenuItem<String>(
               onTap: store.deleteAllNotifications,
               child: PopupMenuItemChild(

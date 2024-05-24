@@ -74,7 +74,12 @@ class NotificationsScreen extends WStoreWidget<NotificationsScreenStore> {
               children: [
                 ...store.currentUserTabs.map(
                   (tab) => TabButton(
-                    title: tab.title,
+                    title: switch (tab) {
+                      NotificationsScreenTab.archived =>
+                        localization.an_archive,
+                      NotificationsScreenTab.current =>
+                        localization.current_many
+                    },
                     onPressed: () {
                       store.selectTab(tab);
                     },
@@ -103,17 +108,4 @@ class NotificationsScreen extends WStoreWidget<NotificationsScreenStore> {
   }
 }
 
-enum NotificationsScreenTab {
-  current(
-    title: 'Текущие',
-  ),
-  archived(
-    title: 'Архив',
-  );
-
-  const NotificationsScreenTab({
-    required this.title,
-  });
-
-  final String title;
-}
+enum NotificationsScreenTab { current, archived }

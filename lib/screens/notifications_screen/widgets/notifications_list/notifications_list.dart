@@ -6,30 +6,43 @@ import 'package:unityspace/screens/notifications_screen/widgets/notification_bot
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/parts/dismissible_background.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/parts/notifications_day_text.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/parts/notifications_info_card.dart';
+import 'package:unityspace/screens/notifications_screen/widgets/skeleton_listview/notification_skeleton_card.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 /// Список дней уведомлений
 class NotificationsList extends StatelessWidget {
+  final bool needToLoadNextPage;
   final List<NotificationModel> items;
   final void Function(List<NotificationModel> list) onDismissEvent;
   final void Function(List<NotificationModel> list) onLongPressButtonTap;
+  final void Function() onScrolledDown;
   NotificationsList({
     super.key,
     required this.onDismissEvent,
     required this.items,
     required this.onLongPressButtonTap,
+    required this.needToLoadNextPage,
+    required this.onScrolledDown,
   });
 
   final notificationHelper = NotificationHelper(userStore: UserStore());
+
   @override
   Widget build(BuildContext context) {
     final localization = LocalizationHelper.getLocalizations(context);
     final dayLists = notificationHelper.groupNotificationsByDay(items);
     return ListView.builder(
-        itemCount: dayLists.length,
+        itemCount: needToLoadNextPage ? dayLists.length + 1 : dayLists.length,
         itemBuilder: (BuildContext context, int index) {
+          if (index == dayLists.length) {
+            _loadMoreItems();
+            return const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: NotificationSkeletonCard(),
+            );
+          }
           final dayList = dayLists[index];
           final List<NotificationsGroup> typeList =
               notificationHelper.groupNotificationsByObject(
@@ -95,6 +108,13 @@ class NotificationsList extends StatelessWidget {
             ),
           );
         });
+  }
+
+  Future<void> _loadMoreItems() async {
+    if (needToLoadNextPage) {
+      debugPrint('Load more items');
+      onScrolledDown();
+    }
   }
 
   void showCustomMenu(

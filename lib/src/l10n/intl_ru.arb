@@ -365,6 +365,7 @@
   "tasks": "Задачи",
   "reglaments":"Регламенты",
   "other":"Другое",
+  "current_many": "Текущие",
   "add_project":"Добавить проект",
   "project_name":"Название проекта",
   "create":"Создать",
