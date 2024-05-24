@@ -32,7 +32,7 @@ class ConfirmScreenStore extends WStore {
       },
       onError: (error, __) {
         String errorText = localization.confirm_email_error;
-        if (error is AuthIncorrectConfirmationCodeException) {
+        if (error is AuthIncorrectConfirmationCodeServiceException) {
           errorText = localization.incorrect_code_error;
         }
         setStore(() {

@@ -41,7 +41,7 @@ class LoginByEmailScreenStore extends WStore {
       },
       onError: (error, __) {
         String errorText = localization.login_error;
-        if (error is AuthIncorrectCredentialsException) {
+        if (error is AuthIncorrectCredentialsServiceException) {
           errorText = localization.invalid_email_or_password;
         }
         setStore(() {

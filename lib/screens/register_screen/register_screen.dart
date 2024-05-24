@@ -42,13 +42,13 @@ class RegisterScreenStore extends WStore {
       },
       onError: (error, __) {
         String errorText = localization.create_account_error;
-        if (error is AuthUserAlreadyExistsException) {
+        if (error is AuthUserAlreadyExistsServiceException) {
           errorText = localization.exist_email_error;
         }
-        if (error is AuthIncorrectEmailException) {
+        if (error is AuthIncorrectEmailServiceException) {
           errorText = localization.incorrect_email_error;
         }
-        if (error is AuthTooManyMessagesException) {
+        if (error is AuthTooManyMessagesServiceException) {
           errorText = localization.overloaded_service_error;
         }
         setStore(() {

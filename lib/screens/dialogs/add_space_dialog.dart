@@ -51,7 +51,7 @@ class AddSpaceDialogStore extends WStore {
       },
       onError: (error, __) {
         String errorText = localization.create_space_error;
-        if (error is SpacesCannotAddPaidTariffException) {
+        if (error is SpacesCannotAddPaidTariffServiceException) {
           errorText = localization.paid_tariff_error;
         }
         setStore(() {

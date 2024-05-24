@@ -17,7 +17,7 @@ Future<UserResponse> getUserData() async {
   } catch (e) {
     if (e is HttpPluginException) {
       if (e.statusCode == 401) {
-        throw UserUnauthorizedException();
+        throw UserUnauthorizedServiceException();
       }
       throw ServiceException(e.message);
     }
@@ -34,7 +34,7 @@ Future<OrganizationResponse> getOrganizationData() async {
   } catch (e) {
     if (e is HttpPluginException) {
       if (e.statusCode == 401) {
-        throw UserUnauthorizedException();
+        throw UserUnauthorizedServiceException();
       }
       throw ServiceException(e.message);
     }
@@ -84,9 +84,9 @@ Future<UserResponse> setUserName(final String userName) async {
   } catch (e) {
     if (e is HttpPluginException) {
       if (e.statusCode == 401) {
-        throw UserUnauthorizedException();
+        throw UserUnauthorizedServiceException();
       } else if (e.statusCode == 400 && e.message == 'name must be a string') {
-        throw UserNameIsNotAStringException();
+        throw UserNameIsNotAStringServiceException();
       }
       throw ServiceException(e.message);
     }
@@ -109,7 +109,7 @@ Future<OnlyTokensResponse> setUserPassword(
   } catch (e) {
     if (e is HttpPluginException) {
       if (e.message == 'Credentials incorrect') {
-        throw UserIncorrectOldPasswordException();
+        throw UserIncorrectOldPasswordServiceException();
       }
       throw ServiceException(e.message);
     }
@@ -210,11 +210,11 @@ Future<String?> requestEmailVerification({
   } catch (e) {
     if (e is HttpPluginException) {
       if (e.message == 'User is already exists') {
-        throw UserEmailAlreadyExistsException();
+        throw UserEmailAlreadyExistsServiceException();
       } else if (e.message == 'Cannot process its email') {
-        throw UserCannotProcessEmailException();
+        throw UserCannotProcessEmailServiceException();
       } else if (e.message == 'email must be an email') {
-        throw UserIncorrectEmailFormatException();
+        throw UserIncorrectEmailFormatServiceException();
       } else {
         throw ServiceException(e.message);
       }
@@ -239,7 +239,7 @@ Future confirmUserEmail(
   } catch (e) {
     if (e is HttpPluginException) {
       if (e.statusCode == 400 && e.message == 'Error while verifying email') {
-        throw UserIncorrectConfirmationCodeException();
+        throw UserIncorrectConfirmationCodeServiceException();
       }
       throw ServiceException(e.message);
     }

@@ -30,7 +30,7 @@ Future<SpaceResponse> createSpaces(final String title, final int order) async {
     if (e is HttpPluginException) {
       if (e.message ==
           'Cannot add more spaces, check paid tariff or remove spaces') {
-        throw SpacesCannotAddPaidTariffException();
+        throw SpacesCannotAddPaidTariffServiceException();
       }
       throw ServiceException(e.message);
     }

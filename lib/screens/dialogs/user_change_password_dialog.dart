@@ -95,7 +95,7 @@ class UserChangePasswordDialogStore extends WStore {
       },
       onError: (error, stack) {
         String errorText = localization.change_password_error;
-        if (error is UserIncorrectOldPasswordException) {
+        if (error is UserIncorrectOldPasswordServiceException) {
           errorText = localization.incorrect_old_password_error;
         } else {
           logger.d(

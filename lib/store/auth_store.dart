@@ -82,7 +82,7 @@ class AuthStore extends GStore {
       _refreshUserTokenCompleteEvent.complete(true);
       return true;
     } catch (e, __) {
-      if (e is AuthUnauthorizedException) {
+      if (e is AuthUnauthorizedServiceException) {
         // токен протух - удялем - разлогин
         await removeUserTokens();
       }

@@ -71,11 +71,11 @@ class ChangeEmailDialogStore extends WStore {
         newEmail = email;
       });
     } catch (e) {
-      if (e is UserEmailAlreadyExistsException) {
+      if (e is UserEmailAlreadyExistsServiceException) {
         _setErrorChangeUserEmail(EmailErrors.emailAlreadyExists);
-      } else if (e is UserCannotProcessEmailException) {
+      } else if (e is UserCannotProcessEmailServiceException) {
         _setErrorChangeUserEmail(EmailErrors.cannotSendEmail);
-      } else if (e is UserIncorrectEmailFormatException) {
+      } else if (e is UserIncorrectEmailFormatServiceException) {
         _setErrorChangeUserEmail(EmailErrors.incorrectEmailAddress);
       } else if (e is ServiceException) {
         _setErrorChangeUserEmail(EmailErrors.unknown);
@@ -237,7 +237,7 @@ class ConfirmEmailDialogStore extends WStore {
         isShowConfirm = true;
       });
     } catch (e) {
-      if (e is UserIncorrectConfirmationCodeException) {
+      if (e is UserIncorrectConfirmationCodeServiceException) {
         setStore(() {
           codeStatus = WStoreStatus.error;
           codeError = CodeConfimationErrors.incorrectCode;

@@ -19,13 +19,13 @@ Future<RegisterResponse> register({
   } catch (e) {
     if (e is HttpPluginException) {
       if (e.message == 'User is already exists') {
-        throw AuthUserAlreadyExistsException();
+        throw AuthUserAlreadyExistsServiceException();
       }
       if (e.message == 'incorrect or non-exist Email') {
-        throw AuthIncorrectEmailException();
+        throw AuthIncorrectEmailServiceException();
       }
       if (e.statusCode == 500 && e.message.contains('554')) {
-        throw AuthTooManyMessagesException();
+        throw AuthTooManyMessagesServiceException();
       }
       throw ServiceException(e.message);
     }
@@ -50,7 +50,7 @@ Future<OnlyTokensResponse> confirmEmail({
   } catch (e) {
     if (e is HttpPluginException) {
       if (e.message == 'Error while verifying email') {
-        throw AuthIncorrectConfirmationCodeException();
+        throw AuthIncorrectConfirmationCodeServiceException();
       }
       throw ServiceException(e.message);
     }
@@ -73,7 +73,7 @@ Future<OnlyTokensResponse> login({
   } catch (e) {
     if (e is HttpPluginException) {
       if (e.message == 'Credentials incorrect') {
-        throw AuthIncorrectCredentialsException();
+        throw AuthIncorrectCredentialsServiceException();
       }
       throw ServiceException(e.message);
     }
@@ -111,7 +111,7 @@ Future<OnlyTokensResponse> refreshAccessToken({
   } catch (e) {
     if (e is HttpPluginException) {
       if (e.statusCode == 401) {
-        throw AuthUnauthorizedException();
+        throw AuthUnauthorizedServiceException();
       }
       throw ServiceException(e.message);
     }
@@ -129,7 +129,7 @@ Future<void> restorePasswordByEmail({
   } catch (e) {
     if (e is HttpPluginException) {
       if (e.message == 'Credentials incorrect') {
-        throw AuthIncorrectCredentialsException();
+        throw AuthIncorrectCredentialsServiceException();
       }
       throw ServiceException(e.message);
     }

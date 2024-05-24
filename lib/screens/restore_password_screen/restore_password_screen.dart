@@ -41,7 +41,7 @@ class RestorePasswordScreenStore extends WStore {
       },
       onError: (error, __) {
         String errorText = localization.restore_password_error;
-        if (error is AuthIncorrectCredentialsException) {
+        if (error is AuthIncorrectCredentialsServiceException) {
           errorText = localization.nonexistent_account;
         }
         setStore(() {

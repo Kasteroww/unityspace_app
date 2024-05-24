@@ -3,58 +3,58 @@ class ServiceException implements Exception {
   ServiceException([this.message]);
 }
 
-class UserUnauthorizedException extends ServiceException {
-  UserUnauthorizedException([super.message]);
+class UserUnauthorizedServiceException extends ServiceException {
+  UserUnauthorizedServiceException([super.message]);
 }
 
-class UserNameIsNotAStringException extends ServiceException {
-  UserNameIsNotAStringException([super.message]);
+class UserNameIsNotAStringServiceException extends ServiceException {
+  UserNameIsNotAStringServiceException([super.message]);
 }
 
-class UserEmailAlreadyExistsException extends ServiceException {
-  UserEmailAlreadyExistsException([super.message]);
+class UserEmailAlreadyExistsServiceException extends ServiceException {
+  UserEmailAlreadyExistsServiceException([super.message]);
 }
 
-class UserCannotProcessEmailException extends ServiceException {
-  UserCannotProcessEmailException([super.message]);
+class UserCannotProcessEmailServiceException extends ServiceException {
+  UserCannotProcessEmailServiceException([super.message]);
 }
 
-class UserIncorrectEmailFormatException extends ServiceException {
-  UserIncorrectEmailFormatException([super.message]);
+class UserIncorrectEmailFormatServiceException extends ServiceException {
+  UserIncorrectEmailFormatServiceException([super.message]);
 }
 
-class UserIncorrectConfirmationCodeException extends ServiceException {
-  UserIncorrectConfirmationCodeException([super.message]);
+class UserIncorrectConfirmationCodeServiceException extends ServiceException {
+  UserIncorrectConfirmationCodeServiceException([super.message]);
 }
 
-class UserIncorrectOldPasswordException extends ServiceException {
-  UserIncorrectOldPasswordException([super.message]);
+class UserIncorrectOldPasswordServiceException extends ServiceException {
+  UserIncorrectOldPasswordServiceException([super.message]);
 }
 
-class AuthUserAlreadyExistsException extends ServiceException {
-  AuthUserAlreadyExistsException([super.message]);
+class AuthUserAlreadyExistsServiceException extends ServiceException {
+  AuthUserAlreadyExistsServiceException([super.message]);
 }
 
-class AuthIncorrectEmailException extends ServiceException {
-  AuthIncorrectEmailException([super.message]);
+class AuthIncorrectEmailServiceException extends ServiceException {
+  AuthIncorrectEmailServiceException([super.message]);
 }
 
-class AuthTooManyMessagesException extends ServiceException {
-  AuthTooManyMessagesException([super.message]);
+class AuthTooManyMessagesServiceException extends ServiceException {
+  AuthTooManyMessagesServiceException([super.message]);
 }
 
-class AuthIncorrectConfirmationCodeException extends ServiceException {
-  AuthIncorrectConfirmationCodeException([super.message]);
+class AuthIncorrectConfirmationCodeServiceException extends ServiceException {
+  AuthIncorrectConfirmationCodeServiceException([super.message]);
 }
 
-class AuthIncorrectCredentialsException extends ServiceException {
-  AuthIncorrectCredentialsException([super.message]);
+class AuthIncorrectCredentialsServiceException extends ServiceException {
+  AuthIncorrectCredentialsServiceException([super.message]);
 }
 
-class AuthUnauthorizedException extends ServiceException {
-  AuthUnauthorizedException([super.message]);
+class AuthUnauthorizedServiceException extends ServiceException {
+  AuthUnauthorizedServiceException([super.message]);
 }
 
-class SpacesCannotAddPaidTariffException extends ServiceException {
-  SpacesCannotAddPaidTariffException([super.message]);
+class SpacesCannotAddPaidTariffServiceException extends ServiceException {
+  SpacesCannotAddPaidTariffServiceException([super.message]);
 }
