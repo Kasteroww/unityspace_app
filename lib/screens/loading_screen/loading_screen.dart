@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:unityspace/store/project_store.dart';
+import 'package:unityspace/store/reglament_store.dart';
 import 'package:unityspace/utils/constants.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:unityspace/screens/widgets/color_button_widget.dart';
@@ -20,14 +21,13 @@ class LoadingScreenStore extends WStore {
       status = WStoreStatus.loading;
       error = '';
     });
-    //
+    // Методы, которые нужно ждать
     subscribe(
       subscriptionId: 1,
       future: Future.wait([
         UserStore().getUserData(),
         UserStore().getOrganizationData(),
         SpacesStore().getSpacesData(),
-        ProjectStore().getAllProjects(),
       ]),
       onData: (_) {
         setStore(() {
@@ -40,6 +40,18 @@ class LoadingScreenStore extends WStore {
           status = WStoreStatus.error;
           error = loadError;
         });
+      },
+    );
+    // Дополнительные данные, которые можно загрузить после
+    subscribe(
+      subscriptionId: 2,
+      future: Future.wait([
+        ProjectStore().getAllProjects(),
+        ReglamentsStore().getReglaments(),
+      ]),
+      onError: (e, stack) {
+        logger.d(
+            'LoadingScreenStore load additional Data error=$e\nstack=$stack');
       },
     );
   }

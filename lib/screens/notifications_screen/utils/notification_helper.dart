@@ -3,6 +3,7 @@ import 'package:collection/collection.dart';
 import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/store/project_store.dart';
+import 'package:unityspace/store/reglament_store.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/helpers.dart';
@@ -85,10 +86,9 @@ class NotificationHelper {
         if (groupsMap.containsKey(groupId)) {
           groupsMap[groupId]!.notifications.add(notification);
         } else {
+          final reglamentMap = createMapById(ReglamentsStore().reglaments);
           String reglamentName =
-              //TODO: сделать ReglamentStore
-              //reglamentsStore[notification.parentId]?.name ??
-              notification.text;
+              reglamentMap[notification.parentId]?.name ?? notification.text;
           NotificationsGroup newGroup = NotificationsGroup(
             groupId: groupId,
             locations: notification.locations,

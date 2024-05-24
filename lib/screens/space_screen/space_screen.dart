@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/screens/app_navigation_drawer.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/project_page.dart';
-import 'package:unityspace/screens/space_screen/pages/regulations_page/regulations_page.dart';
+import 'package:unityspace/screens/space_screen/pages/reglaments_page/reglaments_page.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/tasks_page.dart';
 import 'package:unityspace/screens/widgets/tabs_list/tab_button.dart';
 import 'package:unityspace/screens/widgets/tabs_list/tabs_list_row.dart';
@@ -10,8 +10,6 @@ import 'package:wstore/wstore.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 
 class SpaceScreenStore extends WStore {
-  // TODO: add data here...
-
   SpacesScreenTab selectedTab = SpacesScreenTab.projects;
 
   void selectTab(final SpacesScreenTab tab) {
@@ -77,7 +75,7 @@ class SpaceScreen extends WStoreWidget<SpaceScreenStore> {
                     SpacesScreenTab.projects =>
                       ProjectsPage(spaceId: spaceId, listColumns: listColumns),
                     SpacesScreenTab.tasks => const TasksPage(),
-                    SpacesScreenTab.regulations => const RegulationsPage(),
+                    SpacesScreenTab.reglaments => const ReglamentsPage(),
                   };
                 }),
           ),
@@ -94,7 +92,7 @@ enum SpacesScreenTab {
   tasks(
     title: 'Задачи',
   ),
-  regulations(
+  reglaments(
     title: 'Регламенты',
   );
 
