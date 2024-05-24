@@ -3,7 +3,7 @@
 ## Ручная сборка проекта:
 ### Android:
 1. Ввести команду для сборки: 
-```
+```bash
 flutter build apk --release  
 ```
 
@@ -11,26 +11,26 @@ flutter build apk --release
 
 1. Ввести команду для сборки: 
 
-```
+```bash
 flutter build macos
 ```
 
 2. Перейти в папку dmg_creator:
 
-```
+```bash
 cd installers/dmg_creator
 ```
 
 3. Ввести команду для генерации dmg файла:
 
-```
+```bash
 appdmg ./config.json ./unity_space.dmg
 ```
 
 ### Windows:
 
 1. Ввести команду для сборки:
-```
+```bash
 flutter build windows
 ```
 
@@ -42,3 +42,180 @@ flutter build windows
 ```
 installers/exe_creator/desktop_inno_script.iss
 ```
+
+
+## Правила написания кода
+
+### services 
+
+Каждая функция заворачивается в `try-catch`. Внутри `catch` проверяется, является ли ошибка `HttpPluginException`. Если нет - ошибка пробрасывается дальше. Если да, то выбрасывается `ServiceException` с `error.message`. 
+
+Некоторые конкретные `HttpPluginException` обрабатываются особо. Для каждой из таких создается отдельный класс, наследующийся от `ServiceException`. Название классу дается в формате `<ServiceName> + <Description> + ServiceException`
+
+`HttpPluginException` не должны обрабатываться нигде, кроме сервисов.
+
+#### Примеры
+<details>
+<summary> </summary>
+
+1. Обработка `HttpPluginException` 
+```dart
+Future<UserResponse> removeUserAvatar() async {
+    // блок логики завернут в try-catch
+  try {
+    final response = await HttpPlugin().patch('/user/removeAvatar');
+    final jsonData = json.decode(response.body);
+    final result = UserResponse.fromJson(jsonData);
+    return result;
+  } catch (e) {
+    // проверка, является ли исключение исключением `HttpPlugin`
+    if (e is HttpPluginException) {
+        // выбрасывается `ServiceException` с сообщением ошибки
+      throw ServiceException(e.message);
+    }
+    // если ошибка не имеет отношения к `HttpPlugin` - она пробрасывается дальше
+    rethrow;
+  }
+}
+```
+
+2. Обработка отдельных ошибок 
+```dart
+Future<OrganizationResponse> getOrganizationData() async {
+  try {
+    final response = await HttpPlugin().get('/user/organization');
+    final jsonData = json.decode(response.body);
+    final result = OrganizationResponse.fromJson(jsonData);
+    return result;
+  } catch (e) {
+    if (e is HttpPluginException) {
+        // в случае ошибки с кодом 401 `Unauthorized` выбрасывается исключение `UserUnauthorizedServiceException`
+      if (e.statusCode == 401) {
+        throw UserUnauthorizedServiceException();
+      }
+      // во всех остальных случаях как и раньше выбрасывается `ServiceException` в сообщением ошибки
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
+}
+```
+
+```dart
+Future<OnlyTokensResponse> setUserPassword(
+  final String oldPassword,
+  final String newPassword,
+) async {
+  try {
+    final response = await HttpPlugin().patch('/user/password', {
+      'oldPassword': oldPassword,
+      'password': newPassword,
+    });
+    final jsonData = json.decode(response.body);
+    final result = OnlyTokensResponse.fromJson(jsonData);
+    return result;
+  } catch (e) {
+    if (e is HttpPluginException) {
+        // если сообщение об ошибке содержит message "Credentials incorrect" выбрасывается `UserIncorrectOldPasswordServiceException`
+      if (e.message == 'Credentials incorrect') {
+        throw UserIncorrectOldPasswordServiceException();
+      }
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
+}
+
+```
+
+3. Структура названия 
+```dart
+// из services/auth_service.dart
+Future<RegisterResponse> register({
+  required final String email,
+  required final String password,
+}) async {
+  try {
+    final response = await HttpPlugin().post('/auth/register', {
+      'email': email,
+      'password': password,
+    });
+    final jsonData = json.decode(response.body);
+    final result = RegisterResponse.fromJson(jsonData);
+    return result;
+  } catch (e) {
+    if (e is HttpPluginException) {
+      if (e.message == 'User is already exists') {
+        // название сервиса + описание + ServiceException 
+        // Auth + UserAlreadyExists + ServiceException
+        throw AuthUserAlreadyExistsServiceException();
+      }
+      if (e.message == 'incorrect or non-exist Email') {
+        // Auth + IncorrectEmail + ServiceException
+        throw AuthIncorrectEmailServiceException();
+      }
+      if (e.statusCode == 500 && e.message.contains('554')) {
+        // Auth + TooManyMessages + ServiceException
+        throw AuthTooManyMessagesServiceException();
+      }
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
+}
+```
+
+4. Обработка ошибок запроса в сторах 
+```dart
+// из services/auth_service.dart
+Future<OnlyTokensResponse> refreshAccessToken({
+  required final String refreshToken,
+}) async {
+  try {
+    final response = await HttpPlugin().get('/auth/refresh', {
+      'refreshToken': refreshToken,
+    });
+    final jsonData = json.decode(response.body);
+    final result = OnlyTokensResponse.fromJson(jsonData);
+    return result;
+  } catch (e) {
+    //обработка 401 'Unauthorized' происходит в сервисе
+    if (e is HttpPluginException) {
+      if (e.statusCode == 401) {
+        throw AuthUnauthorizedServiceException();
+      }
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
+}
+
+
+// из store/auth_store.dart
+  Future<bool> refreshUserToken() async {
+    if (_refreshUserTokenCompleteEvent.isCompleted == false) {
+      return await _refreshUserTokenCompleteEvent.future;
+    }
+    _refreshUserTokenCompleteEvent = Completer<bool>();
+    final refreshToken = _currentTokens.refreshToken;
+    if (refreshToken.isEmpty) {
+      _refreshUserTokenCompleteEvent.complete(false);
+      return false;
+    }
+    try {
+      final tokens = await api.refreshAccessToken(refreshToken: refreshToken);
+      await setUserTokens(tokens.accessToken, tokens.refreshToken);
+      _refreshUserTokenCompleteEvent.complete(true);
+      return true;
+    } catch (e, __) {
+        // проверка на авторизацию ожидает AuthUnauthorizedServiceException
+      if (e is AuthUnauthorizedServiceException) {
+        // токен протух - удялем - разлогин
+        await removeUserTokens();
+      }
+      _refreshUserTokenCompleteEvent.complete(false);
+      return false;
+    }
+  }
+```
+</details>
