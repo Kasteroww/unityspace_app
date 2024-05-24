@@ -9,7 +9,7 @@ class ProjectResponse {
   final int creatorId;
   final int columnId;
   final String order;
-  final List<ProjectStagesResponse> stages;
+  final List<ProjectStageResponse> stages;
   final int taskCount;
   final String memo;
 
@@ -37,7 +37,7 @@ class ProjectResponse {
       columnId: map['columnId'] as int,
       order: map['order'] as String,
       stages: stagesList
-          .map((stages) => ProjectStagesResponse.fromJson(stages))
+          .map((stages) => ProjectStageResponse.fromJson(stages))
           .toList(),
       taskCount: map['taskCount'] as int,
       memo: map['memo'] as String,
@@ -45,21 +45,21 @@ class ProjectResponse {
   }
 }
 
-class ProjectStagesResponse {
+class ProjectStageResponse {
   final int id;
   final int projectId;
   final String name;
   final String order;
 
-  ProjectStagesResponse({
+  ProjectStageResponse({
     required this.id,
     required this.projectId,
     required this.name,
     required this.order,
   });
 
-  factory ProjectStagesResponse.fromJson(Map<String, dynamic> json) {
-    return ProjectStagesResponse(
+  factory ProjectStageResponse.fromJson(Map<String, dynamic> json) {
+    return ProjectStageResponse(
       id: json['id'] as int,
       projectId: json['projectId'] as int,
       name: json['name'] as String,
@@ -77,7 +77,7 @@ class Project implements BaseModel {
   final int creatorId;
   final int columnId;
   final String order;
-  final List<ProjectStages> stages;
+  final List<ProjectStage> stages;
   final int taskCount;
   final String memo;
 
@@ -103,32 +103,78 @@ class Project implements BaseModel {
       creatorId: data.creatorId,
       columnId: data.columnId,
       order: data.order,
-      stages: data.stages.map(ProjectStages.fromResponse).toList(),
+      stages: data.stages.map(ProjectStage.fromResponse).toList(),
       taskCount: data.taskCount,
       memo: data.memo,
     );
   }
 }
 
-class ProjectStages {
+class ProjectStage {
   final int id;
   final int projectId;
   final String name;
   final String order;
 
-  ProjectStages({
+  ProjectStage({
     required this.id,
     required this.projectId,
     required this.name,
     required this.order,
   });
 
-  factory ProjectStages.fromResponse(ProjectStagesResponse data) {
-    return ProjectStages(
+  factory ProjectStage.fromResponse(ProjectStageResponse data) {
+    return ProjectStage(
       id: data.id,
       projectId: data.projectId,
       name: data.name,
       order: data.order,
     );
+  }
+}
+
+class AddProject {
+  final String name;
+  final int spaceColumnId;
+  final String? color;
+  final List<AddProjectStage>? stages;
+  final int? responsibleId;
+  final int postponingTaskDayCount;
+
+  AddProject({
+    required this.name,
+    required this.spaceColumnId,
+    this.color,
+    this.stages,
+    this.responsibleId,
+    this.postponingTaskDayCount = 0,
+  });
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'name': name,
+      'spaceColumnId': spaceColumnId,
+      'color': color,
+      'stages': stages,
+      'responsibleId': responsibleId,
+      'postponingTaskDayCount': postponingTaskDayCount,
+    };
+  }
+}
+
+class AddProjectStage {
+  final String name;
+  final String order;
+
+  AddProjectStage({
+    required this.name,
+    required this.order,
+  });
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'name': name,
+      'order': order,
+    };
   }
 }

@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/models/spaces_models.dart';
+import 'package:unityspace/screens/dialogs/add_project_dialog.dart';
 import 'package:unityspace/screens/space_screen/widgets/pop_up_projects_button.dart';
 import 'package:unityspace/screens/widgets/columns_list/column_button.dart';
 import 'package:unityspace/screens/widgets/columns_list/columns_list_row.dart';
+import 'package:unityspace/screens/widgets/tabs_list/tab_button.dart';
 import 'package:unityspace/store/project_store.dart';
 import 'package:unityspace/utils/constants.dart';
 import 'package:unityspace/utils/errors.dart';
@@ -41,10 +43,6 @@ class ProjectsPageStore extends WStore {
 
   void archiveProject(List<int> projectIds, int archiveColumnId) {
     projectStore.archiveProject(projectIds, archiveColumnId);
-  }
-
-  void unarchiveProject(int projectId) {
-    projectStore.unarchiveProject(projectId);
   }
 
   void selectFirstColumn(List<SpaceColumn> listColumns) {
@@ -289,6 +287,29 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
                                         const Divider(),
                               ),
                             ),
+                            store.isArchivedPage
+                                ? Container()
+                                : Row(
+                                    children: [
+                                      Expanded(
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 16),
+                                          child: TabButton(
+                                            title:
+                                                '+ ${localization.add_project}',
+                                            selected: false,
+                                            onPressed: () {
+                                              showAddProjectDialog(
+                                                context,
+                                                store.selectedColumn.id,
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  )
                           ],
                         ),
                       ),

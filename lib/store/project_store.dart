@@ -40,9 +40,11 @@ class ProjectStore extends GStore {
     });
   }
 
-  Future<void> unarchiveProject(int projectId) async {
+  Future<void> addProject(AddProject project) async {
+    final projectsData = await api.addProject(project);
+    final projectsNew = projects..add(Project.fromResponse(projectsData));
     setStore(() {
-      projects = projects;
+      projects = [...projectsNew];
     });
   }
 

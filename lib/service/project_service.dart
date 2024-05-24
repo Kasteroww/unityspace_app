@@ -20,17 +20,46 @@ Future<List<ProjectResponse>> getProjects({required int spaceId}) async {
 }
 
 Future<List<ProjectResponse>> getAllProjects() async {
-  final response = await HttpPlugin().get('/projects/all-projects');
-  final jsonDataList = json.decode(response.body) as List<dynamic>;
-  final result =
-      jsonDataList.map((data) => ProjectResponse.fromJson(data)).toList();
-  return result;
+  try {
+    final response = await HttpPlugin().get('/projects/all-projects');
+    final jsonDataList = json.decode(response.body) as List<dynamic>;
+    final result =
+        jsonDataList.map((data) => ProjectResponse.fromJson(data)).toList();
+    return result;
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
 }
 
 Future<List<ProjectResponse>> archiveProject(
     {required List<int> projectIds, required int archiveColumnId}) async {
-  final response = await HttpPlugin().patch(
-      '/projects/changeColumn/$archiveColumnId', {"projectIds": projectIds});
-  final List jsonData = json.decode(response.body);
-  return jsonData.map((element) => ProjectResponse.fromJson(element)).toList();
+  try {
+    final response = await HttpPlugin().patch(
+        '/projects/changeColumn/$archiveColumnId', {"projectIds": projectIds});
+    final List jsonData = json.decode(response.body);
+    return jsonData
+        .map((element) => ProjectResponse.fromJson(element))
+        .toList();
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
+}
+
+Future<ProjectResponse> addProject(AddProject project) async {
+  try {
+    final response = await HttpPlugin().post('/projects', project.toJson());
+    final Map<String, dynamic> jsonData = json.decode(response.body);
+    return ProjectResponse.fromJson(jsonData);
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
 }
