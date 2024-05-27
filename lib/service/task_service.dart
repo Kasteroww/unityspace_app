@@ -18,3 +18,20 @@ Future<MyTaskHistoryResponse> getMyTasksHistory(int page) async {
     rethrow;
   }
 }
+
+/// получение задач по spaceId и статусам
+Future getSpaceTasks(
+    {required int spaceId, required List<int> statuses}) async {
+  try {
+    final response = await HttpPlugin()
+        .get('/spaces/$spaceId/tasks', {"statuses": statuses.join(', ')});
+    final List<dynamic> jsonDataList = json.decode(response.body);
+    // с сервера приходит список
+    return jsonDataList.map((data) => TaskResponse.fromJson(data)).toList();
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
+}

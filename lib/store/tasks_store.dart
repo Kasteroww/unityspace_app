@@ -77,6 +77,20 @@ class TasksStore extends GStore {
     });
   }
 
+  /// получение задач по spaceId и статусам
+  Future<List<Task>> getSpaceTasks(
+      {required int spaceId, required List<int> statuses}) async {
+    final List<TaskResponse> tasksResponse =
+        await api.getSpaceTasks(spaceId: spaceId, statuses: statuses);
+    final allTasks =
+        tasksResponse.map((res) => Task.fromResponse(res)).toList();
+    setStore(() {
+      // задачи в сторе перезаписываются полученными
+      tasks = allTasks;
+    });
+    return allTasks;
+  }
+
   @override
   void clear() {
     super.clear();

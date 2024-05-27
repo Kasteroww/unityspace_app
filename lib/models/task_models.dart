@@ -132,6 +132,16 @@ class Task implements BaseModel {
   }
 }
 
+enum TaskStatuses {
+  inWork(0),
+  completed(1),
+  rejected(2);
+
+  final int value;
+
+  const TaskStatuses(this.value);
+}
+
 enum TaskImportance {
   high(1),
   normal(0),

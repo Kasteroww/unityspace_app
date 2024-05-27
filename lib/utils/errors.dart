@@ -29,3 +29,5 @@ enum TextErrors { none, textIsEmpty }
 enum LinkErrors { none, linkIsEmpty, couldNotLaunch }
 
 enum ProjectErrors { none, loadingDataError }
+
+enum TasksErrors { none, loadingDataError }
