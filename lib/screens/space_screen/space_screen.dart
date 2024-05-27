@@ -80,10 +80,7 @@ class SpaceScreen extends WStoreWidget<SpaceScreenStore> {
                 watch: (store) => store.selectedTab,
                 builder: (context, selectedTab) {
                   return switch (selectedTab) {
-                    SpacesScreenTab.projects => ProjectsPage(
-                        spaceId: space.id,
-                        listColumns: space.columns,
-                      ),
+                    SpacesScreenTab.projects => ProjectsPage(space: space),
                     SpacesScreenTab.tasks => TasksPage(spaceId: space.id),
                     SpacesScreenTab.reglaments => ReglamentsPage(space: space),
                   };

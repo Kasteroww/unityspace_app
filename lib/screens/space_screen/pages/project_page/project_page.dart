@@ -49,14 +49,14 @@ class ProjectsPageStore extends WStore {
     selectedColumn = listColumns.first;
   }
 
-  Future<void> loadData(int spaceId, List<SpaceColumn> listColumns) async {
+  Future<void> loadData(Space space) async {
     if (status == WStoreStatus.loading) return;
     setStore(() {
       status = WStoreStatus.loading;
       error = ProjectErrors.none;
     });
     try {
-      await projectStore.getProjectsBySpaceId(spaceId);
+      await projectStore.getProjectsBySpaceId(space.id);
       setStore(() {
         status = WStoreStatus.loaded;
       });
@@ -103,19 +103,17 @@ class ProjectsPageStore extends WStore {
 }
 
 class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
-  final int spaceId;
-  final List<SpaceColumn> listColumns;
+  final Space space;
 
   const ProjectsPage({
     super.key,
-    required this.spaceId,
-    required this.listColumns,
+    required this.space,
   });
 
   @override
   ProjectsPageStore createWStore() => ProjectsPageStore()
-    ..loadData(spaceId, listColumns)
-    ..selectFirstColumn(listColumns);
+    ..loadData(space)
+    ..selectFirstColumn(space.columns);
 
   @override
   Widget build(BuildContext context, ProjectsPageStore store) {
@@ -160,7 +158,7 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
               [store.selectedColumn, store.isArchivedPage, store.projects],
           store: context.wstore(),
           builder: (context, store) {
-            store.getArchiveProjectsCount(listColumns);
+            store.getArchiveProjectsCount(space.columns);
             List<Project> listProjects = store.getProjectsByColumnId(
                 store.isArchivedPage
                     ? store.archiveColumnId
@@ -182,7 +180,7 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
                           children: [
                             ColumnsListRow(
                               children: [
-                                ...listColumns.map(
+                                ...space.columns.map(
                                   (column) => ColumnButton(
                                     title: column.name,
                                     onPressed: () {
