@@ -102,10 +102,8 @@ class MyApp extends WStoreWidget<MyAppStore> {
                     ModalRoute.of(context)?.settings.arguments as String? ?? '',
               ),
           '/space': (context) => SpaceScreen(
-                space: (ModalRoute.of(context)!.settings.arguments
-                        as Map)['space'] ??
-                    0,
-              ),
+              space:
+                  (ModalRoute.of(context)?.settings.arguments as Map)['space']),
           '/notifications': (context) => const NotificationsScreen(),
           '/account': (context) {
             final arguments = ModalRoute.of(context)?.settings.arguments

@@ -44,7 +44,7 @@ class NotificationHelper {
       }
 
       // Добавляем уведомление в соответствующий список
-      groupedByDay[day]!.add(notification);
+      groupedByDay[day]?.add(notification);
     }
 
     // Возвращаем значения словаря как список списков
@@ -67,7 +67,7 @@ class NotificationHelper {
       if (notification.parentType == 'TASK') {
         groupId = 'task-${notification.parentId}';
         if (groupsMap.containsKey(groupId)) {
-          groupsMap[groupId]!.notifications.add(notification);
+          groupsMap[groupId]?.notifications.add(notification);
         } else {
           NotificationsGroup newGroup = NotificationsGroup(
             groupId: groupId,
@@ -84,7 +84,7 @@ class NotificationHelper {
       } else if (notification.parentType == 'REGLAMENT') {
         groupId = 'reglament-${notification.parentId}';
         if (groupsMap.containsKey(groupId)) {
-          groupsMap[groupId]!.notifications.add(notification);
+          groupsMap[groupId]?.notifications.add(notification);
         } else {
           final reglamentMap = createMapById(ReglamentsStore().reglaments);
           String reglamentName =
@@ -104,7 +104,7 @@ class NotificationHelper {
       } else if (notification.parentType == 'MEMBER') {
         groupId = 'space-${notification.locations[0].spaceId}';
         if (groupsMap.containsKey(groupId)) {
-          groupsMap[groupId]!.notifications.add(notification);
+          groupsMap[groupId]?.notifications.add(notification);
         } else {
           final spacesMap = createMapById(SpacesStore().spaces);
           String spaceName =

@@ -221,13 +221,13 @@ class ChangeReglamentColumnAndOrderResponse {
     required this.columnId,
     required this.order,
   });
-  
+
   factory ChangeReglamentColumnAndOrderResponse.fromJson(
       Map<String, dynamic> map) {
     return ChangeReglamentColumnAndOrderResponse(
       id: map['id'] as int,
       columnId: map['columnId'] as int,
-      order: map['order'] as int,
+      order: int.parse(map['order']),
     );
   }
 }
@@ -294,7 +294,7 @@ class Reglament implements BaseModel {
   final String createdAt;
   final int creatorId;
   final String name;
-  final String order;
+  final int order;
   final int reglamentColumnId;
   final bool required;
   final bool intro;
@@ -320,11 +320,37 @@ class Reglament implements BaseModel {
         creatorId: data.creatorId,
         id: data.id,
         name: data.name,
-        order: data.order,
+        order: int.parse(data.order),
         reglamentColumnId: data.reglamentColumnId,
         required: data.required,
         intro: data.intro,
         updatedAt: data.updatedAt,
         usersPassed: data.usersPassed);
+  }
+
+  Reglament copyWith({
+    int? id,
+    String? createdAt,
+    int? creatorId,
+    String? name,
+    int? order,
+    int? reglamentColumnId,
+    bool? required,
+    bool? intro,
+    String? updatedAt,
+    List<UserPassedResponse>? usersPassed,
+  }) {
+    return Reglament(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      creatorId: creatorId ?? this.creatorId,
+      name: name ?? this.name,
+      order: order ?? this.order,
+      reglamentColumnId: reglamentColumnId ?? this.reglamentColumnId,
+      required: required ?? this.required,
+      intro: intro ?? this.intro,
+      updatedAt: updatedAt ?? this.updatedAt,
+      usersPassed: usersPassed ?? this.usersPassed,
+    );
   }
 }

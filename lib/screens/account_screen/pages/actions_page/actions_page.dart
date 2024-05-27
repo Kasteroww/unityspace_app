@@ -191,7 +191,7 @@ class _ActionsListState extends State<ActionsList> {
                                   date: action.updateDate,
                                   localization: localization,
                                   locale: localization.localeName),
-                              style: textTheme.bodyMedium!.copyWith(
+                              style: textTheme.bodyMedium?.copyWith(
                                   color: ColorConstants.grey04,
                                   fontWeight: FontWeight.w400)),
                           const PaddingTop(12),

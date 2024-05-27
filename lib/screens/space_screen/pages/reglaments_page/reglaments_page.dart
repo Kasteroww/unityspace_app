@@ -65,7 +65,7 @@ class ReglamentsPageStore extends WStore {
     // Группируем регламенты по reglamentColumnId
     for (var reglament in spaceReglaments) {
       if (columnReglaments.containsKey(reglament.reglamentColumnId)) {
-        columnReglaments[reglament.reglamentColumnId]!.add(reglament);
+        columnReglaments[reglament.reglamentColumnId]?.add(reglament);
       } else {
         columnReglaments[reglament.reglamentColumnId] = [reglament];
       }
@@ -73,7 +73,7 @@ class ReglamentsPageStore extends WStore {
 
     // Сортируем регламенты внутри каждой колонки по полю order
     for (var column in columnReglaments.keys) {
-      columnReglaments[column]!.sort((a, b) => a.order.compareTo(b.order));
+      columnReglaments[column]?.sort((a, b) => a.order.compareTo(b.order));
     }
 
     return columnReglaments;
@@ -191,6 +191,7 @@ class ReglamentListView extends StatelessWidget {
             child: ListView.builder(
                 itemCount: store.columnReglaments.length,
                 itemBuilder: (BuildContext context, int index) {
+                  final columnReglament = store.columnReglaments[index];
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 8),
                     child: Container(
@@ -201,12 +202,15 @@ class ReglamentListView extends StatelessWidget {
                             children: [
                               Expanded(
                                 child: Text(
-                                  store.columnReglaments[index].name,
+                                  columnReglament.name,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                               InkWell(
-                                  onTap: () {},
+                                  onTap: () {
+                                    store.moveToArchive(
+                                        reglamentId: columnReglament.id);
+                                  },
                                   child: SvgPicture.asset(
                                       'assets/icons/settings.svg'))
                             ],

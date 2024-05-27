@@ -26,7 +26,7 @@ Future<ChangeReglamentColumnAndOrderResponse> changeReglamentColumnAndOrder({
 }) async {
   try {
     final response = await HttpPlugin().patch(
-      '/$reglamentId/changeReglamentColumnAndOrder',
+      '/reglaments/$reglamentId/changeReglamentColumnAndOrder',
       {
         'columnId': columnId,
         'order': order,
