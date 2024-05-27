@@ -75,7 +75,9 @@ class SpaceScreen extends WStoreWidget<SpaceScreenStore> {
                     SpacesScreenTab.projects =>
                       ProjectsPage(spaceId: spaceId, listColumns: listColumns),
                     SpacesScreenTab.tasks => TasksPage(spaceId: spaceId),
-                    SpacesScreenTab.reglaments => const ReglamentsPage(),
+                    SpacesScreenTab.reglaments => ReglamentsPage(
+                      spaceId: spaceId
+                    ),
                   };
                 }),
           ),

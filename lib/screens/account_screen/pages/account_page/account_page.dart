@@ -260,8 +260,6 @@ class AccountPageStore extends WStore {
   AccountPage get widget => super.widget as AccountPage;
 }
 
-class SpaceStore {}
-
 class AccountPage extends WStoreWidget<AccountPageStore> {
   const AccountPage({
     super.key,
