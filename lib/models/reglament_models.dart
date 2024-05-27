@@ -24,6 +24,12 @@ class DeleteReglamentResponse {
   final int id;
 
   DeleteReglamentResponse({required this.id});
+
+  factory DeleteReglamentResponse.fromFson(Map<String, dynamic> map) {
+    return DeleteReglamentResponse(
+      id: map['id'] as int,
+    );
+  }
 }
 
 class ReglamentAnswerResponse {
@@ -208,13 +214,22 @@ class SearchReglamentResponse extends ReglamentResponse {
 class ChangeReglamentColumnAndOrderResponse {
   final int id;
   final int columnId;
-  final BigInt order;
+  final int order;
 
   ChangeReglamentColumnAndOrderResponse({
     required this.id,
     required this.columnId,
     required this.order,
   });
+  
+  factory ChangeReglamentColumnAndOrderResponse.fromJson(
+      Map<String, dynamic> map) {
+    return ChangeReglamentColumnAndOrderResponse(
+      id: map['id'] as int,
+      columnId: map['columnId'] as int,
+      order: map['order'] as int,
+    );
+  }
 }
 
 class GetSearchReglaments {

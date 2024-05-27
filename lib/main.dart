@@ -102,12 +102,9 @@ class MyApp extends WStoreWidget<MyAppStore> {
                     ModalRoute.of(context)?.settings.arguments as String? ?? '',
               ),
           '/space': (context) => SpaceScreen(
-                spaceId: (ModalRoute.of(context)!.settings.arguments
-                        as Map)['spaceId'] ??
+                space: (ModalRoute.of(context)!.settings.arguments
+                        as Map)['space'] ??
                     0,
-                listColumns: (ModalRoute.of(context)!.settings.arguments
-                        as Map)['listColumns'] ??
-                    [],
               ),
           '/notifications': (context) => const NotificationsScreen(),
           '/account': (context) {

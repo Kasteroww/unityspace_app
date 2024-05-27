@@ -10,12 +10,17 @@ import 'package:wstore/wstore.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 
 class SpaceScreenStore extends WStore {
+  late Space spaceId;
   SpacesScreenTab selectedTab = SpacesScreenTab.projects;
 
   void selectTab(final SpacesScreenTab tab) {
     setStore(() {
       selectedTab = tab;
     });
+  }
+
+  void initValues({required Space space}) {
+    spaceId = space;
   }
 
   List<SpacesScreenTab> get currentUserTabs => SpacesScreenTab.values.toList();
@@ -25,17 +30,16 @@ class SpaceScreenStore extends WStore {
 }
 
 class SpaceScreen extends WStoreWidget<SpaceScreenStore> {
-  final int spaceId;
-  final List<SpaceColumn> listColumns;
+  final Space space;
 
   const SpaceScreen({
     super.key,
-    required this.spaceId,
-    required this.listColumns,
+    required this.space,
   });
 
   @override
-  SpaceScreenStore createWStore() => SpaceScreenStore();
+  SpaceScreenStore createWStore() =>
+      SpaceScreenStore()..initValues(space: space);
 
   @override
   Widget build(BuildContext context, SpaceScreenStore store) {
@@ -43,7 +47,7 @@ class SpaceScreen extends WStoreWidget<SpaceScreenStore> {
     return Scaffold(
       drawer: const AppNavigationDrawer(),
       appBar: AppBar(
-        title: Text('${localization.space} $spaceId'),
+        title: Text(space.name),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,7 +59,11 @@ class SpaceScreen extends WStoreWidget<SpaceScreenStore> {
               children: [
                 ...store.currentUserTabs.map(
                   (tab) => TabButton(
-                    title: tab.title,
+                    title: switch (tab) {
+                      SpacesScreenTab.projects => localization.projects,
+                      SpacesScreenTab.tasks => localization.tasks,
+                      SpacesScreenTab.reglaments => localization.reglaments,
+                    },
                     onPressed: () {
                       store.selectTab(tab);
                     },
@@ -72,12 +80,12 @@ class SpaceScreen extends WStoreWidget<SpaceScreenStore> {
                 watch: (store) => store.selectedTab,
                 builder: (context, selectedTab) {
                   return switch (selectedTab) {
-                    SpacesScreenTab.projects =>
-                      ProjectsPage(spaceId: spaceId, listColumns: listColumns),
-                    SpacesScreenTab.tasks => TasksPage(spaceId: spaceId),
-                    SpacesScreenTab.reglaments => ReglamentsPage(
-                      spaceId: spaceId
-                    ),
+                    SpacesScreenTab.projects => ProjectsPage(
+                        spaceId: space.id,
+                        listColumns: space.columns,
+                      ),
+                    SpacesScreenTab.tasks => TasksPage(spaceId: space.id),
+                    SpacesScreenTab.reglaments => ReglamentsPage(space: space),
                   };
                 }),
           ),
@@ -87,20 +95,4 @@ class SpaceScreen extends WStoreWidget<SpaceScreenStore> {
   }
 }
 
-enum SpacesScreenTab {
-  projects(
-    title: 'Проекты',
-  ),
-  tasks(
-    title: 'Задачи',
-  ),
-  reglaments(
-    title: 'Регламенты',
-  );
-
-  const SpacesScreenTab({
-    required this.title,
-  });
-
-  final String title;
-}
+enum SpacesScreenTab { projects, tasks, reglaments }

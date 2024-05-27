@@ -22,6 +22,17 @@ class ReglamentsStore extends GStore {
     });
   }
 
+  Future<void> changeReglamentColumnAndOrder(
+      {required int reglamentId,
+      required int newColumnId,
+      required int newOrder}) async {
+    api.changeReglamentColumnAndOrder(
+      reglamentId: reglamentId,
+      columnId: newColumnId,
+      order: newOrder,
+    );
+  }
+
   @override
   void clear() {
     super.clear();
