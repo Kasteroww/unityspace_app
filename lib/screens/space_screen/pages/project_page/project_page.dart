@@ -41,8 +41,8 @@ class ProjectsPageStore extends WStore {
     });
   }
 
-  void archiveProject(List<int> projectIds, int archiveColumnId) {
-    projectStore.archiveProject(projectIds, archiveColumnId);
+  void changeProjectColumn(List<int> projectIds, int archiveColumnId) {
+    projectStore.changeProjectColumn(projectIds, archiveColumnId);
   }
 
   void selectFirstColumn(List<SpaceColumn> listColumns) {

@@ -27,9 +27,10 @@ class ProjectStore extends GStore {
     });
   }
 
-  Future<void> archiveProject(List<int> projectIds, int archiveColumnId) async {
-    final projectsData = await api.archiveProject(
-        projectIds: projectIds, archiveColumnId: archiveColumnId);
+  /// Архивация и разархивация Проектов
+  Future<void> changeProjectColumn(List<int> projectIds, int columnId) async {
+    final projectsData = await api.changeProjectColumn(
+        projectIds: projectIds, columnId: columnId);
     final project = projectsData.map(Project.fromResponse).toList();
     final projectId = projects.indexWhere((el) => el.id == project.first.id);
     final projectsNew = projects

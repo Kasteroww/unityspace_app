@@ -34,11 +34,12 @@ Future<List<ProjectResponse>> getAllProjects() async {
   }
 }
 
-Future<List<ProjectResponse>> archiveProject(
-    {required List<int> projectIds, required int archiveColumnId}) async {
+/// Архивация и разархивация Проектов
+Future<List<ProjectResponse>> changeProjectColumn(
+    {required List<int> projectIds, required int columnId}) async {
   try {
-    final response = await HttpPlugin().patch(
-        '/projects/changeColumn/$archiveColumnId', {"projectIds": projectIds});
+    final response = await HttpPlugin()
+        .patch('/projects/changeColumn/$columnId', {"projectIds": projectIds});
     final List jsonData = json.decode(response.body);
     return jsonData
         .map((element) => ProjectResponse.fromJson(element))

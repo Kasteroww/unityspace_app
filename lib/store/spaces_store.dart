@@ -11,7 +11,7 @@ class SpacesStore extends GStore {
 
   SpacesStore._();
 
-  List<Space>? spaces;
+  List<Space> spaces = [];
 
   Future<void> getSpacesData() async {
     final spacesData = await api.getSpacesData();
@@ -22,18 +22,17 @@ class SpacesStore extends GStore {
   }
 
   Future<int> createSpace(final String title) async {
-    final maxOrder = this.spaces?.fold<double>(
-              0,
-              (max, space) => max > space.order ? max : space.order,
-            ) ??
-        0;
+    final maxOrder = this.spaces.fold<double>(
+          0,
+          (max, space) => max > space.order ? max : space.order,
+        );
     final newOrder = maxOrder + 1;
     final spaceData = await api.createSpaces(
       title,
       makeIntFromOrder(newOrder),
     );
     final newSpace = Space.fromResponse(spaceData);
-    final spaces = [...?this.spaces, newSpace];
+    final spaces = [...this.spaces, newSpace];
     setStore(() {
       this.spaces = spaces;
     });
@@ -42,8 +41,8 @@ class SpacesStore extends GStore {
 
   changeSpaceMemberEmailLocally(
       {required int userId, required String newEmail}) {
-    if (spaces != null && spaces!.isNotEmpty) {
-      for (final space in spaces!) {
+    if (spaces.isNotEmpty) {
+      for (final space in spaces) {
         final member = space.members.firstWhereOrNull((m) => m.id == userId);
         if (member != null) {
           SpaceMember updatedMember = member.copyWith(email: newEmail);
@@ -60,7 +59,7 @@ class SpacesStore extends GStore {
   void clear() {
     super.clear();
     setStore(() {
-      spaces = null;
+      spaces = [];
     });
   }
 }
