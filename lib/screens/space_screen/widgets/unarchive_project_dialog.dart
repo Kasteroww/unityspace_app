@@ -9,28 +9,29 @@ import 'package:wstore/wstore.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-Future<void> showUnarchiveProjectDialog(
-    BuildContext context, int spaceId, int projectId) async {
+Future<void> showMoveProjectDialog(
+    BuildContext context, SpaceColumn selectedColumn, int projectId) async {
   return showDialog(
     context: context,
     builder: (context) {
-      return UnarchiveProjectDialog(
-        spaceId: spaceId,
+      return MoveProjectDialog(
+        selectedColumn: selectedColumn,
         projectId: projectId,
       );
     },
   );
 }
 
-class UnarchiveProjectDialogStore extends WStore {
-  String unarchiveProjectError = '';
-  WStoreStatus statusUnarchiveProject = WStoreStatus.init;
+class MoveProjectDialogStore extends WStore {
+  String moveProjectError = '';
+  WStoreStatus statusMoveProject = WStoreStatus.init;
   List<Space> spaces = [];
   int selectedSpaceId = 0;
-  late Space selectedSpace;
   int selectedColumnId = 0;
+  late Space selectedSpace;
+  late SpaceColumn selectedColumn;
 
-  List<SpaceColumn> getColumnNamesBySpaceId(int spaceId) {
+  List<SpaceColumn> getColumnsBySpaceId(int spaceId) {
     return spaces.where((el) => el.id == spaceId).first.columns;
   }
 
@@ -40,26 +41,27 @@ class UnarchiveProjectDialogStore extends WStore {
     });
   }
 
-  void setColumnIdToUnarchive(int columnId) {
+  void setSelectedColumnId(int columnId) {
     setStore(() {
       selectedColumnId = columnId;
     });
   }
 
-  void initData(int spaceId) {
+  void initData(SpaceColumn column) {
     setStore(() {
       spaces = SpacesStore().spaces;
-      selectedSpace = spaces.where((el) => el.id == spaceId).first;
-      selectedSpaceId = spaces.where((el) => el.id == spaceId).first.id;
-      selectedColumnId = getColumnNamesBySpaceId(selectedSpaceId).first.id;
+      selectedSpace = spaces.where((el) => el.id == column.spaceId).first;
+      selectedColumn = column;
+      selectedSpaceId = selectedSpace.id;
+      selectedColumnId = column.id;
     });
   }
 
-  void unarchiveProject(AppLocalizations localization, projectId) {
-    if (statusUnarchiveProject == WStoreStatus.loading) return;
+  void moveProject(AppLocalizations localization, projectId) {
+    if (statusMoveProject == WStoreStatus.loading) return;
     setStore(() {
-      statusUnarchiveProject = WStoreStatus.loading;
-      unarchiveProjectError = '';
+      statusMoveProject = WStoreStatus.loading;
+      moveProjectError = '';
     });
 
     subscribe(
@@ -67,51 +69,51 @@ class UnarchiveProjectDialogStore extends WStore {
       subscriptionId: 1,
       onData: (_) {
         setStore(() {
-          statusUnarchiveProject = WStoreStatus.loaded;
+          statusMoveProject = WStoreStatus.loaded;
         });
       },
       onError: (error, stack) {
         logger.d(
-            'UnarchiveProjectDialogStore.unarchiveProject error: $error stack: $stack');
+            'MoveProjectDialogStore.moveProject error: $error stack: $stack');
         setStore(() {
-          statusUnarchiveProject = WStoreStatus.error;
-          unarchiveProjectError = localization.unarchive_project_error;
+          statusMoveProject = WStoreStatus.error;
+          moveProjectError = localization.move_project_error;
         });
       },
     );
   }
 
   @override
-  UnarchiveProjectDialog get widget => super.widget as UnarchiveProjectDialog;
+  MoveProjectDialog get widget => super.widget as MoveProjectDialog;
 }
 
-class UnarchiveProjectDialog extends WStoreWidget<UnarchiveProjectDialogStore> {
-  final int spaceId;
+class MoveProjectDialog extends WStoreWidget<MoveProjectDialogStore> {
+  final SpaceColumn selectedColumn;
   final int projectId;
 
-  const UnarchiveProjectDialog({
-    required this.spaceId,
+  const MoveProjectDialog({
+    required this.selectedColumn,
     required this.projectId,
     super.key,
   });
 
   @override
-  UnarchiveProjectDialogStore createWStore() =>
-      UnarchiveProjectDialogStore()..initData(spaceId);
+  MoveProjectDialogStore createWStore() =>
+      MoveProjectDialogStore()..initData(selectedColumn);
 
   @override
-  Widget build(BuildContext context, UnarchiveProjectDialogStore store) {
+  Widget build(BuildContext context, MoveProjectDialogStore store) {
     final localization = LocalizationHelper.getLocalizations(context);
     return WStoreStatusBuilder(
       store: store,
-      watch: (store) => store.statusUnarchiveProject,
+      watch: (store) => store.statusMoveProject,
       onStatusLoaded: (context) {
         Navigator.of(context).pop();
       },
       builder: (context, status) {
         final loading = status == WStoreStatus.loading;
         final error = status == WStoreStatus.error;
-        return WStoreBuilder<UnarchiveProjectDialogStore>(
+        return WStoreBuilder<MoveProjectDialogStore>(
             watch: (store) => [store.selectedSpace],
             store: context.wstore(),
             builder: (context, store) {
@@ -120,7 +122,7 @@ class UnarchiveProjectDialog extends WStoreWidget<UnarchiveProjectDialogStore> {
                 primaryButtonText: localization.move,
                 onPrimaryButtonPressed: () {
                   FocusScope.of(context).unfocus();
-                  store.unarchiveProject(localization, projectId);
+                  store.moveProject(localization, projectId);
                 },
                 primaryButtonLoading: loading,
                 secondaryButtonText: '',
@@ -129,7 +131,6 @@ class UnarchiveProjectDialog extends WStoreWidget<UnarchiveProjectDialogStore> {
                     onChanged: (spaceId) {
                       FocusScope.of(context).unfocus();
                       store.setSelectedSpaceId(spaceId);
-                      store.getColumnNamesBySpaceId(spaceId);
                     },
                     labelText: localization.space,
                     listValues: store.spaces,
@@ -139,15 +140,15 @@ class UnarchiveProjectDialog extends WStoreWidget<UnarchiveProjectDialogStore> {
                   AddDialogDropdownMenu<SpaceColumn>(
                     onChanged: (value) {
                       FocusScope.of(context).unfocus();
-                      store.setColumnIdToUnarchive(value);
+                      store.setSelectedColumnId(value);
                     },
                     labelText: localization.group,
                     listValues:
-                        store.getColumnNamesBySpaceId(store.selectedSpaceId),
+                        store.getColumnsBySpaceId(store.selectedSpaceId),
                   ),
                   if (error)
                     Text(
-                      store.unarchiveProjectError,
+                      store.moveProjectError,
                       style: const TextStyle(
                         color: Color(0xFFD83400),
                       ),

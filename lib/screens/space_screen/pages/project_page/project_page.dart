@@ -277,7 +277,7 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
                                               )
                                             : null,
                                     trailing: PopUpProjectsButton(
-                                        id: listProjects[index].id),
+                                        projectId: listProjects[index].id),
                                   );
                                 },
                                 separatorBuilder:

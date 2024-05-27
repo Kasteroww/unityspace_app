@@ -7,9 +7,9 @@ import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
 
 class PopUpProjectsButton extends StatelessWidget {
-  const PopUpProjectsButton({super.key, required this.id});
+  const PopUpProjectsButton({super.key, required this.projectId});
 
-  final int id;
+  final int projectId;
 
   @override
   Widget build(BuildContext context) {
@@ -31,8 +31,15 @@ class PopUpProjectsButton extends StatelessWidget {
         return <PopupMenuEntry<String>>[
           if (!store.isArchivedPage) ...[
             PopupMenuItem(
+              onTap: () => showMoveProjectDialog(
+                  context, store.selectedColumn, projectId),
+              child: PopupProjectsItem(
+                text: localization.move_project,
+              ),
+            ),
+            PopupMenuItem(
               onTap: () =>
-                  store.changeProjectColumn([id], store.archiveColumnId),
+                  store.changeProjectColumn([projectId], store.archiveColumnId),
               child: PopupProjectsItem(
                 text: localization.to_archive,
               ),
@@ -40,11 +47,8 @@ class PopUpProjectsButton extends StatelessWidget {
           ] else ...[
             PopupMenuItem(
               onTap: () {
-                showUnarchiveProjectDialog(
-                  context,
-                  store.selectedColumn.spaceId,
-                  id
-                );
+                showMoveProjectDialog(
+                    context, store.selectedColumn, projectId);
               },
               child: PopupProjectsItem(
                 text: localization.from_archive,
