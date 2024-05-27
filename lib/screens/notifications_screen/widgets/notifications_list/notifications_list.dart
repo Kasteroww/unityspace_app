@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
 import 'package:unityspace/models/notification_models.dart';
+import 'package:unityspace/screens/notifications_screen/pages/notifications_page.dart';
 import 'package:unityspace/screens/notifications_screen/utils/notification_helper.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notification_bottom_sheet.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/parts/dismissible_background.dart';
@@ -10,6 +10,7 @@ import 'package:unityspace/screens/notifications_screen/widgets/skeleton_listvie
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:wstore/wstore.dart';
 
 /// Список дней уведомлений
 class NotificationsList extends StatelessWidget {
@@ -77,14 +78,9 @@ class NotificationsList extends StatelessWidget {
                                 localization: localization);
                           },
                           onTap: () {
-                            showModalBottomSheet(
-                              backgroundColor: Colors.white,
-                              context: context,
-                              builder: (BuildContext context) {
-                                return NotificationBottomSheet(
-                                    notificationsGroup: notificationsGroup);
-                              },
-                            );
+                            showNotificationInfo(
+                                context: context,
+                                notificationsGroup: notificationsGroup);
                           },
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8),
@@ -156,5 +152,26 @@ class NotificationsList extends StatelessWidget {
         ),
       ],
     ).then((value) {});
+  }
+
+  void showNotificationInfo(
+      {required BuildContext context,
+      required NotificationsGroup notificationsGroup}) {
+    // Отмечаем уведомления как прочитанные
+    if (notificationsGroup.notifications
+        .any((element) => element.unread && !element.archived)) {
+      context
+          .wstore<NotificationPageStore>()
+          .changeReadStatusNotification(notificationsGroup.notifications, true);
+    }
+
+    // Отображаем нижнюю панель с информацией
+    showModalBottomSheet(
+      backgroundColor: Colors.white,
+      context: context,
+      builder: (BuildContext context) {
+        return NotificationBottomSheet(notificationsGroup: notificationsGroup);
+      },
+    );
   }
 }
