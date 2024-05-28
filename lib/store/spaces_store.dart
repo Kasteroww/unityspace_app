@@ -12,6 +12,27 @@ class SpacesStore extends GStore {
   SpacesStore._();
 
   List<Space> spaces = [];
+  int masterSpaceId = -1;
+
+  Map<int, Space?> get spacesMap {
+    if (spaces.isEmpty) return {};
+
+    return spaces.fold<Map<int, Space?>>(
+      {},
+      (acc, space) {
+        acc[space.id] = space;
+        return acc;
+      },
+    );
+  }
+
+  Map<int, SpaceColumn?> get columnsMap {
+    if (spaces == []) return {};
+    return {
+      for (var column in spaces.expand((space) => space.columns))
+        column.id: column
+    };
+  }
 
   Future<void> getSpacesData() async {
     final spacesData = await api.getSpacesData();

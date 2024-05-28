@@ -11,6 +11,17 @@ class ProjectStore extends GStore {
 
   List<Project> projects = [];
 
+  Map<int, Project?> get projectsMap {
+    if (projects == []) return {};
+    return projects.fold<Map<int, Project?>>(
+      {},
+      (acc, project) {
+        acc[project.id] = project;
+        return acc;
+      },
+    );
+  }
+
   Future<void> getProjectsBySpaceId(int spaceId) async {
     final projectsData = await api.getProjects(spaceId: spaceId);
     final projects = projectsData.map(Project.fromResponse).toList();

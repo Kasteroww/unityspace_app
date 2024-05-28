@@ -204,6 +204,27 @@ class TaskStages {
   }
 }
 
+class TasksGroup {
+  final int id;
+  final int spaceFavorite;
+  final int spaceOrder;
+  final String groupTitle;
+  final int projectOrder;
+  final int columnOrder;
+  final int spaceId;
+  final List<Task> tasks;
+
+  TasksGroup(
+      {required this.id,
+      required this.spaceFavorite,
+      required this.spaceOrder,
+      required this.groupTitle,
+      required this.projectOrder,
+      required this.columnOrder,
+      required this.spaceId,
+      required this.tasks});
+}
+
 class TaskResponse {
   final int id;
   final String name;
