@@ -31,22 +31,37 @@ class ProjectStore extends GStore {
   Future<void> changeProjectColumn(List<int> projectIds, int columnId) async {
     final projectsData = await api.changeProjectColumn(
         projectIds: projectIds, columnId: columnId);
-    final project = projectsData.map(Project.fromResponse).toList();
-    final projectId = projects.indexWhere((el) => el.id == project.first.id);
-    final projectsNew = projects
-      ..removeAt(projectId)
-      ..add(project.first);
     setStore(() {
-      projects = [...projectsNew];
+      projects = _changeProjectColumnLocally(projectsData, projects);
     });
+  }
+
+  List<Project> _changeProjectColumnLocally(
+      List<ProjectResponse> projectsResponse, List<Project> projects) {
+    final projectsIdsResponse = projectsResponse.map((e) => e.id).toList();
+    return projects.map((project) {
+      if (projectsIdsResponse.contains(project.id)) {
+        return project.copyWith(
+            columnId: projectsResponse
+                .where((e) => e.id == project.id)
+                .first
+                .columnId);
+      } else {
+        return project;
+      }
+    }).toList();
   }
 
   Future<void> addProject(AddProject project) async {
     final projectsData = await api.addProject(project);
-    final projectsNew = projects..add(Project.fromResponse(projectsData));
     setStore(() {
-      projects = [...projectsNew];
+      projects = _addProjectLocally(projectsData, projects);
     });
+  }
+
+  List<Project> _addProjectLocally(
+      ProjectResponse projectResponse, List<Project> projects) {
+    return projects..add(Project.fromResponse(projectResponse));
   }
 
   @override

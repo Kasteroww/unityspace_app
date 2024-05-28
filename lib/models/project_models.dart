@@ -108,6 +108,32 @@ class Project implements BaseModel {
       memo: data.memo,
     );
   }
+
+  Project copyWith({
+    int? id,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? name,
+    int? creatorId,
+    int? columnId,
+    String? order,
+    List<ProjectStage>? stages,
+    int? taskCount,
+    String? memo,
+  }) {
+    return Project(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      name: name ?? this.name,
+      creatorId: creatorId ?? this.creatorId,
+      columnId: columnId ?? this.columnId,
+      order: order ?? this.order,
+      stages: stages ?? this.stages,
+      taskCount: taskCount ?? this.taskCount,
+      memo: memo ?? this.memo,
+    );
+  }
 }
 
 class ProjectStage {
