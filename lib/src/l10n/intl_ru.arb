@@ -1,4 +1,7 @@
 {
+  "task_name": "Наименование задачи",
+  "column": "Колонка",
+
   "email_cannot_be_empty": "Email не может быть пустым",
   "incorrect_email_format": "Некорректный формат",
   "emails_are_the_same": "Почты совпадают",

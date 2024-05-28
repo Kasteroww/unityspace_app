@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:unityspace/models/project_models.dart';
 import 'package:wstore/wstore.dart';
 import 'package:unityspace/service/project_service.dart' as api;
@@ -20,6 +21,10 @@ class ProjectStore extends GStore {
         return acc;
       },
     );
+  }
+
+  Project? getProjectById(int projectId) {
+    return projects.firstWhereOrNull((project) => project.id == projectId);
   }
 
   Future<void> getProjectsBySpaceId(int spaceId) async {

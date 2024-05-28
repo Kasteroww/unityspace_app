@@ -3,12 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/models/task_models.dart';
+import 'package:unityspace/screens/space_screen/pages/tasks_page/widgets/divider.dart';
 import 'package:unityspace/screens/widgets/common/paddings.dart';
+import 'package:unityspace/src/theme/theme.dart';
 import 'package:unityspace/store/project_store.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/tasks_store.dart';
 import 'package:unityspace/utils/constants.dart';
 import 'package:unityspace/utils/errors.dart';
+import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
 
@@ -47,6 +50,10 @@ class TasksPageStore extends WStore {
         error = TasksErrors.loadingDataError;
       });
     }
+  }
+
+  String? getProjectNameById(int projectId) {
+    return projectStore.getProjectById(projectId)?.name;
   }
 
   /// группирует задачи по проектам
@@ -135,6 +142,7 @@ class TasksPage extends WStoreWidget<TasksPageStore> {
 
   @override
   Widget build(BuildContext context, TasksPageStore store) {
+    final localization = LocalizationHelper.getLocalizations(context);
     return WStoreStatusBuilder<TasksPageStore>(
       store: store,
       watch: (store) => store.status,
@@ -153,50 +161,128 @@ class TasksPage extends WStoreWidget<TasksPageStore> {
       builderLoaded: (context) {
         return PaddingAll(
           20,
-          child: WStoreValueBuilder<TasksPageStore, List<TasksGroup>?>(
-              builder: (context, store) {
-                if (store != null) {
-                  return ListView.builder(
-                    itemCount: store.length,
-                    itemBuilder: (context, projectIndex) {
-                      final tasks = store[projectIndex].tasks;
-                      return Container(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              store[projectIndex].groupTitle,
+          child: SizedBox(
+            width: double.infinity,
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 50,
+                  width: double.infinity,
+                  child: Row(
+                    children: [
+                      Expanded(
+                          flex: 8,
+                          child: Text(
+                            localization.task_name,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                  fontWeight: FontWeight.w500,
+                                ),
+                          )),
+                      const DividerWithoutPadding(
+                        isHorisontal: false,
+                        color: ColorConstants.grey04,
+                      ),
+                      Flexible(
+                        flex: 2,
+                        child: PaddingLeft(8,
+                            child: Text(
+                              localization.column,
                               style: Theme.of(context)
                                   .textTheme
-                                  .headlineSmall!
-                                  .copyWith(fontWeight: FontWeight.w500),
-                            ),
-                            const PaddingTop(8),
-                            PaddingLeft(
-                              20,
-                              child: ListView.separated(
-                                shrinkWrap: true,
-                                physics: const ClampingScrollPhysics(),
-                                itemCount: tasks.length,
-                                itemBuilder: (context, taskIndex) {
-                                  return Text(tasks[taskIndex].name);
-                                },
-                                separatorBuilder: (context, _) {
-                                  return const PaddingTop(8);
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  );
-                } else {
-                  return const Text('tasks is empty');
-                }
-              },
-              watch: (store) => store.tasksByProject),
+                                  .bodyMedium!
+                                  .copyWith(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                            )),
+                      ),
+                    ],
+                  ),
+                ),
+                const DividerWithoutPadding(
+                  color: ColorConstants.grey04,
+                ),
+                Expanded(
+                  child: WStoreValueBuilder<TasksPageStore, List<TasksGroup>?>(
+                      builder: (context, store) {
+                        if (store != null) {
+                          return ListView.builder(
+                            itemCount: store.length,
+                            itemBuilder: (context, projectIndex) {
+                              final tasks = store[projectIndex].tasks;
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    store[projectIndex].groupTitle,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineSmall!
+                                        .copyWith(fontWeight: FontWeight.w500),
+                                  ),
+                                  const PaddingTop(8),
+                                  PaddingVertical(
+                                    16,
+                                    child: ListView.builder(
+                                      shrinkWrap: true,
+                                      physics: const ClampingScrollPhysics(),
+                                      itemCount: tasks.length,
+                                      itemBuilder: (context, taskIndex) {
+                                        return IntrinsicHeight(
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                flex: 8,
+                                                child: PaddingLeft(16,
+                                                    child: Text(
+                                                        tasks[taskIndex].name)),
+                                              ),
+                                              const DividerWithoutPadding(
+                                                isHorisontal: false,
+                                                color: ColorConstants.grey04,
+                                              ),
+                                              Expanded(
+                                                  flex: 2,
+                                                  child: PaddingLeft(
+                                                    8,
+                                                    child: PaddingBottom(
+                                                      8,
+                                                      child: Text(context
+                                                              .wstore<
+                                                                  TasksPageStore>()
+                                                              .getProjectNameById(tasks[
+                                                                      taskIndex]
+                                                                  // не знаю какую брать и могут ли они вообще
+                                                                  // отличаться
+                                                                  .stages[0]
+                                                                  .projectId) ??
+                                                          // не локализовано потому что
+                                                          // placeholder, потом нужно будет узнать что
+                                                          // делать если у задачи нет проекта
+                                                          'Проект не существует'),
+                                                    ),
+                                                  ))
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        } else {
+                          return const Text('tasks is empty');
+                        }
+                      },
+                      watch: (store) => store.tasksByProject),
+                ),
+              ],
+            ),
+          ),
         );
       },
     );
