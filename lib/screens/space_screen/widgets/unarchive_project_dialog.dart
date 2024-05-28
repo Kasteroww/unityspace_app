@@ -128,19 +128,19 @@ class MoveProjectDialog extends WStoreWidget<MoveProjectDialogStore> {
                 secondaryButtonText: '',
                 children: [
                   AddDialogDropdownMenu<Space>(
-                    onChanged: (spaceId) {
+                    onChanged: (space) {
                       FocusScope.of(context).unfocus();
-                      store.setSelectedSpaceId(spaceId);
+                      store.setSelectedSpaceId(space.id);
                     },
                     labelText: localization.space,
                     listValues: store.spaces,
-                    currentSpace: store.selectedSpace,
+                    currentValue: store.selectedSpace,
                   ),
                   const SizedBox(height: 16),
                   AddDialogDropdownMenu<SpaceColumn>(
                     onChanged: (value) {
                       FocusScope.of(context).unfocus();
-                      store.setSelectedColumnId(value);
+                      store.setSelectedColumnId(value.id);
                     },
                     labelText: localization.group,
                     listValues:

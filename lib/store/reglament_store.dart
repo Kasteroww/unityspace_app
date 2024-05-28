@@ -24,16 +24,14 @@ class ReglamentsStore extends GStore {
   }
 
   Map<int, Reglament?> _changeReglamentColumnLocally(
-      {required int reglamentId,
-      required int columnId,
-      required int newOrder}) {
+      {required ChangeReglamentColumnAndOrderResponse response}) {
     final reglamentMap = createMapById(reglaments);
-    final reglament = reglamentMap[reglamentId];
+    final reglament = reglamentMap[response.id];
 
     if (reglament != null) {
-      reglamentMap[reglamentId] = reglament.copyWith(
-        reglamentColumnId: columnId,
-        order: newOrder,
+      reglamentMap[response.id] = reglament.copyWith(
+        reglamentColumnId: response.columnId,
+        order: response.order,
       );
     }
     return reglamentMap;
@@ -49,11 +47,7 @@ class ReglamentsStore extends GStore {
       order: newOrder,
     );
 
-    final updatedMap = _changeReglamentColumnLocally(
-      reglamentId: response.id,
-      columnId: response.columnId,
-      newOrder: response.order,
-    );
+    final updatedMap = _changeReglamentColumnLocally(response: response);
     setStore(() {
       reglaments = updatedMap.values.whereType<Reglament>().toList();
     });

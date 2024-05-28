@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:unityspace/models/spaces_models.dart';
 
 class AddDialogDropdownMenu<T> extends StatefulWidget {
   final GlobalKey? fieldKey;
   final String labelText;
   final List<T> listValues;
-  final Space? currentSpace;
+  final dynamic currentValue;
   final bool autofocus;
-  final void Function(String value)? onSaved;
-  final void Function(int value)? onChanged;
+  final void Function(dynamic value)? onSaved;
+  final void Function(dynamic value)? onChanged;
 
   const AddDialogDropdownMenu({
     super.key,
     required this.labelText,
     required this.listValues,
-    this.currentSpace,
+    this.currentValue,
     this.fieldKey,
     this.onSaved,
     this.onChanged,
@@ -43,12 +42,13 @@ class _AddDialogDropdownMenuState extends State<AddDialogDropdownMenu> {
       children: [
         Text(widget.labelText),
         DropdownButtonFormField(
+          dropdownColor: Colors.white,
           key: widget.fieldKey,
           focusNode: myFocusNode,
           autofocus: widget.autofocus,
-          value: widget.currentSpace ?? widget.listValues.first,
-          onSaved: (value) => widget.onSaved?.call(value.name),
-          onChanged: (value) => widget.onChanged?.call(value.id),
+          value: widget.currentValue ?? widget.listValues.first,
+          onSaved: (value) => widget.onSaved?.call(value),
+          onChanged: (value) => widget.onChanged?.call(value),
           style: const TextStyle(
             color: Color(0xFF4C4C4D),
           ),

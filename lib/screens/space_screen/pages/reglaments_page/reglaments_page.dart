@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:unityspace/models/reglament_models.dart';
 import 'package:unityspace/models/spaces_models.dart';
-import 'package:unityspace/screens/space_screen/pages/reglaments_page/widgets/add_reglament_dialog.dart';
+import 'package:unityspace/screens/space_screen/pages/reglaments_page/widgets/dialogs/add_reglament_dialog.dart';
+import 'package:unityspace/screens/space_screen/pages/reglaments_page/widgets/reglament_listview.dart';
 import 'package:unityspace/store/reglament_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
@@ -167,59 +167,6 @@ class ReglamentsPage extends WStoreWidget<ReglamentsPageStore> {
             ),
           )
         ],
-      ),
-    );
-  }
-}
-
-class ReglamentListView extends StatelessWidget {
-  const ReglamentListView({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: WStoreBuilder(
-        store: context.wstore<ReglamentsPageStore>(),
-        watch: (store) => [
-          store.columnReglaments,
-        ],
-        builder: (context, store) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: ListView.builder(
-                itemCount: store.columnReglaments.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final columnReglament = store.columnReglaments[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Container(
-                        color: Colors.white,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  columnReglament.name,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              InkWell(
-                                  onTap: () {
-                                    store.moveToArchive(
-                                        reglamentId: columnReglament.id);
-                                  },
-                                  child: SvgPicture.asset(
-                                      'assets/icons/settings.svg'))
-                            ],
-                          ),
-                        )),
-                  );
-                }),
-          );
-        },
       ),
     );
   }
