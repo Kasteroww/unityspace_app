@@ -80,6 +80,17 @@ class ProjectStore extends GStore {
     return projects..add(Project.fromResponse(projectResponse));
   }
 
+  Future<void> deleteProject(int projectId) async {
+    await api.deleteProject(projectId);
+    setStore(() {
+      projects = [..._deleteProjectLocally(projectId, projects)];
+    });
+  }
+
+  List<Project> _deleteProjectLocally(int projectId, List<Project> projects) {
+    return projects..removeWhere((project) => project.id == projectId);
+  }
+
   @override
   void clear() {
     super.clear();

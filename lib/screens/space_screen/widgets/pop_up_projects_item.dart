@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 
 class PopupProjectsItem extends StatelessWidget {
-  const PopupProjectsItem({super.key, required this.text});
+  const PopupProjectsItem({
+    super.key,
+    required this.text,
+    this.color = const Color.fromRGBO(77, 77, 77, 1),
+  });
 
   final String text;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -16,11 +21,11 @@ class PopupProjectsItem extends StatelessWidget {
         const SizedBox(width: 12),
         Text(
           text,
-          style: const TextStyle(
+          style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w400,
               height: 16.41 / 14,
-              color: Color.fromRGBO(77, 77, 77, 1)),
+              color: color),
         ),
       ],
     );

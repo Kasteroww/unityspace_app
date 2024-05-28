@@ -37,6 +37,15 @@ class UserStore extends GStore {
     return organization?.ownerId == user?.id;
   }
 
+  bool get isAdmin {
+    if (user == null || organization == null) return false;
+    return user!.isAdmin;
+  }
+
+  OrganizationMember? get organizationOwner {
+    return organizationMembers[organization?.ownerId];
+  }
+
   Map<int, OrganizationMember> get organizationMembers {
     final members = organization?.members ?? [];
     return members.fold(<int, OrganizationMember>{}, (map, member) {

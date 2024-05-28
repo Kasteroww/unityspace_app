@@ -11,6 +11,7 @@ class UserResponse {
   final String? githubLink;
   final String? birthDate;
   final String? jobTitle;
+  final bool isAdmin;
 
   const UserResponse({
     required this.id,
@@ -23,6 +24,7 @@ class UserResponse {
     required this.githubLink,
     required this.birthDate,
     required this.jobTitle,
+    required this.isAdmin,
   });
 
   factory UserResponse.fromJson(Map<String, dynamic> map) {
@@ -37,6 +39,7 @@ class UserResponse {
       githubLink: map['githubLink'] as String?,
       birthDate: map['birthDate'] as String?,
       jobTitle: map['jobTitle'] as String?,
+      isAdmin: map['isAdmin'] as bool,
     );
   }
 }
@@ -52,6 +55,7 @@ class User {
   final String? githubLink;
   final DateTime? birthDate;
   final String? jobTitle;
+  final bool isAdmin;
 
   const User({
     required this.id,
@@ -64,6 +68,7 @@ class User {
     required this.githubLink,
     required this.birthDate,
     required this.jobTitle,
+    required this.isAdmin,
   });
 
   factory User.fromResponse(final UserResponse data) {
@@ -79,12 +84,13 @@ class User {
       birthDate:
           data.birthDate != null ? DateTime.parse(data.birthDate!) : null,
       jobTitle: helpers.getNullStringIfEmpty(data.jobTitle),
+      isAdmin: data.isAdmin,
     );
   }
 
   @override
   String toString() {
-    return 'User{id: $id, globalId: $globalId, name: $name, email: $email, avatarLink: $avatarLink, phoneNumber: $phoneNumber, telegramLink: $telegramLink, githubLink: $githubLink, birthDate: $birthDate, jobTitle: $jobTitle}';
+    return 'User{id: $id, globalId: $globalId, name: $name, email: $email, avatarLink: $avatarLink, phoneNumber: $phoneNumber, telegramLink: $telegramLink, githubLink: $githubLink, birthDate: $birthDate, jobTitle: $jobTitle, isAdmin: $isAdmin}';
   }
 
   User copyWith({
@@ -98,6 +104,7 @@ class User {
     String? githubLink,
     DateTime? birthDate,
     String? jobTitle,
+    bool? isAdmin,
   }) {
     return User(
       id: id ?? this.id,
@@ -110,6 +117,7 @@ class User {
       githubLink: githubLink ?? this.githubLink,
       birthDate: birthDate ?? this.birthDate,
       jobTitle: jobTitle ?? this.jobTitle,
+      isAdmin: isAdmin ?? this.isAdmin,
     );
   }
 }

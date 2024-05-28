@@ -64,3 +64,17 @@ Future<ProjectResponse> addProject(AddProject project) async {
     rethrow;
   }
 }
+
+Future<Map<String, dynamic>> deleteProject(int projectId) async {
+  try {
+    // приходит только статус и сообщение
+    final response = await HttpPlugin().delete('/projects/$projectId');
+    final Map<String, dynamic> jsonData = json.decode(response.body);
+    return jsonData;
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
+}

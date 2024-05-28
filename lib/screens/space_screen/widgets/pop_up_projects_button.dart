@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:unityspace/screens/space_screen/widgets/delete_no_rules_dialog.dart';
 import 'package:unityspace/screens/space_screen/widgets/unarchive_project_dialog.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/project_page.dart';
 import 'package:unityspace/screens/space_screen/widgets/pop_up_projects_item.dart';
@@ -44,16 +45,33 @@ class PopUpProjectsButton extends StatelessWidget {
                 text: localization.to_archive,
               ),
             ),
+            PopupMenuItem(
+              onTap: () => store.checkRulesByDelete()
+                  ? store.deleteProject(projectId)
+                  : showDeleteNoRulesDialog(context, store.owner),
+              child: PopupProjectsItem(
+                text: localization.delete_project,
+                color: Colors.red,
+              ),
+            )
           ] else ...[
             PopupMenuItem(
               onTap: () {
-                showMoveProjectDialog(
-                    context, store.selectedColumn, projectId);
+                showMoveProjectDialog(context, store.selectedColumn, projectId);
               },
               child: PopupProjectsItem(
                 text: localization.from_archive,
               ),
             ),
+            PopupMenuItem(
+              onTap: () => store.checkRulesByDelete()
+                  ? store.deleteProject(projectId)
+                  : showDeleteNoRulesDialog(context, store.owner),
+              child: PopupProjectsItem(
+                text: localization.delete_project,
+                color: Colors.red,
+              ),
+            )
           ],
         ];
       },

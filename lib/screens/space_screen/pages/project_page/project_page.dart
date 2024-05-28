@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/models/spaces_models.dart';
+import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/screens/dialogs/add_project_dialog.dart';
 import 'package:unityspace/screens/space_screen/widgets/pop_up_projects_button.dart';
 import 'package:unityspace/screens/widgets/columns_list/column_button.dart';
 import 'package:unityspace/screens/widgets/columns_list/columns_list_row.dart';
 import 'package:unityspace/screens/widgets/tabs_list/tab_button.dart';
 import 'package:unityspace/store/project_store.dart';
+import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/constants.dart';
 import 'package:unityspace/utils/errors.dart';
 import 'package:unityspace/utils/localization_helper.dart';
@@ -43,6 +45,14 @@ class ProjectsPageStore extends WStore {
 
   void changeProjectColumn(List<int> projectIds, int archiveColumnId) {
     projectStore.changeProjectColumn(projectIds, archiveColumnId);
+  }
+
+  void deleteProject(int projectId) {
+    projectStore.deleteProject(projectId);
+  }
+
+  bool checkRulesByDelete() {
+    return (isOwner || isAdmin) ? true : false;
   }
 
   void selectFirstColumn(List<SpaceColumn> listColumns) {
@@ -91,6 +101,24 @@ class ProjectsPageStore extends WStore {
     });
     return archiveProjectsCount;
   }
+
+  OrganizationMember? get owner => computedFromStore(
+        store: UserStore(),
+        getValue: (store) => store.organizationOwner,
+        keyName: 'owner',
+      );
+
+  bool get isOwner => computedFromStore(
+        store: UserStore(),
+        getValue: (store) => store.isOrganizationOwner,
+        keyName: 'isOwner',
+      );
+
+  bool get isAdmin => computedFromStore(
+        store: UserStore(),
+        getValue: (store) => store.isAdmin,
+        keyName: 'isAdmin',
+      );
 
   List<Project> get projects => computedFromStore(
         store: projectStore,
@@ -155,7 +183,7 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
       builderLoaded: (BuildContext context) {
         return WStoreBuilder<ProjectsPageStore>(
           watch: (store) =>
-              [store.selectedColumn, store.isArchivedPage, store.projects],
+              [store.projects, store.selectedColumn, store.isArchivedPage],
           store: context.wstore(),
           builder: (context, store) {
             store.getArchiveProjectsCount(space.columns);
