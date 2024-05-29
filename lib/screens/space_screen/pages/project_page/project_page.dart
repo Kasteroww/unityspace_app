@@ -5,11 +5,9 @@ import 'package:lottie/lottie.dart';
 import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/models/user_models.dart';
-import 'package:unityspace/screens/dialogs/add_project_dialog.dart';
-import 'package:unityspace/screens/space_screen/widgets/pop_up_projects_button.dart';
+import 'package:unityspace/screens/space_screen/pages/project_page/widgets/projects_listview.dart';
 import 'package:unityspace/screens/widgets/columns_list/column_button.dart';
 import 'package:unityspace/screens/widgets/columns_list/columns_list_row.dart';
-import 'package:unityspace/screens/widgets/tabs_list/tab_button.dart';
 import 'package:unityspace/store/project_store.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/constants.dart';
@@ -21,15 +19,10 @@ import 'package:wstore/wstore.dart';
 class ProjectsPageStore extends WStore {
   ProjectErrors error = ProjectErrors.none;
   WStoreStatus status = WStoreStatus.init;
-  ProjectStore projectStore;
   bool isArchivedPage = false;
   int archiveProjectsCount = 0;
   int archiveColumnId = 0;
-
   late SpaceColumn selectedColumn;
-
-  ProjectsPageStore({ProjectStore? projectStore})
-      : projectStore = projectStore ?? ProjectStore();
 
   void selectColumn(final SpaceColumn column) {
     setStore(() {
@@ -44,11 +37,11 @@ class ProjectsPageStore extends WStore {
   }
 
   void changeProjectColumn(List<int> projectIds, int archiveColumnId) {
-    projectStore.changeProjectColumn(projectIds, archiveColumnId);
+    ProjectStore().changeProjectColumn(projectIds, archiveColumnId);
   }
 
   void deleteProject(int projectId) {
-    projectStore.deleteProject(projectId);
+    ProjectStore().deleteProject(projectId);
   }
 
   bool checkRulesByDelete() {
@@ -66,7 +59,7 @@ class ProjectsPageStore extends WStore {
       error = ProjectErrors.none;
     });
     try {
-      await projectStore.getProjectsBySpaceId(space.id);
+      await ProjectStore().getProjectsBySpaceId(space.id);
       setStore(() {
         status = WStoreStatus.loaded;
       });
@@ -102,6 +95,18 @@ class ProjectsPageStore extends WStore {
     return archiveProjectsCount;
   }
 
+  void setProjectFavorite(int projectId, bool favorite) {
+    ProjectStore().setProjectFavorite(projectId, favorite);
+  }
+
+  List<Project> get projectsByColumn => computed(
+        getValue: () => getProjectsByColumnId(
+          isArchivedPage ? archiveColumnId : selectedColumn.id,
+        ),
+        watch: () => [projects, selectedColumn, isArchivedPage],
+        keyName: 'projectsByColumn',
+      );
+
   OrganizationMember? get owner => computedFromStore(
         store: UserStore(),
         getValue: (store) => store.organizationOwner,
@@ -121,7 +126,7 @@ class ProjectsPageStore extends WStore {
       );
 
   List<Project> get projects => computedFromStore(
-        store: projectStore,
+        store: ProjectStore(),
         getValue: (store) => store.projects,
         keyName: 'projects',
       );
@@ -146,7 +151,8 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
   @override
   Widget build(BuildContext context, ProjectsPageStore store) {
     final localization = LocalizationHelper.getLocalizations(context);
-
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     return WStoreStatusBuilder(
       store: store,
       watch: (store) => store.status,
@@ -187,11 +193,6 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
           store: context.wstore(),
           builder: (context, store) {
             store.getArchiveProjectsCount(space.columns);
-            final List<Project> listProjects = store.getProjectsByColumnId(
-              store.isArchivedPage
-                  ? store.archiveColumnId
-                  : store.selectedColumn.id,
-            );
             return Column(
               children: [
                 if (store.isArchivedPage)
@@ -200,10 +201,10 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
                   Container(
                     padding: const EdgeInsets.only(top: 10),
                     constraints: BoxConstraints(
-                      maxHeight: MediaQuery.of(context).size.height * 0.04,
+                      maxHeight: height * 0.04,
                       maxWidth: (Platform.isAndroid || Platform.isIOS)
-                          ? MediaQuery.of(context).size.width * 0.95
-                          : MediaQuery.of(context).size.width * 0.75,
+                          ? width * 0.95
+                          : width * 0.75,
                     ),
                     child: ListView(
                       scrollDirection: Axis.horizontal,
@@ -229,13 +230,13 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
                   child: Container(
                     padding: EdgeInsets.only(
                       top: 10,
-                      right: MediaQuery.of(context).size.width * 0.1,
+                      right: width * 0.1,
                     ),
                     constraints: BoxConstraints(
-                      maxHeight: MediaQuery.of(context).size.height * 0.04,
+                      maxHeight: height * 0.04,
                       maxWidth: (Platform.isAndroid || Platform.isIOS)
-                          ? MediaQuery.of(context).size.width * 0.95
-                          : MediaQuery.of(context).size.width * 0.75,
+                          ? width * 0.95
+                          : width * 0.75,
                     ),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -262,96 +263,7 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
                     ),
                   ),
                 ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Align(
-                      alignment: Alignment.topCenter,
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height,
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: Colors.white,
-                        ),
-                        constraints: BoxConstraints(
-                          maxWidth: (Platform.isAndroid || Platform.isIOS)
-                              ? MediaQuery.of(context).size.width * 0.95
-                              : MediaQuery.of(context).size.width * 0.75,
-                        ),
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Align(
-                                alignment: Alignment.topLeft,
-                                child: Text(
-                                  store.isArchivedPage
-                                      ? localization.an_archive
-                                      : store.selectedColumn.name,
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: ListView.separated(
-                                itemCount: listProjects.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return ListTile(
-                                    title: Text(
-                                      listProjects[index].name,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(fontSize: 18),
-                                    ),
-                                    subtitle:
-                                        listProjects[index].memo.isNotEmpty
-                                            ? Text(
-                                                listProjects[index].memo,
-                                                overflow: TextOverflow.ellipsis,
-                                              )
-                                            : null,
-                                    trailing: PopUpProjectsButton(
-                                      projectId: listProjects[index].id,
-                                    ),
-                                  );
-                                },
-                                separatorBuilder:
-                                    (BuildContext context, int index) =>
-                                        const Divider(),
-                              ),
-                            ),
-                            if (store.isArchivedPage)
-                              Container()
-                            else
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(top: 16),
-                                      child: TabButton(
-                                        title: '+ ${localization.add_project}',
-                                        selected: false,
-                                        onPressed: () {
-                                          showAddProjectDialog(
-                                            context,
-                                            store.selectedColumn.id,
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                const ProjectsListview(),
               ],
             );
           },

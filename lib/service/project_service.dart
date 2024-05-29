@@ -80,3 +80,27 @@ Future<Map<String, dynamic>> deleteProject(int projectId) async {
     rethrow;
   }
 }
+
+/// Добавление Проекта в избранное и Удаление
+Future<Map<String, dynamic>> setProjectFavorite({
+  required int projectId,
+  required bool favorite,
+}) async {
+  try {
+    // приходит userId, projectId, favorite
+    final response = await HttpPlugin().patch(
+      '/user-preference/set-project-favorite',
+      {
+        'projectId': projectId,
+        'favorite': favorite,
+      },
+    );
+    final Map<String, dynamic> jsonData = json.decode(response.body);
+    return jsonData;
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
+}

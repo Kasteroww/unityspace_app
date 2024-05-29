@@ -12,6 +12,7 @@ class ProjectResponse {
   final List<ProjectStageResponse> stages;
   final int taskCount;
   final String memo;
+  final bool favorite;
 
   const ProjectResponse({
     required this.id,
@@ -24,6 +25,7 @@ class ProjectResponse {
     required this.stages,
     required this.taskCount,
     required this.memo,
+    required this.favorite,
   });
 
   factory ProjectResponse.fromJson(Map<String, dynamic> map) {
@@ -41,6 +43,7 @@ class ProjectResponse {
           .toList(),
       taskCount: map['taskCount'] as int,
       memo: map['memo'] as String,
+      favorite: map['favorite'] as bool,
     );
   }
 }
@@ -80,6 +83,7 @@ class Project implements Identifiable {
   final List<ProjectStage> stages;
   final int taskCount;
   final String memo;
+  final bool favorite;
 
   Project({
     required this.id,
@@ -92,6 +96,7 @@ class Project implements Identifiable {
     required this.stages,
     required this.taskCount,
     required this.memo,
+    required this.favorite,
   });
 
   factory Project.fromResponse(final ProjectResponse data) {
@@ -106,6 +111,7 @@ class Project implements Identifiable {
       stages: data.stages.map(ProjectStage.fromResponse).toList(),
       taskCount: data.taskCount,
       memo: data.memo,
+      favorite: data.favorite,
     );
   }
 
@@ -120,6 +126,7 @@ class Project implements Identifiable {
     List<ProjectStage>? stages,
     int? taskCount,
     String? memo,
+    bool? favorite,
   }) {
     return Project(
       id: id ?? this.id,
@@ -132,6 +139,7 @@ class Project implements Identifiable {
       stages: stages ?? this.stages,
       taskCount: taskCount ?? this.taskCount,
       memo: memo ?? this.memo,
+      favorite: favorite ?? this.favorite,
     );
   }
 }

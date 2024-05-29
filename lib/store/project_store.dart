@@ -96,6 +96,33 @@ class ProjectStore extends GStore {
     return projects..removeWhere((project) => project.id == projectId);
   }
 
+  /// Добавление Проекта в избранное и Удаление
+  Future<void> setProjectFavorite(int projectId, bool favorite) async {
+    await api.setProjectFavorite(
+      projectId: projectId,
+      favorite: favorite,
+    );
+    _setProjectFavoriteLocally(projectId, favorite);
+  }
+
+  void _setProjectFavoriteLocally(
+    int projectId,
+    bool favorite,
+  ) {
+    final projectsNew = projects.map((project) {
+      if (projectId == project.id) {
+        return project.copyWith(
+          favorite: favorite,
+        );
+      } else {
+        return project;
+      }
+    }).toList();
+    setStore(() {
+      projects = projectsNew;
+    });
+  }
+
   @override
   void clear() {
     super.clear();
