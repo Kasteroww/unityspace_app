@@ -1,5 +1,11 @@
-interface class BaseModel {
+interface class Identifiable {
   final int id;
 
-  BaseModel({required this.id});
+  Identifiable({required this.id});
+}
+
+interface class Nameable {
+  final String name;
+
+  Nameable({required this.name});
 }

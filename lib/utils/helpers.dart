@@ -54,7 +54,7 @@ extension StringExtension on String {
   }
 }
 
-Map<int, T?> createMapById<T extends BaseModel>(List<T>? list) {
+Map<int, T?> createMapById<T extends Identifiable>(List<T>? list) {
   if (list == null) {
     return {};
   }

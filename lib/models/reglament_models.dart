@@ -289,7 +289,7 @@ class FullReglamentResponse {
   });
 }
 
-class Reglament implements BaseModel {
+class Reglament implements Identifiable {
   @override
   final int id;
   final String createdAt;

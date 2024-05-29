@@ -116,7 +116,7 @@ class DeleteNotificationsResponse {
   }
 }
 
-class NotificationModel implements BaseModel {
+class NotificationModel implements Identifiable {
   @override
   final int id;
   final bool archived;

@@ -60,7 +60,7 @@ enum TaskChangesTypes {
   const TaskChangesTypes(this.value);
 }
 
-class Task implements BaseModel {
+class Task implements Identifiable {
   @override
   final int id;
   final String name;
@@ -320,7 +320,7 @@ class TaskResponses {
   }
 }
 
-class TaskHistory implements BaseModel {
+class TaskHistory implements Identifiable {
   @override
   final int id;
   final String? state;

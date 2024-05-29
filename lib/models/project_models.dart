@@ -68,7 +68,7 @@ class ProjectStageResponse {
   }
 }
 
-class Project implements BaseModel {
+class Project implements Identifiable {
   @override
   final int id;
   final DateTime createdAt;

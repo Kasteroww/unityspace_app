@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:unityspace/models/i_base_model.dart';
 
 class AddDialogDropdownMenu<T> extends StatefulWidget {
   final GlobalKey? fieldKey;
   final String labelText;
-  final List<T> listValues;
+  final List<Nameable> listValues;
   final dynamic currentValue;
   final bool autofocus;
   final void Function(dynamic value)? onSaved;

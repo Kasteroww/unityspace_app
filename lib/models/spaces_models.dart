@@ -147,9 +147,10 @@ class SpaceMemberResponse {
   }
 }
 
-class Space implements BaseModel {
+class Space implements Identifiable, Nameable {
   @override
   final int id;
+  @override
   final String name;
   final double order;
   final List<SpaceMember> members;
@@ -226,8 +227,10 @@ class SpaceInvite {
   }
 }
 
-class SpaceColumn {
+class SpaceColumn implements Identifiable, Nameable {
+  @override
   final int id;
+  @override
   final String name;
   final double order;
   final int spaceId;
