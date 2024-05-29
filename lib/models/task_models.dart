@@ -320,6 +320,39 @@ class TaskResponses {
   }
 }
 
+/// модель для возвращения из метода searchTasks
+// в веб версии отсутствует, создана чтобы не использовать record
+class SearchTaskResponse {
+  final List<TaskResponse> tasks;
+  final int maxPagesCount;
+  final int tasksCount;
+
+  SearchTaskResponse({
+    required this.tasks,
+    required this.maxPagesCount,
+    required this.tasksCount,
+  });
+
+  factory SearchTaskResponse.fromJson(Map<String, dynamic> map) {
+    final tasksList = map['tasks'] as List<dynamic>;
+    return SearchTaskResponse(
+      tasks: tasksList.map((data) => TaskResponse.fromJson(data)).toList(),
+      maxPagesCount: map['maxPagesCount'] as int,
+      tasksCount: map['tasksCount'] as int,
+    );
+  }
+}
+
+class SearchTasksStoreResult {
+  final int maxPagesCount;
+  final int tasksCount;
+
+  SearchTasksStoreResult({
+    required this.maxPagesCount,
+    required this.tasksCount,
+  });
+}
+
 class TaskHistory implements Identifiable {
   @override
   final int id;

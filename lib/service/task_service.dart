@@ -37,3 +37,20 @@ Future getSpaceTasks({
     rethrow;
   }
 }
+
+Future<SearchTaskResponse> searchTasks({
+  required String searchText,
+  required int page,
+}) async {
+  try {
+    final response = await HttpPlugin()
+        .get('/tasks/search-tasks/$page', {'search': searchText});
+    final Map<String, dynamic> jsonDataList = json.decode(response.body);
+    return SearchTaskResponse.fromJson(jsonDataList);
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
+}
