@@ -82,7 +82,7 @@ class AllTasksBody extends WStoreWidget<SearchTaskStore> {
     return Column(
       children: [
         AddDialogInputField(
-          labelText: 'Найти',
+          labelText: localization.find,
           onChanged: (value) {
             store.searchTasks(searchString: value);
           },
