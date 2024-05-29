@@ -21,7 +21,9 @@ class NotificationHelper {
 
   /// Поиск пользователя по id
   static OrganizationMember? findMemberById(
-      List<OrganizationMember> members, int id) {
+    List<OrganizationMember> members,
+    int id,
+  ) {
     return members.firstWhereOrNull((member) => member.id == id);
   }
 
@@ -29,13 +31,14 @@ class NotificationHelper {
   ///
   /// Если уведомления произоши в один день, то они будут в одном списке
   List<List<NotificationModel>> groupNotificationsByDay(
-      List<NotificationModel> notifications) {
+    List<NotificationModel> notifications,
+  ) {
     // Словарь для хранения уведомлений, сгруппированных по дате
-    Map<String, List<NotificationModel>> groupedByDay = {};
+    final Map<String, List<NotificationModel>> groupedByDay = {};
 
-    for (var notification in notifications) {
+    for (final notification in notifications) {
       // Преобразование даты в строку в формате yyyy-MM-dd
-      String day =
+      final String day =
           '${notification.createdAt.year}-${notification.createdAt.month}-${notification.createdAt.day}';
 
       // Если такого дня еще нет в словаре, добавляем
@@ -59,17 +62,17 @@ class NotificationHelper {
   List<NotificationsGroup> groupNotificationsByObject(
     List<NotificationModel> notifications,
   ) {
-    List<NotificationsGroup> groups = [];
-    Map<String, NotificationsGroup> groupsMap = {};
+    final List<NotificationsGroup> groups = [];
+    final Map<String, NotificationsGroup> groupsMap = {};
 
-    for (var notification in notifications) {
+    for (final notification in notifications) {
       String groupId = '';
       if (notification.parentType == 'TASK') {
         groupId = 'task-${notification.parentId}';
         if (groupsMap.containsKey(groupId)) {
           groupsMap[groupId]?.notifications.add(notification);
         } else {
-          NotificationsGroup newGroup = NotificationsGroup(
+          final NotificationsGroup newGroup = NotificationsGroup(
             groupId: groupId,
             locations: notification.locations,
             createdAt: notification.createdAt,
@@ -87,9 +90,9 @@ class NotificationHelper {
           groupsMap[groupId]?.notifications.add(notification);
         } else {
           final reglamentMap = createMapById(ReglamentsStore().reglaments);
-          String reglamentName =
+          final String reglamentName =
               reglamentMap[notification.parentId]?.name ?? notification.text;
-          NotificationsGroup newGroup = NotificationsGroup(
+          final NotificationsGroup newGroup = NotificationsGroup(
             groupId: groupId,
             locations: notification.locations,
             createdAt: notification.createdAt,
@@ -107,10 +110,10 @@ class NotificationHelper {
           groupsMap[groupId]?.notifications.add(notification);
         } else {
           final spacesMap = createMapById(SpacesStore().spaces);
-          String spaceName =
+          final String spaceName =
               spacesMap[notification.locations[0].spaceId]?.name ??
                   notification.text;
-          NotificationsGroup newGroup = NotificationsGroup(
+          final NotificationsGroup newGroup = NotificationsGroup(
             groupId: groupId,
             locations: [],
             createdAt: notification.createdAt,
@@ -124,7 +127,7 @@ class NotificationHelper {
         }
       } else if (notification.parentType == 'ACHIEVEMENT') {
         groupId = 'achievement-${notification.id}';
-        NotificationsGroup newGroup = NotificationsGroup(
+        final NotificationsGroup newGroup = NotificationsGroup(
           groupId: groupId,
           locations: [],
           createdAt: notification.createdAt,
@@ -137,7 +140,7 @@ class NotificationHelper {
         groupsMap[newGroup.groupId] = newGroup;
       } else {
         groupId = 'other-${notification.id}';
-        NotificationsGroup newGroup = NotificationsGroup(
+        final NotificationsGroup newGroup = NotificationsGroup(
           groupId: groupId,
           locations: [],
           createdAt: notification.createdAt,
@@ -176,11 +179,10 @@ class NotificationHelper {
     if (locations.isEmpty) {
       return [
         LocationGroup(
-            key: 'null',
-            spaceId: null,
-            spaceName: '',
-            projectId: null,
-            projectName: '')
+          key: 'null',
+          spaceName: '',
+          projectName: '',
+        ),
       ];
     }
 
@@ -196,11 +198,12 @@ class NotificationHelper {
       final projectName = project?.name ?? '';
 
       return LocationGroup(
-          key: '${location.spaceId}/${location.projectId}',
-          spaceId: location.spaceId,
-          spaceName: spaceName,
-          projectId: location.projectId,
-          projectName: projectName);
+        key: '${location.spaceId}/${location.projectId}',
+        spaceId: location.spaceId,
+        spaceName: spaceName,
+        projectId: location.projectId,
+        projectName: projectName,
+      );
     }).toList();
   }
 }

@@ -23,7 +23,7 @@ Future<String> uploadAvatarByChunks({
     final totalChunks = (file.length / chunkSize).ceil();
     int start = 0;
     int end = 0;
-    List<Future<http.Response>> uploads = [];
+    final List<Future<http.Response>> uploads = [];
     for (int i = 0; i < totalChunks; i++) {
       end = start + chunkSize;
       if (end > file.length) {

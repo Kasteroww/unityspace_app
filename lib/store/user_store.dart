@@ -88,22 +88,31 @@ class UserStore extends GStore {
     _updateUserAtStore(user);
   }
 
-  Future<String?> requestEmailVerification(
-      {required String email, required bool isChangeEmail}) async {
-    return await api.requestEmailVerification(
-        email: email, isChangeEmail: isChangeEmail);
+  Future<String?> requestEmailVerification({
+    required String email,
+    required bool isChangeEmail,
+  }) async {
+    return api.requestEmailVerification(
+      email: email,
+      isChangeEmail: isChangeEmail,
+    );
   }
 
-  confirmEmail(
-      {required String email,
-      required String code,
-      required int userGlobalId,
-      required int userId}) async {
+  Future<void> confirmEmail({
+    required String email,
+    required String code,
+    required int userGlobalId,
+    required int userId,
+  }) async {
     await api.confirmUserEmail(
-        email: email, code: code, userGlobalId: userGlobalId, userId: userId);
+      email: email,
+      code: code,
+      userGlobalId: userGlobalId,
+      userId: userId,
+    );
   }
 
-  changeEmailLocally({required String newEmail}) {
+  void changeEmailLocally({required String newEmail}) {
     if (user != null) {
       setStore(() {
         user = user!.copyWith(email: newEmail);
@@ -111,7 +120,10 @@ class UserStore extends GStore {
     }
   }
 
-  changeMemberEmailLocally({required int userId, required String newEmail}) {
+  void changeMemberEmailLocally({
+    required int userId,
+    required String newEmail,
+  }) {
     if (organizationMembers.isEmpty) return;
     final member =
         organization?.members.firstWhereOrNull((m) => m.id == userId);
@@ -184,7 +196,8 @@ class UserStore extends GStore {
   }
 
   Map<String, OrganizationMember?> organizationMembersByEmailMap(
-      UserStore store) {
+    UserStore store,
+  ) {
     if (store.organization?.members == null) {
       return {};
     }

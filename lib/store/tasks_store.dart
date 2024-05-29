@@ -1,10 +1,10 @@
 import 'dart:collection';
 
+import 'package:collection/collection.dart';
 import 'package:unityspace/models/task_models.dart';
+import 'package:unityspace/service/task_service.dart' as api;
 import 'package:unityspace/utils/extensions/gstore_extension.dart';
 import 'package:wstore/wstore.dart';
-import 'package:unityspace/service/task_service.dart' as api;
-import 'package:collection/collection.dart';
 
 class TasksStore extends GStore {
   static TasksStore? _instance;
@@ -32,10 +32,10 @@ class TasksStore extends GStore {
     final tasksResponse = response.tasks;
     final List<Task> tasksList =
         tasksResponse.map((res) => Task.fromResponse(res)).toList();
-    HashMap<int, Task>? tasksMap = tasks != null
+    final HashMap<int, Task>? tasksMap = tasks != null
         ? HashMap.fromIterable(
             tasks!,
-            key: (element) => element.id,
+            key: (element) => element is Task ? element.id : throw Exception,
             value: (element) => element,
           )
         : null;
@@ -44,7 +44,7 @@ class TasksStore extends GStore {
       if (tasksMap == null || tasksMap.isEmpty) {
         tasks = tasksList;
       } else {
-        List<Task> updatedTasksList =
+        final List<Task> updatedTasksList =
             List<Task>.from(updateLocally(tasksList, tasksMap));
         tasks = updatedTasksList;
       }
@@ -56,10 +56,12 @@ class TasksStore extends GStore {
     final historyPage =
         historyResponse.map((res) => TaskHistory.fromResponse(res)).toList();
 
-    HashMap<int, TaskHistory>? historyMap = history != null
+    final HashMap<int, TaskHistory>? historyMap = history != null
         ? HashMap.fromIterable(
             history!,
-            key: (element) => element.id,
+            key: (element) => element is TaskHistory
+                ? element.id
+                : throw Exception('Value has wrong type'),
             value: (element) => element,
           )
         : null;
@@ -68,7 +70,7 @@ class TasksStore extends GStore {
       if (historyMap == null || historyMap.isEmpty) {
         history = historyPage;
       } else {
-        List<TaskHistory> updatedHistoryList =
+        final List<TaskHistory> updatedHistoryList =
             List<TaskHistory>.from(updateLocally(historyPage, historyMap));
 
         updatedHistoryList.sort((a, b) => a.updateDate.compareTo(b.updateDate));
@@ -78,8 +80,10 @@ class TasksStore extends GStore {
   }
 
   /// получение задач по spaceId и статусам
-  Future<List<Task>> getSpaceTasks(
-      {required int spaceId, required List<int> statuses}) async {
+  Future<List<Task>> getSpaceTasks({
+    required int spaceId,
+    required List<int> statuses,
+  }) async {
     final List<TaskResponse> tasksResponse =
         await api.getSpaceTasks(spaceId: spaceId, statuses: statuses);
     final allTasks =

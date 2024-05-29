@@ -4,8 +4,8 @@ class MainFormTextSubtitleWidget extends StatelessWidget {
   final String text;
 
   const MainFormTextSubtitleWidget({
-    super.key,
     required this.text,
+    super.key,
   });
 
   @override

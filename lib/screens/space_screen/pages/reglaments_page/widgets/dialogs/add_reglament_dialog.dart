@@ -1,9 +1,9 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
-import 'package:flutter/material.dart';
-import 'package:wstore/wstore.dart';
 import 'package:unityspace/utils/localization_helper.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:wstore/wstore.dart';
 
 Future<void> showAddReglamentDialog(BuildContext context, int columnId) async {
   return showDialog(

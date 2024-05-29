@@ -5,9 +5,9 @@ import 'package:crop_your_image/crop_your_image.dart';
 import 'package:flutter/material.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_primary_button.dart';
 import 'package:unityspace/utils/errors.dart';
+import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
-import 'package:unityspace/utils/localization_helper.dart';
 
 class CropImageScreenStore extends WStore {
   final controller = CropController();
@@ -66,8 +66,8 @@ class CropImageScreen extends WStoreWidget<CropImageScreenStore> {
   final String imageFilePath;
 
   const CropImageScreen({
-    super.key,
     required this.imageFilePath,
+    super.key,
   });
 
   @override
@@ -117,7 +117,7 @@ class CropImageScreen extends WStoreWidget<CropImageScreenStore> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: AspectRatio(
-                        aspectRatio: 1.0,
+                        aspectRatio: 1,
                         child: Crop(
                           controller: store.controller,
                           image: store.imageData!,

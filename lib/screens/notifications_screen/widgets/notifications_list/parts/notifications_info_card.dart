@@ -10,8 +10,8 @@ import 'package:unityspace/utils/date_time_converter.dart';
 
 class NotificationsInfoCard extends StatelessWidget {
   NotificationsInfoCard({
-    super.key,
     required this.notificationsGroup,
+    super.key,
   });
 
   final NotificationsGroup notificationsGroup;
@@ -24,7 +24,7 @@ class NotificationsInfoCard extends StatelessWidget {
         _sortNotificationsByDateTime(notificationsGroup.notifications);
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
-      child: Container(
+      child: ColoredBox(
         color: Colors.white,
         child: Padding(
           padding: const EdgeInsets.all(12),
@@ -42,15 +42,18 @@ class NotificationsInfoCard extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: Text(
                       DateTimeConverter.formatTimeHHmm(
-                          notifications.last.createdAt),
+                        notifications.last.createdAt,
+                      ),
                       style: const TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w400,
-                          color: Color.fromRGBO(102, 102, 102, 1)),
+                        fontSize: 10,
+                        fontWeight: FontWeight.w400,
+                        color: Color.fromRGBO(102, 102, 102, 1),
+                      ),
                     ),
                   ),
                   if (_checkIfUnreadAndNotInArchive(
-                      notificationsGroup.notifications))
+                    notificationsGroup.notifications,
+                  ))
                     Container(
                       width: 10,
                       height: 10,
@@ -74,8 +77,10 @@ class NotificationsInfoCard extends StatelessWidget {
                   SizedBox(
                     height: 14,
                     width: 14,
-                    child: SvgPicture.asset(notificationHelper
-                        .getPictureAssetByType(notificationsGroup)),
+                    child: SvgPicture.asset(
+                      notificationHelper
+                          .getPictureAssetByType(notificationsGroup),
+                    ),
                   ),
                   const SizedBox(
                     width: 5,
@@ -85,9 +90,10 @@ class NotificationsInfoCard extends StatelessWidget {
                       notificationsGroup.title,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          color: Color.fromRGBO(102, 102, 102, 1)),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: Color.fromRGBO(102, 102, 102, 1),
+                      ),
                     ),
                   ),
                 ],
@@ -95,7 +101,7 @@ class NotificationsInfoCard extends StatelessWidget {
               const SizedBox(
                 height: 4,
               ),
-              NotificationInfo(notificationGroup: notificationsGroup)
+              NotificationInfo(notificationGroup: notificationsGroup),
             ],
           ),
         ),
@@ -105,13 +111,14 @@ class NotificationsInfoCard extends StatelessWidget {
 
   /// Проверяет, что уведомление не архивировано и есть непрочитанные сообщения
   bool _checkIfUnreadAndNotInArchive(List<NotificationModel> typeList) {
-    return (typeList.any((element) => element.archived) == false &&
-        typeList.any((element) => element.unread));
+    return typeList.any((element) => element.archived) == false &&
+        typeList.any((element) => element.unread);
   }
 
   List<NotificationModel> _sortNotificationsByDateTime(
-      List<NotificationModel> notifications) {
-    List<NotificationModel> sortedNotifications = notifications;
+    List<NotificationModel> notifications,
+  ) {
+    final List<NotificationModel> sortedNotifications = notifications;
     // сортировка уведомлений от новейшего к более старому
     sortedNotifications.sort((a, b) => a.createdAt.compareTo(b.createdAt));
 

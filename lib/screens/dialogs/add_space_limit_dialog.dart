@@ -26,8 +26,8 @@ class AddSpaceLimitDialog extends StatelessWidget {
   final bool showTrialButton;
 
   const AddSpaceLimitDialog({
-    super.key,
     required this.showTrialButton,
+    super.key,
   });
 
   @override

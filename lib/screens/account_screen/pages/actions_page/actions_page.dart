@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/screens/account_screen/pages/actions_page/widgets/action_card.dart';
 import 'package:unityspace/screens/account_screen/pages/actions_page/widgets/action_skeleton_card.dart';
+import 'package:unityspace/screens/widgets/common/paddings.dart';
 import 'package:unityspace/screens/widgets/common/skeleton/skeleton_listview.dart';
+import 'package:unityspace/src/theme/theme.dart';
+import 'package:unityspace/store/tasks_store.dart';
 import 'package:unityspace/utils/constants.dart';
 import 'package:unityspace/utils/date_time_converter.dart';
 import 'package:unityspace/utils/errors.dart';
-import 'package:unityspace/screens/widgets/common/paddings.dart';
-import 'package:unityspace/store/tasks_store.dart';
 import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
-import 'package:unityspace/src/theme/theme.dart';
 import 'package:wstore/wstore.dart';
 
 class ActionsPageStore extends WStore {
@@ -164,22 +164,22 @@ class _ActionsListState extends State<ActionsList> {
       watch: (store) => [store.history, store.needToLoadNextPage],
       store: context.wstore<ActionsPageStore>(),
       builder: (context, store) {
-        List<TaskHistory> history = store.history ?? [];
+        final List<TaskHistory> history = store.history ?? [];
         return ListView.builder(
-            controller: _scrollController,
-            itemCount:
-                store.needToLoadNextPage ? history.length + 1 : history.length,
-            itemBuilder: (context, index) {
-              if (index == history.length) {
-                return const ActionSkeletonCard();
-              }
-              final action = history[index];
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  LayoutBuilder(builder: (context, _) {
+          controller: _scrollController,
+          itemCount:
+              store.needToLoadNextPage ? history.length + 1 : history.length,
+          itemBuilder: (context, index) {
+            if (index == history.length) {
+              return const ActionSkeletonCard();
+            }
+            final action = history[index];
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                LayoutBuilder(
+                  builder: (context, _) {
                     if (index == 0 ||
                         (dateFromDateTime(action.updateDate) !=
                             dateFromDateTime(history[index - 1].updateDate))) {
@@ -187,35 +187,40 @@ class _ActionsListState extends State<ActionsList> {
                         children: [
                           const PaddingTop(12),
                           Text(
-                              DateTimeConverter.formatDateEEEEdMMMM(
-                                  date: action.updateDate,
-                                  localization: localization,
-                                  locale: localization.localeName),
-                              style: textTheme.bodyMedium?.copyWith(
-                                  color: ColorConstants.grey04,
-                                  fontWeight: FontWeight.w400)),
+                            DateTimeConverter.formatDateEEEEdMMMM(
+                              date: action.updateDate,
+                              localization: localization,
+                              locale: localization.localeName,
+                            ),
+                            style: textTheme.bodyMedium?.copyWith(
+                              color: ColorConstants.grey04,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
                           const PaddingTop(12),
                         ],
                       );
                     } else {
                       return const SizedBox.shrink();
                     }
-                  }),
-                  PaddingBottom(
-                    12,
-                    child: ActionCard(
-                      isSelected: false,
-                      data: (
-                        history: action,
-                        taskName: context
-                            .wstore<ActionsPageStore>()
-                            .getTaskNameById(action.id)
-                      ),
+                  },
+                ),
+                PaddingBottom(
+                  12,
+                  child: ActionCard(
+                    isSelected: false,
+                    data: (
+                      history: action,
+                      taskName: context
+                          .wstore<ActionsPageStore>()
+                          .getTaskNameById(action.id)
                     ),
                   ),
-                ],
-              );
-            });
+                ),
+              ],
+            );
+          },
+        );
       },
     );
   }

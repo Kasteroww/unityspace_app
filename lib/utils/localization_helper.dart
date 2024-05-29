@@ -12,7 +12,8 @@ class LocalizationHelper {
     final localization = AppLocalizations.of(context);
     if (localization == null) {
       throw Exception(
-          'Localizations not found. Ensure localization is initialized properly.');
+        'Localizations not found. Ensure localization is initialized properly.',
+      );
     }
     return localization;
   }

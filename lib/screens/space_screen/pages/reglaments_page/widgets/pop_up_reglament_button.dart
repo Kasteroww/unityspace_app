@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class PopUpReglamentButton extends StatelessWidget {
   final List<PopupMenuEntry<String>> popupMenuEntryList;
-  const PopUpReglamentButton({super.key, required this.popupMenuEntryList});
+  const PopUpReglamentButton({required this.popupMenuEntryList, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,17 +27,18 @@ class PopUpReglamentButton extends StatelessWidget {
 
 class PopupMenuItemChild extends StatelessWidget {
   final String text;
-  const PopupMenuItemChild({super.key, required this.text});
+  const PopupMenuItemChild({required this.text, super.key});
 
   @override
   Widget build(BuildContext context) {
     return Text(
       text,
       style: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w400,
-          height: 16.41 / 14,
-          color: Color.fromRGBO(77, 77, 77, 1)),
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        height: 16.41 / 14,
+        color: Color.fromRGBO(77, 77, 77, 1),
+      ),
     );
   }
 }

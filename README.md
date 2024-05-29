@@ -46,6 +46,29 @@ installers/exe_creator/desktop_inno_script.iss
 
 ## Правила написания кода
 
+### Стилистическое 
+
+#### dynamic
+
+В ситуациях когда требуется dynamic, но значение используется (например, есть обращение к его параметрам) используется проверка на тип 
+
+```dart
+onChanged: (value) {
+  FocusScope.of(context).unfocus();
+  if (value is SpaceColumn) {
+    store.setSelectedColumnId(value.id);
+  } 
+},
+```
+
+Если требуется блок else - обработать или выбросить ошибку 
+
+```dart
+ key: (element) => element is TaskHistory
+    ? element.id
+    : throw TypeErrors.castTypeError,
+```
+
 ### services 
 
 Каждая функция заворачивается в `try-catch`. Внутри `catch` проверяется, является ли ошибка `HttpPluginException`. Если нет - ошибка пробрасывается дальше. Если да, то выбрасывается `ServiceException` с `error.message`. 

@@ -10,9 +10,9 @@ class AddDialogDropdownMenu<T> extends StatefulWidget {
   final void Function(dynamic value)? onChanged;
 
   const AddDialogDropdownMenu({
-    super.key,
     required this.labelText,
     required this.listValues,
+    super.key,
     this.currentValue,
     this.fieldKey,
     this.onSaved,

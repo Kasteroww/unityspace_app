@@ -84,9 +84,9 @@ class ReglamentCompleteTestResponse {
   ReglamentCompleteTestResponse({
     required this.id,
     required this.status,
-    this.createdAt,
     required this.userId,
     required this.failedQuestions,
+    this.createdAt,
   });
 }
 
@@ -223,7 +223,8 @@ class ChangeReglamentColumnAndOrderResponse {
   });
 
   factory ChangeReglamentColumnAndOrderResponse.fromJson(
-      Map<String, dynamic> map) {
+    Map<String, dynamic> map,
+  ) {
     return ChangeReglamentColumnAndOrderResponse(
       id: map['id'] as int,
       columnId: map['columnId'] as int,
@@ -316,16 +317,17 @@ class Reglament implements BaseModel {
 
   factory Reglament.fromResponse(final ReglamentResponse data) {
     return Reglament(
-        createdAt: data.createdAt,
-        creatorId: data.creatorId,
-        id: data.id,
-        name: data.name,
-        order: int.parse(data.order),
-        reglamentColumnId: data.reglamentColumnId,
-        required: data.required,
-        intro: data.intro,
-        updatedAt: data.updatedAt,
-        usersPassed: data.usersPassed);
+      createdAt: data.createdAt,
+      creatorId: data.creatorId,
+      id: data.id,
+      name: data.name,
+      order: int.parse(data.order),
+      reglamentColumnId: data.reglamentColumnId,
+      required: data.required,
+      intro: data.intro,
+      updatedAt: data.updatedAt,
+      usersPassed: data.usersPassed,
+    );
   }
 
   Reglament copyWith({

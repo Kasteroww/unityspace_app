@@ -20,16 +20,20 @@ class ReglamentsPageStore extends WStore {
 
   /// Получение колонок с Регламентами
   List<SpaceColumn> get reglamentColumns => computed(
-      getValue: () => _getColumns(currentSpace: currentSpace),
-      watch: () => [currentSpace],
-      keyName: 'reglamentColumns');
+        getValue: () => _getColumns(currentSpace: currentSpace),
+        watch: () => [currentSpace],
+        keyName: 'reglamentColumns',
+      );
 
   /// Получение регламентов из колонки
   List<Reglament> get columnReglaments => computed(
-      getValue: () =>
-          _getReglaments(reglaments: allReglaments, chosenColumn: chosenColumn),
-      watch: () => [allReglaments, chosenColumn],
-      keyName: 'columnReglaments');
+        getValue: () => _getReglaments(
+          reglaments: allReglaments,
+          chosenColumn: chosenColumn,
+        ),
+        watch: () => [allReglaments, chosenColumn],
+        keyName: 'columnReglaments',
+      );
 
   /// Выбрать колонку
   void chooseColumn({required SpaceColumn newChosenColumn}) {
@@ -48,10 +52,11 @@ class ReglamentsPageStore extends WStore {
     int newOrder = 0,
   }) async {
     final archiveIdColumn = archiveColumnId();
-    ReglamentsStore().changeReglamentColumnAndOrder(
-        reglamentId: reglamentId,
-        newColumnId: archiveIdColumn,
-        newOrder: newOrder);
+    await ReglamentsStore().changeReglamentColumnAndOrder(
+      reglamentId: reglamentId,
+      newColumnId: archiveIdColumn,
+      newOrder: newOrder,
+    );
   }
 
   int archiveColumnId() {
@@ -63,7 +68,7 @@ class ReglamentsPageStore extends WStore {
     final Map<int, List<Reglament>> columnReglaments = {};
 
     // Группируем регламенты по reglamentColumnId
-    for (var reglament in spaceReglaments) {
+    for (final reglament in spaceReglaments) {
       if (columnReglaments.containsKey(reglament.reglamentColumnId)) {
         columnReglaments[reglament.reglamentColumnId]?.add(reglament);
       } else {
@@ -72,7 +77,7 @@ class ReglamentsPageStore extends WStore {
     }
 
     // Сортируем регламенты внутри каждой колонки по полю order
-    for (var column in columnReglaments.keys) {
+    for (final column in columnReglaments.keys) {
       columnReglaments[column]?.sort((a, b) => a.order.compareTo(b.order));
     }
 
@@ -80,15 +85,16 @@ class ReglamentsPageStore extends WStore {
   }
 
   List<SpaceColumn> _getColumns({required Space? currentSpace}) {
-    var cols = currentSpace?.reglamentColumns ?? [];
+    final cols = currentSpace?.reglamentColumns ?? [];
     cols.sort((a, b) => a.order.compareTo(b.order));
     return cols;
   }
 
-  List<Reglament> _getReglaments(
-      {required List<Reglament> reglaments,
-      required SpaceColumn chosenColumn}) {
-    var reglamentsMap = _columnReglaments(reglaments);
+  List<Reglament> _getReglaments({
+    required List<Reglament> reglaments,
+    required SpaceColumn chosenColumn,
+  }) {
+    final reglamentsMap = _columnReglaments(reglaments);
     return reglamentsMap[chosenColumn.id] ?? [];
   }
 
@@ -99,8 +105,8 @@ class ReglamentsPageStore extends WStore {
 class ReglamentsPage extends WStoreWidget<ReglamentsPageStore> {
   final Space space;
   const ReglamentsPage({
-    super.key,
     required this.space,
+    super.key,
   });
 
   @override
@@ -117,39 +123,43 @@ class ReglamentsPage extends WStoreWidget<ReglamentsPageStore> {
           SizedBox(
             height: 40,
             child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: store.reglamentColumns.length,
-                separatorBuilder: (BuildContext context, int index) {
-                  return const SizedBox(
-                    width: 4,
-                  );
-                },
-                itemBuilder: (BuildContext context, int index) {
-                  final reglamentColumn = store.reglamentColumns[index];
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: WStoreBuilder(
-                        store: store,
-                        watch: (store) => [
-                              store.chosenColumn,
-                            ],
-                        builder: (context, store) {
-                          return InkWell(
-                            onTap: () {
-                              store.chooseColumn(
-                                  newChosenColumn: reglamentColumn);
-                            },
-                            child: Text(
-                              reglamentColumn.name,
-                              style: TextStyle(
-                                  color: reglamentColumn == store.chosenColumn
-                                      ? Colors.red
-                                      : Colors.blue),
-                            ),
+              scrollDirection: Axis.horizontal,
+              itemCount: store.reglamentColumns.length,
+              separatorBuilder: (BuildContext context, int index) {
+                return const SizedBox(
+                  width: 4,
+                );
+              },
+              itemBuilder: (BuildContext context, int index) {
+                final reglamentColumn = store.reglamentColumns[index];
+                return Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: WStoreBuilder(
+                    store: store,
+                    watch: (store) => [
+                      store.chosenColumn,
+                    ],
+                    builder: (context, store) {
+                      return InkWell(
+                        onTap: () {
+                          store.chooseColumn(
+                            newChosenColumn: reglamentColumn,
                           );
-                        }),
-                  );
-                }),
+                        },
+                        child: Text(
+                          reglamentColumn.name,
+                          style: TextStyle(
+                            color: reglamentColumn == store.chosenColumn
+                                ? Colors.red
+                                : Colors.blue,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
           ),
           const ReglamentListView(),
           InkWell(
@@ -161,11 +171,12 @@ class ReglamentsPage extends WStoreWidget<ReglamentsPageStore> {
               width: width,
               color: Colors.blue,
               child: Center(
-                  child: Text(
-                '+ ${localization.add_reglament}',
-              )),
+                child: Text(
+                  '+ ${localization.add_reglament}',
+                ),
+              ),
             ),
-          )
+          ),
         ],
       ),
     );

@@ -73,11 +73,11 @@ class UserAvatarWidget extends WStoreWidget<UserAvatarWidgetStore> {
   final Color colorText;
 
   const UserAvatarWidget({
-    super.key,
     required this.id,
     required this.width,
     required this.height,
     required this.fontSize,
+    super.key,
     this.email = '',
     this.radius = 6,
     this.colorBackground = const Color(0xFF6E777A),
@@ -100,7 +100,6 @@ class UserAvatarWidget extends WStoreWidget<UserAvatarWidgetStore> {
             color: colorBackground,
             border: Border.all(
               color: Colors.white, // Specify the border color
-              width: 1, // Specify the border width
             ),
             image: store.userAvatarUrl.isNotEmpty
                 ? DecorationImage(
@@ -136,15 +135,15 @@ class UserAvatar extends StatefulWidget {
   final Color colorBackground;
   final Color colorText;
   const UserAvatar({
-    super.key,
     required this.width,
     required this.height,
     required this.fontSize,
+    required this.member,
+    super.key,
     this.email = '',
     this.radius = 6,
     this.colorBackground = const Color(0xFF6E777A),
     this.colorText = Colors.white,
-    required this.member,
   });
 
   @override
@@ -184,7 +183,6 @@ class _UserAvatarState extends State<UserAvatar> {
         color: widget.colorBackground,
         border: Border.all(
           color: Colors.white, // Specify the border color
-          width: 1, // Specify the border width
         ),
         image: widget.member.avatarLink != null
             ? DecorationImage(

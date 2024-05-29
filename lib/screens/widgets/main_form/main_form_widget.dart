@@ -11,11 +11,11 @@ class MainFormWidget extends StatefulWidget {
   final List<Widget> Function(VoidCallback submit) children;
 
   const MainFormWidget({
-    super.key,
     required this.submitButtonText,
     required this.onSubmit,
     required this.submittingNow,
     required this.children,
+    super.key,
     this.onAdditionalButton,
     this.additionalButtonText = '',
   });
@@ -28,7 +28,7 @@ class _MainFormWidgetState extends State<MainFormWidget> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   void submit() {
-    FormState? formState = _formKey.currentState;
+    final FormState? formState = _formKey.currentState;
     if (formState != null && formState.validate()) {
       formState.save();
       widget.onSubmit();

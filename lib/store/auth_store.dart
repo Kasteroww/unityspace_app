@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unityspace/models/auth_models.dart';
+import 'package:unityspace/service/auth_service.dart' as api;
 import 'package:unityspace/service/service_exceptions.dart';
+import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/constants.dart';
 import 'package:unityspace/utils/http_plugin.dart';
-import 'package:unityspace/service/auth_service.dart' as api;
-import 'package:unityspace/store/user_store.dart';
 import 'package:wstore/wstore.dart';
 
 class AuthStore extends GStore {
@@ -68,7 +68,7 @@ class AuthStore extends GStore {
 
   Future<bool> refreshUserToken() async {
     if (_refreshUserTokenCompleteEvent.isCompleted == false) {
-      return await _refreshUserTokenCompleteEvent.future;
+      return _refreshUserTokenCompleteEvent.future;
     }
     _refreshUserTokenCompleteEvent = Completer<bool>();
     final refreshToken = _currentTokens.refreshToken;

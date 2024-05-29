@@ -18,12 +18,14 @@ class PaginatedNotifications {
   final List<NotificationResponse> notifications;
   final int maxPagesCount;
 
-  PaginatedNotifications(
-      {required this.notifications, required this.maxPagesCount});
+  PaginatedNotifications({
+    required this.notifications,
+    required this.maxPagesCount,
+  });
 
   factory PaginatedNotifications.fromJson(Map<String, dynamic> json) {
-    var list = json['notifications'] as List;
-    List<NotificationResponse> notificationsList =
+    final List<dynamic> list = json['notifications'];
+    final List<NotificationResponse> notificationsList =
         list.map((i) => NotificationResponse.fromJson(i)).toList();
     return PaginatedNotifications(
       notifications: notificationsList,
@@ -66,8 +68,8 @@ class NotificationResponse {
   });
 
   factory NotificationResponse.fromJson(Map<String, dynamic> json) {
-    var locList = json['locations'] as List;
-    List<NotificationLocation> locationList =
+    final List<dynamic> locList = json['locations'];
+    final List<NotificationLocation> locationList =
         locList.map((i) => NotificationLocation.fromJson(i)).toList();
     return NotificationResponse(
       archived: json['archived'] as bool,
@@ -231,10 +233,10 @@ class LocationGroup {
 
   LocationGroup({
     required this.key,
-    this.spaceId,
     required this.spaceName,
-    this.projectId,
     required this.projectName,
+    this.spaceId,
+    this.projectId,
   });
 }
 

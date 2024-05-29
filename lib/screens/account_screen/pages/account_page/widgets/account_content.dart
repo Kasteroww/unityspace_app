@@ -5,9 +5,9 @@ class AccountContentWidget extends StatelessWidget {
   final List<Widget> children;
 
   const AccountContentWidget({
-    super.key,
     required this.avatar,
     required this.children,
+    super.key,
   });
 
   @override

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:unityspace/screens/widgets/color_button_widget.dart';
 import 'package:unityspace/store/project_store.dart';
 import 'package:unityspace/store/reglament_store.dart';
-import 'package:unityspace/utils/constants.dart';
-import 'package:unityspace/utils/logger_plugin.dart';
-import 'package:unityspace/screens/widgets/color_button_widget.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/user_store.dart';
-import 'package:wstore/wstore.dart';
+import 'package:unityspace/utils/constants.dart';
 import 'package:unityspace/utils/localization_helper.dart';
+import 'package:unityspace/utils/logger_plugin.dart';
+import 'package:wstore/wstore.dart';
 
 class LoadingScreenStore extends WStore {
   WStoreStatus status = WStoreStatus.init;
@@ -51,7 +51,8 @@ class LoadingScreenStore extends WStore {
       ]),
       onError: (e, stack) {
         logger.d(
-            'LoadingScreenStore load additional Data error=$e\nstack=$stack');
+          'LoadingScreenStore load additional Data error=$e\nstack=$stack',
+        );
       },
     );
   }

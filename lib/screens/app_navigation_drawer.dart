@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/models/user_models.dart';
-import 'package:unityspace/screens/dialogs/add_space_limit_dialog.dart';
 import 'package:unityspace/screens/dialogs/add_space_dialog.dart';
+import 'package:unityspace/screens/dialogs/add_space_limit_dialog.dart';
 import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/constants.dart';
-import 'package:wstore/wstore.dart';
 import 'package:unityspace/utils/localization_helper.dart';
+import 'package:wstore/wstore.dart';
 
 class AppNavigationDrawerStore extends WStore {
   bool spaceCreating = false;
@@ -179,7 +179,8 @@ class AppNavigationDrawer extends WStoreWidget<AppNavigationDrawerStore> {
                       child: Column(
                         children: [
                           NavigatorMenuListTitle(
-                              title: localization.all_spaces),
+                            title: localization.all_spaces,
+                          ),
                           if (store.allSortedSpaces.isEmpty)
                             NavigatorMenuEmptySpacesHint(
                               isOrganizationOwner: store.isOrganizationOwner,
@@ -306,8 +307,8 @@ class NavigatorMenuEmptySpacesHint extends StatelessWidget {
   final bool isOrganizationOwner;
 
   const NavigatorMenuEmptySpacesHint({
-    super.key,
     required this.isOrganizationOwner,
+    super.key,
   });
 
   @override
@@ -341,8 +342,8 @@ class AddSpaceButtonWidget extends StatelessWidget {
   final VoidCallback onTap;
 
   const AddSpaceButtonWidget({
-    super.key,
     required this.onTap,
+    super.key,
   });
 
   @override
@@ -386,8 +387,8 @@ class NavigatorMenuListTitle extends StatelessWidget {
   final String title;
 
   const NavigatorMenuListTitle({
-    super.key,
     required this.title,
+    super.key,
   });
 
   @override
@@ -417,12 +418,12 @@ class NavigatorMenuItem extends StatelessWidget {
   final VoidCallback onTap;
 
   const NavigatorMenuItem({
-    super.key,
     required this.title,
     required this.selected,
     required this.iconAssetName,
     required this.onTap,
     required this.favorite,
+    super.key,
   });
 
   @override
@@ -474,12 +475,12 @@ class NavigatorMenuCurrentUser extends StatelessWidget {
   final VoidCallback onTap;
 
   const NavigatorMenuCurrentUser({
-    super.key,
     required this.name,
     required this.selected,
     required this.onTap,
     required this.license,
     required this.currentUserId,
+    super.key,
   });
 
   @override

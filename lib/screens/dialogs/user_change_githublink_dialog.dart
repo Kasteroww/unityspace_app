@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/helpers.dart';
+import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
-import 'package:unityspace/utils/localization_helper.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<void> showUserChangeGitHubLinkDialog(
   BuildContext context,
@@ -69,9 +69,10 @@ class UserChangeGitHubLinkDialogStore extends WStore {
         });
       },
       onError: (error, stack) {
-        String errorText = localization.change_link_error;
+        final String errorText = localization.change_link_error;
         logger.d(
-            'UserChangeGitHubLinkDialogStore.changeGitHubLink error: $error stack: $stack');
+          'UserChangeGitHubLinkDialogStore.changeGitHubLink error: $error stack: $stack',
+        );
         setStore(() {
           statusChangeGitHubLink = WStoreStatus.error;
           changeGitHubLinkError = errorText;
@@ -90,8 +91,8 @@ class UserChangeGitHubLinkDialog
   final String link;
 
   const UserChangeGitHubLinkDialog({
-    super.key,
     required this.link,
+    super.key,
   });
 
   @override
@@ -124,7 +125,6 @@ class UserChangeGitHubLinkDialog
               autofocus: true,
               initialValue: link,
               textInputAction: TextInputAction.done,
-              textCapitalization: TextCapitalization.none,
               keyboardType: TextInputType.url,
               autocorrect: false,
               onChanged: (value) {

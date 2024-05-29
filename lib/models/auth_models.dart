@@ -65,7 +65,8 @@ class GoogleAuthResponse {
   factory GoogleAuthResponse.fromJson(Map<String, dynamic> jsonData) {
     return GoogleAuthResponse(
       tokens: OnlyTokensResponse.fromJson(
-          jsonData['tokens'] as Map<String, dynamic>),
+        jsonData['tokens'] as Map<String, dynamic>,
+      ),
       registered: jsonData['registered'] as bool,
       picture: jsonData['picture'] as String?,
       spaceId: jsonData['spaceId'] as int?,

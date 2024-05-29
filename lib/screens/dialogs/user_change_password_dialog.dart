@@ -1,13 +1,12 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
-
-import 'package:flutter/material.dart';
 import 'package:unityspace/service/service_exceptions.dart';
 import 'package:unityspace/store/user_store.dart';
+import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
-import 'package:unityspace/utils/localization_helper.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<void> showUserChangePasswordDialog(
   BuildContext context,
@@ -99,7 +98,8 @@ class UserChangePasswordDialogStore extends WStore {
           errorText = localization.incorrect_old_password_error;
         } else {
           logger.d(
-              'UserChangePasswordDialogStore.changePassword error: $error stack: $stack');
+            'UserChangePasswordDialogStore.changePassword error: $error stack: $stack',
+          );
         }
         setStore(() {
           statusChange = WStoreStatus.error;

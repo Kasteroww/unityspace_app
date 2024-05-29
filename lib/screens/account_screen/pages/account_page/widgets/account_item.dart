@@ -11,11 +11,11 @@ class AccountItemWidget extends StatelessWidget {
   final VoidCallback? onLongTapValue;
 
   const AccountItemWidget({
-    super.key,
     required this.text,
     required this.value,
     required this.iconAssetName,
     required this.onTapChange,
+    super.key,
     this.onTapValue,
     this.onLongTapValue,
   });

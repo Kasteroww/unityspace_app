@@ -6,8 +6,8 @@ import 'package:unityspace/screens/space_screen/pages/reglaments_page/reglaments
 import 'package:unityspace/screens/space_screen/pages/tasks_page/tasks_page.dart';
 import 'package:unityspace/screens/widgets/tabs_list/tab_button.dart';
 import 'package:unityspace/screens/widgets/tabs_list/tabs_list_row.dart';
-import 'package:wstore/wstore.dart';
 import 'package:unityspace/utils/localization_helper.dart';
+import 'package:wstore/wstore.dart';
 
 class SpaceScreenStore extends WStore {
   late Space spaceId;
@@ -33,8 +33,8 @@ class SpaceScreen extends WStoreWidget<SpaceScreenStore> {
   final Space space;
 
   const SpaceScreen({
-    super.key,
     required this.space,
+    super.key,
   });
 
   @override
@@ -76,15 +76,16 @@ class SpaceScreen extends WStoreWidget<SpaceScreenStore> {
           const SizedBox(height: 8),
           Expanded(
             child: WStoreValueBuilder(
-                store: store,
-                watch: (store) => store.selectedTab,
-                builder: (context, selectedTab) {
-                  return switch (selectedTab) {
-                    SpacesScreenTab.projects => ProjectsPage(space: space),
-                    SpacesScreenTab.tasks => TasksPage(spaceId: space.id),
-                    SpacesScreenTab.reglaments => ReglamentsPage(space: space),
-                  };
-                }),
+              store: store,
+              watch: (store) => store.selectedTab,
+              builder: (context, selectedTab) {
+                return switch (selectedTab) {
+                  SpacesScreenTab.projects => ProjectsPage(space: space),
+                  SpacesScreenTab.tasks => TasksPage(spaceId: space.id),
+                  SpacesScreenTab.reglaments => ReglamentsPage(space: space),
+                };
+              },
+            ),
           ),
         ],
       ),

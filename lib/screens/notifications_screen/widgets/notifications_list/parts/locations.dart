@@ -12,8 +12,8 @@ class Locations extends StatelessWidget {
   final NotificationsGroup notificationsGroup;
 
   Locations({
-    super.key,
     required this.notificationsGroup,
+    super.key,
   });
 
   final notificationHelper = NotificationHelper(userStore: UserStore());
@@ -21,13 +21,17 @@ class Locations extends StatelessWidget {
   Widget build(BuildContext context) {
     final localization = LocalizationHelper.getLocalizations(context);
     final locationGroups = notificationHelper.groupLocations(
-        notificationsGroup.locations, SpacesStore(), ProjectStore());
+      notificationsGroup.locations,
+      SpacesStore(),
+      ProjectStore(),
+    );
     final groupName =
         NotificationsStrings.groupName(notificationsGroup, localization);
     const textStyle = TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w400,
-        color: Color.fromRGBO(102, 102, 102, 1));
+      fontSize: 12,
+      fontWeight: FontWeight.w400,
+      color: Color.fromRGBO(102, 102, 102, 1),
+    );
     final location = locationGroups.first;
     return Text(
       '${location.spaceName.isNotEmpty ? '${location.spaceName} / ' : ''}'

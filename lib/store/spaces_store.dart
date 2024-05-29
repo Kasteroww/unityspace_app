@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:unityspace/models/spaces_models.dart';
-import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/service/spaces_service.dart' as api;
+import 'package:unityspace/utils/helpers.dart';
 import 'package:wstore/wstore.dart';
 
 class SpacesStore extends GStore {
@@ -29,8 +29,8 @@ class SpacesStore extends GStore {
   Map<int, SpaceColumn?> get columnsMap {
     if (spaces == []) return {};
     return {
-      for (var column in spaces.expand((space) => space.columns))
-        column.id: column
+      for (final column in spaces.expand((space) => space.columns))
+        column.id: column,
     };
   }
 
@@ -60,13 +60,15 @@ class SpacesStore extends GStore {
     return newSpace.id;
   }
 
-  changeSpaceMemberEmailLocally(
-      {required int userId, required String newEmail}) {
+  void changeSpaceMemberEmailLocally({
+    required int userId,
+    required String newEmail,
+  }) {
     if (spaces.isNotEmpty) {
       for (final space in spaces) {
         final member = space.members.firstWhereOrNull((m) => m.id == userId);
         if (member != null) {
-          SpaceMember updatedMember = member.copyWith(email: newEmail);
+          final SpaceMember updatedMember = member.copyWith(email: newEmail);
           final memberIndex = space.members.indexOf(member);
           setStore(() {
             space.members[memberIndex] = updatedMember;

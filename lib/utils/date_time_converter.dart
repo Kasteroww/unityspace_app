@@ -10,7 +10,7 @@ class DateTimeConverter {
       return DateTime.parse(dateString);
     } catch (e) {
       // Обработка ошибок, если строка не может быть разобрана
-      throw FormatException("Invalid date format: $dateString");
+      throw FormatException('Invalid date format: $dateString');
     }
   }
 
@@ -38,13 +38,13 @@ class DateTimeConverter {
     required AppLocalizations localization,
     required String locale,
   }) {
-    DateFormat formatter = DateFormat('EEEE d MMMM', locale);
-    String formattedDate = formatter.format(date);
-    DateTime now = DateTime.now();
-    DateTime today = DateTime(now.year, now.month, now.day);
-    DateTime yesterday = today.subtract(const Duration(days: 1));
-    DateTime dateWithoutTime = DateTime(date.year, date.month, date.day);
-    String formattedDateCapitalized = formattedDate.capitalizeWords();
+    final DateFormat formatter = DateFormat('EEEE d MMMM', locale);
+    final String formattedDate = formatter.format(date);
+    final DateTime now = DateTime.now();
+    final DateTime today = DateTime(now.year, now.month, now.day);
+    final DateTime yesterday = today.subtract(const Duration(days: 1));
+    final DateTime dateWithoutTime = DateTime(date.year, date.month, date.day);
+    final String formattedDateCapitalized = formattedDate.capitalizeWords();
 
     if (dateWithoutTime == yesterday) {
       return '${localization.yesterday}, $formattedDateCapitalized';

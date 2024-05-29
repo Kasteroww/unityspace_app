@@ -9,10 +9,10 @@ class TabButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   const TabButton({
-    super.key,
     required this.title,
     required this.selected,
     required this.onPressed,
+    super.key,
     this.iconAsset,
   });
 
@@ -45,7 +45,9 @@ class TabButton extends StatelessWidget {
               Text(
                 title,
                 style: textTheme.bodyMedium!.copyWith(
-                    color: ColorConstants.grey02, fontWeight: FontWeight.w500),
+                  color: ColorConstants.grey02,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ],
           ),

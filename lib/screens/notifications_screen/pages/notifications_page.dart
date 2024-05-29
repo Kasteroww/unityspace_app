@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/notifications_list.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/skeleton_listview/notification_skeleton_card.dart';
 import 'package:unityspace/screens/widgets/common/paddings.dart';
 import 'package:unityspace/screens/widgets/common/skeleton/skeleton_listview.dart';
-import 'package:unityspace/store/user_store.dart';
-import 'package:wstore/wstore.dart';
-import 'package:unityspace/models/notification_models.dart';
-import 'package:unityspace/utils/errors.dart';
 import 'package:unityspace/store/notifications_store.dart';
+import 'package:unityspace/store/user_store.dart';
+import 'package:unityspace/utils/errors.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
+import 'package:wstore/wstore.dart';
 
 /// Стор страницы уведомлений
 ///
@@ -19,9 +19,10 @@ import 'package:unityspace/utils/logger_plugin.dart';
 /// Содержит в себе методы получения и обработки уведомлений пользователя
 class NotificationPageStore extends WStore {
   //
-  NotificationPageStore(
-      {NotificationsStore? notificationsStore, UserStore? userStore})
-      : notificationsStore = notificationsStore ?? NotificationsStore(),
+  NotificationPageStore({
+    NotificationsStore? notificationsStore,
+    UserStore? userStore,
+  })  : notificationsStore = notificationsStore ?? NotificationsStore(),
         userStore = userStore ?? UserStore();
   //
   NotificationErrors error = NotificationErrors.none;
@@ -61,16 +62,22 @@ class NotificationPageStore extends WStore {
 
   ///Изменяет статус архивирования уведомлений из списка
   void changeArchiveStatusNotifications(
-      List<NotificationModel> notificationList, bool archived) {
+    List<NotificationModel> notificationList,
+    bool archived,
+  ) {
     final notificationIds =
         notificationList.map((notification) => notification.id).toList();
     notificationsStore.changeArchiveStatusNotifications(
-        notificationIds, archived);
+      notificationIds,
+      archived,
+    );
   }
 
   ///Изменяет статус прочтения уведомлений из спика
   void changeReadStatusNotification(
-      List<NotificationModel> notificationList, bool unread) {
+    List<NotificationModel> notificationList,
+    bool unread,
+  ) {
     final notificationIds =
         notificationList.map((notification) => notification.id).toList();
     notificationsStore.changeReadStatusNotification(notificationIds, unread);
@@ -135,7 +142,7 @@ class NotificationsPage extends WStoreWidget<NotificationPageStore> {
           padding: const EdgeInsets.symmetric(horizontal: 48),
           child: Text(
             switch (store.error) {
-              NotificationErrors.none => "",
+              NotificationErrors.none => '',
               NotificationErrors.loadingDataError =>
                 localization.problem_uploading_data_try_again
             },
@@ -161,25 +168,29 @@ class NotificationsPage extends WStoreWidget<NotificationPageStore> {
       },
       builderLoaded: (context) {
         return WStoreBuilder<NotificationPageStore>(
-            watch: (store) => [store.notifications],
-            store: context.wstore<NotificationPageStore>(),
-            builder: (context, store) {
-              final List<NotificationModel> notifications = store.notifications;
-              return NotificationsList(
-                needToLoadNextPage: store.needToLoadNextPage,
-                items: notifications,
-                onLongPressButtonTap: (List<NotificationModel> list) {
-                  store.changeReadStatusNotification(
-                      list, list.any((element) => element.unread));
-                },
-                onDismissEvent: (List<NotificationModel> list) {
-                  store.changeArchiveStatusNotifications(
-                      list, list.any((element) => element.archived));
-                },
-                onScrolledDown:
-                    context.wstore<NotificationPageStore>().nextPage,
-              );
-            });
+          watch: (store) => [store.notifications],
+          store: context.wstore<NotificationPageStore>(),
+          builder: (context, store) {
+            final List<NotificationModel> notifications = store.notifications;
+            return NotificationsList(
+              needToLoadNextPage: store.needToLoadNextPage,
+              items: notifications,
+              onLongPressButtonTap: (List<NotificationModel> list) {
+                store.changeReadStatusNotification(
+                  list,
+                  list.any((element) => element.unread),
+                );
+              },
+              onDismissEvent: (List<NotificationModel> list) {
+                store.changeArchiveStatusNotifications(
+                  list,
+                  list.any((element) => element.archived),
+                );
+              },
+              onScrolledDown: context.wstore<NotificationPageStore>().nextPage,
+            );
+          },
+        );
       },
     );
   }

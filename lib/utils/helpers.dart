@@ -24,7 +24,7 @@ int makeIntFromOrder(final double order) {
 bool isLinkValid(final String url) {
   return isURL(url, {
     'protocols': ['http', 'https'],
-    'require_protocol': true
+    'require_protocol': true,
   });
 }
 
@@ -46,7 +46,7 @@ String formatDateddMMyyyy({required DateTime date, required String locale}) {
 
 extension StringExtension on String {
   String capitalizeWords() {
-    List<String> words = split(' ');
+    final List<String> words = split(' ');
 
     return words
         .map((word) => '${word[0].toUpperCase()}${word.substring(1)}')

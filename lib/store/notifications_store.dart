@@ -20,11 +20,12 @@ class NotificationsStore extends GStore {
     required List<NotificationResponse> notificationsToRemove,
     required List<NotificationModel> notifications,
   }) {
-    List<int> notificationIdsToRemove =
+    final List<int> notificationIdsToRemove =
         notificationsToRemove.map((e) => e.id).toList();
     return notifications
-        .where((notification) =>
-            !notificationIdsToRemove.contains(notification.id))
+        .where(
+          (notification) => !notificationIdsToRemove.contains(notification.id),
+        )
         .toList();
   }
 
@@ -59,20 +60,24 @@ class NotificationsStore extends GStore {
     required List<int> notificationIdsToRemove,
   }) {
     return notifications
-        .where((notification) =>
-            !notificationIdsToRemove.contains(notification.id))
+        .where(
+          (notification) => !notificationIdsToRemove.contains(notification.id),
+        )
         .toList();
   }
 
-  Future<int> getNotificationsData(
-      {required int page, bool isArchived = false}) async {
+  Future<int> getNotificationsData({
+    required int page,
+    bool isArchived = false,
+  }) async {
     // Получение данных уведомлений
     final PaginatedNotifications notificationsData = isArchived
         ? await api.getArchivedNotificationsOnPage(page: page)
         : await api.getNotificationsOnPage(page: page);
 
     // Преобразование ответа в список моделей NotificationModel
-    List<NotificationModel> newNotifications = notificationsData.notifications
+    final List<NotificationModel> newNotifications = notificationsData
+        .notifications
         .map((notification) => NotificationModel.fromResponse(notification))
         .toList();
     notifications.addAll(newNotifications);
@@ -90,24 +95,36 @@ class NotificationsStore extends GStore {
   /// Меняет статус по Архивированию уведомлений по id тех уведомлений,
   /// которые мы укажем
   Future<void> changeArchiveStatusNotifications(
-      List<int> notificationIds, bool isArchived) async {
+    List<int> notificationIds,
+    bool isArchived,
+  ) async {
     final archivedList = await api.archiveNotification(
-        notificationIds: notificationIds, isArchived: !isArchived);
+      notificationIds: notificationIds,
+      isArchived: !isArchived,
+    );
     setStore(() {
       notifications = _removeFromListLocally(
-          notificationsToRemove: archivedList, notifications: notifications);
+        notificationsToRemove: archivedList,
+        notifications: notifications,
+      );
     });
   }
 
   /// Меняет статус по Прочтению уведомлений по id тех уведомлений,
   /// которые мы укажем
   Future<void> changeReadStatusNotification(
-      List<int> notificationIds, bool isUnread) async {
+    List<int> notificationIds,
+    bool isUnread,
+  ) async {
     final readList = await api.readNotification(
-        notificationIds: notificationIds, status: !isUnread);
+      notificationIds: notificationIds,
+      status: !isUnread,
+    );
     setStore(() {
       notifications = _readLocally(
-          notificationsToUpdate: readList, notifications: notifications);
+        notificationsToUpdate: readList,
+        notifications: notifications,
+      );
     });
   }
 
@@ -119,8 +136,9 @@ class NotificationsStore extends GStore {
     );
     setStore(() {
       notifications = _deleteLocally(
-          notifications: notifications,
-          notificationIdsToRemove: notificationIds);
+        notifications: notifications,
+        notificationIdsToRemove: notificationIds,
+      );
     });
   }
 
@@ -129,7 +147,9 @@ class NotificationsStore extends GStore {
     final archivedList = await api.archiveAllNotifications();
     setStore(() {
       notifications = _removeFromListLocally(
-          notificationsToRemove: archivedList, notifications: notifications);
+        notificationsToRemove: archivedList,
+        notifications: notifications,
+      );
     });
   }
 
@@ -138,7 +158,9 @@ class NotificationsStore extends GStore {
     final readList = await api.readAllNotifications();
     setStore(() {
       notifications = _readLocally(
-          notificationsToUpdate: readList, notifications: notifications);
+        notificationsToUpdate: readList,
+        notifications: notifications,
+      );
     });
   }
 

@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:unityspace/models/project_models.dart';
-import 'package:wstore/wstore.dart';
 import 'package:unityspace/service/project_service.dart' as api;
+import 'package:wstore/wstore.dart';
 
 class ProjectStore extends GStore {
   static ProjectStore? _instance;
@@ -46,22 +46,25 @@ class ProjectStore extends GStore {
   /// Архивация и разархивация Проектов
   Future<void> changeProjectColumn(List<int> projectIds, int columnId) async {
     final projectsData = await api.changeProjectColumn(
-        projectIds: projectIds, columnId: columnId);
+      projectIds: projectIds,
+      columnId: columnId,
+    );
     setStore(() {
       projects = _changeProjectColumnLocally(projectsData, projects);
     });
   }
 
   List<Project> _changeProjectColumnLocally(
-      List<ProjectResponse> projectsResponse, List<Project> projects) {
+    List<ProjectResponse> projectsResponse,
+    List<Project> projects,
+  ) {
     final projectsIdsResponse = projectsResponse.map((e) => e.id).toList();
     return projects.map((project) {
       if (projectsIdsResponse.contains(project.id)) {
         return project.copyWith(
-            columnId: projectsResponse
-                .where((e) => e.id == project.id)
-                .first
-                .columnId);
+          columnId:
+              projectsResponse.where((e) => e.id == project.id).first.columnId,
+        );
       } else {
         return project;
       }
@@ -76,7 +79,9 @@ class ProjectStore extends GStore {
   }
 
   List<Project> _addProjectLocally(
-      ProjectResponse projectResponse, List<Project> projects) {
+    ProjectResponse projectResponse,
+    List<Project> projects,
+  ) {
     return projects..add(Project.fromResponse(projectResponse));
   }
 

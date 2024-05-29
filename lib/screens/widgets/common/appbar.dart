@@ -5,9 +5,9 @@ import 'package:unityspace/utils/constants.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({
+    required this.titleText,
     super.key,
     this.actions,
-    required this.titleText,
   });
 
   final String titleText;

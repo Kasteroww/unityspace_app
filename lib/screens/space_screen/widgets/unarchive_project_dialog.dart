@@ -1,16 +1,19 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_dropdown_menu.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
-import 'package:flutter/material.dart';
 import 'package:unityspace/store/project_store.dart';
 import 'package:unityspace/store/spaces_store.dart';
+import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
-import 'package:unityspace/utils/localization_helper.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<void> showMoveProjectDialog(
-    BuildContext context, SpaceColumn selectedColumn, int projectId) async {
+  BuildContext context,
+  SpaceColumn selectedColumn,
+  int projectId,
+) async {
   return showDialog(
     context: context,
     builder: (context) {
@@ -57,7 +60,7 @@ class MoveProjectDialogStore extends WStore {
     });
   }
 
-  void moveProject(AppLocalizations localization, projectId) {
+  void moveProject(AppLocalizations localization, int projectId) {
     if (statusMoveProject == WStoreStatus.loading) return;
     setStore(() {
       statusMoveProject = WStoreStatus.loading;
@@ -74,7 +77,8 @@ class MoveProjectDialogStore extends WStore {
       },
       onError: (error, stack) {
         logger.d(
-            'MoveProjectDialogStore.moveProject error: $error stack: $stack');
+          'MoveProjectDialogStore.moveProject error: $error stack: $stack',
+        );
         setStore(() {
           statusMoveProject = WStoreStatus.error;
           moveProjectError = localization.move_project_error;
@@ -114,48 +118,54 @@ class MoveProjectDialog extends WStoreWidget<MoveProjectDialogStore> {
         final loading = status == WStoreStatus.loading;
         final error = status == WStoreStatus.error;
         return WStoreBuilder<MoveProjectDialogStore>(
-            watch: (store) => [store.selectedSpace],
-            store: context.wstore(),
-            builder: (context, store) {
-              return AppDialogWithButtons(
-                title: localization.move_project,
-                primaryButtonText: localization.move,
-                onPrimaryButtonPressed: () {
-                  FocusScope.of(context).unfocus();
-                  store.moveProject(localization, projectId);
-                },
-                primaryButtonLoading: loading,
-                secondaryButtonText: '',
-                children: [
-                  AddDialogDropdownMenu<Space>(
-                    onChanged: (space) {
-                      FocusScope.of(context).unfocus();
+          watch: (store) => [store.selectedSpace],
+          store: context.wstore(),
+          builder: (context, store) {
+            return AppDialogWithButtons(
+              title: localization.move_project,
+              primaryButtonText: localization.move,
+              onPrimaryButtonPressed: () {
+                FocusScope.of(context).unfocus();
+                store.moveProject(localization, projectId);
+              },
+              primaryButtonLoading: loading,
+              secondaryButtonText: '',
+              children: [
+                AddDialogDropdownMenu<Space>(
+                  onChanged: (space) {
+                    FocusScope.of(context).unfocus();
+                    if (space is Space) {
                       store.setSelectedSpaceId(space.id);
-                    },
-                    labelText: localization.space,
-                    listValues: store.spaces,
-                    currentValue: store.selectedSpace,
-                  ),
-                  const SizedBox(height: 16),
-                  AddDialogDropdownMenu<SpaceColumn>(
-                    onChanged: (value) {
-                      FocusScope.of(context).unfocus();
+                    }
+                  },
+                  labelText: localization.space,
+                  listValues: store.spaces,
+                  currentValue: store.selectedSpace,
+                ),
+                const SizedBox(height: 16),
+                AddDialogDropdownMenu<SpaceColumn>(
+                  onChanged: (value) {
+                    FocusScope.of(context).unfocus();
+                    if (value is SpaceColumn) {
                       store.setSelectedColumnId(value.id);
-                    },
-                    labelText: localization.group,
-                    listValues:
-                        store.getColumnsBySpaceId(store.selectedSpaceId),
-                  ),
-                  if (error)
-                    Text(
-                      store.moveProjectError,
-                      style: const TextStyle(
-                        color: Color(0xFFD83400),
-                      ),
+                    } else {
+                      throw Exception('Value has wrong type');
+                    }
+                  },
+                  labelText: localization.group,
+                  listValues: store.getColumnsBySpaceId(store.selectedSpaceId),
+                ),
+                if (error)
+                  Text(
+                    store.moveProjectError,
+                    style: const TextStyle(
+                      color: Color(0xFFD83400),
                     ),
-                ],
-              );
-            });
+                  ),
+              ],
+            );
+          },
+        );
       },
     );
   }

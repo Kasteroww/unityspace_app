@@ -2,10 +2,9 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:unityspace/models/auth_models.dart';
-import 'package:unityspace/service/service_exceptions.dart';
-import 'package:unityspace/service/files_service.dart' as api_files;
-
 import 'package:unityspace/models/user_models.dart';
+import 'package:unityspace/service/files_service.dart' as api_files;
+import 'package:unityspace/service/service_exceptions.dart';
 import 'package:unityspace/utils/http_plugin.dart';
 
 Future<UserResponse> getUserData() async {
@@ -203,9 +202,10 @@ Future<String?> requestEmailVerification({
 }) async {
   try {
     final response = await HttpPlugin().post(
-        '/auth/request-email-verification/',
-        {'email': email},
-        {'change': isChangeEmail.toString()});
+      '/auth/request-email-verification/',
+      {'email': email},
+      {'change': isChangeEmail.toString()},
+    );
     return response.body;
   } catch (e) {
     if (e is HttpPluginException) {
@@ -223,17 +223,18 @@ Future<String?> requestEmailVerification({
   }
 }
 
-Future confirmUserEmail(
-    {required String email,
-    required String code,
-    required int userGlobalId,
-    required int userId}) async {
+Future confirmUserEmail({
+  required String email,
+  required String code,
+  required int userGlobalId,
+  required int userId,
+}) async {
   try {
     final response = await HttpPlugin().post('/auth/verify-email-change', {
-      "email": email,
-      "code": code,
-      "userGlobalId": userGlobalId,
-      "userId": userId
+      'email': email,
+      'code': code,
+      'userGlobalId': userGlobalId,
+      'userId': userId,
     });
     return response.body;
   } catch (e) {

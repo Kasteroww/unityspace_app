@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_input_field.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_logo_widget.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_text_subtitle_widget.dart';
@@ -6,9 +7,8 @@ import 'package:unityspace/screens/widgets/main_form/main_form_widget.dart';
 import 'package:unityspace/service/service_exceptions.dart';
 import 'package:unityspace/store/auth_store.dart';
 import 'package:unityspace/utils/constants.dart';
-import 'package:wstore/wstore.dart';
 import 'package:unityspace/utils/localization_helper.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:wstore/wstore.dart';
 
 class ConfirmScreenStore extends WStore {
   WStoreStatus status = WStoreStatus.init;
@@ -51,8 +51,8 @@ class ConfirmScreen extends WStoreWidget<ConfirmScreenStore> {
   final String email;
 
   const ConfirmScreen({
-    super.key,
     required this.email,
+    super.key,
   });
 
   @override
@@ -104,8 +104,8 @@ class ConfirmForm extends StatelessWidget {
   final bool loading;
 
   const ConfirmForm({
-    super.key,
     required this.loading,
+    super.key,
   });
 
   @override

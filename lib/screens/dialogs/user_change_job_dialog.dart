@@ -1,11 +1,10 @@
+import 'package:flutter/material.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
-
-import 'package:flutter/material.dart';
 import 'package:unityspace/store/user_store.dart';
+import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
-import 'package:unityspace/utils/localization_helper.dart';
 
 Future<void> showUserChangeJobDialog(
   BuildContext context,
@@ -55,7 +54,8 @@ class UserChangeJobDialogStore extends WStore {
       },
       onError: (error, stack) {
         logger.d(
-            'UserChangeJobDialogStore.changeJobTitle error: $error stack: $stack');
+          'UserChangeJobDialogStore.changeJobTitle error: $error stack: $stack',
+        );
         setStore(() {
           statusChange = WStoreStatus.error;
           changeError = changeJobError;
@@ -72,8 +72,8 @@ class UserChangeJobDialog extends WStoreWidget<UserChangeJobDialogStore> {
   final String jobTitle;
 
   const UserChangeJobDialog({
-    super.key,
     required this.jobTitle,
+    super.key,
   });
 
   @override

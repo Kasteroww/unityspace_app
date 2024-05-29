@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 
 class CustomContainer extends StatelessWidget {
-  const CustomContainer(
-      {super.key,
-      this.height = double.infinity,
-      this.width = double.infinity,
-      this.radius = 6,
-      this.color = Colors.white,
-      this.borderColor = Colors.greenAccent,
-      this.hasBorder = false,
-      this.child,
-      this.paddingTop = 12,
-      this.paddingLeft = 12,
-      this.paddingRight = 12,
-      this.paddingBottom = 12});
+  const CustomContainer({
+    super.key,
+    this.height = double.infinity,
+    this.width = double.infinity,
+    this.radius = 6,
+    this.color = Colors.white,
+    this.borderColor = Colors.greenAccent,
+    this.hasBorder = false,
+    this.child,
+    this.paddingTop = 12,
+    this.paddingLeft = 12,
+    this.paddingRight = 12,
+    this.paddingBottom = 12,
+  });
 
   final double height;
   final double width;
@@ -33,10 +34,11 @@ class CustomContainer extends StatelessWidget {
       width: width,
       height: height,
       padding: EdgeInsets.only(
-          top: paddingTop,
-          left: paddingLeft,
-          right: paddingRight,
-          bottom: paddingBottom),
+        top: paddingTop,
+        left: paddingLeft,
+        right: paddingRight,
+        bottom: paddingBottom,
+      ),
       decoration: BoxDecoration(
         color: color,
         border: hasBorder

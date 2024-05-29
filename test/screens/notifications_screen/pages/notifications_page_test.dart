@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:unityspace/screens/notifications_screen/pages/notifications_page.dart';
-import 'package:unityspace/utils/errors.dart';
 import 'package:unityspace/store/notifications_store.dart';
+import 'package:unityspace/utils/errors.dart';
 import 'package:unityspace/utils/http_plugin.dart';
 import 'package:wstore/wstore.dart';
 
@@ -52,8 +52,12 @@ void main() {
   test('сorrect error messages', () {
     // arange
     when(() => mockNotificationsStore.getNotificationsData(page: 1)).thenThrow(
-        const HttpPluginException(-1,
-            "Failed host lookup: 'server.unityspace.ru'", "ClientException"));
+      const HttpPluginException(
+        -1,
+        "Failed host lookup: 'server.unityspace.ru'",
+        'ClientException',
+      ),
+    );
     //act
     notificationPageStore.loadData();
     //assert

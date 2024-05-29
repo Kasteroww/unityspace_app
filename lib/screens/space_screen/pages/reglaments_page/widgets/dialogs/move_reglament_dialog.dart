@@ -1,12 +1,12 @@
+import 'package:flutter/material.dart';
 import 'package:unityspace/models/reglament_models.dart';
 import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_dropdown_menu.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
-import 'package:flutter/material.dart';
 import 'package:unityspace/store/reglament_store.dart';
 import 'package:unityspace/store/spaces_store.dart';
-import 'package:wstore/wstore.dart';
 import 'package:unityspace/utils/localization_helper.dart';
+import 'package:wstore/wstore.dart';
 
 Future<void> showMoveReglamentDialog({
   required BuildContext context,
@@ -59,10 +59,11 @@ class MoveReglamentDialogStore extends WStore {
     required int reglamentId,
     int newOrder = 0,
   }) async {
-    ReglamentsStore().changeReglamentColumnAndOrder(
-        reglamentId: reglamentId,
-        newColumnId: selectedColumn.id,
-        newOrder: newOrder);
+    await ReglamentsStore().changeReglamentColumnAndOrder(
+      reglamentId: reglamentId,
+      newColumnId: selectedColumn.id,
+      newOrder: newOrder,
+    );
   }
 
   List<SpaceColumn> getColumnsBySpaceId(int spaceId) {

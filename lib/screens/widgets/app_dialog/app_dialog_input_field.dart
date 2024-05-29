@@ -21,8 +21,8 @@ class AddDialogInputField extends StatefulWidget {
   final TextCapitalization textCapitalization;
 
   const AddDialogInputField({
-    super.key,
     required this.labelText,
+    super.key,
     this.fieldKey,
     this.initialValue,
     this.iconAssetName,

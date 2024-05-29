@@ -6,10 +6,10 @@ class AppDialog extends StatelessWidget {
   final List<Widget> buttons;
 
   const AppDialog({
-    super.key,
     required this.title,
     required this.children,
     required this.buttons,
+    super.key,
   });
 
   @override

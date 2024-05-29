@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:wstore/wstore.dart';
 import 'package:unityspace/utils/localization_helper.dart';
+import 'package:wstore/wstore.dart';
 
 class SettingsPageStore extends WStore {
   // TODO: add data here...
@@ -20,7 +20,7 @@ class SettingsPage extends WStoreWidget<SettingsPageStore> {
   @override
   Widget build(BuildContext context, SettingsPageStore store) {
     final localization = LocalizationHelper.getLocalizations(context);
-    return Container(
+    return ColoredBox(
       color: Colors.blue,
       child: Center(
         child: Text(localization.settings),

@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:unityspace/screens/notifications_screen/pages/archived_notifications_page.dart';
-import 'package:unityspace/utils/errors.dart';
 import 'package:unityspace/store/notifications_store.dart';
+import 'package:unityspace/utils/errors.dart';
 import 'package:unityspace/utils/http_plugin.dart';
 import 'package:wstore/wstore.dart';
 
@@ -15,7 +15,8 @@ void main() {
   setUp(() {
     mockNotificationsStore = MockNotificationsStore();
     notificationPageStore = ArchivedNotificationPageStore(
-        notificationsStore: mockNotificationsStore);
+      notificationsStore: mockNotificationsStore,
+    );
   });
 
   test('initial values are correct', () {
@@ -28,22 +29,32 @@ void main() {
   group('getNotifications', () {
     test('getNotificationsData called 1 time', () {
       // arange
-      when(() => mockNotificationsStore.getNotificationsData(
-              page: 1, isArchived: notificationPageStore.isArchived))
-          .thenAnswer((invocation) async => 1);
+      when(
+        () => mockNotificationsStore.getNotificationsData(
+          page: 1,
+          isArchived: notificationPageStore.isArchived,
+        ),
+      ).thenAnswer((invocation) async => 1);
       //act
       notificationPageStore.loadData();
       //assert
-      verify(() => mockNotificationsStore.getNotificationsData(
-          page: 1, isArchived: true)).called(1);
+      verify(
+        () => mockNotificationsStore.getNotificationsData(
+          page: 1,
+          isArchived: true,
+        ),
+      ).called(1);
     });
   });
 
   test('notifications loaded correctly', () async {
     // arange
-    when(() => mockNotificationsStore.getNotificationsData(
-            page: 1, isArchived: notificationPageStore.isArchived))
-        .thenAnswer((invocation) async => 1);
+    when(
+      () => mockNotificationsStore.getNotificationsData(
+        page: 1,
+        isArchived: notificationPageStore.isArchived,
+      ),
+    ).thenAnswer((invocation) async => 1);
     //act
     await notificationPageStore.loadData();
     //assert
@@ -55,8 +66,12 @@ void main() {
   test('сorrect error messages', () {
     // arange
     when(() => mockNotificationsStore.getNotificationsData(page: 1)).thenThrow(
-        const HttpPluginException(-1,
-            "Failed host lookup: 'server.unityspace.ru'", "ClientException"));
+      const HttpPluginException(
+        -1,
+        "Failed host lookup: 'server.unityspace.ru'",
+        'ClientException',
+      ),
+    );
     //act
     notificationPageStore.loadData();
     //assert

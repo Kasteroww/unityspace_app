@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
 import 'package:unityspace/store/user_store.dart';
+import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
-import 'package:unityspace/utils/localization_helper.dart';
 
 Future<void> showUserChangeBirthdayDialog(
   BuildContext context,
@@ -53,7 +53,8 @@ class UserChangeBirthdayDialogStore extends WStore {
       },
       onError: (error, stack) {
         logger.d(
-            'UserChangeBirthdayDialogStore.changeBirthday error: $error stack: $stack');
+          'UserChangeBirthdayDialogStore.changeBirthday error: $error stack: $stack',
+        );
         setStore(() {
           statusChangeBirthday = WStoreStatus.error;
           changeError = changeBirthdayError;
@@ -72,8 +73,8 @@ class UserChangeBirthdayDialog
   final DateTime? date;
 
   const UserChangeBirthdayDialog({
-    super.key,
     required this.date,
+    super.key,
   });
 
   @override

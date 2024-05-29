@@ -9,10 +9,10 @@ class ColumnButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   const ColumnButton({
-    super.key,
     required this.title,
     required this.selected,
     required this.onPressed,
+    super.key,
     this.iconAsset,
   });
 
@@ -44,11 +44,11 @@ class ColumnButton extends StatelessWidget {
               Text(
                 title,
                 style: textTheme.bodyMedium!.copyWith(
-                    color: ColorConstants.grey02,
-                    fontWeight: FontWeight.w500,
-                    decoration: selected
-                        ? TextDecoration.underline
-                        : TextDecoration.none),
+                  color: ColorConstants.grey02,
+                  fontWeight: FontWeight.w500,
+                  decoration:
+                      selected ? TextDecoration.underline : TextDecoration.none,
+                ),
               ),
             ],
           ),

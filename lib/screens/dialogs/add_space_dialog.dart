@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_primary_button.dart';
 import 'package:unityspace/service/service_exceptions.dart';
 import 'package:unityspace/store/spaces_store.dart';
-import 'package:wstore/wstore.dart';
 import 'package:unityspace/utils/localization_helper.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:wstore/wstore.dart';
 
 Future<int?> showAddSpaceDialog(BuildContext context) async {
   return showDialog<int?>(
@@ -102,7 +102,7 @@ class AddSpaceDialog extends WStoreWidget<AddSpaceDialogStore> {
           onStatusLoaded: (context) {
             Navigator.of(context).pop(store.newSpaceId);
           },
-        )
+        ),
       ],
       children: [
         Text(

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:unityspace/screens/notifications_screen/notifications_screen.dart';
-import 'package:wstore/wstore.dart';
 import 'package:unityspace/utils/localization_helper.dart';
+import 'package:wstore/wstore.dart';
 
 class PopUpNotificationsButton extends StatelessWidget {
   const PopUpNotificationsButton({super.key});
@@ -30,23 +30,26 @@ class PopUpNotificationsButton extends StatelessWidget {
             PopupMenuItem<String>(
               onTap: store.readAllNotifications,
               child: PopupMenuItemChild(
-                  iconPath: 'assets/icons/notifications/visible.svg',
-                  text: localization.read_all),
+                iconPath: 'assets/icons/notifications/visible.svg',
+                text: localization.read_all,
+              ),
             ),
             //Архивировать все
             PopupMenuItem<String>(
               onTap: store.archiveAllNotifications,
               child: PopupMenuItemChild(
-                  iconPath: 'assets/icons/notifications/download_box_1.svg',
-                  text: localization.archive_all),
+                iconPath: 'assets/icons/notifications/download_box_1.svg',
+                text: localization.archive_all,
+              ),
             ),
           ] else if (store.selectedTab == NotificationsScreenTab.archived) ...[
             //Удалить все
             PopupMenuItem<String>(
               onTap: store.deleteAllNotifications,
               child: PopupMenuItemChild(
-                  iconPath: 'assets/icons/notifications/recycle_bin_2.svg',
-                  text: localization.delete_all),
+                iconPath: 'assets/icons/notifications/recycle_bin_2.svg',
+                text: localization.delete_all,
+              ),
             ),
           ],
         ];
@@ -58,8 +61,11 @@ class PopUpNotificationsButton extends StatelessWidget {
 class PopupMenuItemChild extends StatelessWidget {
   final String iconPath;
   final String text;
-  const PopupMenuItemChild(
-      {super.key, required this.iconPath, required this.text});
+  const PopupMenuItemChild({
+    required this.iconPath,
+    required this.text,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -74,10 +80,11 @@ class PopupMenuItemChild extends StatelessWidget {
         Text(
           text,
           style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              height: 16.41 / 14,
-              color: Color.fromRGBO(77, 77, 77, 1)),
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            height: 16.41 / 14,
+            color: Color.fromRGBO(77, 77, 77, 1),
+          ),
         ),
       ],
     );

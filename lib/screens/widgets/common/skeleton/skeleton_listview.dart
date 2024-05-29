@@ -3,8 +3,8 @@ import 'package:unityspace/screens/notifications_screen/widgets/skeleton_listvie
 
 class SkeletonListView extends StatelessWidget {
   const SkeletonListView({
-    super.key,
     required this.skeletonCard,
+    super.key,
   });
 
   final Widget skeletonCard;
@@ -20,17 +20,19 @@ class SkeletonListView extends StatelessWidget {
             height: 15,
             width: 139,
             decoration: BoxDecoration(
-                color: const Color.fromRGBO(229, 231, 235, 1),
-                borderRadius: BorderRadius.circular(4)),
+              color: const Color.fromRGBO(229, 231, 235, 1),
+              borderRadius: BorderRadius.circular(4),
+            ),
           ),
           const SizedBox(
             height: 16,
           ),
           Expanded(
             child: ListView.builder(
-                itemBuilder: (BuildContext context, int index) {
-              return const NotificationSkeletonCard();
-            }),
+              itemBuilder: (BuildContext context, int index) {
+                return const NotificationSkeletonCard();
+              },
+            ),
           ),
         ],
       ),

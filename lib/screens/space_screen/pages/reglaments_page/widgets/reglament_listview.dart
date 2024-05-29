@@ -24,63 +24,71 @@ class ReglamentListView extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: ListView.builder(
-                itemCount: store.columnReglaments.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final columnReglament = store.columnReglaments[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Container(
-                        color: Colors.white,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  columnReglament.name,
-                                  overflow: TextOverflow.ellipsis,
+              itemCount: store.columnReglaments.length,
+              itemBuilder: (BuildContext context, int index) {
+                final columnReglament = store.columnReglaments[index];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: ColoredBox(
+                    color: Colors.white,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              columnReglament.name,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          PopUpReglamentButton(
+                            popupMenuEntryList: [
+                              PopupMenuItem<String>(
+                                child: PopupMenuItemChild(
+                                  text: localization.change_the_title,
                                 ),
                               ),
-                              PopUpReglamentButton(
-                                popupMenuEntryList: [
-                                  PopupMenuItem<String>(
-                                    child: PopupMenuItemChild(
-                                        text: localization.change_the_title),
-                                  ),
-                                  PopupMenuItem<String>(
-                                    child: PopupMenuItemChild(
-                                        text: localization.duplicate_reglament),
-                                  ),
-                                  PopupMenuItem<String>(
-                                    child: PopupMenuItemChild(
-                                        text: localization.copy_reglament_link),
-                                  ),
-                                  PopupMenuItem<String>(
-                                    onTap: () {
-                                      showMoveReglamentDialog(
-                                          context: context,
-                                          reglamentColumns:
-                                              store.reglamentColumns,
-                                          columnReglament: columnReglament);
-                                    },
-                                    child: PopupMenuItemChild(
-                                        text: localization.move_reglament),
-                                  ),
-                                  PopupMenuItem<String>(
-                                    onTap: () {
-                                      store.moveToArchive(
-                                          reglamentId: columnReglament.id);
-                                    },
-                                    child: PopupMenuItemChild(
-                                        text: localization.send_to_archive),
-                                  ),
-                                ],
-                              )
+                              PopupMenuItem<String>(
+                                child: PopupMenuItemChild(
+                                  text: localization.duplicate_reglament,
+                                ),
+                              ),
+                              PopupMenuItem<String>(
+                                child: PopupMenuItemChild(
+                                  text: localization.copy_reglament_link,
+                                ),
+                              ),
+                              PopupMenuItem<String>(
+                                onTap: () {
+                                  showMoveReglamentDialog(
+                                    context: context,
+                                    reglamentColumns: store.reglamentColumns,
+                                    columnReglament: columnReglament,
+                                  );
+                                },
+                                child: PopupMenuItemChild(
+                                  text: localization.move_reglament,
+                                ),
+                              ),
+                              PopupMenuItem<String>(
+                                onTap: () {
+                                  store.moveToArchive(
+                                    reglamentId: columnReglament.id,
+                                  );
+                                },
+                                child: PopupMenuItemChild(
+                                  text: localization.send_to_archive,
+                                ),
+                              ),
                             ],
                           ),
-                        )),
-                  );
-                }),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
           );
         },
       ),

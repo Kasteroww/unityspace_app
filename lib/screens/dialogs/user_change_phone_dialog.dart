@@ -1,12 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:phone_numbers_parser/phone_numbers_parser.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
-
-import 'package:flutter/material.dart';
 import 'package:unityspace/store/user_store.dart';
+import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
-import 'package:unityspace/utils/localization_helper.dart';
 
 Future<void> showUserChangePhoneDialog(
   BuildContext context,
@@ -80,7 +79,8 @@ class UserChangePhoneDialogStore extends WStore {
       },
       onError: (error, stack) {
         logger.d(
-            'UserChangePhoneDialogStore.changePhone error: $error stack: $stack');
+          'UserChangePhoneDialogStore.changePhone error: $error stack: $stack',
+        );
         setStore(() {
           statusChange = WStoreStatus.error;
           changeError = changePhoneError;
@@ -97,8 +97,8 @@ class UserChangePhoneDialog extends WStoreWidget<UserChangePhoneDialogStore> {
   final String phone;
 
   const UserChangePhoneDialog({
-    super.key,
     required this.phone,
+    super.key,
   });
 
   @override

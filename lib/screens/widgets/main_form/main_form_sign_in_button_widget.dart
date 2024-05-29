@@ -11,14 +11,14 @@ class MainFormSignInButtonWidget extends StatelessWidget {
   final String iconAssetName;
 
   const MainFormSignInButtonWidget({
-    super.key,
     required this.onPressed,
     required this.text,
     required this.loading,
+    required this.iconAssetName,
+    super.key,
     this.width = double.infinity,
     this.colorBackground = Colors.white,
     this.colorText = const Color(0xFF111012),
-    required this.iconAssetName,
   });
 
   @override
@@ -31,7 +31,7 @@ class MainFormSignInButtonWidget extends StatelessWidget {
       height: 40,
       elevation: 2,
       color: colorBackground,
-      padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       onPressed: loading ? null : onPressed,
       child: loading
           ? SizedBox(

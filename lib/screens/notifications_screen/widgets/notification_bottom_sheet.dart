@@ -12,8 +12,8 @@ import 'package:unityspace/utils/localization_helper.dart';
 
 class NotificationBottomSheet extends StatelessWidget {
   NotificationBottomSheet({
-    super.key,
     required this.notificationsGroup,
+    super.key,
   });
 
   final NotificationsGroup notificationsGroup;
@@ -50,30 +50,33 @@ class NotificationBottomSheet extends StatelessWidget {
                   height: 40,
                 ),
               Align(
-                  alignment: const Alignment(-1, 0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SvgPicture.asset(notificationHelper
-                          .getPictureAssetByType(notificationsGroup)),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      Expanded(
-                        child: Text(
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          notificationsGroup.title,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 20,
-                            height: 23.44 / 20,
-                            color: ColorConstants.grey02,
-                          ),
+                alignment: const Alignment(-1, 0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SvgPicture.asset(
+                      notificationHelper
+                          .getPictureAssetByType(notificationsGroup),
+                    ),
+                    const SizedBox(
+                      width: 8,
+                    ),
+                    Expanded(
+                      child: Text(
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        notificationsGroup.title,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 20,
+                          height: 23.44 / 20,
+                          color: ColorConstants.grey02,
                         ),
                       ),
-                    ],
-                  )),
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(
                 height: 24,
               ),
@@ -95,19 +98,21 @@ class NotificationBottomSheet extends StatelessWidget {
                 width: width,
                 height: 50,
                 decoration: BoxDecoration(
-                    color: const Color.fromRGBO(194, 238, 213, 1),
-                    borderRadius: BorderRadius.circular(12)),
+                  color: const Color.fromRGBO(194, 238, 213, 1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Center(
                   child: Text(
                     '${localization.go_to} ${NotificationsStrings.groupName(notificationsGroup, localization)}',
                     style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        height: 20 / 14,
-                        color: ColorConstants.grey02),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      height: 20 / 14,
+                      color: ColorConstants.grey02,
+                    ),
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),

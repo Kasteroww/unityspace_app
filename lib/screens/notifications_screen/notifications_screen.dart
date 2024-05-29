@@ -7,8 +7,8 @@ import 'package:unityspace/screens/widgets/common/appbar.dart';
 import 'package:unityspace/screens/widgets/tabs_list/tab_button.dart';
 import 'package:unityspace/screens/widgets/tabs_list/tabs_list_row.dart';
 import 'package:unityspace/store/notifications_store.dart';
-import 'package:wstore/wstore.dart';
 import 'package:unityspace/utils/localization_helper.dart';
+import 'package:wstore/wstore.dart';
 
 enum NotificationErrors { none, loadingDataError }
 
@@ -92,15 +92,16 @@ class NotificationsScreen extends WStoreWidget<NotificationsScreenStore> {
           const SizedBox(height: 8),
           Expanded(
             child: WStoreValueBuilder(
-                store: store,
-                watch: (store) => store.selectedTab,
-                builder: (context, selectedTab) {
-                  return switch (selectedTab) {
-                    NotificationsScreenTab.current => const NotificationsPage(),
-                    NotificationsScreenTab.archived =>
-                      const ArchivedNotificationsPage(),
-                  };
-                }),
+              store: store,
+              watch: (store) => store.selectedTab,
+              builder: (context, selectedTab) {
+                return switch (selectedTab) {
+                  NotificationsScreenTab.current => const NotificationsPage(),
+                  NotificationsScreenTab.archived =>
+                    const ArchivedNotificationsPage(),
+                };
+              },
+            ),
           ),
         ],
       ),

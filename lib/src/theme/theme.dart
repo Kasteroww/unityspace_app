@@ -5,19 +5,20 @@ ThemeData themeData = ThemeData(
   colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0C5B35)),
   scaffoldBackgroundColor: ColorConstants.background,
   appBarTheme: const AppBarTheme(
-      backgroundColor: ColorConstants.background,
-      surfaceTintColor: ColorConstants.background,
-      iconTheme: IconThemeData(
-        size: 20,
-        color: ColorConstants.grey03,
-      ),
-      titleTextStyle: TextStyle(
-        fontFamily: 'roboto',
-        fontWeight: FontWeight.w500,
-        fontSize: 20,
-        height: 23.44 / 20,
-        color: ColorConstants.grey03,
-      )),
+    backgroundColor: ColorConstants.background,
+    surfaceTintColor: ColorConstants.background,
+    iconTheme: IconThemeData(
+      size: 20,
+      color: ColorConstants.grey03,
+    ),
+    titleTextStyle: TextStyle(
+      fontFamily: 'roboto',
+      fontWeight: FontWeight.w500,
+      fontSize: 20,
+      height: 23.44 / 20,
+      color: ColorConstants.grey03,
+    ),
+  ),
   textButtonTheme: TextButtonThemeData(
     style: TextButton.styleFrom(
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -42,31 +43,34 @@ class ColorConstants {
 }
 
 TextTheme textTheme = const TextTheme(
-    headlineMedium: TextStyle(
-      fontFamily: 'roboto',
-      fontWeight: FontWeight.w500,
-      fontSize: 20,
-      height: 23.44 / 20,
-    ),
-    headlineSmall: TextStyle(
-      fontFamily: 'roboto',
-      fontWeight: FontWeight.w500,
-      fontSize: 16,
-      height: 18.75 / 16,
-    ),
-    bodyMedium: TextStyle(
-        fontFamily: 'roboto',
-        fontWeight: FontWeight.w500,
-        fontSize: 14,
-        height: 16.41 / 14),
-    labelMedium: TextStyle(
-      fontFamily: 'roboto',
-      fontWeight: FontWeight.w400,
-      fontSize: 12,
-      height: 14.06 / 12,
-    ),
-    labelSmall: TextStyle(
-        fontFamily: 'roboto',
-        fontWeight: FontWeight.w400,
-        fontSize: 10,
-        height: 11.72 / 10));
+  headlineMedium: TextStyle(
+    fontFamily: 'roboto',
+    fontWeight: FontWeight.w500,
+    fontSize: 20,
+    height: 23.44 / 20,
+  ),
+  headlineSmall: TextStyle(
+    fontFamily: 'roboto',
+    fontWeight: FontWeight.w500,
+    fontSize: 16,
+    height: 18.75 / 16,
+  ),
+  bodyMedium: TextStyle(
+    fontFamily: 'roboto',
+    fontWeight: FontWeight.w500,
+    fontSize: 14,
+    height: 16.41 / 14,
+  ),
+  labelMedium: TextStyle(
+    fontFamily: 'roboto',
+    fontWeight: FontWeight.w400,
+    fontSize: 12,
+    height: 14.06 / 12,
+  ),
+  labelSmall: TextStyle(
+    fontFamily: 'roboto',
+    fontWeight: FontWeight.w400,
+    fontSize: 10,
+    height: 11.72 / 10,
+  ),
+);

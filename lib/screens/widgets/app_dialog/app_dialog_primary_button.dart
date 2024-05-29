@@ -7,10 +7,10 @@ class AppDialogPrimaryButton extends StatelessWidget {
   final bool loading;
 
   const AppDialogPrimaryButton({
-    super.key,
     required this.onPressed,
     required this.text,
     required this.loading,
+    super.key,
   });
 
   @override

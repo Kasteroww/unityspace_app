@@ -7,15 +7,16 @@ import 'package:unityspace/service/service_exceptions.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/errors.dart';
-import 'package:wstore/wstore.dart';
 import 'package:unityspace/utils/localization_helper.dart';
+import 'package:wstore/wstore.dart';
 
 Future<void> showChangeEmailDialog(BuildContext context) async {
   return showDialog(
-      context: context,
-      builder: (_) {
-        return const ChangeEmailDialog();
-      });
+    context: context,
+    builder: (_) {
+      return const ChangeEmailDialog();
+    },
+  );
 }
 
 class ChangeEmailDialogStore extends WStore {
@@ -38,13 +39,13 @@ class ChangeEmailDialogStore extends WStore {
         keyName: 'currentUserEmail',
       );
 
-  setNewEmail(String value) {
+  void setNewEmail(String value) {
     setStore(() {
       newEmail = value.trim();
     });
   }
 
-  _setErrorChangeUserEmail(EmailErrors error) {
+  void _setErrorChangeUserEmail(EmailErrors error) {
     setStore(() {
       isChangeEmail = false;
       statusEmail = WStoreStatus.error;
@@ -114,58 +115,59 @@ class ChangeEmailDialog extends WStoreWidget<ChangeEmailDialogStore> {
         final loading = status == WStoreStatus.loading;
         final error = status == WStoreStatus.error;
         return AppDialogWithButtons(
-            title: localization.change_email,
-            primaryButtonText: localization.save,
-            onPrimaryButtonPressed: () {
-              FocusScope.of(context).unfocus();
-              store.changeUserEmail(store.newEmail);
-            },
-            primaryButtonLoading: loading,
-            secondaryButtonText: '',
-            children: [
-              AddDialogInputField(
-                fieldKey: fieldKey,
-                labelText: localization.enter_new_email,
-                autofocus: true,
-                initialValue: store.currentUserEmail,
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return localization.email_cannot_be_empty;
-                  } else if (!isValidEmail(value)) {
-                    return localization.incorrect_email_format;
-                  } else if (value == store.currentUserEmail) {
-                    return localization.emails_are_the_same;
-                  }
-                  return '';
+          title: localization.change_email,
+          primaryButtonText: localization.save,
+          onPrimaryButtonPressed: () {
+            FocusScope.of(context).unfocus();
+            store.changeUserEmail(store.newEmail);
+          },
+          primaryButtonLoading: loading,
+          secondaryButtonText: '',
+          children: [
+            AddDialogInputField(
+              fieldKey: fieldKey,
+              labelText: localization.enter_new_email,
+              autofocus: true,
+              initialValue: store.currentUserEmail,
+              keyboardType: TextInputType.emailAddress,
+              validator: (value) {
+                if (value.isEmpty) {
+                  return localization.email_cannot_be_empty;
+                } else if (!isValidEmail(value)) {
+                  return localization.incorrect_email_format;
+                } else if (value == store.currentUserEmail) {
+                  return localization.emails_are_the_same;
+                }
+                return '';
+              },
+              onChanged: (value) => store.setNewEmail(value),
+              onEditingComplete: () {
+                final bool isValidated =
+                    fieldKey.currentState?.validate() ?? false;
+                if (isValidated) {
+                  FocusScope.of(context).unfocus();
+                  store.changeUserEmail(store.newEmail);
+                }
+              },
+            ),
+            if (error)
+              Text(
+                switch (store.emailError) {
+                  EmailErrors.incorrectEmailAddress =>
+                    localization.email_is_incorrect,
+                  EmailErrors.emailAlreadyExists =>
+                    localization.this_email_already_exists,
+                  EmailErrors.cannotSendEmail =>
+                    localization.error_while_sending_try_later,
+                  EmailErrors.unknown => localization.unknown_error_try_later,
+                  EmailErrors.none => '',
                 },
-                onChanged: (value) => store.setNewEmail(value),
-                onEditingComplete: () {
-                  final bool isValidated =
-                      fieldKey.currentState?.validate() ?? false;
-                  if (isValidated) {
-                    FocusScope.of(context).unfocus();
-                    store.changeUserEmail(store.newEmail);
-                  }
-                },
-              ),
-              if (error)
-                Text(
-                  switch (store.emailError) {
-                    EmailErrors.incorrectEmailAddress =>
-                      localization.email_is_incorrect,
-                    EmailErrors.emailAlreadyExists =>
-                      localization.this_email_already_exists,
-                    EmailErrors.cannotSendEmail =>
-                      localization.error_while_sending_try_later,
-                    EmailErrors.unknown => localization.unknown_error_try_later,
-                    EmailErrors.none => '',
-                  },
-                  style: const TextStyle(
-                    color: Color(0xFFD83400),
-                  ),
+                style: const TextStyle(
+                  color: Color(0xFFD83400),
                 ),
-            ]);
+              ),
+          ],
+        );
       },
     );
   }
@@ -175,13 +177,16 @@ class ChangeEmailDialog extends WStoreWidget<ChangeEmailDialogStore> {
   }
 }
 
-Future<void> showConfirmEmailDialog(BuildContext context,
-    {required String newEmail}) async {
+Future<void> showConfirmEmailDialog(
+  BuildContext context, {
+  required String newEmail,
+}) async {
   return showDialog(
-      context: context,
-      builder: (_) {
-        return ConfirmEmailDialog(newEmail: newEmail);
-      });
+    context: context,
+    builder: (_) {
+      return ConfirmEmailDialog(newEmail: newEmail);
+    },
+  );
 }
 
 class ConfirmEmailDialogStore extends WStore {
@@ -212,23 +217,27 @@ class ConfirmEmailDialogStore extends WStore {
         keyName: 'currentUserGlobalId',
       );
 
-  setCode(String value) {
+  void setCode(String value) {
     setStore(() {
       code = value.trim();
     });
   }
 
-  confirmEmail({required String email, required String code}) async {
+  Future<void> confirmEmail({
+    required String email,
+    required String code,
+  }) async {
     if (currentUser == null) return;
     setStore(() {
       codeStatus = WStoreStatus.loading;
     });
     try {
       await userStore.confirmEmail(
-          email: email,
-          code: code,
-          userGlobalId: currentUserGlobalId,
-          userId: currentUserId);
+        email: email,
+        code: code,
+        userGlobalId: currentUserGlobalId,
+        userId: currentUserId,
+      );
       codeStatus = WStoreStatus.loaded;
       if (currentUser != null) {
         _updateEmailLocally(email: email, userId: currentUserId);
@@ -250,7 +259,7 @@ class ConfirmEmailDialogStore extends WStore {
     }
   }
 
-  _updateEmailLocally({required String email, required int userId}) {
+  void _updateEmailLocally({required String email, required int userId}) {
     userStore.changeEmailLocally(newEmail: email);
     userStore.changeMemberEmailLocally(userId: userId, newEmail: email);
     spacesStore.changeSpaceMemberEmailLocally(newEmail: email, userId: userId);
@@ -262,8 +271,8 @@ class ConfirmEmailDialogStore extends WStore {
 
 class ConfirmEmailDialog extends WStoreWidget<ConfirmEmailDialogStore> {
   const ConfirmEmailDialog({
-    super.key,
     required this.newEmail,
+    super.key,
   });
 
   final String newEmail;
@@ -287,68 +296,74 @@ class ConfirmEmailDialog extends WStoreWidget<ConfirmEmailDialogStore> {
         final error = status == WStoreStatus.error;
         final fieldKey = GlobalKey<FormFieldState>();
         return AppDialogWithButtons(
-            title: localization.confirm_email,
-            primaryButtonText: localization.confirm,
-            onPrimaryButtonPressed: () {
-              FocusScope.of(context).unfocus();
-              store.confirmEmail(email: newEmail, code: store.code);
-            },
-            primaryButtonLoading: loading,
-            secondaryButtonText: '',
-            children: [
-              RichText(
-                  text: TextSpan(
-                      text: localization.code_has_been_send_to,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                      children: [
-                    TextSpan(
-                        text: newEmail,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium!
-                            .copyWith(fontWeight: FontWeight.w500))
-                  ])),
-              const PaddingTop(16),
-              AddDialogInputField(
-                fieldKey: fieldKey,
-                labelText: localization.enter_code,
-                autofocus: true,
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return localization.enter_code;
-                  } else if (value.length != 4) {
-                    return localization.code_length_must_be_4;
-                  } else if (int.tryParse(value) == null) {
-                    return localization.only_numbers_allowed;
-                  }
-                  return '';
-                },
-                onChanged: (value) => store.setCode(value),
-                onEditingComplete: () {
-                  final bool isValidated =
-                      fieldKey.currentState?.validate() ?? false;
-                  if (isValidated) {
-                    FocusScope.of(context).unfocus();
-                    store.confirmEmail(
-                        email: newEmail, code: store.code.trim());
-                  }
-                },
-              ),
-              if (error)
-                Text(
-                  switch (store.codeError) {
-                    CodeConfimationErrors.incorrectCode =>
-                      localization.incorrect_code,
-                    CodeConfimationErrors.unknown =>
-                      localization.unknown_error_try_later,
-                    CodeConfimationErrors.none => '',
-                  },
-                  style: const TextStyle(
-                    color: Color(0xFFD83400),
+          title: localization.confirm_email,
+          primaryButtonText: localization.confirm,
+          onPrimaryButtonPressed: () {
+            FocusScope.of(context).unfocus();
+            store.confirmEmail(email: newEmail, code: store.code);
+          },
+          primaryButtonLoading: loading,
+          secondaryButtonText: '',
+          children: [
+            RichText(
+              text: TextSpan(
+                text: localization.code_has_been_send_to,
+                style: Theme.of(context).textTheme.bodyMedium,
+                children: [
+                  TextSpan(
+                    text: newEmail,
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium!
+                        .copyWith(fontWeight: FontWeight.w500),
                   ),
+                ],
+              ),
+            ),
+            const PaddingTop(16),
+            AddDialogInputField(
+              fieldKey: fieldKey,
+              labelText: localization.enter_code,
+              autofocus: true,
+              keyboardType: TextInputType.number,
+              validator: (value) {
+                if (value.isEmpty) {
+                  return localization.enter_code;
+                } else if (value.length != 4) {
+                  return localization.code_length_must_be_4;
+                } else if (int.tryParse(value) == null) {
+                  return localization.only_numbers_allowed;
+                }
+                return '';
+              },
+              onChanged: (value) => store.setCode(value),
+              onEditingComplete: () {
+                final bool isValidated =
+                    fieldKey.currentState?.validate() ?? false;
+                if (isValidated) {
+                  FocusScope.of(context).unfocus();
+                  store.confirmEmail(
+                    email: newEmail,
+                    code: store.code.trim(),
+                  );
+                }
+              },
+            ),
+            if (error)
+              Text(
+                switch (store.codeError) {
+                  CodeConfimationErrors.incorrectCode =>
+                    localization.incorrect_code,
+                  CodeConfimationErrors.unknown =>
+                    localization.unknown_error_try_later,
+                  CodeConfimationErrors.none => '',
+                },
+                style: const TextStyle(
+                  color: Color(0xFFD83400),
                 ),
-            ]);
+              ),
+          ],
+        );
       },
     );
   }

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 class PopupProjectsItem extends StatelessWidget {
   const PopupProjectsItem({
-    super.key,
     required this.text,
+    super.key,
     this.color = const Color.fromRGBO(77, 77, 77, 1),
   });
 
@@ -22,10 +22,11 @@ class PopupProjectsItem extends StatelessWidget {
         Text(
           text,
           style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              height: 16.41 / 14,
-              color: color),
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            height: 16.41 / 14,
+            color: color,
+          ),
         ),
       ],
     );

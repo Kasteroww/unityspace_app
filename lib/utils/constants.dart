@@ -8,12 +8,14 @@ class ConstantStrings {
   static const String google = 'Google';
   static const String error = 'Error';
   static const String hiddenPassword = '********';
-  static const String privacyPolicyUrl = 'https://www.unityspace.ru/privacy-policy';
+  static const String privacyPolicyUrl =
+      'https://www.unityspace.ru/privacy-policy';
   static const String incorrectUserName = 'Incorrect user name';
   static const String existUser = 'User already exists';
   static const String nonExistEmail = 'non-exist Email';
   static const String tooManyMessages = 'too many messages';
-  static const String invalidEmailOrPassword = 'Incorrect user name or password';
+  static const String invalidEmailOrPassword =
+      'Incorrect user name or password';
   static const String incorrectOldPassword = 'Incorrect old password';
   static const String paidTariffError = 'paid tariff';
   static const String incorrectCodeError = 'Error while entering code';
@@ -26,7 +28,8 @@ class ConstantIcons {
   static const String navigatorFavorite = 'assets/icons/navigator_favorite.svg';
   static const String navigatorPlus = 'assets/icons/navigator_plus.svg';
   static const String navigatorSpace = 'assets/icons/navigator_space.svg';
-  static const String navigatorNotifications = 'assets/icons/navigator_notifications.svg';
+  static const String navigatorNotifications =
+      'assets/icons/navigator_notifications.svg';
   static const String navigatorMain = 'assets/icons/navigator_main.svg';
   static const String appIcon = 'assets/icons/app_icon.svg';
   static const String menu = 'assets/icons/menu.svg';
@@ -45,4 +48,3 @@ class ConstantIcons {
   static const String accountGithub = 'assets/icons/account_github.svg';
   static const String accountPassword = 'assets/icons/account_password.svg';
 }
-

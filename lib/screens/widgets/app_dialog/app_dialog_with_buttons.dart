@@ -14,13 +14,13 @@ class AppDialogWithButtons extends StatelessWidget {
   final bool secondaryButtonLoading;
 
   const AppDialogWithButtons({
-    super.key,
     required this.title,
     required this.children,
     required this.primaryButtonText,
+    required this.secondaryButtonText,
+    super.key,
     this.onPrimaryButtonPressed,
     this.primaryButtonLoading = false,
-    required this.secondaryButtonText,
     this.onSecondaryButtonPressed,
     this.secondaryButtonLoading = false,
   });

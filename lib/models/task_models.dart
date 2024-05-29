@@ -106,29 +106,30 @@ class Task implements BaseModel {
 
   factory Task.fromResponse(TaskResponse response) {
     return Task(
-        id: response.id,
-        name: response.name,
-        stages: response.stages,
-        color: response.color,
-        createdAt: DateTimeConverter.stringToLocalDateTime(response.createdAt),
-        creatorId: response.creatorId,
-        tags: response.tags,
-        responsibleUsersId: response.responsibleUserId,
-        hasMessages: response.hasMessages,
-        hasDescription: response.hasDescription,
-        status: response.status,
-        dateBegin: response.dateBegin != null
-            ? DateTimeConverter.stringToLocalDateTime(response.dateBegin!)
-            : null,
-        dateEnd: response.dateEnd != null
-            ? DateTimeConverter.stringToLocalDateTime(response.dateEnd!)
-            : null,
-        dateMove: DateTimeConverter.stringToLocalDateTime(response.dateMove!),
-        importance: response.importance,
-        dateStatusChanged: response.dateStatusChanged,
-        blockReason: response.blockReason,
-        members: response.members,
-        cover: response.cover);
+      id: response.id,
+      name: response.name,
+      stages: response.stages,
+      color: response.color,
+      createdAt: DateTimeConverter.stringToLocalDateTime(response.createdAt),
+      creatorId: response.creatorId,
+      tags: response.tags,
+      responsibleUsersId: response.responsibleUserId,
+      hasMessages: response.hasMessages,
+      hasDescription: response.hasDescription,
+      status: response.status,
+      dateBegin: response.dateBegin != null
+          ? DateTimeConverter.stringToLocalDateTime(response.dateBegin!)
+          : null,
+      dateEnd: response.dateEnd != null
+          ? DateTimeConverter.stringToLocalDateTime(response.dateEnd!)
+          : null,
+      dateMove: DateTimeConverter.stringToLocalDateTime(response.dateMove!),
+      importance: response.importance,
+      dateStatusChanged: response.dateStatusChanged,
+      blockReason: response.blockReason,
+      members: response.members,
+      cover: response.cover,
+    );
   }
 }
 
@@ -214,15 +215,16 @@ class TasksGroup {
   final int spaceId;
   final List<Task> tasks;
 
-  TasksGroup(
-      {required this.id,
-      required this.spaceFavorite,
-      required this.spaceOrder,
-      required this.groupTitle,
-      required this.projectOrder,
-      required this.columnOrder,
-      required this.spaceId,
-      required this.tasks});
+  TasksGroup({
+    required this.id,
+    required this.spaceFavorite,
+    required this.spaceOrder,
+    required this.groupTitle,
+    required this.projectOrder,
+    required this.columnOrder,
+    required this.spaceId,
+    required this.tasks,
+  });
 }
 
 class TaskResponse {
@@ -277,8 +279,9 @@ class TaskResponse {
           .map((e) => TaskStages.fromJson(e as Map<String, dynamic>))
           .toList(),
       importance: TaskImportance.values.firstWhere(
-          (type) => type.value == json['importance'] as int,
-          orElse: () => TaskImportance.normal),
+        (type) => type.value == json['importance'] as int,
+        orElse: () => TaskImportance.normal,
+      ),
       createdAt: json['createdAt'] as String,
       creatorId: json['creatorId'] as int,
       tags: (json['tags'] as List<dynamic>).map((e) => e as int).toList(),
@@ -347,8 +350,9 @@ class TaskHistory implements BaseModel {
       state: response.state,
       taskId: response.taskId,
       type: TaskChangesTypes.values.firstWhere(
-          (type) => type.value == response.type,
-          orElse: () => TaskChangesTypes.defaultValue),
+        (type) => type.value == response.type,
+        orElse: () => TaskChangesTypes.defaultValue,
+      ),
       updateDate: DateTimeConverter.stringToLocalDateTime(response.updateDate),
       userId: response.userId,
       projectName: response.projectName,
@@ -362,19 +366,23 @@ class MyTaskHistoryResponse {
   final int maxPageCount;
   final List<TaskHistoryResponse> history;
   final List<TaskResponse> tasks;
-  MyTaskHistoryResponse(
-      {required this.maxPageCount, required this.history, required this.tasks});
+  MyTaskHistoryResponse({
+    required this.maxPageCount,
+    required this.history,
+    required this.tasks,
+  });
 
   factory MyTaskHistoryResponse.fromJson(Map<String, dynamic> map) {
     final historyList = map['history'] as List<dynamic>;
     final tasksList = map['tasks'] as List<dynamic>;
 
     return MyTaskHistoryResponse(
-        maxPageCount: map['maxPagesCount'] as int,
-        history: historyList
-            .map((history) => TaskHistoryResponse.fromJson(history))
-            .toList(),
-        tasks: tasksList.map((task) => TaskResponse.fromJson(task)).toList());
+      maxPageCount: map['maxPagesCount'] as int,
+      history: historyList
+          .map((history) => TaskHistoryResponse.fromJson(history))
+          .toList(),
+      tasks: tasksList.map((task) => TaskResponse.fromJson(task)).toList(),
+    );
   }
 }
 
@@ -389,16 +397,17 @@ class TaskHistoryResponse {
   final String? projectName;
   final String? commitName;
 
-  TaskHistoryResponse(
-      {required this.id,
-      required this.updateDate,
-      required this.taskId,
-      required this.taskName,
-      required this.userId,
-      required this.type,
-      required this.state,
-      required this.projectName,
-      required this.commitName});
+  TaskHistoryResponse({
+    required this.id,
+    required this.updateDate,
+    required this.taskId,
+    required this.taskName,
+    required this.userId,
+    required this.type,
+    required this.state,
+    required this.projectName,
+    required this.commitName,
+  });
 
   factory TaskHistoryResponse.fromJson(Map<dynamic, dynamic> map) {
     return TaskHistoryResponse(

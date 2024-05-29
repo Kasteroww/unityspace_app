@@ -1,12 +1,11 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
-
-import 'package:flutter/material.dart';
 import 'package:unityspace/store/user_store.dart';
+import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
-import 'package:unityspace/utils/localization_helper.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<void> showUserChangeNameDialog(
   BuildContext context,
@@ -64,7 +63,8 @@ class UserChangeNameDialogStore extends WStore {
       },
       onError: (error, stack) {
         logger.d(
-            'UserChangeNameDialogStore.changeName error: $error stack: $stack');
+          'UserChangeNameDialogStore.changeName error: $error stack: $stack',
+        );
         setStore(() {
           statusChangeName = WStoreStatus.error;
           changeNameError = localization.change_name_error;
@@ -81,8 +81,8 @@ class UserChangeNameDialog extends WStoreWidget<UserChangeNameDialogStore> {
   final String name;
 
   const UserChangeNameDialog({
-    super.key,
     required this.name,
+    super.key,
   });
 
   @override

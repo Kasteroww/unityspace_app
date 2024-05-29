@@ -5,8 +5,8 @@ class ColumnsListRow extends StatefulWidget {
   final List<ColumnButton> children;
 
   const ColumnsListRow({
-    super.key,
     required this.children,
+    super.key,
   });
 
   @override

@@ -137,8 +137,9 @@ Future<void> restorePasswordByEmail({
   }
 }
 
-Future<GoogleAuthResponse> googleAuth(
-    {required final String credential}) async {
+Future<GoogleAuthResponse> googleAuth({
+  required final String credential,
+}) async {
   try {
     final response = await HttpPlugin().post('/google/auth', {
       'credential': credential,

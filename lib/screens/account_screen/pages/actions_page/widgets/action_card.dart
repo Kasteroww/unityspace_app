@@ -1,17 +1,17 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:unityspace/models/task_models.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/screens/widgets/common/paddings.dart';
+import 'package:unityspace/src/theme/theme.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/errors.dart';
 import 'package:unityspace/utils/extensions/color_extension.dart';
 import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/localization_helper.dart';
-import 'package:unityspace/src/theme/theme.dart';
 import 'package:wstore/wstore.dart';
-import 'package:collection/collection.dart';
 
 class ActionCardStore extends WStore {
   WStoreStatus status = WStoreStatus.init;
@@ -25,9 +25,9 @@ class ActionCardStore extends WStore {
 
 class ActionCard extends WStoreWidget<ActionCardStore> {
   const ActionCard({
-    super.key,
     required this.data,
     required this.isSelected,
+    super.key,
   });
 
   final bool isSelected;
@@ -37,12 +37,16 @@ class ActionCard extends WStoreWidget<ActionCardStore> {
     return data.taskName ?? data.history.taskName ?? '???';
   }
 
-  String formatHistoryUpdateDate(
-      {required String dateString, required String locale}) {
-    List<String> dates = dateString.split('/');
+  String formatHistoryUpdateDate({
+    required String dateString,
+    required String locale,
+  }) {
+    final List<String> dates = dateString.split('/');
     if (dates.length == 1) {
       return formatDateddMMyyyy(
-          date: DateTime.parse(dateString), locale: locale);
+        date: DateTime.parse(dateString),
+        locale: locale,
+      );
     } else if (dates.length == 2) {
       return '${formatDateddMMyyyy(date: DateTime.parse(dates[0]), locale: locale)} - ${formatDateddMMyyyy(date: DateTime.parse(dates[1]), locale: locale)}';
     } else {
@@ -50,9 +54,10 @@ class ActionCard extends WStoreWidget<ActionCardStore> {
     }
   }
 
-  String taskChangesTypesToString(
-      {required ({TaskHistory history, String? taskName}) data,
-      required AppLocalizations localization}) {
+  String taskChangesTypesToString({
+    required ({TaskHistory history, String? taskName}) data,
+    required AppLocalizations localization,
+  }) {
     final history = data.history;
     final type = history.type;
     switch (type) {
@@ -74,8 +79,12 @@ class ActionCard extends WStoreWidget<ActionCardStore> {
         return localization.overdue_task_with_responsible;
       case TaskChangesTypes.changeDate:
         if (history.state != null) {
-          return localization.change_data_set(formatHistoryUpdateDate(
-              dateString: history.state!, locale: localization.localeName));
+          return localization.change_data_set(
+            formatHistoryUpdateDate(
+              dateString: history.state!,
+              locale: localization.localeName,
+            ),
+          );
         }
         return localization.change_data_removed;
       case TaskChangesTypes.changeColor:
@@ -102,7 +111,9 @@ class ActionCard extends WStoreWidget<ActionCardStore> {
           return localization.change_stage_archived(history.projectName ?? '');
         }
         return localization.change_stage_column(
-            history.state ?? '', history.projectName ?? '');
+          history.state ?? '',
+          history.projectName ?? '',
+        );
       case TaskChangesTypes.addTag:
         return localization.add_tag(history.state ?? '');
       case TaskChangesTypes.deleteTag:
@@ -121,7 +132,9 @@ class ActionCard extends WStoreWidget<ActionCardStore> {
         return localization.commit(history.commitName ?? '');
       case TaskChangesTypes.addStage:
         return localization.add_stage(
-            history.projectName ?? '', history.state ?? '');
+          history.projectName ?? '',
+          history.state ?? '',
+        );
       case TaskChangesTypes.deleteStage:
         return localization.delete_stage(history.projectName ?? '');
       case TaskChangesTypes.removeMember:
@@ -143,7 +156,7 @@ class ActionCard extends WStoreWidget<ActionCardStore> {
   Widget build(BuildContext context, ActionCardStore store) {
     final AppLocalizations localization =
         LocalizationHelper.getLocalizations(context);
-    return Container(
+    return DecoratedBox(
       decoration: BoxDecoration(
         color: ColorConstants.white,
         borderRadius: const BorderRadius.all(Radius.circular(8)),
@@ -154,7 +167,6 @@ class ActionCard extends WStoreWidget<ActionCardStore> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          mainAxisSize: MainAxisSize.max,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -169,87 +181,100 @@ class ActionCard extends WStoreWidget<ActionCardStore> {
                   ),
                 ),
                 const PaddingLeft(12),
-                Text(timeFromDateString(data.history.updateDate),
-                    style: textTheme.labelSmall!.copyWith(
-                      color: ColorConstants.grey04,
-                    )),
+                Text(
+                  timeFromDateString(data.history.updateDate),
+                  style: textTheme.labelSmall!.copyWith(
+                    color: ColorConstants.grey04,
+                  ),
+                ),
               ],
             ),
             const PaddingTop(8),
             ConstrainedBox(
               constraints: const BoxConstraints(maxHeight: 57),
-              child: LayoutBuilder(builder: (context, _) {
-                final type = data.history.type;
-                final state = data.history.state;
-                final text = taskChangesTypesToString(
-                    data: data, localization: localization);
-                final taskNumber = data.history.taskId.toString();
-                if (type == TaskChangesTypes.changeColor) {
-                  if (state != null && state != '') {
-                    final Color? color = _getColor(state);
+              child: LayoutBuilder(
+                builder: (context, _) {
+                  final type = data.history.type;
+                  final state = data.history.state;
+                  final text = taskChangesTypesToString(
+                    data: data,
+                    localization: localization,
+                  );
+                  final taskNumber = data.history.taskId.toString();
+                  if (type == TaskChangesTypes.changeColor) {
+                    if (state != null && state != '') {
+                      final Color? color = _getColor(state);
+                      return Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ActionText(
+                            '$text ',
+                          ),
+                          if (color != null)
+                            Container(
+                              width: 20,
+                              height: 20,
+                              decoration: BoxDecoration(
+                                color: color,
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(4),
+                                ),
+                              ),
+                            )
+                          else
+                            Container(
+                              width: 20,
+                              height: 20,
+                              decoration: BoxDecoration(
+                                color: Colors.transparent,
+                                border: Border.all(
+                                  color: ColorConstants.grey03,
+                                ),
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(4),
+                                ),
+                              ),
+                            ),
+                        ],
+                      );
+                    } else {
+                      return ActionText(
+                        '$text ',
+                      );
+                    }
+                  }
+                  if (type == TaskChangesTypes.createTask) {
                     return Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         ActionText(
                           '$text ',
                         ),
-                        color != null
-                            ? Container(
-                                width: 20,
-                                height: 20,
-                                decoration: BoxDecoration(
-                                    color: color,
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(4))),
-                              )
-                            : Container(
-                                width: 20,
-                                height: 20,
-                                decoration: BoxDecoration(
-                                    color: Colors.transparent,
-                                    border: Border.all(
-                                        color: ColorConstants.grey03),
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(4)))),
+                        TapToCopyText(
+                          text: '#$taskNumber',
+                        ),
                       ],
                     );
-                  } else {
+                  }
+                  if (type == TaskChangesTypes.addResponsible ||
+                      type == TaskChangesTypes.removeResponsible ||
+                      type == TaskChangesTypes.changeResponsible ||
+                      type == TaskChangesTypes.removeMember) {
+                    final name = state != null
+                        ? context
+                            .wstore<ActionCardStore>()
+                            .getUserNameById(int.parse(state))
+                        : '';
                     return ActionText(
-                      '$text ',
+                      '$text - $name',
                     );
                   }
-                }
-                if (type == TaskChangesTypes.createTask) {
-                  return Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ActionText(
-                        '$text ',
-                      ),
-                      TapToCopyText(
-                        text: '#$taskNumber',
-                      ),
-                    ],
-                  );
-                }
-                if (type == TaskChangesTypes.addResponsible ||
-                    type == TaskChangesTypes.removeResponsible ||
-                    type == TaskChangesTypes.changeResponsible ||
-                    type == TaskChangesTypes.removeMember) {
-                  final name = state != null
-                      ? context
-                          .wstore<ActionCardStore>()
-                          .getUserNameById(int.parse(state))
-                      : '';
                   return ActionText(
-                    '$text - $name',
+                    text,
                   );
-                }
-                return ActionText(
-                  text,
-                );
-              }),
-            )
+                },
+              ),
+            ),
           ],
         ),
       ),
@@ -282,9 +307,9 @@ class ActionText extends StatelessWidget {
 
 class TapToCopyText extends StatefulWidget {
   const TapToCopyText({
+    required this.text,
     super.key,
     this.style,
-    required this.text,
   });
 
   final TextStyle? style;
@@ -310,15 +335,19 @@ class _TapToCopyTextState extends State<TapToCopyText> {
       onTap: () {
         Clipboard.setData(ClipboardData(text: widget.text));
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(localization.task_number_copied)));
+          SnackBar(content: Text(localization.task_number_copied)),
+        );
       },
       child: MouseRegion(
         onHover: (_) => setIsHovered(true),
         onExit: (_) => {setIsHovered(false)},
-        child: Text(widget.text,
-            style: textTheme.headlineSmall!.copyWith(
-                color: ColorConstants.grey03,
-                decoration: isHovered ? TextDecoration.underline : null)),
+        child: Text(
+          widget.text,
+          style: textTheme.headlineSmall!.copyWith(
+            color: ColorConstants.grey03,
+            decoration: isHovered ? TextDecoration.underline : null,
+          ),
+        ),
       ),
     );
   }

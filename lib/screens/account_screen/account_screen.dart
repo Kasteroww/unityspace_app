@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:unityspace/screens/app_navigation_drawer.dart';
 import 'package:unityspace/screens/account_screen/pages/account_page/account_page.dart';
 import 'package:unityspace/screens/account_screen/pages/achievements_page.dart';
 import 'package:unityspace/screens/account_screen/pages/actions_page/actions_page.dart';
 import 'package:unityspace/screens/account_screen/pages/members_page.dart';
 import 'package:unityspace/screens/account_screen/pages/settings_page.dart';
 import 'package:unityspace/screens/account_screen/pages/tariff_page.dart';
+import 'package:unityspace/screens/app_navigation_drawer.dart';
 import 'package:unityspace/screens/widgets/common/appbar.dart';
 import 'package:unityspace/screens/widgets/common/paddings.dart';
 import 'package:unityspace/screens/widgets/tabs_list/tab_button.dart';
@@ -109,9 +108,9 @@ class AccountScreen extends WStoreWidget<AccountScreenStore> {
   final String action;
 
   const AccountScreen({
-    super.key,
     required this.tab,
     required this.action,
+    super.key,
   });
 
   @override
@@ -170,18 +169,19 @@ class AccountScreen extends WStoreWidget<AccountScreenStore> {
           const PaddingTop(12),
           Expanded(
             child: WStoreValueBuilder(
-                store: store,
-                watch: (store) => store.selectedTab,
-                builder: (context, selectedTab) {
-                  return switch (selectedTab) {
-                    AccountScreenTab.account => const AccountPage(),
-                    AccountScreenTab.achievements => const AchievementsPage(),
-                    AccountScreenTab.actions => const ActionsPage(),
-                    AccountScreenTab.settings => const SettingsPage(),
-                    AccountScreenTab.members => const MembersPage(),
-                    AccountScreenTab.tariff => const TariffPage(),
-                  };
-                }),
+              store: store,
+              watch: (store) => store.selectedTab,
+              builder: (context, selectedTab) {
+                return switch (selectedTab) {
+                  AccountScreenTab.account => const AccountPage(),
+                  AccountScreenTab.achievements => const AchievementsPage(),
+                  AccountScreenTab.actions => const ActionsPage(),
+                  AccountScreenTab.settings => const SettingsPage(),
+                  AccountScreenTab.members => const MembersPage(),
+                  AccountScreenTab.tariff => const TariffPage(),
+                };
+              },
+            ),
           ),
         ],
       ),
@@ -194,9 +194,9 @@ class SignOutIconButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   const SignOutIconButton({
-    super.key,
     required this.onPressed,
     required this.loading,
+    super.key,
   });
 
   @override

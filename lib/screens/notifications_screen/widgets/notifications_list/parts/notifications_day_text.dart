@@ -4,9 +4,9 @@ import 'package:unityspace/utils/date_time_converter.dart';
 
 class NotificationsDayText extends StatelessWidget {
   const NotificationsDayText({
-    super.key,
     required this.localization,
     required this.date,
+    super.key,
   });
 
   final AppLocalizations localization;
@@ -17,13 +17,15 @@ class NotificationsDayText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       DateTimeConverter.formatDateEEEEdMMMM(
-          locale: localization.localeName,
-          date: date,
-          localization: localization),
+        locale: localization.localeName,
+        date: date,
+        localization: localization,
+      ),
       style: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w400,
-          color: Color.fromRGBO(102, 102, 102, 1)),
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        color: Color.fromRGBO(102, 102, 102, 1),
+      ),
     );
   }
 }

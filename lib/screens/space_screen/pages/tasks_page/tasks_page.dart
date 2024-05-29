@@ -25,7 +25,10 @@ class TasksPageStore extends WStore {
 
   /// геттер задач из TasksStore
   List<Task>? get tasks => computedFromStore(
-      store: tasksStore, getValue: (store) => store.tasks, keyName: 'tasks');
+        store: tasksStore,
+        getValue: (store) => store.tasks,
+        keyName: 'tasks',
+      );
 
   /// загрузка задач по пространству и статусам
   Future<void> loadData() async {
@@ -117,7 +120,7 @@ class TasksPageStore extends WStore {
   }
 
   /// spaceId для получения задач, вызывается сразу после создания сторы
-  initValues({required int currentSpaceId}) {
+  void initValues({required int currentSpaceId}) {
     setStore(() {
       spaceId = currentSpaceId;
     });
@@ -171,32 +174,33 @@ class TasksPage extends WStoreWidget<TasksPageStore> {
                   child: Row(
                     children: [
                       Expanded(
-                          flex: 8,
-                          child: Text(
-                            localization.task_name,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium!
-                                .copyWith(
-                                  fontWeight: FontWeight.w500,
-                                ),
-                          )),
+                        flex: 8,
+                        child: Text(
+                          localization.task_name,
+                          style:
+                              Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                        ),
+                      ),
                       const DividerWithoutPadding(
                         isHorisontal: false,
                         color: ColorConstants.grey04,
                       ),
                       Flexible(
                         flex: 2,
-                        child: PaddingLeft(8,
-                            child: Text(
-                              localization.column,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium!
-                                  .copyWith(
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                            )),
+                        child: PaddingLeft(
+                          8,
+                          child: Text(
+                            localization.column,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                  fontWeight: FontWeight.w500,
+                                ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -206,79 +210,87 @@ class TasksPage extends WStoreWidget<TasksPageStore> {
                 ),
                 Expanded(
                   child: WStoreValueBuilder<TasksPageStore, List<TasksGroup>?>(
-                      builder: (context, store) {
-                        if (store != null) {
-                          return ListView.builder(
-                            itemCount: store.length,
-                            itemBuilder: (context, projectIndex) {
-                              final tasks = store[projectIndex].tasks;
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    store[projectIndex].groupTitle,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineSmall!
-                                        .copyWith(fontWeight: FontWeight.w500),
-                                  ),
-                                  const PaddingTop(8),
-                                  PaddingVertical(
-                                    16,
-                                    child: ListView.builder(
-                                      shrinkWrap: true,
-                                      physics: const ClampingScrollPhysics(),
-                                      itemCount: tasks.length,
-                                      itemBuilder: (context, taskIndex) {
-                                        return IntrinsicHeight(
-                                          child: Row(
-                                            children: [
-                                              Expanded(
-                                                flex: 8,
-                                                child: PaddingLeft(16,
-                                                    child: Text(
-                                                        tasks[taskIndex].name)),
+                    builder: (context, store) {
+                      if (store != null) {
+                        return ListView.builder(
+                          itemCount: store.length,
+                          itemBuilder: (context, projectIndex) {
+                            final tasks = store[projectIndex].tasks;
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  store[projectIndex].groupTitle,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall!
+                                      .copyWith(fontWeight: FontWeight.w500),
+                                ),
+                                const PaddingTop(8),
+                                PaddingVertical(
+                                  16,
+                                  child: ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: const ClampingScrollPhysics(),
+                                    itemCount: tasks.length,
+                                    itemBuilder: (context, taskIndex) {
+                                      return IntrinsicHeight(
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                              flex: 8,
+                                              child: PaddingLeft(
+                                                16,
+                                                child: Text(
+                                                  tasks[taskIndex].name,
+                                                ),
                                               ),
-                                              const DividerWithoutPadding(
-                                                isHorisontal: false,
-                                                color: ColorConstants.grey04,
-                                              ),
-                                              Expanded(
-                                                  flex: 2,
-                                                  child: PaddingLeft(
-                                                    8,
-                                                    child: PaddingBottom(
-                                                      8,
-                                                      child: Text(context
-                                                              .wstore<
-                                                                  TasksPageStore>()
-                                                              .getProjectNameById(tasks[
-                                                                      taskIndex]
+                                            ),
+                                            const DividerWithoutPadding(
+                                              isHorisontal: false,
+                                              color: ColorConstants.grey04,
+                                            ),
+                                            Expanded(
+                                              flex: 2,
+                                              child: PaddingLeft(
+                                                8,
+                                                child: PaddingBottom(
+                                                  8,
+                                                  child: Text(
+                                                    context
+                                                            .wstore<
+                                                                TasksPageStore>()
+                                                            .getProjectNameById(
+                                                              tasks[taskIndex]
                                                                   // не знаю какую брать и могут ли они вообще
                                                                   // отличаться
                                                                   .stages[0]
-                                                                  .projectId) ??
-                                                          // не локализовано потому что
-                                                          // placeholder, потом нужно будет узнать что
-                                                          // делать если у задачи нет проекта
-                                                          'Проект не существует'),
-                                                    ),
-                                                  ))
-                                            ],
-                                          ),
-                                        );
-                                      },
-                                    ),
+                                                                  .projectId,
+                                                            ) ??
+                                                        // не локализовано потому что
+                                                        // placeholder, потом нужно будет узнать что
+                                                        // делать если у задачи нет проекта
+                                                        'Проект не существует',
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
                                   ),
-                                ],
-                              );
-                            },
-                          );
-                        } else {
-                          return const Text('tasks is empty');
-                        }
-                      },
-                      watch: (store) => store.tasksByProject),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      } else {
+                        return const Text('tasks is empty');
+                      }
+                    },
+                    watch: (store) => store.tasksByProject,
+                  ),
                 ),
               ],
             ),

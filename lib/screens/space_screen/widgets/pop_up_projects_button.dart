@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:unityspace/screens/space_screen/widgets/delete_no_rules_dialog.dart';
-import 'package:unityspace/screens/space_screen/widgets/unarchive_project_dialog.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/project_page.dart';
+import 'package:unityspace/screens/space_screen/widgets/delete_no_rules_dialog.dart';
 import 'package:unityspace/screens/space_screen/widgets/pop_up_projects_item.dart';
+import 'package:unityspace/screens/space_screen/widgets/unarchive_project_dialog.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
 
 class PopUpProjectsButton extends StatelessWidget {
-  const PopUpProjectsButton({super.key, required this.projectId});
+  const PopUpProjectsButton({required this.projectId, super.key});
 
   final int projectId;
 
@@ -33,7 +33,10 @@ class PopUpProjectsButton extends StatelessWidget {
           if (!store.isArchivedPage) ...[
             PopupMenuItem(
               onTap: () => showMoveProjectDialog(
-                  context, store.selectedColumn, projectId),
+                context,
+                store.selectedColumn,
+                projectId,
+              ),
               child: PopupProjectsItem(
                 text: localization.move_project,
               ),
@@ -53,7 +56,7 @@ class PopUpProjectsButton extends StatelessWidget {
                 text: localization.delete_project,
                 color: Colors.red,
               ),
-            )
+            ),
           ] else ...[
             PopupMenuItem(
               onTap: () {
@@ -71,7 +74,7 @@ class PopUpProjectsButton extends StatelessWidget {
                 text: localization.delete_project,
                 color: Colors.red,
               ),
-            )
+            ),
           ],
         ];
       },

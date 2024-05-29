@@ -1,12 +1,12 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
-import 'package:flutter/material.dart';
 import 'package:unityspace/store/project_store.dart';
+import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
-import 'package:unityspace/utils/localization_helper.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<void> showAddProjectDialog(BuildContext context, int columnId) async {
   return showDialog(
@@ -46,7 +46,8 @@ class AddProjectDialogStore extends WStore {
 
     subscribe(
       future: ProjectStore().addProject(
-          AddProject(name: projectName, spaceColumnId: widget.columnId)),
+        AddProject(name: projectName, spaceColumnId: widget.columnId),
+      ),
       subscriptionId: 1,
       onData: (_) {
         setStore(() {
@@ -55,7 +56,8 @@ class AddProjectDialogStore extends WStore {
       },
       onError: (error, stack) {
         logger.d(
-            'CreateProjectDialogStore.createProject error: $error stack: $stack');
+          'CreateProjectDialogStore.createProject error: $error stack: $stack',
+        );
         setStore(() {
           statusCreateProject = WStoreStatus.error;
           createProjectError = localization.create_project_error;

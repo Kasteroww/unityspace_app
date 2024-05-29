@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:unityspace/utils/constants.dart';
-import 'package:unityspace/utils/errors.dart';
-import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_button_widget.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_logo_widget.dart';
+import 'package:unityspace/screens/widgets/main_form/main_form_sign_in_button_widget.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_text_button_widget.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_text_title_widget.dart';
-import 'package:unityspace/screens/widgets/main_form/main_form_sign_in_button_widget.dart';
 import 'package:unityspace/store/auth_store.dart';
-import 'package:wstore/wstore.dart';
+import 'package:unityspace/utils/constants.dart';
+import 'package:unityspace/utils/errors.dart';
 import 'package:unityspace/utils/localization_helper.dart';
+import 'package:unityspace/utils/logger_plugin.dart';
+import 'package:wstore/wstore.dart';
 
 class LoginScreenStore extends WStore {
   WStoreStatus statusGoogle = WStoreStatus.init;
@@ -43,14 +43,14 @@ class LoginScreenStore extends WStore {
   }
 
   Future<void> _googleSignInAction() async {
-    GoogleSignInAccount? account = await googleSignIn.signIn();
+    final GoogleSignInAccount? account = await googleSignIn.signIn();
     if (account != null) {
-      GoogleSignInAuthentication auth = await account.authentication;
+      final GoogleSignInAuthentication auth = await account.authentication;
       if (auth.accessToken != null) {
         await AuthStore().googleAuth(auth.accessToken!);
-        googleSignIn.disconnect();
+        await googleSignIn.disconnect();
       } else {
-        googleSignIn.disconnect();
+        await googleSignIn.disconnect();
         throw UserAuthErrors.noAccessToken;
       }
     }

@@ -33,7 +33,8 @@ Future<ChangeReglamentColumnAndOrderResponse> changeReglamentColumnAndOrder({
       },
     );
     final validated = ChangeReglamentColumnAndOrderResponse.fromJson(
-        jsonDecode(response.body));
+      jsonDecode(response.body),
+    );
     return validated;
   } catch (e) {
     if (e is HttpPluginException) {

@@ -3,10 +3,10 @@ import 'package:unityspace/screens/widgets/color_button_widget.dart';
 
 class AppDialogSecondaryButton extends StatelessWidget {
   const AppDialogSecondaryButton({
-    super.key,
     required this.onPressed,
     required this.text,
     required this.loading,
+    super.key,
   });
 
   final VoidCallback? onPressed;

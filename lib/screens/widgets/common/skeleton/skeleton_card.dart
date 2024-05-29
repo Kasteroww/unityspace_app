@@ -15,7 +15,7 @@ class SkeletonCard extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8),
-        child: Container(
+        child: ColoredBox(
           color: Colors.white,
           child: Padding(
             padding: const EdgeInsets.all(12),
@@ -37,9 +37,9 @@ class SkeletonBox extends StatelessWidget {
   final double borderRadius;
 
   const SkeletonBox({
-    super.key,
     required this.height,
     required this.width,
+    super.key,
     this.color = const Color.fromRGBO(230, 230, 230, 1),
     this.borderRadius = 4,
   });

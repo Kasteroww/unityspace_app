@@ -18,16 +18,18 @@ class DividerWithoutPadding extends StatelessWidget {
       height: isHorisontal ? 0 : double.infinity,
       width: isHorisontal ? double.infinity : 0,
       decoration: BoxDecoration(
-          border: Border(
-              left: isHorisontal
-                  ? BorderSide.none
-                  : BorderSide(
-                      color: color,
-                      width: thickness,
-                    ),
-              top: isHorisontal
-                  ? BorderSide(color: color, width: thickness)
-                  : BorderSide.none)),
+        border: Border(
+          left: isHorisontal
+              ? BorderSide.none
+              : BorderSide(
+                  color: color,
+                  width: thickness,
+                ),
+          top: isHorisontal
+              ? BorderSide(color: color, width: thickness)
+              : BorderSide.none,
+        ),
+      ),
     );
   }
 }

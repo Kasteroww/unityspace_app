@@ -1,9 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:unityspace/src/theme/theme.dart';
-import 'package:window_manager/window_manager.dart';
-import 'package:wstore/wstore.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:unityspace/screens/account_screen/account_screen.dart';
 import 'package:unityspace/screens/confirm_screen/confirm_screen.dart';
@@ -15,19 +13,23 @@ import 'package:unityspace/screens/notifications_screen/notifications_screen.dar
 import 'package:unityspace/screens/register_screen/register_screen.dart';
 import 'package:unityspace/screens/restore_password_screen/restore_password_screen.dart';
 import 'package:unityspace/screens/space_screen/space_screen.dart';
+import 'package:unityspace/src/theme/theme.dart';
 import 'package:unityspace/store/auth_store.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:window_manager/window_manager.dart';
+import 'package:wstore/wstore.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AuthStore().loadUserTokens();
-  await initializeDateFormatting('ru_RU', null);
+  await initializeDateFormatting(
+    'ru_RU',
+  );
 
   if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
     await windowManager.ensureInitialized();
-    WindowOptions windowOptions =
-        const WindowOptions(minimumSize: Size(600, 400));
-    windowManager.waitUntilReadyToShow(windowOptions, () async {
+    const WindowOptions windowOptions =
+        WindowOptions(minimumSize: Size(600, 400));
+    await windowManager.waitUntilReadyToShow(windowOptions, () async {
       await windowManager.show();
       await windowManager.focus();
     });
@@ -57,8 +59,8 @@ class MyApp extends WStoreWidget<MyAppStore> {
   final bool isAuthenticated;
 
   const MyApp({
-    super.key,
     required this.isAuthenticated,
+    super.key,
   });
 
   @override
@@ -102,8 +104,9 @@ class MyApp extends WStoreWidget<MyAppStore> {
                     ModalRoute.of(context)?.settings.arguments as String? ?? '',
               ),
           '/space': (context) => SpaceScreen(
-              space:
-                  (ModalRoute.of(context)?.settings.arguments as Map)['space']),
+                space: (ModalRoute.of(context)!.settings.arguments!
+                    as Map)['space'],
+              ),
           '/notifications': (context) => const NotificationsScreen(),
           '/account': (context) {
             final arguments = ModalRoute.of(context)?.settings.arguments

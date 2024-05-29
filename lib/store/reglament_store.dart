@@ -1,7 +1,7 @@
 import 'package:unityspace/models/reglament_models.dart';
+import 'package:unityspace/service/reglament_service.dart' as api;
 import 'package:unityspace/utils/helpers.dart';
 import 'package:wstore/wstore.dart';
-import 'package:unityspace/service/reglament_service.dart' as api;
 
 class ReglamentsStore extends GStore {
   static ReglamentsStore? _instance;
@@ -23,8 +23,9 @@ class ReglamentsStore extends GStore {
     });
   }
 
-  Map<int, Reglament?> _changeReglamentColumnLocally(
-      {required ChangeReglamentColumnAndOrderResponse response}) {
+  Map<int, Reglament?> _changeReglamentColumnLocally({
+    required ChangeReglamentColumnAndOrderResponse response,
+  }) {
     final reglamentMap = createMapById(reglaments);
     final reglament = reglamentMap[response.id];
 
@@ -37,10 +38,11 @@ class ReglamentsStore extends GStore {
     return reglamentMap;
   }
 
-  Future<void> changeReglamentColumnAndOrder(
-      {required int reglamentId,
-      required int newColumnId,
-      required int newOrder}) async {
+  Future<void> changeReglamentColumnAndOrder({
+    required int reglamentId,
+    required int newColumnId,
+    required int newOrder,
+  }) async {
     final response = await api.changeReglamentColumnAndOrder(
       reglamentId: reglamentId,
       columnId: newColumnId,

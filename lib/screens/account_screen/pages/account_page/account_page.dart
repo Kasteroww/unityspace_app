@@ -6,8 +6,8 @@ import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/screens/account_screen/pages/account_page/widgets/account_content.dart';
 import 'package:unityspace/screens/account_screen/pages/account_page/widgets/account_item.dart';
 import 'package:unityspace/screens/crop_image_screen/crop_image_screen.dart';
-import 'package:unityspace/screens/dialogs/user_change_email_dialog.dart';
 import 'package:unityspace/screens/dialogs/user_change_birthday_dialog.dart';
+import 'package:unityspace/screens/dialogs/user_change_email_dialog.dart';
 import 'package:unityspace/screens/dialogs/user_change_githublink_dialog.dart';
 import 'package:unityspace/screens/dialogs/user_change_job_dialog.dart';
 import 'package:unityspace/screens/dialogs/user_change_name_dialog.dart';
@@ -18,10 +18,10 @@ import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/constants.dart';
 import 'package:unityspace/utils/errors.dart';
+import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wstore/wstore.dart';
-import 'package:unityspace/utils/localization_helper.dart';
 
 class AccountPageStore extends WStore {
   String imageFilePath = '';
@@ -151,7 +151,10 @@ class AccountPageStore extends WStore {
   }
 
   void copy(
-      final String text, final String successMessage, final String copyError) {
+    final String text,
+    final String successMessage,
+    final String copyError,
+  ) {
     listenFuture(
       _copyToClipboard(text),
       id: 1,
@@ -191,12 +194,13 @@ class AccountPageStore extends WStore {
 
   Future<void> _gotoLink(final String link) async {
     if (link.isEmpty) throw LinkErrors.linkIsEmpty;
-    final url = Uri.parse(link);
-    bool result = await launchUrl(url, mode: LaunchMode.externalApplication);
+    final Uri url = Uri.parse(link);
+    final bool result =
+        await launchUrl(url, mode: LaunchMode.externalApplication);
     if (!result) throw '${LinkErrors.couldNotLaunch} $link';
   }
 
-  void pickAvatar(String pickAvatarError) async {
+  Future<void> pickAvatar(String pickAvatarError) async {
     setStore(() {
       statusAvatar = WStoreStatus.loading;
     });
@@ -221,7 +225,7 @@ class AccountPageStore extends WStore {
     );
   }
 
-  void pickPhoto(String pickPhotoError) async {
+  Future<void> pickPhoto(String pickPhotoError) async {
     setStore(() {
       statusAvatar = WStoreStatus.loading;
     });
@@ -298,14 +302,19 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                 watch: (store) => store.imageFilePath,
                 reset: (store) => store.imageFilePath = '',
                 onNotEmpty: (context, imageFilePath) async {
-                  Uint8List? avatarImage =
-                      await Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => CropImageScreen(
-                                imageFilePath: imageFilePath,
-                              )));
+                  final Uint8List? avatarImage =
+                      await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => CropImageScreen(
+                        imageFilePath: imageFilePath,
+                      ),
+                    ),
+                  );
                   if (avatarImage != null) {
                     store.setAvatar(
-                        avatarImage, localization.load_avatar_error);
+                      avatarImage,
+                      localization.load_avatar_error,
+                    );
                   }
                 },
                 child: WStoreValueBuilder(
@@ -377,7 +386,7 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                     value:
                         email.isNotEmpty ? email : localization.not_specified,
                     iconAssetName: 'assets/icons/account_email.svg',
-                    onTapChange: () async {
+                    onTapChange: () {
                       showChangeEmailDialog(context);
                     },
                     onTapValue: email.isNotEmpty
@@ -502,11 +511,11 @@ class AccountAvatarWidget extends StatelessWidget {
   final bool hasAvatar;
 
   const AccountAvatarWidget({
-    super.key,
     required this.hasAvatar,
     required this.onChangeAvatar,
     required this.onChangePhoto,
     required this.onClearAvatar,
+    super.key,
   });
 
   @override

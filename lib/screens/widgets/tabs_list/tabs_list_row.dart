@@ -5,8 +5,8 @@ class TabsListRow extends StatefulWidget {
   final List<TabButton> children;
 
   const TabsListRow({
-    super.key,
     required this.children,
+    super.key,
   });
 
   @override

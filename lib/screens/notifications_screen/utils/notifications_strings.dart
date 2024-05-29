@@ -1,9 +1,9 @@
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/screens/notifications_screen/utils/notification_helper.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 /// Класс для работы со строками уведомлений
 ///
@@ -17,7 +17,9 @@ class NotificationsStrings {
   });
 
   static String groupName(
-      NotificationsGroup notificationGroup, AppLocalizations localization) {
+    NotificationsGroup notificationGroup,
+    AppLocalizations localization,
+  ) {
     switch (notificationGroup.type) {
       case NotificationType.task:
         return localization.tasks;
@@ -33,7 +35,7 @@ class NotificationsStrings {
   }
 
   String notificationText(NotificationModel notification) {
-    List<OrganizationMember> organizationMembers =
+    final List<OrganizationMember> organizationMembers =
         userStore.organization?.members ?? [];
     try {
       if (notification.notificationType == 'REGLAMENT_CREATED') {
@@ -45,7 +47,7 @@ class NotificationsStrings {
       if (notification.notificationType == 'REGLAMENT_REQUIRED_UNSET') {
         return 'Отметил(а) регламент как необязательный';
       }
-      if (notification.notificationType == "REGLAMENT_UPDATE") {
+      if (notification.notificationType == 'REGLAMENT_UPDATE') {
         const message =
             'Обновил(а) регламент и сбросил(а) участников, прошедших регламент';
         return notification.text.isNotEmpty
@@ -55,7 +57,7 @@ class NotificationsStrings {
       if (notification.notificationType == 'MESSAGE') {
         // убираем кавычки в начале и в конце
         // заменяем упоминания на осмысленный текст
-        String message = notification.text
+        final String message = notification.text
             .substring(1, notification.text.length - 1)
             .replaceAllMapped(RegExp(r'(?:^@|(?<=\s)@)\S+\w'), (match) {
           switch (match.group(0)) {
@@ -64,31 +66,32 @@ class NotificationsStrings {
             case '@performer':
               return '@Исполнитель';
             default:
-              String? email = match.group(0)?.substring(1);
+              final String? email = match.group(0)?.substring(1);
               final membersMap =
                   userStore.organizationMembersByEmailMap(userStore);
-              String? name = membersMap[email]?.name ?? email;
+              final String? name = membersMap[email]?.name ?? email;
               return '@$name';
           }
         });
         return '"$message"';
       }
-      if (notification.notificationType == "TASK_CHANGED_RESPONSIBLE") {
+      if (notification.notificationType == 'TASK_CHANGED_RESPONSIBLE') {
         if (notification.text.startsWith('add responsible ')) {
-          int userId =
+          final int userId =
               int.parse(notification.text.substring('add responsible '.length));
           final member =
               NotificationHelper.findMemberById(organizationMembers, userId);
           return 'Установил(а) исполнителя: ${member?.name ?? ''}';
         }
         if (notification.text.startsWith('change responsible ')) {
-          int userId = int.parse(
-              notification.text.substring('change responsible '.length));
+          final int userId = int.parse(
+            notification.text.substring('change responsible '.length),
+          );
           final member =
               NotificationHelper.findMemberById(organizationMembers, userId);
           return 'Сменил(а) исполнителя на: ${member?.name ?? ''}';
         }
-        return ('Сменил(а) исполнителя на: ${notification.text.substring('Новый исполнитель '.length)}');
+        return 'Сменил(а) исполнителя на: ${notification.text.substring('Новый исполнитель '.length)}';
       }
       if (notification.notificationType == 'TASK_DELETED_RESPONSIBLE') {
         final userId = int.tryParse(notification.text);
@@ -124,7 +127,9 @@ class NotificationsStrings {
           return 'Вышел(а) из пространства';
         }
         final member = NotificationHelper.findMemberById(
-            organizationMembers, notification.parentId);
+          organizationMembers,
+          notification.parentId,
+        );
         final memberName = member?.name;
 
         return 'Исключил(а) пользователя \'$memberName\' из пространства';
@@ -145,7 +150,9 @@ class NotificationsStrings {
 
       if (notification.notificationType == 'MEMBER_ADDED_FOR_OWNER') {
         final member = NotificationHelper.findMemberById(
-            organizationMembers, notification.parentId);
+          organizationMembers,
+          notification.parentId,
+        );
         final memberName = member?.name;
         return 'Добавил(а) пользователя \'$memberName\' в пространство';
       }

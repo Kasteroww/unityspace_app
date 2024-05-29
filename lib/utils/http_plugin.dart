@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:unityspace/store/auth_store.dart';
+import 'package:unityspace/utils/logger_plugin.dart';
 
 class HttpPluginException implements Exception {
   final int statusCode;
@@ -43,9 +43,11 @@ class HttpPlugin {
     _headers['Authorization'] = authorization;
   }
 
-  Future<http.Response> post(final String url,
-      [final Map<String, dynamic>? data,
-      Map<String, dynamic>? queryParameters]) {
+  Future<http.Response> post(
+    final String url, [
+    final Map<String, dynamic>? data,
+    Map<String, dynamic>? queryParameters,
+  ]) {
     return send('POST', url, data, queryParameters);
   }
 
@@ -96,7 +98,8 @@ class HttpPlugin {
             logger.d('RETRY $method REQUEST to $url with data = $data');
           } else if (queryParameters != null) {
             logger.d(
-                'RETRY $method REQUEST to $url with params = $queryParameters');
+              'RETRY $method REQUEST to $url with params = $queryParameters',
+            );
           } else {
             logger.d('RETRY $method REQUEST to $url');
           }
@@ -112,7 +115,7 @@ class HttpPlugin {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return response;
       }
-      final jsonData = json.decode(response.body);
+      final Map<String, dynamic> jsonData = json.decode(response.body);
       final message = jsonData['message'];
       throw HttpPluginException(
         response.statusCode,
@@ -122,7 +125,7 @@ class HttpPlugin {
         jsonData['error']?.toString() ?? 'unknown',
       );
     } catch (e) {
-      logger.d('$method RESPONSE from $url exception = ${e.toString()}');
+      logger.d('$method RESPONSE from $url exception = $e');
       if (e is http.ClientException) {
         throw HttpPluginException(-1, e.message, 'ClientException');
       }
@@ -168,7 +171,7 @@ class HttpPlugin {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return response;
       }
-      final jsonData = json.decode(response.body);
+      final Map jsonData = json.decode(response.body);
       final message = jsonData['message'];
       throw HttpPluginException(
         response.statusCode,
@@ -178,7 +181,7 @@ class HttpPlugin {
         jsonData['error']?.toString() ?? 'unknown',
       );
     } catch (e) {
-      logger.d('$method FILE RESPONSE from $url exception = ${e.toString()}');
+      logger.d('$method FILE RESPONSE from $url exception = $e');
       if (e is http.ClientException) {
         throw HttpPluginException(-1, e.message, 'ClientException');
       }
@@ -196,8 +199,8 @@ class HttpPlugin {
         ? Uri.https(_host, url, queryParameters)
         : Uri.http(_host, url, queryParameters);
     final request = http.Request(method, uri);
-    http.MultipartFile;
-    http.MultipartRequest;
+    //http.MultipartFile;
+    //http.MultipartRequest;
     request.headers.addAll(_headers);
     if (data != null) {
       request.headers['Content-Type'] = 'application/json; charset=UTF-8';

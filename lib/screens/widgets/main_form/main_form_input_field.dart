@@ -19,9 +19,9 @@ class MainFormInputField extends StatefulWidget {
   final TextCapitalization textCapitalization;
 
   const MainFormInputField({
-    super.key,
     required this.labelText,
     required this.iconAssetName,
+    super.key,
     this.onIconTap,
     this.onSaved,
     this.onChanged,

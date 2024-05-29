@@ -10,13 +10,13 @@ class ColorButtonWidget extends StatelessWidget {
   final double elevation;
 
   const ColorButtonWidget({
-    super.key,
     required this.onPressed,
     required this.text,
     required this.loading,
     required this.width,
     required this.colorBackground,
     required this.colorText,
+    super.key,
     this.elevation = 2,
   });
 

@@ -5,9 +5,9 @@ class MainFormTextButtonWidget extends StatelessWidget {
   final String text;
 
   const MainFormTextButtonWidget({
-    super.key,
     required this.onPressed,
     required this.text,
+    super.key,
   });
 
   @override

@@ -7,9 +7,9 @@ class MainFormButtonWidget extends StatelessWidget {
   final bool loading;
 
   const MainFormButtonWidget({
-    super.key,
     required this.onPressed,
     required this.text,
+    super.key,
     this.loading = false,
   });
 
