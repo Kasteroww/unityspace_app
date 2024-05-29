@@ -28,35 +28,18 @@ Future<void> showMoveProjectDialog(
 class MoveProjectDialogStore extends WStore {
   String moveProjectError = '';
   WStoreStatus statusMoveProject = WStoreStatus.init;
-  List<Space> spaces = [];
-  int selectedSpaceId = 0;
-  int selectedColumnId = 0;
+  List<Space> spaces = SpacesStore().spaces;
   late Space selectedSpace;
   late SpaceColumn selectedColumn;
 
   List<SpaceColumn> getColumnsBySpaceId(int spaceId) {
-    return spaces.where((el) => el.id == spaceId).first.columns;
-  }
-
-  void setSelectedSpaceId(int spaceId) {
-    setStore(() {
-      selectedSpaceId = spaceId;
-    });
-  }
-
-  void setSelectedColumnId(int columnId) {
-    setStore(() {
-      selectedColumnId = columnId;
-    });
+    return spaces.firstWhere((space) => space.id == spaceId).columns;
   }
 
   void initData(SpaceColumn column) {
     setStore(() {
-      spaces = SpacesStore().spaces;
-      selectedSpace = spaces.where((el) => el.id == column.spaceId).first;
+      selectedSpace = spaces.firstWhere((space) => space.id == column.spaceId);
       selectedColumn = column;
-      selectedSpaceId = selectedSpace.id;
-      selectedColumnId = column.id;
     });
   }
 
@@ -68,7 +51,8 @@ class MoveProjectDialogStore extends WStore {
     });
 
     subscribe(
-      future: ProjectStore().changeProjectColumn([projectId], selectedColumnId),
+      future:
+          ProjectStore().changeProjectColumn([projectId], selectedColumn.id),
       subscriptionId: 1,
       onData: (_) {
         setStore(() {
@@ -135,7 +119,10 @@ class MoveProjectDialog extends WStoreWidget<MoveProjectDialogStore> {
                   onChanged: (space) {
                     FocusScope.of(context).unfocus();
                     if (space is Space) {
-                      store.setSelectedSpaceId(space.id);
+                      store.selectedSpace = space;
+                      store.selectedColumn = space.columns.first;
+                    } else {
+                      throw Exception('Value has wrong type');
                     }
                   },
                   labelText: localization.space,
@@ -144,16 +131,18 @@ class MoveProjectDialog extends WStoreWidget<MoveProjectDialogStore> {
                 ),
                 const SizedBox(height: 16),
                 AddDialogDropdownMenu<SpaceColumn>(
-                  onChanged: (value) {
+                  onChanged: (column) {
                     FocusScope.of(context).unfocus();
-                    if (value is SpaceColumn) {
-                      store.setSelectedColumnId(value.id);
+                    if (column is SpaceColumn) {
+                      store.selectedColumn = column;
                     } else {
                       throw Exception('Value has wrong type');
                     }
                   },
                   labelText: localization.group,
-                  listValues: store.getColumnsBySpaceId(store.selectedSpaceId),
+                  listValues:
+                      store.getColumnsBySpaceId(store.selectedSpace.id),
+                  currentValue: store.selectedColumn,
                 ),
                 if (error)
                   Text(

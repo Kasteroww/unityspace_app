@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/project_page.dart';
+import 'package:unityspace/screens/space_screen/pages/project_page/widgets/move_project_dialog.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/widgets/pop_up_projects_item.dart';
 import 'package:unityspace/screens/space_screen/widgets/delete_no_rules_dialog.dart';
-import 'package:unityspace/screens/space_screen/widgets/move_item_dialog.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
 
