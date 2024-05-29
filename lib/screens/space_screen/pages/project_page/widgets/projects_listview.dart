@@ -21,7 +21,6 @@ class ProjectsListview extends StatelessWidget {
       watch: (store) => [
         store.selectedColumn,
         store.projectsByColumn,
-        store.isArchivedPage,
       ],
       builder: (context, store) {
         return Expanded(

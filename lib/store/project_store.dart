@@ -74,7 +74,7 @@ class ProjectStore extends GStore {
   Future<void> addProject(AddProject project) async {
     final projectsData = await api.addProject(project);
     setStore(() {
-      projects = _addProjectLocally(projectsData, projects);
+      projects = [..._addProjectLocally(projectsData, projects)];
     });
   }
 

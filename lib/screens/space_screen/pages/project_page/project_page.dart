@@ -20,8 +20,7 @@ class ProjectsPageStore extends WStore {
   ProjectErrors error = ProjectErrors.none;
   WStoreStatus status = WStoreStatus.init;
   bool isArchivedPage = false;
-  int archiveProjectsCount = 0;
-  int archiveColumnId = 0;
+  late int archiveColumnId;
   late SpaceColumn selectedColumn;
 
   void selectColumn(final SpaceColumn column) {
@@ -48,8 +47,9 @@ class ProjectsPageStore extends WStore {
     return (isOwner || isAdmin) ? true : false;
   }
 
-  void selectFirstColumn(List<SpaceColumn> listColumns) {
-    selectedColumn = listColumns.first;
+  void initData(Space space) {
+    selectedColumn = space.columns.first;
+    archiveColumnId = space.archiveColumnId;
   }
 
   Future<void> loadData(Space space) async {
@@ -73,26 +73,8 @@ class ProjectsPageStore extends WStore {
     }
   }
 
-  List<Project> getProjectsByColumnId(int id) {
-    final list = projects.where((el) => el.columnId == id).toList();
-    return list;
-  }
-
-  int getArchiveColumnId(List<SpaceColumn> listColumns) {
-    final setColumnsIds = listColumns.map((elem) => elem.id).toSet();
-    final setProjectIds = projects.map((elem) => elem.columnId).toSet();
-    setStore(() {
-      archiveColumnId = setProjectIds.difference(setColumnsIds).first;
-    });
-    return archiveColumnId;
-  }
-
-  int getArchiveProjectsCount(List<SpaceColumn> listColumns) {
-    setStore(() {
-      archiveColumnId = getArchiveColumnId(listColumns);
-      archiveProjectsCount = getProjectsByColumnId(archiveColumnId).length;
-    });
-    return archiveProjectsCount;
+  List<Project> _getProjectsByColumnId(int id) {
+    return projects.where((el) => el.columnId == id).toList();
   }
 
   void setProjectFavorite(int projectId, bool favorite) {
@@ -100,11 +82,17 @@ class ProjectsPageStore extends WStore {
   }
 
   List<Project> get projectsByColumn => computed(
-        getValue: () => getProjectsByColumnId(
+        getValue: () => _getProjectsByColumnId(
           isArchivedPage ? archiveColumnId : selectedColumn.id,
         ),
         watch: () => [projects, selectedColumn, isArchivedPage],
         keyName: 'projectsByColumn',
+      );
+
+  int get archiveProjectsCount => computed(
+        getValue: () => _getProjectsByColumnId(archiveColumnId).length,
+        watch: () => [projects],
+        keyName: 'archiveProjectsCount',
       );
 
   OrganizationMember? get owner => computedFromStore(
@@ -146,7 +134,7 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
   @override
   ProjectsPageStore createWStore() => ProjectsPageStore()
     ..loadData(space)
-    ..selectFirstColumn(space.columns);
+    ..initData(space);
 
   @override
   Widget build(BuildContext context, ProjectsPageStore store) {
@@ -192,7 +180,6 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
               [store.projects, store.selectedColumn, store.isArchivedPage],
           store: context.wstore(),
           builder: (context, store) {
-            store.getArchiveProjectsCount(space.columns);
             return Column(
               children: [
                 if (store.isArchivedPage)
@@ -249,7 +236,7 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
                       },
                       child: WStoreBuilder<ProjectsPageStore>(
                         watch: (store) => [
-                          store.archiveProjectsCount,
+                          store.projects,
                         ],
                         store: context.wstore(),
                         builder: (context, store) {
