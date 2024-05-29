@@ -13,6 +13,9 @@ class ProjectResponse {
   final int taskCount;
   final String memo;
   final bool favorite;
+  final String? color;
+  final int? responsibleId;
+  final int postponingTaskDayCount;
 
   const ProjectResponse({
     required this.id,
@@ -26,6 +29,9 @@ class ProjectResponse {
     required this.taskCount,
     required this.memo,
     required this.favorite,
+    required this.color,
+    required this.responsibleId,
+    required this.postponingTaskDayCount,
   });
 
   factory ProjectResponse.fromJson(Map<String, dynamic> map) {
@@ -44,6 +50,10 @@ class ProjectResponse {
       taskCount: map['taskCount'] as int,
       memo: map['memo'] as String,
       favorite: map['favorite'] as bool,
+      color: map['color'] != null ? map['color'] as String : null,
+      responsibleId:
+          map['responsibleId'] != null ? map['responsibleId'] as int : null,
+      postponingTaskDayCount: map['postponingTaskDayCount'] as int,
     );
   }
 }
@@ -84,6 +94,9 @@ class Project implements Identifiable {
   final int taskCount;
   final String memo;
   final bool favorite;
+  final String? color;
+  final int? responsibleId;
+  final int postponingTaskDayCount;
 
   Project({
     required this.id,
@@ -97,6 +110,9 @@ class Project implements Identifiable {
     required this.taskCount,
     required this.memo,
     required this.favorite,
+    required this.color,
+    required this.responsibleId,
+    required this.postponingTaskDayCount,
   });
 
   factory Project.fromResponse(final ProjectResponse data) {
@@ -112,6 +128,9 @@ class Project implements Identifiable {
       taskCount: data.taskCount,
       memo: data.memo,
       favorite: data.favorite,
+      color: data.color,
+      responsibleId: data.responsibleId,
+      postponingTaskDayCount: data.postponingTaskDayCount,
     );
   }
 
@@ -127,6 +146,9 @@ class Project implements Identifiable {
     int? taskCount,
     String? memo,
     bool? favorite,
+    String? color,
+    int? responsibleId,
+    int? postponingTaskDayCount,
   }) {
     return Project(
       id: id ?? this.id,
@@ -140,6 +162,10 @@ class Project implements Identifiable {
       taskCount: taskCount ?? this.taskCount,
       memo: memo ?? this.memo,
       favorite: favorite ?? this.favorite,
+      color: color ?? this.color,
+      responsibleId: responsibleId ?? this.responsibleId,
+      postponingTaskDayCount:
+          postponingTaskDayCount ?? this.postponingTaskDayCount,
     );
   }
 }
@@ -209,6 +235,31 @@ class AddProjectStage {
     return <String, dynamic>{
       'name': name,
       'order': order,
+    };
+  }
+}
+
+class UpdateProject {
+  final int id;
+  final String name;
+  final String? color;
+  final int? responsibleId;
+  final int postponingTaskDayCount;
+
+  UpdateProject({
+    required this.id,
+    required this.name,
+    this.color,
+    this.responsibleId,
+    this.postponingTaskDayCount = 0,
+  });
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'name': name,
+      'color': color,
+      'responsibleId': responsibleId,
+      'postponingTaskDayCount': postponingTaskDayCount,
     };
   }
 }

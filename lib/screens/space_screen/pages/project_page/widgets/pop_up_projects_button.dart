@@ -4,6 +4,7 @@ import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/project_page.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/widgets/move_project_dialog.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/widgets/pop_up_projects_item.dart';
+import 'package:unityspace/screens/space_screen/pages/project_page/widgets/project_properties_dialog.dart';
 import 'package:unityspace/screens/space_screen/widgets/delete_no_rules_dialog.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
@@ -41,6 +42,12 @@ class PopUpProjectsButton extends StatelessWidget {
             ),
           ),
           if (!store.isArchivedPage) ...[
+            PopupMenuItem(
+              onTap: () => showProjectPropertiesDialog(context, project),
+              child: PopupProjectsItem(
+                text: localization.project_properties,
+              ),
+            ),
             PopupMenuItem(
               onTap: () => showMoveProjectDialog(
                 context,

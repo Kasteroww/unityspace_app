@@ -123,6 +123,31 @@ class ProjectStore extends GStore {
     });
   }
 
+  /// Изменение названия, цвета, ответственного Проекта
+  /// и через сколько отмечать задачи Проекта как неактивные
+  Future<void> updateProject(UpdateProject project) async {
+    final projectData = await api.updateProject(project: project);
+    _updateProjectLocally(projectData);
+  }
+
+  void _updateProjectLocally(ProjectResponse projectResponse) {
+    final projectsNew = projects.map((project) {
+      if (projectResponse.id == project.id) {
+        return project.copyWith(
+          name: projectResponse.name,
+          color: projectResponse.color,
+          responsibleId: projectResponse.responsibleId,
+          postponingTaskDayCount: projectResponse.postponingTaskDayCount,
+        );
+      } else {
+        return project;
+      }
+    }).toList();
+    setStore(() {
+      projects = projectsNew;
+    });
+  }
+
   @override
   void clear() {
     super.clear();

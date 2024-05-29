@@ -104,3 +104,26 @@ Future<Map<String, dynamic>> setProjectFavorite({
     rethrow;
   }
 }
+
+/// Изменение названия, цвета, ответственного Проекта
+/// и через сколько отмечать задачи Проекта как неактивные
+Future<ProjectResponse> updateProject({required UpdateProject project}) async {
+  try {
+    final response = await HttpPlugin().patch(
+      '/projects/${project.id}',
+      {
+        'name': project.name,
+        'color': project.color,
+        'responsibleId': project.responsibleId,
+        'postponingTaskDayCount': project.postponingTaskDayCount,
+      },
+    );
+    final Map<String, dynamic> jsonData = json.decode(response.body);
+    return ProjectResponse.fromJson(jsonData);
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
+}
