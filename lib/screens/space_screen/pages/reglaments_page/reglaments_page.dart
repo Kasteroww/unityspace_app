@@ -6,7 +6,9 @@ import 'package:unityspace/screens/space_screen/pages/reglaments_page/widgets/re
 import 'package:unityspace/screens/space_screen/widgets/delete_no_rules_dialog.dart';
 import 'package:unityspace/store/reglament_store.dart';
 import 'package:unityspace/store/user_store.dart';
+import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/localization_helper.dart';
+import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
 
 class ReglamentsPageStore extends WStore {
@@ -14,6 +16,7 @@ class ReglamentsPageStore extends WStore {
   late SpaceColumn chosenColumn;
 
   bool isInArchive = false;
+  String message = '';
 
   ///Получение ВСЕХ регламентов из стора
   List<Reglament> get allReglaments => computedFromStore(
@@ -82,6 +85,28 @@ class ReglamentsPageStore extends WStore {
     } else {
       showDeleteNoRulesDialog(context);
     }
+  }
+
+  void copyReglamentLink(
+    final String text,
+    final String successMessage,
+    final String copyError,
+  ) {
+    listenFuture(
+      copyToClipboard(text),
+      id: 1,
+      onData: (_) {
+        setStore(() {
+          message = successMessage;
+        });
+      },
+      onError: (error, stack) {
+        logger.e('copyToClipboard error', error: error, stackTrace: stack);
+        setStore(() {
+          message = copyError;
+        });
+      },
+    );
   }
 
   Future<void> deleteReglament({
@@ -168,103 +193,115 @@ class ReglamentsPage extends WStoreWidget<ReglamentsPageStore> {
   Widget build(BuildContext context, ReglamentsPageStore store) {
     final localization = LocalizationHelper.getLocalizations(context);
     final width = MediaQuery.of(context).size.width;
-    return SafeArea(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          WStoreBuilder(
-            store: store,
-            watch: (store) => [store.chosenColumn, store.isInArchive],
-            builder: (context, store) {
-              if (store.isInArchive) {
-                return const SizedBox.shrink();
-              }
-              return SizedBox(
-                height: 40,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: store.reglamentColumns.length,
-                  separatorBuilder: (BuildContext context, int index) {
-                    return const SizedBox(
-                      width: 4,
-                    );
-                  },
-                  itemBuilder: (BuildContext context, int index) {
-                    final reglamentColumn = store.reglamentColumns[index];
-                    return Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: InkWell(
-                        onTap: () {
-                          store.chooseColumn(
-                            newChosenColumn: reglamentColumn,
-                          );
-                        },
-                        child: Text(
-                          reglamentColumn.name,
-                          style: TextStyle(
-                            color: reglamentColumn == store.chosenColumn
-                                ? Colors.red
-                                : Colors.blue,
+    return WStoreStringListener(
+      store: store,
+      watch: (store) => store.message,
+      reset: (store) => store.message = '',
+      onNotEmpty: (context, message) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(message),
+          ),
+        );
+      },
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            WStoreBuilder(
+              store: store,
+              watch: (store) => [store.chosenColumn, store.isInArchive],
+              builder: (context, store) {
+                if (store.isInArchive) {
+                  return const SizedBox.shrink();
+                }
+                return SizedBox(
+                  height: 40,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: store.reglamentColumns.length,
+                    separatorBuilder: (BuildContext context, int index) {
+                      return const SizedBox(
+                        width: 4,
+                      );
+                    },
+                    itemBuilder: (BuildContext context, int index) {
+                      final reglamentColumn = store.reglamentColumns[index];
+                      return Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: InkWell(
+                          onTap: () {
+                            store.chooseColumn(
+                              newChosenColumn: reglamentColumn,
+                            );
+                          },
+                          child: Text(
+                            reglamentColumn.name,
+                            style: TextStyle(
+                              color: reglamentColumn == store.chosenColumn
+                                  ? Colors.red
+                                  : Colors.blue,
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
-                ),
-              );
-            },
-          ),
-          WStoreBuilder(
-            store: store,
-            watch: (store) => [
-              store.isInArchive,
-              store.archiveReglaments,
-            ],
-            builder: (context, store) {
-              return InkWell(
-                onTap: store.changeInArchiveStatus,
-                child: Text(
-                  store.isInArchive
-                      ? localization.exit_from_archive
-                      : '${localization.reglament_count_in_archive}: ${store.archiveReglaments.length}',
-                ),
-              );
-            },
-          ),
-          const SizedBox(
-            height: 12,
-          ),
-          WStoreBuilder(
-            store: store,
-            watch: (store) => [
-              store.chosenColumn,
-              store.archiveReglaments,
-              store.isInArchive,
-            ],
-            builder: (context, store) {
-              return ReglamentListView(
-                columnReglaments: store.isInArchive
-                    ? store.archiveReglaments
-                    : store.columnReglaments,
-              );
-            },
-          ),
-          InkWell(
-            onTap: () {
-              showAddReglamentDialog(context, store.chosenColumn.id);
-            },
-            child: Container(
-              height: 40,
-              width: width,
-              color: Colors.blue,
-              child: Center(
-                child: Text(
-                  '+ ${localization.add_reglament}',
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+            WStoreBuilder(
+              store: store,
+              watch: (store) => [
+                store.isInArchive,
+                store.archiveReglaments,
+              ],
+              builder: (context, store) {
+                return InkWell(
+                  onTap: store.changeInArchiveStatus,
+                  child: Text(
+                    store.isInArchive
+                        ? localization.exit_from_archive
+                        : '${localization.reglament_count_in_archive}: ${store.archiveReglaments.length}',
+                  ),
+                );
+              },
+            ),
+            const SizedBox(
+              height: 12,
+            ),
+            WStoreBuilder(
+              store: store,
+              watch: (store) => [
+                store.chosenColumn,
+                store.archiveReglaments,
+                store.isInArchive,
+              ],
+              builder: (context, store) {
+                return ReglamentListView(
+                  columnReglaments: store.isInArchive
+                      ? store.archiveReglaments
+                      : store.columnReglaments,
+                );
+              },
+            ),
+            InkWell(
+              onTap: () {
+                showAddReglamentDialog(context, store.chosenColumn.id);
+              },
+              child: Container(
+                height: 40,
+                width: width,
+                color: Colors.blue,
+                child: Center(
+                  child: Text(
+                    '+ ${localization.add_reglament}',
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

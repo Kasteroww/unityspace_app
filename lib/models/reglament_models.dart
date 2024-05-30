@@ -25,7 +25,7 @@ class DeleteReglamentResponse {
 
   DeleteReglamentResponse({required this.id});
 
-  factory DeleteReglamentResponse.fromFson(Map<String, dynamic> map) {
+  factory DeleteReglamentResponse.fromJson(Map<String, dynamic> map) {
     return DeleteReglamentResponse(
       id: map['id'] as int,
     );
@@ -130,6 +130,13 @@ class RenameReglamentResponse {
     required this.id,
     required this.name,
   });
+
+  factory RenameReglamentResponse.fromJson(Map<String, dynamic> map) {
+    return RenameReglamentResponse(
+      id: map['id'] as int,
+      name: map['name'] as String,
+    );
+  }
 }
 
 class ReglamentResponse {

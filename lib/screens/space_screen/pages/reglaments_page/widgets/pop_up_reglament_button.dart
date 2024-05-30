@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:unityspace/models/reglament_models.dart';
 import 'package:unityspace/screens/space_screen/pages/reglaments_page/reglaments_page.dart';
 import 'package:unityspace/screens/space_screen/pages/reglaments_page/widgets/dialogs/move_reglament_dialog.dart';
+import 'package:unityspace/screens/space_screen/pages/reglaments_page/widgets/dialogs/rename_reglament_dialog.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
 
@@ -63,17 +64,30 @@ class PopUpReglamentButton extends StatelessWidget {
                 ),
               ]
             : [
+                // Изменение названия
                 PopupMenuItem<String>(
+                  onTap: () {
+                    showRenameReglamentDialog(context, reglament);
+                  },
                   child: PopupMenuItemChild(
                     text: localization.change_the_title,
                   ),
                 ),
+                // Дулирование регламента
                 PopupMenuItem<String>(
                   child: PopupMenuItemChild(
                     text: localization.duplicate_reglament,
                   ),
                 ),
+                // копирует ссылку на регламент
                 PopupMenuItem<String>(
+                  onTap: () {
+                    context.wstore<ReglamentsPageStore>().copyReglamentLink(
+                          '${reglament.id}',
+                          'пока скопирована не ссылка, а только id',
+                          localization.copy_error,
+                        );
+                  },
                   child: PopupMenuItemChild(
                     text: localization.copy_reglament_link,
                   ),

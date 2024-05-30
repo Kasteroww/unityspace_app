@@ -85,6 +85,17 @@ Future<ChangeReglamentColumnAndOrderResponse> changeReglamentColumnAndOrder({
   }
 }
 
+Future<RenameReglamentResponse> renameReglament({
+  required int reglamentId,
+  required String name,
+}) async {
+  final response = await HttpPlugin().patch('/reglaments/$reglamentId/name', {
+    'name': name,
+  });
+  final jsonData = await jsonDecode(response.body);
+  return RenameReglamentResponse.fromJson(jsonData);
+}
+
 // Функция для удаления регламента
 Future<DeleteReglamentResponse> deleteReglament({
   required int reglamentId,
@@ -93,19 +104,15 @@ Future<DeleteReglamentResponse> deleteReglament({
     final response = await HttpPlugin().delete(
       '/reglaments/$reglamentId',
     );
-
-    if (response.statusCode == 200) {
-      final jsonData = await jsonDecode(response.body);
-      return DeleteReglamentResponse.fromFson(jsonData);
-    } else {
-      throw Exception('Failed to delete reglament');
-    }
+    final jsonData = await jsonDecode(response.body);
+    return DeleteReglamentResponse.fromJson(jsonData);
   } catch (e) {
     if (e is HttpPluginException) {
       final responseBody = jsonDecode(e.message);
       if (responseBody == 'Not organization owner') {
-        return Future.error('Not organization owner');
+        return throw ServiceException('Not organization owner');
       }
+      throw ServiceException(e.message);
     }
     rethrow;
   }

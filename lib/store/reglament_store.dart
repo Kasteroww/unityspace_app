@@ -76,6 +76,20 @@ class ReglamentsStore extends GStore {
     });
   }
 
+  Future<void> renameReglament({
+    required int reglamentId,
+    required String name,
+  }) async {
+    final renameRes =
+        await api.renameReglament(reglamentId: reglamentId, name: name);
+    setStore(() {
+      reglaments = _renameReglamentLocally(
+        reglamentId: renameRes.id,
+        name: renameRes.name,
+      );
+    });
+  }
+
   Future<void> deleteReglament({required int reglamentId}) async {
     try {
       final deleteResponse =
@@ -87,6 +101,21 @@ class ReglamentsStore extends GStore {
       if (e == 'Not organization owner') return;
       throw Exception(e);
     }
+  }
+
+  List<Reglament> _renameReglamentLocally({
+    required int reglamentId,
+    required String name,
+  }) {
+    List<Reglament> newReglaments = reglaments ?? [];
+    newReglaments = newReglaments.map((reglament) {
+      if (reglament.id == reglamentId) {
+        return reglament.copyWith(name: name);
+      }
+      return reglament;
+    }).toList();
+
+    return newReglaments;
   }
 
   List<Reglament> _deleteReglamentLocally({required int reglamentID}) {
