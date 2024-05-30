@@ -96,26 +96,6 @@ class TasksStore extends GStore {
     return allTasks;
   }
 
-  Future<SearchTasksStoreResult> searchTasks({
-    required String searchText,
-    required int page,
-  }) async {
-    final search = await api.searchTasks(searchText: searchText, page: page);
-    final List<Task> newSearchedTasks =
-        search.tasks.map((task) => Task.fromResponse(task)).toList();
-    setStore(() {
-      searchedTasks = [
-        ...searchedTasks,
-        ...newSearchedTasks,
-      ];
-    });
-
-    return SearchTasksStoreResult(
-      maxPagesCount: search.maxPagesCount,
-      tasksCount: search.tasksCount,
-    );
-  }
-
   void clearSearchedTasksStateLocally() {
     setStore(() {
       searchedTasks = [];

@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/widgets/all_tasks_body.dart';
@@ -17,22 +18,43 @@ class TasksPageStore extends WStore {
   TasksErrors error = TasksErrors.none;
   WStoreStatus status = WStoreStatus.init;
   TasksStore tasksStore = TasksStore();
-  ProjectStore projectStore = ProjectStore();
+  ProjectStore projectsStore = ProjectStore();
   SpacesStore spacesStore = SpacesStore();
   int spaceId = 0;
 
+  final SearchTaskErrors searchError = SearchTaskErrors.none;
+
+  String searchString = '';
+
+  /// режим поиска, от него зависит отображается ли
+  /// результат поиска или список всех задач
+  bool isSearching = false;
+
+  // для пагинации результата
+  int tasksPage = 1;
+  int tasksMaxPagesCount = 0;
+  int tasksCount = 0;
+
   /// геттер задач из TasksStore
-  List<Task>? get tasks => computedFromStore(
+  List<Task> get tasks => computedFromStore(
         store: tasksStore,
-        getValue: (store) => store.tasks,
+        getValue: (store) => store.tasks ?? [],
         keyName: 'tasks',
       );
+  List<TasksGroup> get groupsToDisplay =>
+      _tasksByProject(isSearching ? searchedTasks : tasks);
 
-  List<Task> get searchTasks => computedFromStore(
-        store: tasksStore,
-        getValue: (store) => store.searchedTasks,
-        keyName: 'searchedTasks',
-      );
+  List<Task> searchedTasks = [];
+
+  List<TasksGroup> get tasksByProject => _tasksByProject(tasks);
+
+  List<TasksGroup> get searchTasksByProject => _tasksByProject(searchedTasks);
+
+  void setSearchString(String value) {
+    setStore(() {
+      searchString = value;
+    });
+  }
 
   /// загрузка задач по пространству и статусам
   Future<void> loadData() async {
@@ -60,12 +82,35 @@ class TasksPageStore extends WStore {
   }
 
   String? getProjectNameById(int projectId) {
-    return projectStore.getProjectById(projectId)?.name;
+    return projectsStore.getProjectById(projectId)?.name;
   }
 
-  List<TasksGroup> get tasksByProject => _tasksByProject(tasks);
+  /// поиск задач по строке
+  Future<void> searchTasks() async {
+    tasksStore.clearSearchedTasksStateLocally();
+    if (searchString.isNotEmpty) {
+      setStore(() {
+        isSearching = true;
+      });
 
-  List<TasksGroup> get searchTasksByProject => _tasksByProject(searchTasks);
+      final searchResult = tasks.where((task) {
+        return task.stages.any((taskStage) {
+              final Project? project =
+                  projectsStore.projectsMap[taskStage.projectId];
+              return project != null && project.spaceId == spaceId;
+            }) &&
+            (searchString.isEmpty ||
+                task.name.toLowerCase().contains(searchString.toLowerCase()));
+      }).toList();
+      setStore(() {
+        searchedTasks = searchResult;
+      });
+    } else {
+      setStore(() {
+        isSearching = false;
+      });
+    }
+  }
 
   /// группирует задачи по проектам
   List<TasksGroup> _tasksByProject(List<Task>? tasks) {
@@ -84,7 +129,7 @@ class TasksPageStore extends WStore {
             taskProject.tasks.add(task);
             // если проекта нет в группах, добавляем проект
           } else {
-            final project = projectStore.projectsMap[taskStage.projectId];
+            final project = projectsStore.projectsMap[taskStage.projectId];
             final space =
                 project != null ? spacesStore.spacesMap[spaceId] : null;
             final SpaceColumn? column = project != null
@@ -98,7 +143,7 @@ class TasksPageStore extends WStore {
                     spaceOrder: space.order.toInt(),
                     spaceFavorite: space.favorite ? 1 : 0,
                     spaceId: space.id,
-                    projectOrder: int.parse(project.order),
+                    projectOrder: project.order,
                     groupTitle: spaceId != 0
                         ? '${column.name} - ${project.name}'
                         : '${space.name} - ${column.name} - ${project.name}',

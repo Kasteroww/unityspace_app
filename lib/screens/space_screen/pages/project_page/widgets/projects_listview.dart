@@ -68,13 +68,14 @@ class ProjectsListview extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(fontSize: 18),
                             ),
-                            subtitle:
-                                store.projectsByColumn[index].memo.isNotEmpty
-                                    ? Text(
-                                        store.projectsByColumn[index].memo,
-                                        overflow: TextOverflow.ellipsis,
-                                      )
-                                    : null,
+                            subtitle: store.projectsByColumn[index].memo !=
+                                        null &&
+                                    store.projectsByColumn[index].memo!.isEmpty
+                                ? Text(
+                                    store.projectsByColumn[index].memo!,
+                                    overflow: TextOverflow.ellipsis,
+                                  )
+                                : null,
                             trailing: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               mainAxisSize: MainAxisSize.min,

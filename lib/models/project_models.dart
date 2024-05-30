@@ -2,6 +2,7 @@ import 'package:unityspace/models/i_base_model.dart';
 import 'package:unityspace/utils/date_time_converter.dart';
 
 class ProjectResponse {
+  final int archiveStageId;
   final int id;
   final String createdAt;
   final String updatedAt;
@@ -10,14 +11,20 @@ class ProjectResponse {
   final int columnId;
   final String order;
   final List<ProjectStageResponse> stages;
+  final int spaceId;
+  final List<ProjectEmbedResponse> embeddings;
+  final bool showProjectReviewTab;
+  final bool timelineViewType;
   final int taskCount;
-  final String memo;
+  final int allTaskCount;
+  final String? memo;
   final bool favorite;
   final String? color;
   final int? responsibleId;
   final int postponingTaskDayCount;
 
   const ProjectResponse({
+    required this.archiveStageId,
     required this.id,
     required this.createdAt,
     required this.updatedAt,
@@ -26,7 +33,12 @@ class ProjectResponse {
     required this.columnId,
     required this.order,
     required this.stages,
+    required this.spaceId,
+    required this.embeddings,
+    required this.showProjectReviewTab,
+    required this.timelineViewType,
     required this.taskCount,
+    required this.allTaskCount,
     required this.memo,
     required this.favorite,
     required this.color,
@@ -36,7 +48,9 @@ class ProjectResponse {
 
   factory ProjectResponse.fromJson(Map<String, dynamic> map) {
     final stagesList = map['stages'] as List<dynamic>;
+    final embeddingsList = map['embeddings'] as List<dynamic>;
     return ProjectResponse(
+      archiveStageId: map['archiveStageId'] as int,
       id: map['id'] as int,
       createdAt: map['createdAt'] as String,
       updatedAt: map['updatedAt'] as String,
@@ -45,15 +59,50 @@ class ProjectResponse {
       columnId: map['columnId'] as int,
       order: map['order'] as String,
       stages: stagesList
-          .map((stages) => ProjectStageResponse.fromJson(stages))
+          .map((stage) => ProjectStageResponse.fromJson(stage))
           .toList(),
+      spaceId: map['spaceId'] as int,
+      embeddings: embeddingsList
+          .map((embedding) => ProjectEmbedResponse.fromJson(embedding))
+          .toList(),
+      showProjectReviewTab: map['showProjectReviewTab'] as bool,
+      timelineViewType: map['timelineViewType'] as bool,
       taskCount: map['taskCount'] as int,
+      allTaskCount: map['allTaskCount'] as int,
       memo: map['memo'] as String,
       favorite: map['favorite'] as bool,
-      color: map['color'] != null ? map['color'] as String : null,
-      responsibleId:
-          map['responsibleId'] != null ? map['responsibleId'] as int : null,
+      color: map['color'] as String?,
+      responsibleId: map['responsibleId'] as int?,
       postponingTaskDayCount: map['postponingTaskDayCount'] as int,
+    );
+  }
+}
+
+class ProjectEmbedResponse {
+  final int id;
+  final int projectId;
+  final String name;
+  final String url;
+  final String category;
+  final int order;
+
+  ProjectEmbedResponse({
+    required this.id,
+    required this.projectId,
+    required this.name,
+    required this.url,
+    required this.category,
+    required this.order,
+  });
+
+  factory ProjectEmbedResponse.fromJson(Map<String, dynamic> json) {
+    return ProjectEmbedResponse(
+      id: json['id'],
+      projectId: json['projectId'],
+      name: json['name'],
+      url: json['url'],
+      category: json['category'],
+      order: json['order'],
     );
   }
 }
@@ -89,10 +138,16 @@ class Project implements Identifiable {
   final String name;
   final int creatorId;
   final int columnId;
-  final String order;
+  final int spaceId;
+  final int order;
   final List<ProjectStage> stages;
+  final List<ProjectEmbed> embeddings;
+  final bool showProjectReviewTab;
+  final bool timelineViewType;
   final int taskCount;
-  final String memo;
+  final int allTaskCount;
+  final int archiveStageId;
+  final String? memo;
   final bool favorite;
   final String? color;
   final int? responsibleId;
@@ -105,9 +160,15 @@ class Project implements Identifiable {
     required this.name,
     required this.creatorId,
     required this.columnId,
+    required this.spaceId,
     required this.order,
     required this.stages,
+    required this.embeddings,
+    required this.showProjectReviewTab,
+    required this.timelineViewType,
     required this.taskCount,
+    required this.allTaskCount,
+    required this.archiveStageId,
     required this.memo,
     required this.favorite,
     required this.color,
@@ -123,9 +184,17 @@ class Project implements Identifiable {
       name: data.name,
       creatorId: data.creatorId,
       columnId: data.columnId,
-      order: data.order,
+      spaceId: data.spaceId,
+      order: int.parse(data.order),
       stages: data.stages.map(ProjectStage.fromResponse).toList(),
+      embeddings: data.embeddings
+          .map((embedding) => ProjectEmbed.fromResponse(embedding))
+          .toList(),
+      showProjectReviewTab: data.showProjectReviewTab,
+      timelineViewType: data.timelineViewType,
       taskCount: data.taskCount,
+      allTaskCount: data.allTaskCount,
+      archiveStageId: data.archiveStageId,
       memo: data.memo,
       favorite: data.favorite,
       color: data.color,
@@ -139,11 +208,18 @@ class Project implements Identifiable {
     DateTime? createdAt,
     DateTime? updatedAt,
     String? name,
+    String? description,
     int? creatorId,
     int? columnId,
-    String? order,
+    int? spaceId,
+    int? order,
     List<ProjectStage>? stages,
+    List<ProjectEmbed>? embeddings,
+    bool? showProjectReviewTab,
+    bool? timelineViewType,
     int? taskCount,
+    int? allTaskCount,
+    int? archiveStageId,
     String? memo,
     bool? favorite,
     String? color,
@@ -157,15 +233,50 @@ class Project implements Identifiable {
       name: name ?? this.name,
       creatorId: creatorId ?? this.creatorId,
       columnId: columnId ?? this.columnId,
+      spaceId: spaceId ?? this.spaceId,
       order: order ?? this.order,
       stages: stages ?? this.stages,
+      embeddings: embeddings ?? this.embeddings,
+      showProjectReviewTab: showProjectReviewTab ?? this.showProjectReviewTab,
+      timelineViewType: timelineViewType ?? this.timelineViewType,
       taskCount: taskCount ?? this.taskCount,
+      allTaskCount: allTaskCount ?? this.allTaskCount,
+      archiveStageId: archiveStageId ?? this.archiveStageId,
       memo: memo ?? this.memo,
       favorite: favorite ?? this.favorite,
       color: color ?? this.color,
       responsibleId: responsibleId ?? this.responsibleId,
       postponingTaskDayCount:
           postponingTaskDayCount ?? this.postponingTaskDayCount,
+    );
+  }
+}
+
+class ProjectEmbed {
+  final int id;
+  final int projectId;
+  final String name;
+  final String url;
+  final String category;
+  final int order;
+
+  ProjectEmbed({
+    required this.id,
+    required this.projectId,
+    required this.name,
+    required this.url,
+    required this.category,
+    required this.order,
+  });
+
+  factory ProjectEmbed.fromResponse(ProjectEmbedResponse response) {
+    return ProjectEmbed(
+      id: response.id,
+      projectId: response.projectId,
+      name: response.name,
+      url: response.url,
+      category: response.category,
+      order: response.order,
     );
   }
 }
