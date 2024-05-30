@@ -50,7 +50,7 @@ class NotificationsList extends StatelessWidget {
           dayList,
         );
 
-        /// Виджет с содержимым одного дня уведомлений
+        // Виджет с содержимым одного дня уведомлений
         return Padding(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
           child: Column(

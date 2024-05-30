@@ -76,6 +76,29 @@ class ReglamentsStore extends GStore {
     });
   }
 
+  Future<void> deleteReglament({required int reglamentId}) async {
+    try {
+      final deleteResponse =
+          await api.deleteReglament(reglamentId: reglamentId);
+      setStore(() {
+        reglaments = _deleteReglamentLocally(reglamentID: deleteResponse.id);
+      });
+    } catch (e) {
+      if (e == 'Not organization owner') return;
+      throw Exception(e);
+    }
+  }
+
+  List<Reglament> _deleteReglamentLocally({required int reglamentID}) {
+    final newReglaments = reglaments ?? [];
+    final reglamentToDelete =
+        newReglaments.firstWhere((reglament) => reglament.id == reglamentID);
+    if (newReglaments.contains(reglamentToDelete)) {
+      newReglaments.remove(reglamentToDelete);
+    }
+    return [...newReglaments];
+  }
+
   /// Отображение локально в списке того, что регламент создан
   List<Reglament> _createReglamentLocally(Reglament reglament) {
     final List<Reglament> newReglaments = reglaments ?? [];

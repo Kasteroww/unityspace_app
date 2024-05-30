@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:unityspace/models/reglament_models.dart';
+import 'package:unityspace/screens/space_screen/pages/reglaments_page/reglaments_page.dart';
+import 'package:unityspace/screens/space_screen/pages/reglaments_page/widgets/dialogs/move_reglament_dialog.dart';
+import 'package:unityspace/utils/localization_helper.dart';
+import 'package:wstore/wstore.dart';
 
 class PopUpReglamentButton extends StatelessWidget {
-  final List<PopupMenuEntry<String>> popupMenuEntryList;
-  const PopUpReglamentButton({required this.popupMenuEntryList, super.key});
+  final Reglament reglament;
+  const PopUpReglamentButton({
+    required this.reglament,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final localization = LocalizationHelper.getLocalizations(context);
     return PopupMenuButton<String>(
       elevation: 1,
       shape: RoundedRectangleBorder(
@@ -19,9 +28,90 @@ class PopUpReglamentButton extends StatelessWidget {
         child: SvgPicture.asset('assets/icons/settings.svg'),
       ),
       itemBuilder: (BuildContext context) {
-        return popupMenuEntryList;
+        return isArchived(
+          currentColumnId: reglament.reglamentColumnId,
+          archivedColumnId:
+              context.wstore<ReglamentsPageStore>().archiveColumnId,
+        )
+            ? [
+                // Перемещение из архива
+                PopupMenuItem<String>(
+                  onTap: () {
+                    showMoveReglamentDialog(
+                      context: context,
+                      reglamentColumns: context
+                          .wstore<ReglamentsPageStore>()
+                          .reglamentColumns,
+                      columnReglament: reglament,
+                    );
+                  },
+                  child: PopupMenuItemChild(
+                    text: localization.restore_from_archive,
+                  ),
+                ),
+                // Удаление реглаента
+                PopupMenuItem<String>(
+                  onTap: () {
+                    context.wstore<ReglamentsPageStore>().tryToDeleteReglament(
+                          reglamentId: reglament.id,
+                          context: context,
+                        );
+                  },
+                  child: PopupMenuItemChild(
+                    text: localization.delete,
+                  ),
+                ),
+              ]
+            : [
+                PopupMenuItem<String>(
+                  child: PopupMenuItemChild(
+                    text: localization.change_the_title,
+                  ),
+                ),
+                PopupMenuItem<String>(
+                  child: PopupMenuItemChild(
+                    text: localization.duplicate_reglament,
+                  ),
+                ),
+                PopupMenuItem<String>(
+                  child: PopupMenuItemChild(
+                    text: localization.copy_reglament_link,
+                  ),
+                ),
+                PopupMenuItem<String>(
+                  onTap: () {
+                    showMoveReglamentDialog(
+                      context: context,
+                      reglamentColumns: context
+                          .wstore<ReglamentsPageStore>()
+                          .reglamentColumns,
+                      columnReglament: reglament,
+                    );
+                  },
+                  child: PopupMenuItemChild(
+                    text: localization.move_reglament,
+                  ),
+                ),
+                PopupMenuItem<String>(
+                  onTap: () {
+                    context.wstore<ReglamentsPageStore>().moveToArchive(
+                          reglamentId: reglament.id,
+                        );
+                  },
+                  child: PopupMenuItemChild(
+                    text: localization.send_to_archive,
+                  ),
+                ),
+              ];
       },
     );
+  }
+
+  bool isArchived({
+    required int currentColumnId,
+    required int archivedColumnId,
+  }) {
+    return currentColumnId == archivedColumnId;
   }
 }
 

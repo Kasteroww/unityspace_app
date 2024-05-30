@@ -68,7 +68,9 @@ class PopUpProjectsButton extends StatelessWidget {
             PopupMenuItem(
               onTap: () => store.checkRulesByDelete()
                   ? store.deleteProject(project.id)
-                  : showDeleteNoRulesDialog(context, store.owner),
+                  : showDeleteNoRulesDialog(
+                      context,
+                    ),
               child: PopupProjectsItem(
                 text: localization.delete_project,
                 color: Colors.red,
@@ -90,7 +92,9 @@ class PopUpProjectsButton extends StatelessWidget {
             PopupMenuItem(
               onTap: () => store.checkRulesByDelete()
                   ? store.deleteProject(project.id)
-                  : showDeleteNoRulesDialog(context, store.owner),
+                  : showDeleteNoRulesDialog(
+                      context,
+                    ),
               child: PopupProjectsItem(
                 text: localization.delete_project,
                 color: Colors.red,

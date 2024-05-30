@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:unityspace/screens/space_screen/pages/add_reglament_page/edit_reglament_page.dart';
+import 'package:unityspace/screens/space_screen/pages/edit_reglament_page/edit_reglament_page.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
 import 'package:unityspace/store/reglament_store.dart';

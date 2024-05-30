@@ -18,6 +18,7 @@ import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/constants.dart';
 import 'package:unityspace/utils/errors.dart';
+import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -156,7 +157,7 @@ class AccountPageStore extends WStore {
     final String copyError,
   ) {
     listenFuture(
-      _copyToClipboard(text),
+      copyToClipboard(text),
       id: 1,
       onData: (_) {
         setStore(() {
@@ -184,12 +185,6 @@ class AccountPageStore extends WStore {
         });
       },
     );
-  }
-
-  Future<void> _copyToClipboard(final String text) async {
-    if (text.isEmpty) throw TextErrors.textIsEmpty;
-    final data = ClipboardData(text: text);
-    await Clipboard.setData(data);
   }
 
   Future<void> _gotoLink(final String link) async {

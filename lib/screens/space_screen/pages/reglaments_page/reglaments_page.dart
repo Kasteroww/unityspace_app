@@ -3,13 +3,17 @@ import 'package:unityspace/models/reglament_models.dart';
 import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/screens/space_screen/pages/reglaments_page/widgets/dialogs/add_reglament_dialog.dart';
 import 'package:unityspace/screens/space_screen/pages/reglaments_page/widgets/reglament_listview.dart';
+import 'package:unityspace/screens/space_screen/widgets/delete_no_rules_dialog.dart';
 import 'package:unityspace/store/reglament_store.dart';
+import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
 
 class ReglamentsPageStore extends WStore {
   late Space currentSpace;
   late SpaceColumn chosenColumn;
+
+  bool isInArchive = false;
 
   ///Получение ВСЕХ регламентов из стора
   List<Reglament> get allReglaments => computedFromStore(
@@ -35,6 +39,16 @@ class ReglamentsPageStore extends WStore {
         keyName: 'columnReglaments',
       );
 
+  /// Получение регламентов из колонки
+  List<Reglament> get archiveReglaments => computed(
+        getValue: () => _archivedReglaments(allReglaments, archiveColumnId),
+        watch: () => [allReglaments, archiveColumnId],
+        keyName: 'archiveReglaments',
+      );
+
+  ///id заархивированного регламента
+  int get archiveColumnId => currentSpace.archiveReglamentColumnId;
+
   /// Выбрать колонку
   void chooseColumn({required SpaceColumn newChosenColumn}) {
     setStore(() {
@@ -51,16 +65,41 @@ class ReglamentsPageStore extends WStore {
     required int reglamentId,
     int newOrder = 0,
   }) async {
-    final archiveIdColumn = archiveColumnId();
+    final columnId = archiveColumnId;
     await ReglamentsStore().changeReglamentColumnAndOrder(
       reglamentId: reglamentId,
-      newColumnId: archiveIdColumn,
+      newColumnId: columnId,
       newOrder: newOrder,
     );
   }
 
-  int archiveColumnId() {
-    return currentSpace.archiveReglamentColumnId;
+  void tryToDeleteReglament({
+    required int reglamentId,
+    required BuildContext context,
+  }) {
+    if (checkIfHasDeleteRights()) {
+      deleteReglament(reglamentId: reglamentId);
+    } else {
+      showDeleteNoRulesDialog(context);
+    }
+  }
+
+  Future<void> deleteReglament({
+    required int reglamentId,
+  }) async {
+    await ReglamentsStore().deleteReglament(reglamentId: reglamentId);
+  }
+
+  void changeInArchiveStatus() {
+    setStore(() {
+      isInArchive = !isInArchive;
+    });
+  }
+
+  bool checkIfHasDeleteRights() {
+    final isOwner = UserStore().isOrganizationOwner;
+    final isAdmin = UserStore().isAdmin;
+    return isOwner || isAdmin;
   }
 
   Map<int, List<Reglament>> _columnReglaments(List<Reglament> spaceReglaments) {
@@ -88,6 +127,18 @@ class ReglamentsPageStore extends WStore {
     final cols = currentSpace?.reglamentColumns ?? [];
     cols.sort((a, b) => a.order.compareTo(b.order));
     return cols;
+  }
+
+  List<Reglament> _archivedReglaments(
+    List<Reglament> allReglaments,
+    int archiveColumnId,
+  ) {
+    final List<Reglament> reglaments = allReglaments
+        .where((reg) => reg.reglamentColumnId == archiveColumnId)
+        .toList();
+    reglaments.sort((a, b) => a.order.compareTo(b.order));
+
+    return reglaments;
   }
 
   List<Reglament> _getReglaments({
@@ -119,28 +170,30 @@ class ReglamentsPage extends WStoreWidget<ReglamentsPageStore> {
     final width = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          SizedBox(
-            height: 40,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: store.reglamentColumns.length,
-              separatorBuilder: (BuildContext context, int index) {
-                return const SizedBox(
-                  width: 4,
-                );
-              },
-              itemBuilder: (BuildContext context, int index) {
-                final reglamentColumn = store.reglamentColumns[index];
-                return Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: WStoreBuilder(
-                    store: store,
-                    watch: (store) => [
-                      store.chosenColumn,
-                    ],
-                    builder: (context, store) {
-                      return InkWell(
+          WStoreBuilder(
+            store: store,
+            watch: (store) => [store.chosenColumn, store.isInArchive],
+            builder: (context, store) {
+              if (store.isInArchive) {
+                return const SizedBox.shrink();
+              }
+              return SizedBox(
+                height: 40,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: store.reglamentColumns.length,
+                  separatorBuilder: (BuildContext context, int index) {
+                    return const SizedBox(
+                      width: 4,
+                    );
+                  },
+                  itemBuilder: (BuildContext context, int index) {
+                    final reglamentColumn = store.reglamentColumns[index];
+                    return Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: InkWell(
                         onTap: () {
                           store.chooseColumn(
                             newChosenColumn: reglamentColumn,
@@ -154,14 +207,48 @@ class ReglamentsPage extends WStoreWidget<ReglamentsPageStore> {
                                 : Colors.blue,
                           ),
                         ),
-                      );
-                    },
-                  ),
-                );
-              },
-            ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
           ),
-          const ReglamentListView(),
+          WStoreBuilder(
+            store: store,
+            watch: (store) => [
+              store.isInArchive,
+              store.archiveReglaments,
+            ],
+            builder: (context, store) {
+              return InkWell(
+                onTap: store.changeInArchiveStatus,
+                child: Text(
+                  store.isInArchive
+                      ? localization.exit_from_archive
+                      : '${localization.reglament_count_in_archive}: ${store.archiveReglaments.length}',
+                ),
+              );
+            },
+          ),
+          const SizedBox(
+            height: 12,
+          ),
+          WStoreBuilder(
+            store: store,
+            watch: (store) => [
+              store.chosenColumn,
+              store.archiveReglaments,
+              store.isInArchive,
+            ],
+            builder: (context, store) {
+              return ReglamentListView(
+                columnReglaments: store.isInArchive
+                    ? store.archiveReglaments
+                    : store.columnReglaments,
+              );
+            },
+          ),
           InkWell(
             onTap: () {
               showAddReglamentDialog(context, store.chosenColumn.id);

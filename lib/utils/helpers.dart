@@ -1,6 +1,8 @@
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:string_validator/string_validator.dart';
 import 'package:unityspace/models/i_base_model.dart';
+import 'package:unityspace/utils/errors.dart';
 import 'package:unityspace/utils/http_plugin.dart';
 
 String? makeAvatarUrl(final String? avatar) {
@@ -62,4 +64,10 @@ Map<int, T?> createMapById<T extends Identifiable>(List<T>? list) {
     acc[item.id] = item;
     return acc;
   });
+}
+
+Future<void> copyToClipboard(final String text) async {
+  if (text.isEmpty) throw TextErrors.textIsEmpty;
+  final data = ClipboardData(text: text);
+  await Clipboard.setData(data);
 }
