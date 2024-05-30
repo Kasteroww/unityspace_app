@@ -1,9 +1,13 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:unityspace/models/color_models.dart';
 import 'package:unityspace/models/project_models.dart';
+import 'package:unityspace/screens/widgets/app_dialog/app_dialog_dropdown_menu.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
 import 'package:unityspace/store/project_store.dart';
+import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
@@ -24,6 +28,18 @@ Future<void> showProjectPropertiesDialog(
 
 class ProjectPropertiesDialogStore extends WStore {
   late Project project;
+  late ColorType selectedColor;
+  List<ColorType> listProjectColors = [
+    ColorType(colorHex: '', name: getColorName('Цвет не выбран')),
+    ColorType(colorHex: '#D8EFF4', name: getColorName('#D8EFF4')),
+    ColorType(colorHex: '#F3E2D9', name: getColorName('#F3E2D9')),
+    ColorType(colorHex: '#F1DBF2', name: getColorName('#F1DBF2')),
+    ColorType(colorHex: '#D9DDF3', name: getColorName('#D9DDF3')),
+    ColorType(colorHex: '#E5F5DD', name: getColorName('#E5F5DD')),
+    ColorType(colorHex: '#CAECD8', name: getColorName('#CAECD8')),
+    ColorType(colorHex: '#ECDECA', name: getColorName('#ECDECA')),
+  ];
+
   String projectPropertiesError = '';
   WStoreStatus statusProjectProperties = WStoreStatus.init;
 
@@ -33,9 +49,30 @@ class ProjectPropertiesDialogStore extends WStore {
     });
   }
 
+  void setProjectColor(ColorType color, AppLocalizations localization) {
+    setStore(() {
+      project = project.copyWith(color: color.colorHex);
+      selectedColor = color;
+    });
+  }
+
+  String setProjectColorName(ColorType color, AppLocalizations localization) {
+    if (color.name.isNotEmpty) {
+      return color.name;
+    } else if (color.colorHex.isNotEmpty) {
+      return color.colorHex;
+    } else {
+      return localization.color_is_empty;
+    }
+  }
+
   void initData(Project project) {
     setStore(() {
       this.project = project;
+      selectedColor = listProjectColors.firstWhereOrNull(
+            (color) => color.colorHex == (project.color ?? ''),
+          ) ??
+          listProjectColors.first;
     });
   }
 
@@ -51,6 +88,7 @@ class ProjectPropertiesDialogStore extends WStore {
         UpdateProject(
           id: project.id,
           name: project.name,
+          color: project.color,
         ),
       ),
       subscriptionId: 1,
@@ -124,11 +162,23 @@ class ProjectPropertiesDialog
                   },
                   onEditingComplete: () {
                     FocusScope.of(context).unfocus();
-                    // store.saveProjectProperties(localization);
                   },
                   labelText: localization.project_name,
                 ),
                 const SizedBox(height: 16),
+                AddDialogDropdownMenu<ColorType>(
+                  onChanged: (color) {
+                    FocusScope.of(context).unfocus();
+                    if (color is ColorType) {
+                      store.setProjectColor(color, localization);
+                    } else {
+                      throw Exception('Value has wrong type');
+                    }
+                  },
+                  labelText: localization.color,
+                  listValues: store.listProjectColors,
+                  currentValue: store.selectedColor,
+                ),
                 if (error)
                   Text(
                     store.projectPropertiesError,

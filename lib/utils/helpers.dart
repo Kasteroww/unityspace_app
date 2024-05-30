@@ -1,7 +1,9 @@
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:string_validator/string_validator.dart';
+import 'package:unityspace/models/color_models.dart';
 import 'package:unityspace/models/i_base_model.dart';
+import 'package:unityspace/utils/constants.dart';
 import 'package:unityspace/utils/errors.dart';
 import 'package:unityspace/utils/http_plugin.dart';
 
@@ -64,6 +66,10 @@ Map<int, T?> createMapById<T extends Identifiable>(List<T>? list) {
     acc[item.id] = item;
     return acc;
   });
+}
+
+String getColorName(String color) {
+  return ConstantColors.colors[color] ?? color;
 }
 
 Future<void> copyToClipboard(final String text) async {
