@@ -1,4 +1,5 @@
 import 'package:unityspace/models/i_base_model.dart';
+import 'package:unityspace/service/data_exceptions.dart';
 
 class UserPassedResponse {
   final String createdAt;
@@ -48,6 +49,66 @@ class ReglamentAnswerResponse {
     required this.questionId,
     required this.updatedAt,
   });
+  factory ReglamentAnswerResponse.fromJson(Map<String, dynamic> map) {
+    try {
+      return ReglamentAnswerResponse(
+        createdAt: map['createdAt'] as String,
+        id: map['id'] as int,
+        isRight: map['isRight'] as bool,
+        name: map['name'] as String,
+        questionId: map['questionId'] as int,
+        updatedAt: map['updatedAt'] as String,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
+  }
+}
+
+class ReglamentAnswer {
+  final String createdAt;
+  final int id;
+  final bool isRight;
+  final String name;
+  final int questionId;
+  final String updatedAt;
+
+  ReglamentAnswer({
+    required this.createdAt,
+    required this.id,
+    required this.isRight,
+    required this.name,
+    required this.questionId,
+    required this.updatedAt,
+  });
+  factory ReglamentAnswer.fromResponse(ReglamentAnswerResponse data) {
+    return ReglamentAnswer(
+      createdAt: data.createdAt,
+      id: data.id,
+      isRight: data.isRight,
+      name: data.name,
+      questionId: data.questionId,
+      updatedAt: data.updatedAt,
+    );
+  }
+
+  ReglamentAnswer copyWith({
+    String? createdAt,
+    int? id,
+    bool? isRight,
+    String? name,
+    int? questionId,
+    String? updatedAt,
+  }) {
+    return ReglamentAnswer(
+      createdAt: createdAt ?? this.createdAt,
+      id: id ?? this.id,
+      isRight: isRight ?? this.isRight,
+      name: name ?? this.name,
+      questionId: questionId ?? this.questionId,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
 }
 
 class ReglamentHistoryResponse {
@@ -120,6 +181,76 @@ class ReglamentQuestionResponse {
     required this.reglamentId,
     required this.updatedAt,
   });
+
+  factory ReglamentQuestionResponse.fromJson(Map<String, dynamic> map) {
+    try {
+      return ReglamentQuestionResponse(
+        answers: (map['answers'] as List<dynamic>)
+            .map((answerJson) => ReglamentAnswerResponse.fromJson(answerJson))
+            .toList(),
+        createdAt: map['createdAt'] as String,
+        id: map['id'] as int,
+        name: map['name'] as String,
+        order: map['order'] as String,
+        reglamentId: map['reglamentId'] as int,
+        updatedAt: map['updatedAt'] as String,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
+  }
+}
+
+class ReglamentQuestion {
+  final List<ReglamentAnswer> answers;
+  final String createdAt;
+  final int id;
+  final String name;
+  final String order;
+  final int reglamentId;
+  final String updatedAt;
+  ReglamentQuestion({
+    required this.answers,
+    required this.createdAt,
+    required this.id,
+    required this.name,
+    required this.order,
+    required this.reglamentId,
+    required this.updatedAt,
+  });
+  factory ReglamentQuestion.fromResponse(ReglamentQuestionResponse data) {
+    final List<ReglamentAnswer> answers =
+        data.answers.map((i) => ReglamentAnswer.fromResponse(i)).toList();
+    return ReglamentQuestion(
+      answers: answers,
+      createdAt: data.createdAt,
+      id: data.id,
+      name: data.name,
+      order: data.order,
+      reglamentId: data.reglamentId,
+      updatedAt: data.updatedAt,
+    );
+  }
+
+  ReglamentQuestion copyWith({
+    List<ReglamentAnswer>? answers,
+    String? createdAt,
+    int? id,
+    String? name,
+    String? order,
+    int? reglamentId,
+    String? updatedAt,
+  }) {
+    return ReglamentQuestion(
+      answers: answers ?? this.answers,
+      createdAt: createdAt ?? this.createdAt,
+      id: id ?? this.id,
+      name: name ?? this.name,
+      order: order ?? this.order,
+      reglamentId: reglamentId ?? this.reglamentId,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
 }
 
 class RenameReglamentResponse {
@@ -270,6 +401,17 @@ class ReglamentRequiredResponse {
     required this.id,
     required this.required,
   });
+
+  factory ReglamentRequiredResponse.fromJson(Map<String, dynamic> map) {
+    try {
+      return ReglamentRequiredResponse(
+        id: map['id'] as int,
+        required: map['required'] as bool,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
+  }
 }
 
 class FullReglamentResponse {
@@ -294,6 +436,65 @@ class FullReglamentResponse {
     required this.order,
     required this.updatedAt,
   });
+  factory FullReglamentResponse.fromJson(Map<String, dynamic> map) {
+    try {
+      return FullReglamentResponse(
+        content: map['content'] as String,
+        createdAt: map['createdAt'] as String,
+        creatorId: map['creatorId'] as int,
+        editorIds: List<int>.from(map['editorIds']),
+        id: map['id'] as int,
+        lastEditDate: map['lastEditDate'] as String,
+        name: map['name'] as String,
+        order: map['order'] as String,
+        updatedAt: map['updatedAt'] as String,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
+  }
+}
+
+class FullReglament {
+  final String content;
+  final String createdAt;
+  final int creatorId;
+  final List<int> editorIds;
+  final int id;
+  final String lastEditDate;
+  final String name;
+  final String order;
+  final String updatedAt;
+
+  FullReglament({
+    required this.content,
+    required this.createdAt,
+    required this.creatorId,
+    required this.editorIds,
+    required this.id,
+    required this.lastEditDate,
+    required this.name,
+    required this.order,
+    required this.updatedAt,
+  });
+
+  factory FullReglament.fromJson(FullReglamentResponse data) {
+    try {
+      return FullReglament(
+        content: data.content,
+        createdAt: data.createdAt,
+        creatorId: data.creatorId,
+        editorIds: data.editorIds,
+        id: data.id,
+        lastEditDate: data.lastEditDate,
+        name: data.name,
+        order: data.order,
+        updatedAt: data.updatedAt,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
+  }
 }
 
 class Reglament implements Identifiable {
@@ -362,4 +563,20 @@ class Reglament implements Identifiable {
       usersPassed: usersPassed ?? this.usersPassed,
     );
   }
+}
+
+class DuplicatedReglament {
+  final String name;
+  final int reglamentColumnId;
+  final double order;
+  final String content;
+  final bool required;
+
+  DuplicatedReglament({
+    required this.name,
+    required this.reglamentColumnId,
+    required this.order,
+    required this.content,
+    required this.required,
+  });
 }

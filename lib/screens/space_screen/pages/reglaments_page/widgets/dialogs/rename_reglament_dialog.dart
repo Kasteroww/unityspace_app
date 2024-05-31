@@ -3,6 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unityspace/models/reglament_models.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
+import 'package:unityspace/service/data_exceptions.dart';
 import 'package:unityspace/store/reglament_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
@@ -57,13 +58,17 @@ class RenameReglamentDialogStore extends WStore {
       });
     } catch (e, stack) {
       logger.d('''
-          on RenameReglamentDialog
-          'NotificationsStore loadData error=$e\nstack=$stack
+          on RenameReglamentDialog loadData error=$e\nstack=$stack
         ''');
       setStore(() {
         status = WStoreStatus.error;
         error = localization.problem_uploading_data_try_again;
       });
+      throw LoadDataException(
+        'on rename reglament excetpion',
+        e,
+        stack,
+      );
     }
   }
 

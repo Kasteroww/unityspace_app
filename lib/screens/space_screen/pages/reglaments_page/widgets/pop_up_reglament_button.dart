@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:unityspace/models/reglament_models.dart';
 import 'package:unityspace/screens/space_screen/pages/reglaments_page/reglaments_page.dart';
+import 'package:unityspace/screens/space_screen/pages/reglaments_page/widgets/dialogs/duplicate_reglament_dialog.dart';
 import 'package:unityspace/screens/space_screen/pages/reglaments_page/widgets/dialogs/move_reglament_dialog.dart';
 import 'package:unityspace/screens/space_screen/pages/reglaments_page/widgets/dialogs/rename_reglament_dialog.dart';
 import 'package:unityspace/utils/localization_helper.dart';
@@ -75,6 +76,14 @@ class PopUpReglamentButton extends StatelessWidget {
                 ),
                 // Дулирование регламента
                 PopupMenuItem<String>(
+                  onTap: () {
+                    showDuplicateReglamentDialog(
+                      context: context,
+                      reglament: reglament,
+                      selectedColumn:
+                          context.wstore<ReglamentsPageStore>().chosenColumn,
+                    );
+                  },
                   child: PopupMenuItemChild(
                     text: localization.duplicate_reglament,
                   ),
