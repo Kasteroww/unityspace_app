@@ -66,7 +66,7 @@ class AllTasksBody extends StatelessWidget {
           color: ColorConstants.grey04,
         ),
         Expanded(
-          child: WStoreValueBuilder<TasksPageStore, List<TasksGroup>?>(
+          child: WStoreValueBuilder<TasksPageStore, List<ITasksGroup>?>(
             builder: (context, store) {
               if (store != null) {
                 return TasksList(
@@ -76,7 +76,7 @@ class AllTasksBody extends StatelessWidget {
                 return const Text('tasks is empty');
               }
             },
-            watch: (store) => store.groupsToDisplay,
+            watch: (store) => store.tasksToDisplay,
           ),
         ),
       ],

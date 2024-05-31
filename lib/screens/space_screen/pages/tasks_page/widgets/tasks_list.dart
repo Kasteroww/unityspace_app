@@ -12,25 +12,24 @@ class TasksList extends StatelessWidget {
     super.key,
   });
 
-  final List<TasksGroup> tasksList;
+  final List<ITasksGroup> tasksList;
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       itemCount: tasksList.length,
-      itemBuilder: (context, projectIndex) {
-        final tasks = tasksList[projectIndex].tasks;
-        return ProjectGroup(
-          tasksList: tasksList,
+      itemBuilder: (context, groupIndex) {
+        final tasks = tasksList[groupIndex].tasks;
+        return TaskGroup(
           tasks: tasks,
-          projectIndex: projectIndex,
+          groupTitle: tasksList[groupIndex].groupTitle,
         );
       },
     );
   }
 }
 
-class ProjectGroupStore extends WStore {
+class TaskGroupStore extends WStore {
   bool isListVisible = true;
 
   void toggleVisibility() {
@@ -40,26 +39,24 @@ class ProjectGroupStore extends WStore {
   }
 
   @override
-  ProjectGroup get widget => super.widget as ProjectGroup;
+  TaskGroup get widget => super.widget as TaskGroup;
 }
 
-class ProjectGroup extends WStoreWidget<ProjectGroupStore> {
-  const ProjectGroup({
-    required this.tasksList,
+class TaskGroup extends WStoreWidget<TaskGroupStore> {
+  const TaskGroup({
     required this.tasks,
-    required this.projectIndex,
+    required this.groupTitle,
     super.key,
   });
 
-  final List<TasksGroup> tasksList;
   final List<Task> tasks;
-  final int projectIndex;
+  final String groupTitle;
 
   @override
-  ProjectGroupStore createWStore() => ProjectGroupStore();
+  TaskGroupStore createWStore() => TaskGroupStore();
 
   @override
-  Widget build(BuildContext context, ProjectGroupStore store) {
+  Widget build(BuildContext context, TaskGroupStore store) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -69,7 +66,7 @@ class ProjectGroup extends WStoreWidget<ProjectGroupStore> {
           },
           child: Row(
             children: [
-              WStoreValueBuilder<ProjectGroupStore, bool>(
+              WStoreValueBuilder<TaskGroupStore, bool>(
                 watch: (store) => store.isListVisible,
                 builder: (context, store) {
                   return store
@@ -80,7 +77,7 @@ class ProjectGroup extends WStoreWidget<ProjectGroupStore> {
               const PaddingLeft(20),
               Flexible(
                 child: Text(
-                  tasksList[projectIndex].groupTitle,
+                  groupTitle,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context)
                       .textTheme
@@ -92,7 +89,7 @@ class ProjectGroup extends WStoreWidget<ProjectGroupStore> {
           ),
         ),
         const PaddingTop(8),
-        WStoreValueBuilder<ProjectGroupStore, bool>(
+        WStoreValueBuilder<TaskGroupStore, bool>(
           watch: (store) => store.isListVisible,
           builder: (context, store) {
             return PaddingVertical(

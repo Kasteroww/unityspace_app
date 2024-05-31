@@ -205,17 +205,26 @@ class TaskStages {
   }
 }
 
-class TasksGroup {
+interface class ITasksGroup {
+  final String groupTitle;
+  final List<Task> tasks;
+
+  ITasksGroup({required this.groupTitle, required this.tasks});
+}
+
+class TasksProjectGroup implements ITasksGroup {
   final int id;
   final int spaceFavorite;
   final int spaceOrder;
+  @override
   final String groupTitle;
   final int projectOrder;
   final int columnOrder;
   final int spaceId;
+  @override
   final List<Task> tasks;
 
-  TasksGroup({
+  TasksProjectGroup({
     required this.id,
     required this.spaceFavorite,
     required this.spaceOrder,
@@ -223,6 +232,36 @@ class TasksGroup {
     required this.projectOrder,
     required this.columnOrder,
     required this.spaceId,
+    required this.tasks,
+  });
+}
+
+class TasksUserGroup implements ITasksGroup {
+  final int id;
+  final int? userId;
+  @override
+  final String groupTitle;
+  @override
+  final List<Task> tasks;
+
+  TasksUserGroup({
+    required this.id,
+    required this.userId,
+    required this.groupTitle,
+    required this.tasks,
+  });
+}
+
+class TasksDateGroup implements ITasksGroup {
+  final int id;
+  @override
+  final String groupTitle;
+  @override
+  final List<Task> tasks;
+
+  TasksDateGroup({
+    required this.id,
+    required this.groupTitle,
     required this.tasks,
   });
 }

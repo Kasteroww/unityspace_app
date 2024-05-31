@@ -11,10 +11,32 @@ import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/tasks_store.dart';
 import 'package:unityspace/utils/constants.dart';
 import 'package:unityspace/utils/errors.dart';
+import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
 
+enum TaskGrouping {
+  byProject,
+  byDate,
+  byUser,
+  noGroup,
+}
+
+enum TaskFilter {
+  onlyActive,
+  onlyCompleted,
+  allTasks,
+}
+
+enum TaskSort {
+  byDate,
+  byStatus,
+  byImportance,
+  defaultSort,
+}
+
 class TasksPageStore extends WStore {
+  // GENERAL
   TasksErrors error = TasksErrors.none;
   WStoreStatus status = WStoreStatus.init;
   TasksStore tasksStore = TasksStore();
@@ -22,18 +44,15 @@ class TasksPageStore extends WStore {
   SpacesStore spacesStore = SpacesStore();
   int spaceId = 0;
 
-  final SearchTaskErrors searchError = SearchTaskErrors.none;
+  TaskGrouping groupingType = TaskGrouping.byDate;
 
+  // SEARCHING
+  final SearchTaskErrors searchError = SearchTaskErrors.none;
   String searchString = '';
 
   /// режим поиска, от него зависит отображается ли
   /// результат поиска или список всех задач
   bool isSearching = false;
-
-  // для пагинации результата
-  int tasksPage = 1;
-  int tasksMaxPagesCount = 0;
-  int tasksCount = 0;
 
   /// геттер задач из TasksStore
   List<Task> get tasks => computedFromStore(
@@ -41,14 +60,25 @@ class TasksPageStore extends WStore {
         getValue: (store) => store.tasks ?? [],
         keyName: 'tasks',
       );
-  List<TasksGroup> get groupsToDisplay =>
-      _tasksByProject(isSearching ? searchedTasks : tasks);
+  List<ITasksGroup> get tasksToDisplay {
+    switch (groupingType) {
+      case TaskGrouping.byProject:
+        return _tasksByProject(isSearching ? searchedTasks : tasks);
+      case TaskGrouping.byDate:
+        return _tasksByDate(isSearching ? searchedTasks : tasks);
+      default:
+        return _tasksByProject(isSearching ? searchedTasks : tasks);
+    }
+  }
 
   List<Task> searchedTasks = [];
 
-  List<TasksGroup> get tasksByProject => _tasksByProject(tasks);
+  List<TasksProjectGroup> get tasksByProject => _tasksByProject(tasks);
 
-  List<TasksGroup> get searchTasksByProject => _tasksByProject(searchedTasks);
+  List<TasksDateGroup> get tasksByDate => _tasksByDate(tasks);
+
+  List<TasksProjectGroup> get searchTasksByProject =>
+      _tasksByProject(searchedTasks);
 
   void setSearchString(String value) {
     setStore(() {
@@ -113,8 +143,8 @@ class TasksPageStore extends WStore {
   }
 
   /// группирует задачи по проектам
-  List<TasksGroup> _tasksByProject(List<Task>? tasks) {
-    final group = <TasksGroup>[];
+  List<TasksProjectGroup> _tasksByProject(List<Task>? tasks) {
+    final group = <TasksProjectGroup>[];
     if (tasks != null && tasks.isNotEmpty) {
       for (final task in tasks) {
         // так как у задачи нет ссылки на ее проект,
@@ -138,7 +168,7 @@ class TasksPageStore extends WStore {
             if (project != null && space != null && column != null) {
               if (spaceId == 0 || spaceId == space.id) {
                 group.add(
-                  TasksGroup(
+                  TasksProjectGroup(
                     id: project.id,
                     spaceOrder: space.order.toInt(),
                     spaceFavorite: space.favorite ? 1 : 0,
@@ -170,6 +200,51 @@ class TasksPageStore extends WStore {
       return a.groupTitle.compareTo(b.groupTitle);
     });
     return group;
+  }
+
+  List<TasksDateGroup> _tasksByDate(List<Task>? tasks) {
+    List<TasksDateGroup> groups = [];
+    if (tasks != null && tasks.isNotEmpty) {
+      final List<Task> tasksWithoutDate = [];
+      final List<Task> todayTasks = [];
+      final List<Task> tomorrowTasks = [];
+      final List<Task> overdueTasks = [];
+      final List<Task> futureTasks = [];
+
+      final todayDate = dateFromDateTime(DateTime.now());
+      final tomorrowDate =
+          DateTime(todayDate.year, todayDate.month, todayDate.day + 1);
+
+      for (final Task task in tasks) {
+        DateTime? taskDateEnd;
+
+        if (task.dateEnd != null) {
+          taskDateEnd = task.dateEnd;
+        }
+
+        if (taskDateEnd == null) {
+          tasksWithoutDate.add(task);
+        } else if (dateFromDateTime(taskDateEnd) == todayDate) {
+          todayTasks.add(task);
+        } else if (dateFromDateTime(taskDateEnd) == tomorrowDate) {
+          tomorrowTasks.add(task);
+        } else if (dateFromDateTime(taskDateEnd).isBefore(todayDate)) {
+          overdueTasks.add(task);
+        } else if (dateFromDateTime(taskDateEnd).isAfter(tomorrowDate)) {
+          futureTasks.add(task);
+        } else {
+          tasksWithoutDate.add(task);
+        }
+      }
+      groups = [
+        TasksDateGroup(id: 1, groupTitle: 'Сегодня', tasks: todayTasks),
+        TasksDateGroup(id: 2, groupTitle: 'Завтра', tasks: tomorrowTasks),
+        TasksDateGroup(id: 3, groupTitle: 'Просрочено', tasks: overdueTasks),
+        TasksDateGroup(id: 4, groupTitle: 'На будущее', tasks: futureTasks),
+        TasksDateGroup(id: 5, groupTitle: 'Без даты', tasks: tasksWithoutDate),
+      ];
+    }
+    return groups;
   }
 
   /// spaceId для получения задач, вызывается сразу после создания сторы
