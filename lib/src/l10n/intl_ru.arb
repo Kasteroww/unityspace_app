@@ -1,4 +1,10 @@
 {
+  "group_tasks_by_project": "По проектам",
+  "group_tasks_by_date": "По дате",
+  "group_tasks_by_user": "По исполнителям",
+  "do_not_group": "Не группировать",
+  "group_tasks": "Группировать",
+
   "find": "Найти",
   "task_name": "Наименование задачи",
   "column": "Колонка",

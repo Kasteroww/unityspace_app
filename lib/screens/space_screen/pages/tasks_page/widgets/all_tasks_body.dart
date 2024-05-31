@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/tasks_page.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/widgets/divider.dart';
+import 'package:unityspace/screens/space_screen/pages/tasks_page/widgets/popup_button.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/widgets/tasks_list.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/common/paddings.dart';
@@ -19,14 +19,34 @@ class AllTasksBody extends StatelessWidget {
     final localization = LocalizationHelper.getLocalizations(context);
     return Column(
       children: [
-        AddDialogInputField(
-          labelText: localization.find,
-          onChanged: (value) {
-            context.wstore<TasksPageStore>().setSearchString(value);
-          },
-          onEditingComplete: () {
-            context.wstore<TasksPageStore>().searchTasks();
-          },
+        Row(
+          children: [
+            Expanded(
+              flex: 2,
+              child: WStoreValueBuilder<TasksPageStore, TaskGrouping>(
+                watch: (store) => store.groupingType,
+                builder: (BuildContext context, value) {
+                  return PopUpTaskGroupingButton(
+                    value: value,
+                  );
+                },
+              ),
+            ),
+            const SizedBox(
+              width: 20,
+            ),
+            Flexible(
+              child: AddDialogInputField(
+                labelText: localization.find,
+                onChanged: (value) {
+                  context.wstore<TasksPageStore>().setSearchString(value);
+                },
+                onEditingComplete: () {
+                  context.wstore<TasksPageStore>().searchTasks();
+                },
+              ),
+            ),
+          ],
         ),
         const PaddingTop(20),
         SizedBox(
@@ -66,17 +86,13 @@ class AllTasksBody extends StatelessWidget {
           color: ColorConstants.grey04,
         ),
         Expanded(
-          child: WStoreValueBuilder<TasksPageStore, List<ITasksGroup>?>(
+          child: WStoreBuilder<TasksPageStore>(
             builder: (context, store) {
-              if (store != null) {
-                return TasksList(
-                  tasksList: store,
-                );
-              } else {
-                return const Text('tasks is empty');
-              }
+              return TasksList(
+                tasksList: store.groupedTasks,
+              );
             },
-            watch: (store) => store.tasksToDisplay,
+            watch: (store) => [store.groupingType],
           ),
         ),
       ],

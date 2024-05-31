@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:lottie/lottie.dart';
 import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/models/spaces_models.dart';
@@ -21,6 +22,21 @@ enum TaskGrouping {
   byDate,
   byUser,
   noGroup,
+}
+
+extension GroupLocalization on TaskGrouping {
+  String localize({required AppLocalizations localization}) {
+    switch (this) {
+      case TaskGrouping.byProject:
+        return localization.group_tasks_by_project;
+      case TaskGrouping.byDate:
+        return localization.group_tasks_by_date;
+      case TaskGrouping.byUser:
+        return localization.group_tasks_by_user;
+      case TaskGrouping.noGroup:
+        return localization.do_not_group;
+    }
+  }
 }
 
 enum TaskFilter {
@@ -45,7 +61,7 @@ class TasksPageStore extends WStore {
   SpacesStore spacesStore = SpacesStore();
   int spaceId = 0;
 
-  TaskGrouping groupingType = TaskGrouping.byUser;
+  TaskGrouping groupingType = TaskGrouping.byProject;
 
   // SEARCHING
   final SearchTaskErrors searchError = SearchTaskErrors.none;
@@ -61,18 +77,23 @@ class TasksPageStore extends WStore {
         getValue: (store) => store.tasks ?? [],
         keyName: 'tasks',
       );
-  List<ITasksGroup> get tasksToDisplay {
-    switch (groupingType) {
-      case TaskGrouping.byProject:
-        return _tasksByProject(isSearching ? searchedTasks : tasks);
-      case TaskGrouping.byUser:
-        return _tasksByUser(isSearching ? searchedTasks : tasks);
-      case TaskGrouping.byDate:
-        return _tasksByDate(isSearching ? searchedTasks : tasks);
-      default:
-        return _tasksByProject(isSearching ? searchedTasks : tasks);
-    }
-  }
+
+  List<ITasksGroup> get groupedTasks => computed(
+        getValue: () {
+          switch (groupingType) {
+            case TaskGrouping.byProject:
+              return _tasksByProject(isSearching ? searchedTasks : tasks);
+            case TaskGrouping.byUser:
+              return _tasksByUser(isSearching ? searchedTasks : tasks);
+            case TaskGrouping.byDate:
+              return _tasksByDate(isSearching ? searchedTasks : tasks);
+            default:
+              return _tasksByProject(isSearching ? searchedTasks : tasks);
+          }
+        },
+        watch: () => [groupingType],
+        keyName: 'groupedTasks',
+      );
 
   List<Task> searchedTasks = [];
 
@@ -86,6 +107,12 @@ class TasksPageStore extends WStore {
   void setSearchString(String value) {
     setStore(() {
       searchString = value;
+    });
+  }
+
+  void setGroupingType(TaskGrouping value) {
+    setStore(() {
+      groupingType = value;
     });
   }
 
