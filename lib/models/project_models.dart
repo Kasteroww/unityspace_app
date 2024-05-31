@@ -374,3 +374,47 @@ class UpdateProject {
     };
   }
 }
+
+class ColorType implements Nameable {
+  final String? colorHex;
+
+  @override
+  final String name;
+
+  const ColorType({required this.colorHex, required this.name});
+
+  ColorType copyWith({
+    String? colorHex,
+    String? name,
+  }) {
+    return ColorType(
+      colorHex: colorHex ?? this.colorHex,
+      name: name ?? this.name,
+    );
+  }
+}
+
+class MarkAsSnailType implements Nameable {
+  final MarkAsSnail value;
+
+  @override
+  final String name;
+
+  const MarkAsSnailType({required this.value, required this.name});
+}
+
+enum MarkAsSnail implements Nameable {
+  zero('0'),
+  one('1'),
+  two('2'),
+  three('3'),
+  four('4'),
+  five('5'),
+  six('6'),
+  seven('7');
+
+  @override
+  final String name;
+
+  const MarkAsSnail(this.name);
+}
