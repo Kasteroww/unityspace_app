@@ -42,6 +42,17 @@ class UserStore extends GStore {
     return user!.isAdmin;
   }
 
+  Map<int, OrganizationMember?> get organizationMembersMap {
+    if (organization?.members == null || organization!.members.isEmpty) {
+      return {};
+    }
+    return organization!.members.fold<Map<int, OrganizationMember?>>({},
+        (acc, member) {
+      acc[member.id] = member;
+      return acc;
+    });
+  }
+
   OrganizationMember? get organizationOwner {
     return organizationMembers[organization?.ownerId];
   }

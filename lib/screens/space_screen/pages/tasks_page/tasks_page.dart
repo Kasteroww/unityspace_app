@@ -9,6 +9,7 @@ import 'package:unityspace/screens/widgets/common/paddings.dart';
 import 'package:unityspace/store/project_store.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/tasks_store.dart';
+import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/constants.dart';
 import 'package:unityspace/utils/errors.dart';
 import 'package:unityspace/utils/helpers.dart';
@@ -44,7 +45,7 @@ class TasksPageStore extends WStore {
   SpacesStore spacesStore = SpacesStore();
   int spaceId = 0;
 
-  TaskGrouping groupingType = TaskGrouping.byDate;
+  TaskGrouping groupingType = TaskGrouping.byUser;
 
   // SEARCHING
   final SearchTaskErrors searchError = SearchTaskErrors.none;
@@ -64,6 +65,8 @@ class TasksPageStore extends WStore {
     switch (groupingType) {
       case TaskGrouping.byProject:
         return _tasksByProject(isSearching ? searchedTasks : tasks);
+      case TaskGrouping.byUser:
+        return _tasksByUser(isSearching ? searchedTasks : tasks);
       case TaskGrouping.byDate:
         return _tasksByDate(isSearching ? searchedTasks : tasks);
       default:
@@ -144,9 +147,9 @@ class TasksPageStore extends WStore {
 
   /// группирует задачи по проектам
   List<TasksProjectGroup> _tasksByProject(List<Task>? tasks) {
-    final group = <TasksProjectGroup>[];
+    final List<TasksProjectGroup> group = [];
     if (tasks != null && tasks.isNotEmpty) {
-      for (final task in tasks) {
+      for (final Task task in tasks) {
         // так как у задачи нет ссылки на ее проект,
         // находим его в поле taskStage
         for (final taskStage in task.stages) {
@@ -202,6 +205,51 @@ class TasksPageStore extends WStore {
     return group;
   }
 
+  List<TasksUserGroup> _tasksByUser(List<Task>? tasks) {
+    final List<TasksUserGroup> group = [];
+
+    if (tasks != null && tasks.isNotEmpty) {
+      for (final Task task in tasks) {
+        for (final int id in task.responsibleUsersId) {
+          final userGroup = group.firstWhereOrNull((user) => user.id == id);
+          if (userGroup != null) {
+            userGroup.tasks.add(task);
+          } else {
+            group.add(
+              TasksUserGroup(
+                id: id,
+                userId: id,
+                groupTitle: getUserNameById(userId: id),
+                tasks: [task],
+              ),
+            );
+          }
+        }
+        if (task.responsibleUsersId.isEmpty) {
+          final userGroup = group.firstWhereOrNull((user) => user.id == -1);
+          if (userGroup != null) {
+            userGroup.tasks.add(task);
+          } else {
+            group.add(
+              TasksUserGroup(
+                id: -1,
+                userId: null,
+                groupTitle: 'Нет ответственного',
+                tasks: [task],
+              ),
+            );
+          }
+        }
+      }
+    }
+    group.sort((a, b) {
+      if (b.id < 0 && a.id >= 0) return -1;
+      if (b.id >= 0 && a.id < 0) return 1;
+      return a.groupTitle.compareTo(b.groupTitle);
+    });
+    return group;
+  }
+
   List<TasksDateGroup> _tasksByDate(List<Task>? tasks) {
     List<TasksDateGroup> groups = [];
     if (tasks != null && tasks.isNotEmpty) {
@@ -245,6 +293,14 @@ class TasksPageStore extends WStore {
       ];
     }
     return groups;
+  }
+
+  String getUserNameById({required int userId}) {
+    final user = UserStore().organizationMembersMap[userId];
+    if (user == null) {
+      return 'Пользователя нет';
+    }
+    return user.name;
   }
 
   /// spaceId для получения задач, вызывается сразу после создания сторы
