@@ -82,10 +82,13 @@ class PopUpReglamentButton extends StatelessWidget {
                 // копирует ссылку на регламент
                 PopupMenuItem<String>(
                   onTap: () {
-                    context.wstore<ReglamentsPageStore>().copyReglamentLink(
-                          '${reglament.id}',
-                          'пока скопирована не ссылка, а только id',
-                          localization.copy_error,
+                    context.wstore<ReglamentsPageStore>().copyText(
+                          text: context
+                              .wstore<ReglamentsPageStore>()
+                              .getReglamentLink(reglamentId: reglament.id),
+                          successMessage:
+                              localization.reglament_link_copied_successfully,
+                          copyError: localization.copy_error,
                         );
                   },
                   child: PopupMenuItemChild(

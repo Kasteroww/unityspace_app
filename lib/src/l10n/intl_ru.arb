@@ -395,5 +395,6 @@
   "move_reglament": "Переместить регламент",
   "send_to_archive": "Отправить в архив",
   "reglament_count_in_archive": "Регламентов в архиве",
-  "rename_reglament": "Переименовать регламент"
+  "rename_reglament": "Переименовать регламент",
+  "reglament_link_copied_successfully": "Ссылка на регламент успешно скопирована"
 }

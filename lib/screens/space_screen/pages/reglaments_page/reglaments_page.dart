@@ -6,6 +6,7 @@ import 'package:unityspace/screens/space_screen/pages/reglaments_page/widgets/re
 import 'package:unityspace/screens/space_screen/widgets/delete_no_rules_dialog.dart';
 import 'package:unityspace/store/reglament_store.dart';
 import 'package:unityspace/store/user_store.dart';
+import 'package:unityspace/utils/constants.dart';
 import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
@@ -87,11 +88,11 @@ class ReglamentsPageStore extends WStore {
     }
   }
 
-  void copyReglamentLink(
-    final String text,
-    final String successMessage,
-    final String copyError,
-  ) {
+  void copyText({
+    required String text,
+    required String successMessage,
+    required String copyError,
+  }) {
     listenFuture(
       copyToClipboard(text),
       id: 1,
@@ -125,6 +126,12 @@ class ReglamentsPageStore extends WStore {
     final isOwner = UserStore().isOrganizationOwner;
     final isAdmin = UserStore().isAdmin;
     return isOwner || isAdmin;
+  }
+
+  ///Копирование ссылки на регламент
+  String getReglamentLink({required int reglamentId}) {
+    //Пример: 'https://app.unityspace.ru/spaces/2/reglaments/32627';
+    return '${ConstantStrings.unitySpaceAppUrl}/spaces/${currentSpace.id}/reglaments/$reglamentId';
   }
 
   Map<int, List<Reglament>> _columnReglaments(List<Reglament> spaceReglaments) {
