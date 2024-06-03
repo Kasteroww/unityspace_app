@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:unityspace/resources/constants.dart';
+import 'package:unityspace/resources/app_icons.dart';
 import 'package:unityspace/screens/widgets/paddings.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -27,7 +27,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           leading: GestureDetector(
             onTap: () => Scaffold.of(context).openDrawer(),
             child: SvgPicture.asset(
-              ConstantIcons.menu,
+              AppIcons.menu,
               width: 20,
               height: 20,
               theme: const SvgTheme(currentColor: Color(0xFF4D4D4D)),

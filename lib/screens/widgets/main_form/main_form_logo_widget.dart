@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:unityspace/resources/constants.dart';
+import 'package:unityspace/resources/app_icons.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 
 class MainFormLogoWidget extends StatelessWidget {
@@ -15,7 +15,7 @@ class MainFormLogoWidget extends StatelessWidget {
       children: [
         const Spacer(),
         SvgPicture.asset(
-          ConstantIcons.appIcon,
+          AppIcons.appIcon,
           width: 42,
           height: 42,
         ),

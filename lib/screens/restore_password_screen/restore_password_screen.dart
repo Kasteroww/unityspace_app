@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:unityspace/resources/constants.dart';
+import 'package:unityspace/resources/app_icons.dart';
 import 'package:unityspace/resources/l10n/app_localizations.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_input_field.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_logo_widget.dart';
@@ -139,7 +139,7 @@ class RestorePasswordForm extends StatelessWidget {
           enabled: !loading,
           autofocus: true,
           labelText: localization.your_email,
-          iconAssetName: ConstantIcons.email,
+          iconAssetName: AppIcons.email,
           textInputAction: TextInputAction.next,
           keyboardType: TextInputType.emailAddress,
           autocorrect: false,

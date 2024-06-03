@@ -4,7 +4,7 @@ import 'package:lottie/lottie.dart';
 import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/models/task_models.dart';
-import 'package:unityspace/resources/constants.dart';
+import 'package:unityspace/resources/app_icons.dart';
 import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/resources/theme/theme.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/utils/enums.dart';
@@ -476,7 +476,7 @@ class TasksPage extends WStoreWidget<TasksPageStore> {
       builderLoading: (context) {
         return Center(
           child: Lottie.asset(
-            ConstantIcons.mainLoader,
+            AppIcons.mainLoader,
             width: 200,
             height: 200,
           ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:unityspace/resources/constants.dart';
+import 'package:unityspace/resources/app_icons.dart';
 import 'package:unityspace/screens/account_screen/pages/account_page/account_page.dart';
 import 'package:unityspace/screens/account_screen/pages/achievements_page.dart';
 import 'package:unityspace/screens/account_screen/pages/actions_page/actions_page.dart';
@@ -88,7 +88,7 @@ enum AccountScreenTab {
   members(title: 'Участники организации', adminOnly: true),
   tariff(
     title: 'Оплата и тарифы',
-    iconAsset: ConstantIcons.tabLicense,
+    iconAsset: AppIcons.tabLicense,
     adminOnly: true,
   );
 
@@ -215,7 +215,7 @@ class SignOutIconButton extends StatelessWidget {
               ),
             )
           : SvgPicture.asset(
-              ConstantIcons.signOut,
+              AppIcons.signOut,
               width: 20,
               height: 20,
               theme: SvgTheme(currentColor: currentColor),

@@ -23,6 +23,7 @@ import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wstore/wstore.dart';
+import 'package:unityspace/resources/app_icons.dart';
 
 class AccountPageStore extends WStore {
   String imageFilePath = '';
@@ -336,7 +337,7 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                   builder: (context, name) => AccountItemWidget(
                     text: localization.name,
                     value: name.isNotEmpty ? name : localization.not_specified,
-                    iconAssetName: ConstantIcons.accountName,
+                    iconAssetName: AppIcons.accountName,
                     onTapChange: () {
                       showUserChangeNameDialog(context, name);
                     },
@@ -357,7 +358,7 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                     value: birthday.isNotEmpty
                         ? birthday
                         : localization.not_specified,
-                    iconAssetName: ConstantIcons.accountBirthday,
+                    iconAssetName: AppIcons.accountBirthday,
                     onTapChange: () {
                       showUserChangeBirthdayDialog(
                         context,
@@ -400,7 +401,7 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                     text: localization.phone,
                     value:
                         phone.isNotEmpty ? phone : localization.not_specified,
-                    iconAssetName: ConstantIcons.accountPhone,
+                    iconAssetName: AppIcons.accountPhone,
                     onTapChange: () {
                       showUserChangePhoneDialog(context, phone);
                     },
@@ -421,7 +422,7 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                     value: jobTitle.isNotEmpty
                         ? jobTitle
                         : localization.not_specified,
-                    iconAssetName: ConstantIcons.accountJob,
+                    iconAssetName: AppIcons.accountJob,
                     onTapChange: () {
                       showUserChangeJobDialog(context, jobTitle);
                     },
@@ -442,7 +443,7 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                     value: telegram.isNotEmpty
                         ? telegram
                         : localization.not_specified,
-                    iconAssetName: ConstantIcons.accountTelegram,
+                    iconAssetName: AppIcons.accountTelegram,
                     onTapChange: () {
                       showUserChangeTgLinkDialog(context, telegram);
                     },
@@ -466,7 +467,7 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                     text: localization.profile_in_github,
                     value:
                         github.isNotEmpty ? github : localization.not_specified,
-                    iconAssetName: ConstantIcons.accountGithub,
+                    iconAssetName: AppIcons.accountGithub,
                     onTapChange: () {
                       showUserChangeGitHubLinkDialog(context, github);
                     },
@@ -485,7 +486,7 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                 AccountItemWidget(
                   text: localization.password,
                   value: ConstantStrings.hiddenPassword,
-                  iconAssetName: ConstantIcons.accountPassword,
+                  iconAssetName: AppIcons.accountPassword,
                   onTapChange: () {
                     showUserChangePasswordDialog(context);
                   },

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:unityspace/resources/app_icons.dart';
 import 'package:unityspace/resources/constants.dart';
 import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_button_widget.dart';
@@ -104,7 +105,7 @@ class LoginScreen extends WStoreWidget<LoginScreenStore> {
                       final loading = status == WStoreStatus.loading;
                       return MainFormSignInButtonWidget(
                         loading: loading,
-                        iconAssetName: ConstantIcons.google,
+                        iconAssetName: AppIcons.google,
                         width: 0,
                         text: ConstantStrings.google,
                         onPressed: () {

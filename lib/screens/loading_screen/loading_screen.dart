@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:unityspace/resources/constants.dart';
+import 'package:unityspace/resources/app_icons.dart';
 import 'package:unityspace/screens/widgets/color_button_widget.dart';
 import 'package:unityspace/store/projects_store.dart';
 import 'package:unityspace/store/reglaments_store.dart';
@@ -112,7 +112,7 @@ class LoadingScreen extends WStoreWidget<LoadingScreenStore> {
             },
             builderLoading: (context) {
               return Lottie.asset(
-                ConstantIcons.mainLoader,
+                AppIcons.mainLoader,
                 width: 200,
                 height: 200,
               );

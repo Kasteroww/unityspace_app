@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/models/spaces_models.dart';
-import 'package:unityspace/resources/constants.dart';
+import 'package:unityspace/resources/app_icons.dart';
 import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/widgets/projects_listview.dart';
 import 'package:unityspace/screens/space_screen/widgets/delete_no_rules_dialog.dart';
@@ -160,7 +160,7 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
       builderLoading: (context) {
         return Center(
           child: Lottie.asset(
-            ConstantIcons.mainLoader,
+            AppIcons.mainLoader,
             width: 200,
             height: 200,
           ),
