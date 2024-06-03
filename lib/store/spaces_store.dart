@@ -1,6 +1,8 @@
 import 'package:collection/collection.dart';
 import 'package:unityspace/models/spaces_models.dart';
+import 'package:unityspace/screens/space_screen/pages/project_content/utils/helpers/role.dart';
 import 'package:unityspace/service/spaces_service.dart' as api;
+import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/helpers.dart';
 import 'package:wstore/wstore.dart';
 
@@ -14,17 +16,39 @@ class SpacesStore extends GStore {
   List<Space> spaces = [];
   int masterSpaceId = -1;
 
-  Map<int, Space?> get spacesMap {
-    if (spaces.isEmpty) return {};
+  Map<int, Space?> get spacesMap => computed(
+        watch: () => [spaces],
+        keyName: 'spacesMap',
+        getValue: () {
+          if (spaces.isEmpty) return {};
 
-    return spaces.fold<Map<int, Space?>>(
-      {},
-      (acc, space) {
-        acc[space.id] = space;
-        return acc;
-      },
-    );
-  }
+          return spaces.fold<Map<int, Space?>>(
+            {},
+            (acc, space) {
+              acc[space.id] = space;
+              return acc;
+            },
+          );
+        },
+      );
+
+  Map<int, Map<int, SpaceMember?>> get spacesMapUser => computed(
+        watch: () => [spaces],
+        keyName: 'spacesMapUser',
+        getValue: () {
+          if (spaces.isEmpty) return {};
+
+          return spaces.fold<Map<int, Map<int, SpaceMember?>>>({},
+              (acc, space) {
+            acc[space.id] =
+                space.members.fold<Map<int, SpaceMember?>>({}, (userAcc, user) {
+              userAcc[user.id] = user;
+              return userAcc;
+            });
+            return acc;
+          });
+        },
+      );
 
   Map<int, SpaceColumn?> get columnsMap {
     if (spaces == []) return {};
@@ -75,6 +99,17 @@ class SpacesStore extends GStore {
           });
         }
       }
+    }
+  }
+
+  UserRoles? getCurrentUserRoleAtSpace({required int spaceId}) {
+    {
+      final userId = UserStore().user?.id;
+      if (userId == null) return null;
+      if (UserStore().isOrganizationOwner || UserStore().isAdmin) {
+        return UserRoles.member;
+      }
+      return getUserRole(spacesMapUser[spaceId]?[userId]?.role);
     }
   }
 

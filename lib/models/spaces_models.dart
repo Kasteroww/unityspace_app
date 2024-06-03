@@ -146,12 +146,14 @@ class SpaceMemberResponse {
   final String email;
   final String name;
   final String? avatar;
+  final int role;
 
   const SpaceMemberResponse({
     required this.id,
     required this.email,
     required this.name,
     required this.avatar,
+    required this.role,
   });
 
   factory SpaceMemberResponse.fromJson(Map<String, dynamic> map) {
@@ -161,6 +163,7 @@ class SpaceMemberResponse {
         email: map['email'] as String,
         name: map['name'] as String,
         avatar: map['avatar'] as String?,
+        role: map['role'] as int,
       );
     } catch (e, stack) {
       throw JsonParsingException('Error parsing Model', e, stack);
@@ -278,18 +281,20 @@ class SpaceColumn implements Identifiable, Nameable {
   }
 }
 
-class SpaceMember implements Nameable{
+class SpaceMember implements Nameable {
   final int id;
   final String email;
   @override
   final String name;
   final String? avatarLink;
+  final int role;
 
   const SpaceMember({
     required this.id,
     required this.email,
     required this.name,
     required this.avatarLink,
+    required this.role,
   });
 
   factory SpaceMember.fromResponse(final SpaceMemberResponse data) {
@@ -298,12 +303,8 @@ class SpaceMember implements Nameable{
       email: data.email,
       name: data.name,
       avatarLink: helpers.makeAvatarUrl(data.avatar),
+      role: data.role,
     );
-  }
-
-  @override
-  String toString() {
-    return 'SpaceMember{id: $id, email: $email, name: $name, avatarLink: $avatarLink}';
   }
 
   SpaceMember copyWith({
@@ -311,12 +312,14 @@ class SpaceMember implements Nameable{
     String? email,
     String? name,
     String? avatarLink,
+    int? role,
   }) {
     return SpaceMember(
       id: id ?? this.id,
       email: email ?? this.email,
       name: name ?? this.name,
       avatarLink: avatarLink ?? this.avatarLink,
+      role: role ?? this.role,
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:unityspace/models/i_base_model.dart';
+import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/service/data_exceptions.dart';
 import 'package:unityspace/utils/date_time_converter.dart';
 
@@ -315,6 +316,18 @@ class ProjectStage {
       order: int.parse(data.order),
     );
   }
+}
+
+class ProjectStageWithTasks {
+  final ProjectStage stage;
+  final List<Task> tasks;
+  final List<Task> tasksNoFilter;
+
+  ProjectStageWithTasks({
+    required this.stage,
+    required this.tasks,
+    required this.tasksNoFilter,
+  });
 }
 
 class AddProject {
