@@ -30,6 +30,9 @@ enum TaskGrouping {
   noGroup,
 }
 
+/// extension с методом локализации
+/// для каждого возможного значения TaskGrouping
+/// возвращает его локализованное значение
 extension GroupLocalization on TaskGrouping {
   String localize({required AppLocalizations localization}) {
     switch (this) {
@@ -58,6 +61,24 @@ enum TaskSort {
   defaultSort,
 }
 
+/// extension с методом локализации
+/// для каждого возможного значения TaskSort
+/// возвращает его локализованное значение
+extension SortLocalization on TaskSort {
+  String localize({required AppLocalizations localization}) {
+    switch (this) {
+      case TaskSort.byDate:
+        return localization.sort_tasks_by_date;
+      case TaskSort.byStatus:
+        return localization.sort_tasks_by_status;
+      case TaskSort.byImportance:
+        return localization.sort_tasks_by_importance;
+      case TaskSort.defaultSort:
+        return localization.default_tasks_sort;
+    }
+  }
+}
+
 class TasksPageStore extends WStore {
   // GENERAL
   TasksErrors error = TasksErrors.none;
@@ -67,11 +88,15 @@ class TasksPageStore extends WStore {
   SpacesStore spacesStore = SpacesStore();
   int spaceId = 0;
 
+  // FILTERING, GROUPING, SORTING
+  // default values
   TaskGrouping groupingType = TaskGrouping.byProject;
+  TaskSort sortType = TaskSort.defaultSort;
 
   // SEARCHING
   final SearchTaskErrors searchError = SearchTaskErrors.none;
   String searchString = '';
+  List<Task> searchedTasks = [];
 
   /// режим поиска, от него зависит отображается ли
   /// результат поиска или список всех задач
@@ -84,24 +109,18 @@ class TasksPageStore extends WStore {
         keyName: 'tasks',
       );
 
-  List<ITasksGroup> get groupedTasks => computed(
-        getValue: () {
-          switch (groupingType) {
-            case TaskGrouping.byProject:
-              return _tasksByProject(isSearching ? searchedTasks : tasks);
-            case TaskGrouping.byUser:
-              return _tasksByUser(isSearching ? searchedTasks : tasks);
-            case TaskGrouping.byDate:
-              return _tasksByDate(isSearching ? searchedTasks : tasks);
-            default:
-              return _tasksByProject(isSearching ? searchedTasks : tasks);
-          }
-        },
-        watch: () => [groupingType],
-        keyName: 'groupedTasks',
-      );
-
-  List<Task> searchedTasks = [];
+  List<ITasksGroup> get groupedTasks {
+    switch (groupingType) {
+      case TaskGrouping.byProject:
+        return _tasksByProject(isSearching ? searchedTasks : tasks);
+      case TaskGrouping.byUser:
+        return _tasksByUser(isSearching ? searchedTasks : tasks);
+      case TaskGrouping.byDate:
+        return _tasksByDate(isSearching ? searchedTasks : tasks);
+      default:
+        return _tasksByProject(isSearching ? searchedTasks : tasks);
+    }
+  }
 
   List<TasksProjectGroup> get tasksByProject => _tasksByProject(tasks);
 
@@ -122,33 +141,22 @@ class TasksPageStore extends WStore {
     });
   }
 
-  /// загрузка задач по пространству и статусам
-  Future<void> loadData() async {
-    if (status == WStoreStatus.loading) return;
+  void setSortType(TaskSort value) {
     setStore(() {
-      status = WStoreStatus.loading;
-      error = TasksErrors.none;
+      sortType = value;
     });
-    try {
-      await tasksStore.getSpaceTasks(
-        spaceId: spaceId,
-        statuses: [TaskStatuses.inWork.value],
-      );
-      setStore(() {
-        status = WStoreStatus.loaded;
-      });
-    } catch (e, stack) {
-      logger.d('on AllTasksPage'
-          'TasksStore loadData error=$e\nstack=$stack');
-      setStore(() {
-        status = WStoreStatus.error;
-        error = TasksErrors.loadingDataError;
-      });
-    }
   }
 
   String? getProjectNameById(int projectId) {
     return projectsStore.getProjectById(projectId)?.name;
+  }
+
+  String getUserNameById({required int userId}) {
+    final user = UserStore().organizationMembersMap[userId];
+    if (user == null) {
+      return 'Пользователя нет';
+    }
+    return user.name;
   }
 
   /// поиск задач по строке
@@ -178,27 +186,102 @@ class TasksPageStore extends WStore {
     }
   }
 
-  String getStagesNames({required List<TaskStages> stages}) {
-    String name = '';
-    for (final TaskStages stage in stages) {
-      final stageName = projectsStore.stagesMap[stage.stageId]?.name ?? '';
-      name += (name.isEmpty) ? stageName : ', $stageName';
+  /// получение информации о колонках в проектах по
+  /// TaskStages stages в задаче
+  TaskStageWithOrder getStageName({
+    required List<TaskStages> stages,
+    int? projectId,
+  }) {
+    // если известнен id проета, то подходящая колонка только одна
+    if (projectId != null) {
+      final taskStage = stages.firstWhereOrNull(
+        (stage) => stage.projectId == projectId,
+      );
+      final stage =
+          taskStage != null ? projectsStore.stagesMap[taskStage.stageId] : null;
+      if (stage == null || taskStage == null) {
+        return TaskStageWithOrder(
+          stageName: '',
+          stagesOrder: 0,
+          taskOrder: 0,
+        );
+      }
+      return TaskStageWithOrder(
+        stageName: stage.name,
+        stagesOrder: stage.order,
+        taskOrder: taskStage.order,
+      );
     }
-    return name;
+    // если projectId неизвестен, данные берутся для всех колонок
+    final stagesPropsArrays = stages.fold(
+      (
+        stagesNames: <String>[],
+        stagesOrders: <int>[],
+        taskOrders: <int>[],
+      ),
+      (acc, taskStage) {
+        final stage = projectsStore.stagesMap[taskStage.stageId];
+        if (stage != null) {
+          acc.stagesNames.add(stage.name);
+          acc.stagesOrders.add(stage.order);
+          acc.taskOrders.add(taskStage.order);
+        }
+        return acc;
+      },
+    );
+
+    return TaskStageWithOrder(
+      stageName: stagesPropsArrays.stagesNames.join(', '),
+      stagesOrder: stagesPropsArrays.stagesOrders.fold(0, (a, b) => a + b),
+      taskOrder: stagesPropsArrays.taskOrders.fold(0, (a, b) => a + b),
+    );
   }
 
-  String getStageNameByProjectId({
-    required List<TaskStages> stages,
-    required int? projectId,
-  }) {
-    final taskStage =
-        stages.firstWhereOrNull((stage) => stage.projectId == projectId);
-    final stage =
-        taskStage != null ? projectsStore.stagesMap[taskStage.stageId] : null;
-    if (stage == null || taskStage == null) {
-      return '';
-    }
-    return stage.name;
+  List<SortedTask> sortTasks(List<Task> tasks) {
+    final List<SortedTask> sortedTasks = tasks.map(
+      (task) {
+        final stageParams = getStageName(stages: task.stages);
+        return SortedTask(
+          id: task.id,
+          task: task,
+          stageName: stageParams.stageName,
+          stageOrder: stageParams.stagesOrder,
+          taskOrder: stageParams.taskOrder,
+        );
+      },
+    ).toList();
+    sortedTasks.sort((a, b) {
+      if (sortType == TaskSort.byDate) {
+        if (a.task.dateEnd == null && b.task.dateEnd != null) {
+          return 1;
+        } else if (a.task.dateEnd != null && b.task.dateEnd == null) {
+          return -1;
+        } else if (a.task.dateEnd == null || b.task.dateEnd == null) {
+          return 0;
+        } else {
+          final DateTime aDate = dateFromDateTime(a.task.dateEnd!);
+          final DateTime bDate = dateFromDateTime(b.task.dateEnd!);
+
+          final int compareByDate = aDate.difference(bDate).inDays;
+          if (compareByDate != 0) return compareByDate;
+        }
+      } else if (sortType == TaskSort.byStatus) {
+        final compareByStatus = a.task.status - b.task.status;
+        if (compareByStatus != 0) return compareByStatus;
+      } else if (sortType == TaskSort.byImportance) {
+        final compareByImportance =
+            b.task.importance.value - a.task.importance.value;
+        if (compareByImportance != 0) return compareByImportance;
+      }
+      final compareByStageNames = a.stageName.compareTo(b.stageName);
+      if (compareByStageNames != 0) return compareByStageNames;
+      final compareByStagesOrder = a.stageOrder - b.stageOrder;
+      if (compareByStagesOrder != 0) return compareByStagesOrder;
+      final compareByTaskOrder = a.taskOrder - b.taskOrder;
+      if (compareByTaskOrder != 0) return compareByTaskOrder;
+      return 0;
+    });
+    return sortedTasks;
   }
 
   /// группирует задачи по проектам
@@ -352,12 +435,29 @@ class TasksPageStore extends WStore {
     return groups;
   }
 
-  String getUserNameById({required int userId}) {
-    final user = UserStore().organizationMembersMap[userId];
-    if (user == null) {
-      return 'Пользователя нет';
+  /// загрузка задач по пространству и статусам
+  Future<void> loadData() async {
+    if (status == WStoreStatus.loading) return;
+    setStore(() {
+      status = WStoreStatus.loading;
+      error = TasksErrors.none;
+    });
+    try {
+      await tasksStore.getSpaceTasks(
+        spaceId: spaceId,
+        statuses: [TaskStatuses.inWork.value],
+      );
+      setStore(() {
+        status = WStoreStatus.loaded;
+      });
+    } catch (e, stack) {
+      logger.d('on AllTasksPage'
+          'TasksStore loadData error=$e\nstack=$stack');
+      setStore(() {
+        status = WStoreStatus.error;
+        error = TasksErrors.loadingDataError;
+      });
     }
-    return user.name;
   }
 
   /// spaceId для получения задач, вызывается сразу после создания сторы
@@ -413,13 +513,33 @@ class TasksPage extends WStoreWidget<TasksPageStore> {
                   children: [
                     Expanded(
                       flex: 2,
-                      child: WStoreValueBuilder<TasksPageStore, TaskGrouping>(
-                        watch: (store) => store.groupingType,
-                        builder: (BuildContext context, value) {
-                          return PopUpTaskGroupingButton(
-                            value: value,
-                          );
-                        },
+                      child: Row(
+                        children: [
+                          Flexible(
+                            child: WStoreValueBuilder<TasksPageStore,
+                                TaskGrouping>(
+                              watch: (store) => store.groupingType,
+                              builder: (BuildContext context, value) {
+                                return PopUpTaskGroupingButton(
+                                  value: value,
+                                );
+                              },
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 20,
+                          ),
+                          Flexible(
+                            child: WStoreValueBuilder<TasksPageStore, TaskSort>(
+                              watch: (store) => store.sortType,
+                              builder: (BuildContext context, value) {
+                                return PopUpTaskSortButton(
+                                  value: value,
+                                );
+                              },
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(
@@ -485,14 +605,15 @@ class TasksPage extends WStoreWidget<TasksPageStore> {
                   child: WStoreBuilder<TasksPageStore>(
                     builder: (context, store) {
                       if (store.groupingType == TaskGrouping.noGroup) {
-                        return TasksList(tasks: store.tasks);
+                        return TasksList(tasks: store.sortTasks(store.tasks));
                       } else {
                         return GroupedTasksList(
-                          tasksList: store.groupedTasks,
+                          tasksList:
+                              context.wstore<TasksPageStore>().groupedTasks,
                         );
                       }
                     },
-                    watch: (store) => [store.groupingType],
+                    watch: (store) => [store.sortType],
                   ),
                 ),
               ],

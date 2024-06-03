@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/models/task_models.dart';
+import 'package:unityspace/screens/space_screen/pages/tasks_page/tasks_page.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/widgets/tasks_list.dart';
 import 'package:unityspace/screens/widgets/common/paddings.dart';
 import 'package:wstore/wstore.dart';
@@ -101,7 +102,9 @@ class TaskGroup extends WStoreWidget<TaskGroupStore> {
                 maintainState: true,
                 visible: store,
                 child: TasksList(
-                  tasks: tasks,
+
+                  tasks: context.wstore<TasksPageStore>().sortTasks(tasks),
+
                 ),
               ),
             );

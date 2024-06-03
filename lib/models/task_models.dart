@@ -278,6 +278,36 @@ class TasksDateGroup implements ITasksGroup {
   });
 }
 
+class TaskStageWithOrder {
+  final String stageName;
+  final int stagesOrder;
+  final int taskOrder;
+
+  TaskStageWithOrder({
+    required this.stageName,
+    required this.stagesOrder,
+    required this.taskOrder,
+  });
+}
+
+/// модель, которая создается при сортировке задач для
+/// удобства их отображения
+class SortedTask {
+  final int id;
+  final String stageName;
+  final int stageOrder;
+  final Task task;
+  final int taskOrder;
+
+  SortedTask({
+    required this.id,
+    required this.stageName,
+    required this.stageOrder,
+    required this.task,
+    required this.taskOrder,
+  });
+}
+
 class TaskResponse {
   final int id;
   final String name;

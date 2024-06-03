@@ -1,4 +1,9 @@
 {
+  "sort_tasks_by_date": "По дате",
+  "sort_tasks_by_status": "По статусу",
+  "sort_tasks_by_importance": "По важности",
+  "default_tasks_sort": "По умолчанию",
+  
   "group_tasks_by_project": "По проектам",
   "group_tasks_by_date": "По дате",
   "group_tasks_by_user": "По исполнителям",

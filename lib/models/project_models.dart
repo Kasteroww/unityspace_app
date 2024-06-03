@@ -298,7 +298,7 @@ class ProjectStage {
   final int id;
   final int projectId;
   final String name;
-  final String order;
+  final int order;
 
   ProjectStage({
     required this.id,
@@ -312,7 +312,7 @@ class ProjectStage {
       id: data.id,
       projectId: data.projectId,
       name: data.name,
-      order: data.order,
+      order: int.parse(data.order),
     );
   }
 }
