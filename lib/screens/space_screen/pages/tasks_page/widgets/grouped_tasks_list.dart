@@ -21,6 +21,9 @@ class GroupedTasksList extends StatelessWidget {
         return TaskGroup(
           tasks: tasks,
           groupTitle: tasksList[groupIndex].groupTitle,
+          projectId: (tasksList[groupIndex] is TasksProjectGroup)
+              ? (tasksList[groupIndex] as TasksProjectGroup).id
+              : null,
         );
       },
     );
@@ -44,11 +47,13 @@ class TaskGroup extends WStoreWidget<TaskGroupStore> {
   const TaskGroup({
     required this.tasks,
     required this.groupTitle,
+    this.projectId,
     super.key,
   });
 
   final List<Task> tasks;
   final String groupTitle;
+  final int? projectId;
 
   @override
   TaskGroupStore createWStore() => TaskGroupStore();
@@ -95,7 +100,9 @@ class TaskGroup extends WStoreWidget<TaskGroupStore> {
               child: Visibility(
                 maintainState: true,
                 visible: store,
-                child: TasksList(tasks: tasks),
+                child: TasksList(
+                  tasks: tasks,
+                ),
               ),
             );
           },

@@ -23,6 +23,17 @@ class ProjectStore extends GStore {
     );
   }
 
+  Map<int, ProjectStage?> get stagesMap {
+    if (projects.isEmpty) return {};
+    return Map.fromEntries(
+      projects.expand(
+        (project) => project.stages.map(
+          (stage) => MapEntry(stage.id, stage),
+        ),
+      ),
+    );
+  }
+
   Project? getProjectById(int projectId) {
     return projects.firstWhereOrNull((project) => project.id == projectId);
   }

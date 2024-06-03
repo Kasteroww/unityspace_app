@@ -178,6 +178,29 @@ class TasksPageStore extends WStore {
     }
   }
 
+  String getStagesNames({required List<TaskStages> stages}) {
+    String name = '';
+    for (final TaskStages stage in stages) {
+      final stageName = projectsStore.stagesMap[stage.stageId]?.name ?? '';
+      name += (name.isEmpty) ? stageName : ', $stageName';
+    }
+    return name;
+  }
+
+  String getStageNameByProjectId({
+    required List<TaskStages> stages,
+    required int? projectId,
+  }) {
+    final taskStage =
+        stages.firstWhereOrNull((stage) => stage.projectId == projectId);
+    final stage =
+        taskStage != null ? projectsStore.stagesMap[taskStage.stageId] : null;
+    if (stage == null || taskStage == null) {
+      return '';
+    }
+    return stage.name;
+  }
+
   /// группирует задачи по проектам
   List<TasksProjectGroup> _tasksByProject(List<Task>? tasks) {
     final List<TasksProjectGroup> group = [];
@@ -201,6 +224,7 @@ class TasksPageStore extends WStore {
             final SpaceColumn? column = project != null
                 ? spacesStore.columnsMap[project.columnId]
                 : null;
+
             if (project != null && space != null && column != null) {
               if (spaceId == 0 || spaceId == space.id) {
                 group.add(

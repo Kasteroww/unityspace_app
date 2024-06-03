@@ -10,9 +10,11 @@ class TasksList extends StatelessWidget {
   const TasksList({
     required this.tasks,
     super.key,
+    this.projectId,
   });
 
   final List<Task> tasks;
+  final int? projectId;
 
   @override
   Widget build(BuildContext context) {
@@ -44,11 +46,16 @@ class TasksList extends StatelessWidget {
                   child: PaddingBottom(
                     8,
                     child: Text(
-                      // заглушка, должна отображаться колонка
-                      context.wstore<TasksPageStore>().getProjectNameById(
-                                tasks[taskIndex].stages[0].projectId,
-                              ) ??
-                          'Проект не найден',
+                      projectId != null
+                          ? context
+                              .wstore<TasksPageStore>()
+                              .getStageNameByProjectId(
+                                stages: tasks[taskIndex].stages,
+                                projectId: projectId,
+                              )
+                          : context
+                              .wstore<TasksPageStore>()
+                              .getStagesNames(stages: tasks[taskIndex].stages),
                     ),
                   ),
                 ),

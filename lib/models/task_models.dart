@@ -209,7 +209,10 @@ interface class ITasksGroup {
   final String groupTitle;
   final List<Task> tasks;
 
-  ITasksGroup({required this.groupTitle, required this.tasks});
+  ITasksGroup({
+    required this.groupTitle,
+    required this.tasks,
+  });
 }
 
 class TasksProjectGroup implements ITasksGroup {
