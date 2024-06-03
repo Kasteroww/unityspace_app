@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/screens/notifications_screen/pages/notifications_page.dart';
 import 'package:unityspace/store/notifications_store.dart';
-import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/utils/http_plugin.dart';
 import 'package:wstore/wstore.dart';
 

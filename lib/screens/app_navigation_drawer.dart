@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/models/user_models.dart';
+import 'package:unityspace/resources/constants.dart';
 import 'package:unityspace/screens/dialogs/add_space_dialog.dart';
 import 'package:unityspace/screens/dialogs/add_space_limit_dialog.dart';
 import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/user_store.dart';
-import 'package:unityspace/resources/constants.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
 

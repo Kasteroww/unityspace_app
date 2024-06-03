@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:unityspace/resources/constants.dart';
 import 'package:unityspace/screens/account_screen/pages/account_page/account_page.dart';
 import 'package:unityspace/screens/account_screen/pages/achievements_page.dart';
 import 'package:unityspace/screens/account_screen/pages/actions_page/actions_page.dart';
@@ -13,7 +14,6 @@ import 'package:unityspace/screens/widgets/tabs_list/tab_button.dart';
 import 'package:unityspace/screens/widgets/tabs_list/tabs_list_row.dart';
 import 'package:unityspace/store/auth_store.dart';
 import 'package:unityspace/store/user_store.dart';
-import 'package:unityspace/resources/constants.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:unityspace/screens/widgets/common/paddings.dart';
 import 'package:unityspace/resources/constants.dart';
+import 'package:unityspace/screens/widgets/common/paddings.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({

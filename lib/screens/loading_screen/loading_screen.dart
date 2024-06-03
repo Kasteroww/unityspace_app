@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:unityspace/resources/constants.dart';
 import 'package:unityspace/screens/widgets/color_button_widget.dart';
 import 'package:unityspace/store/projects_store.dart';
 import 'package:unityspace/store/reglaments_store.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/user_store.dart';
-import 'package:unityspace/resources/constants.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';

@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unityspace/models/auth_models.dart';
+import 'package:unityspace/resources/constants.dart';
 import 'package:unityspace/service/auth_service.dart' as api;
 import 'package:unityspace/service/service_exceptions.dart';
 import 'package:unityspace/store/user_store.dart';
-import 'package:unityspace/resources/constants.dart';
 import 'package:unityspace/utils/http_plugin.dart';
 import 'package:wstore/wstore.dart';
 
