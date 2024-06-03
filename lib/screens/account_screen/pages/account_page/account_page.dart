@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:unityspace/models/user_models.dart';
+import 'package:unityspace/resources/app_icons.dart';
 import 'package:unityspace/resources/constants.dart';
 import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/screens/account_screen/pages/account_page/widgets/account_content.dart';
@@ -23,7 +24,6 @@ import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wstore/wstore.dart';
-import 'package:unityspace/resources/app_icons.dart';
 
 class AccountPageStore extends WStore {
   String imageFilePath = '';
@@ -191,8 +191,7 @@ class AccountPageStore extends WStore {
   Future<void> _gotoLink(final String link) async {
     if (link.isEmpty) throw LinkErrors.linkIsEmpty;
     final Uri url = Uri.parse(link);
-    final bool result =
-        await launchUrl(url, mode: LaunchMode.externalApplication);
+    final bool result = await launchUrl(url, mode: LaunchMode.externalApplication);
     if (!result) throw '${LinkErrors.couldNotLaunch} $link';
   }
 
@@ -298,8 +297,7 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                 watch: (store) => store.imageFilePath,
                 reset: (store) => store.imageFilePath = '',
                 onNotEmpty: (context, imageFilePath) async {
-                  final Uint8List? avatarImage =
-                      await Navigator.of(context).push(
+                  final Uint8List? avatarImage = await Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => CropImageScreen(
                         imageFilePath: imageFilePath,
@@ -355,9 +353,7 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                   watch: (store) => store.currentUserBirthday,
                   builder: (context, birthday) => AccountItemWidget(
                     text: localization.date_of_birth,
-                    value: birthday.isNotEmpty
-                        ? birthday
-                        : localization.not_specified,
+                    value: birthday.isNotEmpty ? birthday : localization.not_specified,
                     iconAssetName: AppIcons.accountBirthday,
                     onTapChange: () {
                       showUserChangeBirthdayDialog(
@@ -379,8 +375,7 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                   watch: (store) => store.currentUserEmail,
                   builder: (context, email) => AccountItemWidget(
                     text: localization.email,
-                    value:
-                        email.isNotEmpty ? email : localization.not_specified,
+                    value: email.isNotEmpty ? email : localization.not_specified,
                     iconAssetName: 'assets/icons/account_email.svg',
                     onTapChange: () {
                       showChangeEmailDialog(context);
@@ -399,8 +394,7 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                   watch: (store) => store.currentUserPhone,
                   builder: (context, phone) => AccountItemWidget(
                     text: localization.phone,
-                    value:
-                        phone.isNotEmpty ? phone : localization.not_specified,
+                    value: phone.isNotEmpty ? phone : localization.not_specified,
                     iconAssetName: AppIcons.accountPhone,
                     onTapChange: () {
                       showUserChangePhoneDialog(context, phone);
@@ -419,9 +413,7 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                   watch: (store) => store.currentUserJobTitle,
                   builder: (context, jobTitle) => AccountItemWidget(
                     text: localization.work_position,
-                    value: jobTitle.isNotEmpty
-                        ? jobTitle
-                        : localization.not_specified,
+                    value: jobTitle.isNotEmpty ? jobTitle : localization.not_specified,
                     iconAssetName: AppIcons.accountJob,
                     onTapChange: () {
                       showUserChangeJobDialog(context, jobTitle);
@@ -440,17 +432,12 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                   watch: (store) => store.currentUserTelegram,
                   builder: (context, telegram) => AccountItemWidget(
                     text: localization.profile_in_telegram,
-                    value: telegram.isNotEmpty
-                        ? telegram
-                        : localization.not_specified,
+                    value: telegram.isNotEmpty ? telegram : localization.not_specified,
                     iconAssetName: AppIcons.accountTelegram,
                     onTapChange: () {
                       showUserChangeTgLinkDialog(context, telegram);
                     },
-                    onTapValue: telegram.isNotEmpty
-                        ? () =>
-                            store.open(telegram, localization.open_link_error)
-                        : null,
+                    onTapValue: telegram.isNotEmpty ? () => store.open(telegram, localization.open_link_error) : null,
                     onLongTapValue: telegram.isNotEmpty
                         ? () => store.copy(
                               telegram,
@@ -465,15 +452,12 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                   watch: (store) => store.currentUserGithub,
                   builder: (context, github) => AccountItemWidget(
                     text: localization.profile_in_github,
-                    value:
-                        github.isNotEmpty ? github : localization.not_specified,
+                    value: github.isNotEmpty ? github : localization.not_specified,
                     iconAssetName: AppIcons.accountGithub,
                     onTapChange: () {
                       showUserChangeGitHubLinkDialog(context, github);
                     },
-                    onTapValue: github.isNotEmpty
-                        ? () => store.open(github, localization.open_link_error)
-                        : null,
+                    onTapValue: github.isNotEmpty ? () => store.open(github, localization.open_link_error) : null,
                     onLongTapValue: github.isNotEmpty
                         ? () => store.copy(
                               github,

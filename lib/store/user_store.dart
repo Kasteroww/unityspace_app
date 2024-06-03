@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
+import 'package:unityspace/models/achievement_models.dart';
 import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/service/user_service.dart' as api;
 import 'package:unityspace/store/auth_store.dart';
@@ -15,6 +16,7 @@ class UserStore extends GStore {
 
   User? user;
   Organization? organization;
+  List<AchievementResponse>? achievements;
 
   bool get hasLicense {
     final license = organization?.licenseEndDate;
@@ -203,6 +205,14 @@ class UserStore extends GStore {
           break;
         }
       }
+    });
+  }
+
+  Future<void> getAchievements() async {
+    final userAchievements = await api.getAchievements();
+
+    setStore(() {
+      achievements = userAchievements;
     });
   }
 

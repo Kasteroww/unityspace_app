@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:unityspace/resources/app_icons.dart';
 import 'package:unityspace/screens/account_screen/pages/account_page/account_page.dart';
-import 'package:unityspace/screens/account_screen/pages/achievements_page.dart';
+import 'package:unityspace/screens/account_screen/pages/achievements_page/achievements_page.dart';
 import 'package:unityspace/screens/account_screen/pages/actions_page/actions_page.dart';
 import 'package:unityspace/screens/account_screen/pages/members_page.dart';
 import 'package:unityspace/screens/account_screen/pages/settings_page.dart';

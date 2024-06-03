@@ -422,5 +422,9 @@
   "reglament_link_copied_successfully": "Ссылка на регламент успешно скопирована",
   "questions": "Вопросы",
   "documents": "Документация",
-  "completed_today": "Завершено сегодня"
+  "completed_today": "Завершено сегодня",
+  "collected": "Собрано",
+  "section_is_development": "Раздел находится в разработке",
+  "section_is_development_desc": "Скоро мы добавим еще больше достижений",
+  "author_regulations": "Автор регламентов"
 }

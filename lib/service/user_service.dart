@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:unityspace/models/achievement_models.dart';
 import 'package:unityspace/models/auth_models.dart';
 import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/service/files_service.dart' as api_files;
@@ -242,6 +243,19 @@ Future confirmUserEmail({
       if (e.statusCode == 400 && e.message == 'Error while verifying email') {
         throw UserIncorrectConfirmationCodeServiceException();
       }
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
+}
+
+Future<List<AchievementResponse>> getAchievements() async {
+  try {
+    final response = await HttpPlugin().get('/achievements');
+
+    return (jsonDecode(response.body) as List).map((e) => AchievementResponse.fromJson(e)).toList();
+  } catch (e) {
+    if (e is HttpPluginException) {
       throw ServiceException(e.message);
     }
     rethrow;
