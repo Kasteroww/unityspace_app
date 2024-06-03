@@ -7,7 +7,7 @@ import 'package:unityspace/screens/widgets/common/paddings.dart';
 import 'package:unityspace/screens/widgets/common/skeleton/skeleton_listview.dart';
 import 'package:unityspace/store/notifications_store.dart';
 import 'package:unityspace/store/user_store.dart';
-import 'package:unityspace/utils/errors.dart';
+import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';

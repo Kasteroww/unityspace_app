@@ -6,7 +6,7 @@ import 'package:unityspace/screens/space_screen/pages/reglaments_page/widgets/re
 import 'package:unityspace/screens/space_screen/widgets/delete_no_rules_dialog.dart';
 import 'package:unityspace/store/reglament_store.dart';
 import 'package:unityspace/store/user_store.dart';
-import 'package:unityspace/utils/constants.dart';
+import 'package:unityspace/resources/constants.dart';
 import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';

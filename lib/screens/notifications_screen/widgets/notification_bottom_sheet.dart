@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-
 import 'package:unityspace/models/notification_models.dart';
+import 'package:unityspace/resources/theme/theme.dart';
 import 'package:unityspace/screens/notifications_screen/utils/notification_helper.dart';
 import 'package:unityspace/screens/notifications_screen/utils/notifications_strings.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_info.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/parts/locations.dart';
-import 'package:unityspace/src/theme/theme.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 

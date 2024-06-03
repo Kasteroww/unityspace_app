@@ -6,7 +6,7 @@ import 'package:unityspace/screens/widgets/common/paddings.dart';
 import 'package:unityspace/service/service_exceptions.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/user_store.dart';
-import 'package:unityspace/utils/errors.dart';
+import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
 

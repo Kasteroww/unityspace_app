@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:unityspace/utils/constants.dart';
+import 'package:unityspace/resources/constants.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 
 class MainFormLogoWidget extends StatelessWidget {

@@ -2,8 +2,8 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:string_validator/string_validator.dart';
 import 'package:unityspace/models/i_base_model.dart';
-import 'package:unityspace/utils/constants.dart';
-import 'package:unityspace/utils/errors.dart';
+import 'package:unityspace/resources/constants.dart';
+import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/utils/http_plugin.dart';
 
 String? makeAvatarUrl(final String? avatar) {

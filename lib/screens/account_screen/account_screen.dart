@@ -13,7 +13,7 @@ import 'package:unityspace/screens/widgets/tabs_list/tab_button.dart';
 import 'package:unityspace/screens/widgets/tabs_list/tabs_list_row.dart';
 import 'package:unityspace/store/auth_store.dart';
 import 'package:unityspace/store/user_store.dart';
-import 'package:unityspace/utils/constants.dart';
+import 'package:unityspace/resources/constants.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';

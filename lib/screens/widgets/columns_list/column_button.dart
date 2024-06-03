@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:unityspace/src/theme/theme.dart';
+import 'package:unityspace/resources/theme/theme.dart';
 
 class ColumnButton extends StatelessWidget {
   final String? iconAsset;

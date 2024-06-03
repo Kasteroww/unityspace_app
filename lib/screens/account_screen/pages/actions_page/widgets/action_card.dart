@@ -4,10 +4,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/models/user_models.dart';
+import 'package:unityspace/resources/theme/theme.dart';
 import 'package:unityspace/screens/widgets/common/paddings.dart';
-import 'package:unityspace/src/theme/theme.dart';
 import 'package:unityspace/store/user_store.dart';
-import 'package:unityspace/utils/errors.dart';
+import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/utils/extensions/color_extension.dart';
 import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/localization_helper.dart';
@@ -16,9 +16,11 @@ import 'package:wstore/wstore.dart';
 class ActionCardStore extends WStore {
   WStoreStatus status = WStoreStatus.init;
   ActionsErrors error = ActionsErrors.none;
+
   @override
   ActionCard get widget => super.widget as ActionCard;
   List<OrganizationMember> members = UserStore().organization?.members ?? [];
+
   String getUserNameById(int id) =>
       members.firstWhereOrNull((member) => member.id == id)?.name ?? '';
 }

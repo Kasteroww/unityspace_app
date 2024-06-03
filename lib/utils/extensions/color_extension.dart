@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:unityspace/utils/errors.dart';
+import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 
 extension HexColor on Color {

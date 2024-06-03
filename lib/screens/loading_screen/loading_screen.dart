@@ -5,7 +5,7 @@ import 'package:unityspace/store/project_store.dart';
 import 'package:unityspace/store/reglament_store.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/user_store.dart';
-import 'package:unityspace/utils/constants.dart';
+import 'package:unityspace/resources/constants.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';

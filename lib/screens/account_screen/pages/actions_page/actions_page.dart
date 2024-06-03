@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/models/task_models.dart';
+import 'package:unityspace/resources/theme/theme.dart';
 import 'package:unityspace/screens/account_screen/pages/actions_page/widgets/action_card.dart';
 import 'package:unityspace/screens/account_screen/pages/actions_page/widgets/action_skeleton_card.dart';
 import 'package:unityspace/screens/widgets/common/paddings.dart';
 import 'package:unityspace/screens/widgets/common/skeleton/skeleton_listview.dart';
-import 'package:unityspace/src/theme/theme.dart';
 import 'package:unityspace/store/tasks_store.dart';
-import 'package:unityspace/utils/constants.dart';
+import 'package:unityspace/resources/constants.dart';
 import 'package:unityspace/utils/date_time_converter.dart';
-import 'package:unityspace/utils/errors.dart';
+import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';

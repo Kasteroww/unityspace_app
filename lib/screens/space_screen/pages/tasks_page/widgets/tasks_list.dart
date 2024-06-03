@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/models/task_models.dart';
+import 'package:unityspace/resources/theme/theme.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/widgets/divider.dart';
 import 'package:unityspace/screens/widgets/common/paddings.dart';
-import 'package:unityspace/src/theme/theme.dart';
 
 class TasksList extends StatelessWidget {
   const TasksList({
