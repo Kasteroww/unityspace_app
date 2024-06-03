@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/models/spaces_models.dart';
-import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/widgets/projects_listview.dart';
+import 'package:unityspace/screens/space_screen/widgets/delete_no_rules_dialog.dart';
 import 'package:unityspace/screens/widgets/columns_list/column_button.dart';
 import 'package:unityspace/screens/widgets/columns_list/columns_list_row.dart';
 import 'package:unityspace/store/project_store.dart';
@@ -39,12 +39,25 @@ class ProjectsPageStore extends WStore {
     ProjectStore().changeProjectColumn(projectIds, archiveColumnId);
   }
 
-  void deleteProject(int projectId) {
+  void tryToDeleteProject({
+    required BuildContext context,
+    required int projectId,
+  }) {
+    if (_checkRulesByDelete()) {
+      _deleteProject(projectId);
+    } else {
+      showDeleteNoRulesDialog(context);
+    }
+  }
+
+  void _deleteProject(int projectId) {
     ProjectStore().deleteProject(projectId);
   }
 
-  bool checkRulesByDelete() {
-    return (isOwner || isAdmin) ? true : false;
+  bool _checkRulesByDelete() {
+    final isOwner = UserStore().isOrganizationOwner;
+    final isAdmin = UserStore().isAdmin;
+    return isOwner || isAdmin;
   }
 
   void initData(Space space) {
@@ -93,24 +106,6 @@ class ProjectsPageStore extends WStore {
         getValue: () => _getProjectsByColumnId(archiveColumnId).length,
         watch: () => [projects],
         keyName: 'archiveProjectsCount',
-      );
-
-  OrganizationMember? get owner => computedFromStore(
-        store: UserStore(),
-        getValue: (store) => store.organizationOwner,
-        keyName: 'owner',
-      );
-
-  bool get isOwner => computedFromStore(
-        store: UserStore(),
-        getValue: (store) => store.isOrganizationOwner,
-        keyName: 'isOwner',
-      );
-
-  bool get isAdmin => computedFromStore(
-        store: UserStore(),
-        getValue: (store) => store.isAdmin,
-        keyName: 'isAdmin',
       );
 
   List<Project> get projects => computedFromStore(

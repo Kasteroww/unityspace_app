@@ -5,7 +5,6 @@ import 'package:unityspace/screens/space_screen/pages/project_page/project_page.
 import 'package:unityspace/screens/space_screen/pages/project_page/widgets/move_project_dialog.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/widgets/pop_up_projects_item.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/widgets/project_properties_dialog.dart';
-import 'package:unityspace/screens/space_screen/widgets/delete_no_rules_dialog.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
 
@@ -66,11 +65,10 @@ class PopUpProjectsButton extends StatelessWidget {
               ),
             ),
             PopupMenuItem(
-              onTap: () => store.checkRulesByDelete()
-                  ? store.deleteProject(project.id)
-                  : showDeleteNoRulesDialog(
-                      context,
-                    ),
+              onTap: () => store.tryToDeleteProject(
+                context: context,
+                projectId: project.id,
+              ),
               child: PopupProjectsItem(
                 text: localization.delete_project,
                 color: Colors.red,
@@ -90,11 +88,10 @@ class PopUpProjectsButton extends StatelessWidget {
               ),
             ),
             PopupMenuItem(
-              onTap: () => store.checkRulesByDelete()
-                  ? store.deleteProject(project.id)
-                  : showDeleteNoRulesDialog(
-                      context,
-                    ),
+              onTap: () => store.tryToDeleteProject(
+                context: context,
+                projectId: project.id,
+              ),
               child: PopupProjectsItem(
                 text: localization.delete_project,
                 color: Colors.red,

@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unityspace/models/i_base_model.dart';
 import 'package:unityspace/models/project_models.dart';
+import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_dropdown_menu.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
 import 'package:unityspace/store/project_store.dart';
+import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
@@ -29,14 +31,14 @@ Future<void> showProjectPropertiesDialog(
 class ProjectPropertiesDialogStore extends WStore {
   String projectPropertiesError = '';
   WStoreStatus statusProjectProperties = WStoreStatus.init;
-
+  late List<SpaceMember?> listMembers;
+  late SpaceMember? selectedMember;
   late String projectName;
-  late ColorType selectedColor;
   late int markAsSnail;
   late List<Nameable> listMarkAsSnail;
+  late ColorType? selectedColor;
 
-  List<ColorType> listProjectColors = [
-    ColorType(colorHex: '', name: getColorName('Цвет не выбран')),
+  List<ColorType?> listProjectColors = [
     ColorType(colorHex: '#D8EFF4', name: getColorName('#D8EFF4')),
     ColorType(colorHex: '#F3E2D9', name: getColorName('#F3E2D9')),
     ColorType(colorHex: '#F1DBF2', name: getColorName('#F1DBF2')),
@@ -46,21 +48,27 @@ class ProjectPropertiesDialogStore extends WStore {
     ColorType(colorHex: '#ECDECA', name: getColorName('#ECDECA')),
   ];
 
-  void _setProjectName(String name) {
+  void setProjectName(String name) {
     setStore(() {
       projectName = name;
     });
   }
 
-  void _setProjectColor(ColorType color) {
+  void setProjectColor(ColorType? color) {
     setStore(() {
       selectedColor = color;
     });
   }
 
-  void _setMarkAsSnail(Nameable markAsSnailCount) {
+  void setMarkAsSnail(Nameable markAsSnailCount) {
     setStore(() {
       markAsSnail = listMarkAsSnail.indexOf(markAsSnailCount);
+    });
+  }
+
+  void setProjectResponsible(SpaceMember? member) {
+    setStore(() {
+      selectedMember = member;
     });
   }
 
@@ -83,24 +91,49 @@ class ProjectPropertiesDialogStore extends WStore {
         .toList();
   }
 
-  ColorType _checkSelectedColor(Project project) {
-    final ColorType? colorType = listProjectColors
-        .firstWhereOrNull((color) => color.colorHex == project.color);
-    if (colorType != null) {
-      return colorType;
+  SpaceMember? _checkSelectedMember(
+    Project project,
+    AppLocalizations localization,
+  ) {
+    final SpaceMember? member = listMembers
+        .firstWhereOrNull((member) => member?.id == project.responsibleId);
+    if (member != null) {
+      return member;
     } else {
-      final ColorType newColor = ColorType(
-        colorHex: project.color,
-        name: project.color == null ? getColorName('') : project.color!,
-      );
-      listProjectColors.add(newColor);
-      return newColor;
+      SpaceMember? newMember;
+      listMembers.add(newMember);
+      return newMember;
     }
   }
 
-  void _initData(Project project, AppLocalizations localization) {
+  ColorType? _checkSelectedColor(Project project) {
+    ColorType? colorType = listProjectColors
+        .firstWhereOrNull((color) => color?.colorHex == project.color);
+
+    if (colorType != null) {
+      return colorType;
+    }
+    if (project.color != null) {
+      colorType = ColorType(
+        colorHex: project.color,
+        name: project.color!,
+      );
+    }
+    listProjectColors.add(colorType);
+    return colorType;
+  }
+
+  void initData(Project project, AppLocalizations localization) {
     setStore(() {
       projectName = project.name;
+      // создание nullable листа SpaceMember для отображения без ответственного
+      listMembers = List.from(
+        SpacesStore()
+            .spaces
+            .firstWhere((space) => space.id == project.spaceId)
+            .members,
+      );
+      selectedMember = _checkSelectedMember(project, localization);
       listMarkAsSnail = _initMarkAsSnail(localization);
       markAsSnail = project.postponingTaskDayCount;
       selectedColor = _checkSelectedColor(project);
@@ -119,7 +152,8 @@ class ProjectPropertiesDialogStore extends WStore {
         UpdateProject(
           id: projectId,
           name: projectName,
-          color: selectedColor.colorHex,
+          color: selectedColor?.colorHex,
+          responsibleId: selectedMember?.id,
           postponingTaskDayCount: markAsSnail,
         ),
       ),
@@ -160,7 +194,7 @@ class ProjectPropertiesDialog
   @override
   Widget build(BuildContext context, ProjectPropertiesDialogStore store) {
     final localization = LocalizationHelper.getLocalizations(context);
-    store._initData(project, localization);
+    store.initData(project, localization);
     return WStoreStatusBuilder(
       store: store,
       watch: (store) => store.statusProjectProperties,
@@ -190,7 +224,7 @@ class ProjectPropertiesDialog
                   textInputAction: TextInputAction.done,
                   textCapitalization: TextCapitalization.words,
                   onChanged: (projectName) {
-                    store._setProjectName(projectName);
+                    store.setProjectName(projectName);
                   },
                   onEditingComplete: () {
                     FocusScope.of(context).unfocus();
@@ -204,11 +238,11 @@ class ProjectPropertiesDialog
               watch: (store) => store.selectedColor,
               store: store,
               builder: (context, selectedColor) {
-                return AddDialogDropdownMenu<ColorType>(
+                return AddDialogDropdownMenu<ColorType?>(
                   onChanged: (color) {
                     FocusScope.of(context).unfocus();
-                    if (color is ColorType) {
-                      store._setProjectColor(color);
+                    if (color is ColorType?) {
+                      store.setProjectColor(color);
                     } else {
                       throw Exception('Value has wrong type');
                     }
@@ -216,6 +250,28 @@ class ProjectPropertiesDialog
                   labelText: localization.color,
                   listValues: store.listProjectColors,
                   currentValue: selectedColor,
+                  labelTextIfValueNull: localization.color_is_empty,
+                );
+              },
+            ),
+            const SizedBox(height: 16),
+            WStoreValueBuilder(
+              watch: (store) => store.selectedMember,
+              store: store,
+              builder: (context, selectedMember) {
+                return AddDialogDropdownMenu<SpaceMember?>(
+                  onChanged: (member) {
+                    FocusScope.of(context).unfocus();
+                    if (member is SpaceMember?) {
+                      store.setProjectResponsible(member);
+                    } else {
+                      throw Exception('Value has wrong type');
+                    }
+                  },
+                  labelText: localization.project_responsible,
+                  listValues: store.listMembers,
+                  currentValue: selectedMember,
+                  labelTextIfValueNull: localization.without_responsible,
                 );
               },
             ),
@@ -228,7 +284,7 @@ class ProjectPropertiesDialog
                   onChanged: (postponingTaskDayCount) {
                     FocusScope.of(context).unfocus();
                     if (postponingTaskDayCount is Nameable) {
-                      store._setMarkAsSnail(postponingTaskDayCount);
+                      store.setMarkAsSnail(postponingTaskDayCount);
                     } else {
                       throw Exception('Value has wrong type');
                     }

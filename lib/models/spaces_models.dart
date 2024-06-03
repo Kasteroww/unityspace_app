@@ -278,9 +278,10 @@ class SpaceColumn implements Identifiable, Nameable {
   }
 }
 
-class SpaceMember {
+class SpaceMember implements Nameable{
   final int id;
   final String email;
+  @override
   final String name;
   final String? avatarLink;
 

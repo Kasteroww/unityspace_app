@@ -140,8 +140,7 @@ class MoveProjectDialog extends WStoreWidget<MoveProjectDialogStore> {
                     }
                   },
                   labelText: localization.group,
-                  listValues:
-                      store.getColumnsBySpaceId(store.selectedSpace.id),
+                  listValues: store.getColumnsBySpaceId(store.selectedSpace.id),
                   currentValue: store.selectedColumn,
                 ),
                 if (error)
