@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:unityspace/resources/l10n/app_localizations.dart';
 
 /// Класс, содержащий в себе методы поддержки локализации в приложении
 class LocalizationHelper {

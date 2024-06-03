@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unityspace/models/notification_models.dart';
+import 'package:unityspace/resources/l10n/app_localizations.dart';
 import 'package:unityspace/screens/notifications_screen/pages/notifications_page.dart';
 import 'package:unityspace/screens/notifications_screen/utils/notification_helper.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notification_bottom_sheet.dart';

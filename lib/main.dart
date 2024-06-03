@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:unityspace/resources/l10n/app_localizations.dart';
 import 'package:unityspace/resources/theme/theme.dart';
 import 'package:unityspace/screens/account_screen/account_screen.dart';
 import 'package:unityspace/screens/confirm_screen/confirm_screen.dart';

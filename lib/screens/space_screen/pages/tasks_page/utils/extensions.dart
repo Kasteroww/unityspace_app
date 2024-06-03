@@ -1,4 +1,4 @@
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:unityspace/resources/l10n/app_localizations.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/utils/enums.dart';
 
 extension GroupLocalization on TaskGrouping {
