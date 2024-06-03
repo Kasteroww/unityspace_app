@@ -3,6 +3,7 @@ import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/resources/theme/theme.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/widgets/divider.dart';
 import 'package:unityspace/screens/widgets/paddings.dart';
+import 'package:unityspace/utils/extensions/color_extension.dart';
 
 class TasksList extends StatelessWidget {
   const TasksList({
@@ -19,6 +20,10 @@ class TasksList extends StatelessWidget {
       itemCount: tasks.length,
       itemBuilder: (context, taskIndex) {
         final SortedTask sortedTask = tasks[taskIndex];
+        final Color? taskColor =
+            (sortedTask.task.color != null && sortedTask.task.color!.isNotEmpty)
+                ? HexColor.fromHex(sortedTask.task.color!)
+                : null;
         return IntrinsicHeight(
           child: Row(
             children: [
@@ -26,8 +31,29 @@ class TasksList extends StatelessWidget {
                 flex: 8,
                 child: PaddingLeft(
                   16,
-                  child: Text(
-                    sortedTask.task.name,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          sortedTask.task.name,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 20),
+                        child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: (taskColor != null)
+                              ? Icon(
+                                  Icons.water_drop,
+                                  color: taskColor,
+                                  size: 20,
+                                )
+                              : const SizedBox.shrink(),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
