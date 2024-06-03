@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/models/project_models.dart';
+import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_boards.dart';
 import 'package:wstore/wstore.dart';
 
 class ProjectContentStore extends WStore {
@@ -23,12 +24,11 @@ class ProjectContent extends WStoreWidget<ProjectContentStore> {
       appBar: AppBar(
         title: Text(project.name),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Text('${project.id}'),
-          ],
-        ),
+      body: Column(
+        children: [
+          Text('${project.id}'),
+          ProjectBoards(project: project),
+        ],
       ),
     );
   }
