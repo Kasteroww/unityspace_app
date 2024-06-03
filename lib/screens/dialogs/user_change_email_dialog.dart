@@ -3,7 +3,7 @@ import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
-import 'package:unityspace/screens/widgets/common/paddings.dart';
+import 'package:unityspace/screens/widgets/paddings.dart';
 import 'package:unityspace/service/service_exceptions.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/user_store.dart';

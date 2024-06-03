@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:unityspace/screens/widgets/common/paddings.dart';
-import 'package:unityspace/screens/widgets/common/skeleton/skeleton_card.dart';
+import 'package:unityspace/screens/widgets/paddings.dart';
+import 'package:unityspace/screens/widgets/skeleton/skeleton_card.dart';
 
 class ActionSkeletonCard extends StatelessWidget {
   const ActionSkeletonCard({super.key});

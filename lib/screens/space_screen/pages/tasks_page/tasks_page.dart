@@ -15,7 +15,7 @@ import 'package:unityspace/screens/space_screen/pages/tasks_page/widgets/popup_g
 import 'package:unityspace/screens/space_screen/pages/tasks_page/widgets/popup_sort_button.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/widgets/tasks_list.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
-import 'package:unityspace/screens/widgets/common/paddings.dart';
+import 'package:unityspace/screens/widgets/paddings.dart';
 import 'package:unityspace/store/projects_store.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/tasks_store.dart';

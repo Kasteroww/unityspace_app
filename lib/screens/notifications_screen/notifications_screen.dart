@@ -3,7 +3,7 @@ import 'package:unityspace/screens/app_navigation_drawer.dart';
 import 'package:unityspace/screens/notifications_screen/pages/archived_notifications_page.dart';
 import 'package:unityspace/screens/notifications_screen/pages/notifications_page.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/pop_up_notifications_button.dart';
-import 'package:unityspace/screens/widgets/common/appbar.dart';
+import 'package:unityspace/screens/widgets/appbar.dart';
 import 'package:unityspace/screens/widgets/tabs_list/tab_button.dart';
 import 'package:unityspace/screens/widgets/tabs_list/tabs_list_row.dart';
 import 'package:unityspace/store/notifications_store.dart';
