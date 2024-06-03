@@ -1,3 +1,5 @@
+import 'package:unityspace/service/data_exceptions.dart';
+
 class InitialUploadResponse {
   final String uploadId;
   final String key;
@@ -8,9 +10,13 @@ class InitialUploadResponse {
   });
 
   factory InitialUploadResponse.fromJson(Map<String, dynamic> map) {
-    return InitialUploadResponse(
-      uploadId: map['uploadId'] as String,
-      key: map['key'] as String,
-    );
+    try {
+      return InitialUploadResponse(
+        uploadId: map['uploadId'] as String,
+        key: map['key'] as String,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }

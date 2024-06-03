@@ -1,3 +1,4 @@
+import 'package:unityspace/service/data_exceptions.dart';
 import 'package:unityspace/utils/helpers.dart' as helpers;
 
 class UserResponse {
@@ -28,19 +29,23 @@ class UserResponse {
   });
 
   factory UserResponse.fromJson(Map<String, dynamic> map) {
-    return UserResponse(
-      id: map['id'] as int,
-      globalId: map['globalId'] as int,
-      name: map['name'] as String,
-      email: map['email'] as String,
-      avatar: map['avatar'] as String?,
-      phoneNumber: map['phoneNumber'] as String?,
-      telegramLink: map['telegramLink'] as String?,
-      githubLink: map['githubLink'] as String?,
-      birthDate: map['birthDate'] as String?,
-      jobTitle: map['jobTitle'] as String?,
-      isAdmin: map['isAdmin'] as bool,
-    );
+    try {
+      return UserResponse(
+        id: map['id'] as int,
+        globalId: map['globalId'] as int,
+        name: map['name'] as String,
+        email: map['email'] as String,
+        avatar: map['avatar'] as String?,
+        phoneNumber: map['phoneNumber'] as String?,
+        telegramLink: map['telegramLink'] as String?,
+        githubLink: map['githubLink'] as String?,
+        birthDate: map['birthDate'] as String?,
+        jobTitle: map['jobTitle'] as String?,
+        isAdmin: map['isAdmin'] as bool,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
 
@@ -146,20 +151,24 @@ class OrganizationResponse {
   });
 
   factory OrganizationResponse.fromJson(Map<String, dynamic> map) {
-    final membersList = map['members'] as List<dynamic>;
-    return OrganizationResponse(
-      id: map['id'] as int,
-      ownerId: map['ownerId'] as int,
-      createdAt: map['createdAt'] as String,
-      updatedAt: map['updatedAt'] as String,
-      availableUsersCount: map['availableUsersCount'] as int,
-      licenseEndDate: map['licenseEndDate'] as String?,
-      trialEndDate: map['trialEndDate'] as String?,
-      members: membersList
-          .map((member) => OrganizationMemberResponse.fromJson(member))
-          .toList(),
-      uniqueSpaceUsersCount: map['uniqueSpaceUsersCount'] as int,
-    );
+    try {
+      final membersList = map['members'] as List<dynamic>;
+      return OrganizationResponse(
+        id: map['id'] as int,
+        ownerId: map['ownerId'] as int,
+        createdAt: map['createdAt'] as String,
+        updatedAt: map['updatedAt'] as String,
+        availableUsersCount: map['availableUsersCount'] as int,
+        licenseEndDate: map['licenseEndDate'] as String?,
+        trialEndDate: map['trialEndDate'] as String?,
+        members: membersList
+            .map((member) => OrganizationMemberResponse.fromJson(member))
+            .toList(),
+        uniqueSpaceUsersCount: map['uniqueSpaceUsersCount'] as int,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
 
@@ -193,23 +202,27 @@ class OrganizationMemberResponse {
   });
 
   factory OrganizationMemberResponse.fromJson(Map<String, dynamic> map) {
-    final userAchievementsList = map['userAchievements'] as List<dynamic>;
-    return OrganizationMemberResponse(
-      avatar: map['avatar'] as String?,
-      email: map['email'] as String,
-      name: map['name'] as String,
-      organizationId: map['organizationId'] as int,
-      id: map['id'] as int,
-      userAchievements: userAchievementsList
-          .map((member) => UserAchievementsResponse.fromJson(member))
-          .toList(),
-      phoneNumber: map['phoneNumber'] as String?,
-      telegramLink: map['telegramLink'] as String?,
-      githubLink: map['githubLink'] as String?,
-      birthDate: map['birthDate'] as String?,
-      jobTitle: map['jobTitle'] as String?,
-      lastActivityDate: map['lastActivityDate'] as String,
-    );
+    try {
+      final userAchievementsList = map['userAchievements'] as List<dynamic>;
+      return OrganizationMemberResponse(
+        avatar: map['avatar'] as String?,
+        email: map['email'] as String,
+        name: map['name'] as String,
+        organizationId: map['organizationId'] as int,
+        id: map['id'] as int,
+        userAchievements: userAchievementsList
+            .map((member) => UserAchievementsResponse.fromJson(member))
+            .toList(),
+        phoneNumber: map['phoneNumber'] as String?,
+        telegramLink: map['telegramLink'] as String?,
+        githubLink: map['githubLink'] as String?,
+        birthDate: map['birthDate'] as String?,
+        jobTitle: map['jobTitle'] as String?,
+        lastActivityDate: map['lastActivityDate'] as String,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
 
@@ -225,11 +238,15 @@ class UserAchievementsResponse {
   });
 
   factory UserAchievementsResponse.fromJson(Map<String, dynamic> map) {
-    return UserAchievementsResponse(
-      userId: map['userId'] as int,
-      achievementType: map['achievementType'] as String,
-      dateReceived: map['dateReceived'] as String,
-    );
+    try {
+      return UserAchievementsResponse(
+        userId: map['userId'] as int,
+        achievementType: map['achievementType'] as String,
+        dateReceived: map['dateReceived'] as String,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
 

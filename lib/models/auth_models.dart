@@ -1,3 +1,5 @@
+import 'package:unityspace/service/data_exceptions.dart';
+
 class RegisterResponse {
   final String status;
   final String message;
@@ -8,10 +10,14 @@ class RegisterResponse {
   });
 
   factory RegisterResponse.fromJson(Map<String, dynamic> jsonData) {
-    return RegisterResponse(
-      status: jsonData['status'] as String,
-      message: jsonData['message'] as String,
-    );
+    try {
+      return RegisterResponse(
+        status: jsonData['status'] as String,
+        message: jsonData['message'] as String,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
 
@@ -25,10 +31,14 @@ class ResetPasswordResponse {
   });
 
   factory ResetPasswordResponse.fromJson(Map<String, dynamic> jsonData) {
-    return ResetPasswordResponse(
-      status: jsonData['status'] as String,
-      message: jsonData['message'] as String,
-    );
+    try {
+      return ResetPasswordResponse(
+        status: jsonData['status'] as String,
+        message: jsonData['message'] as String,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
 
@@ -42,10 +52,14 @@ class OnlyTokensResponse {
   });
 
   factory OnlyTokensResponse.fromJson(Map<String, dynamic> jsonData) {
-    return OnlyTokensResponse(
-      accessToken: jsonData['access_token'].toString(),
-      refreshToken: jsonData['refresh_token'].toString(),
-    );
+    try {
+      return OnlyTokensResponse(
+        accessToken: jsonData['access_token'].toString(),
+        refreshToken: jsonData['refresh_token'].toString(),
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
 
@@ -63,14 +77,18 @@ class GoogleAuthResponse {
   });
 
   factory GoogleAuthResponse.fromJson(Map<String, dynamic> jsonData) {
-    return GoogleAuthResponse(
-      tokens: OnlyTokensResponse.fromJson(
-        jsonData['tokens'] as Map<String, dynamic>,
-      ),
-      registered: jsonData['registered'] as bool,
-      picture: jsonData['picture'] as String?,
-      spaceId: jsonData['spaceId'] as int?,
-    );
+    try {
+      return GoogleAuthResponse(
+        tokens: OnlyTokensResponse.fromJson(
+          jsonData['tokens'] as Map<String, dynamic>,
+        ),
+        registered: jsonData['registered'] as bool,
+        picture: jsonData['picture'] as String?,
+        spaceId: jsonData['spaceId'] as int?,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
 

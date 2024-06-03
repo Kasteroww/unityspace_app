@@ -69,6 +69,30 @@ onChanged: (value) {
     : throw TypeErrors.castTypeError,
 ```
 
+### models 
+
+Фабрики `fromJson` должны иметь обработку ошибок парсинга. Все тело фабрики заворачивается в `try-catch`. В блоке `catch` выбрасывается `JsonParsingException` с `message` 'Error parsing Model', ошибкой `e` и стектрейсом `stack`
+```dart
+class NotificationResponse {
+  // ...parameters
+
+  NotificationResponse({
+    // ...default constructor
+  });
+
+  factory NotificationResponse.fromJson(Map<String, dynamic> json) {
+    try {
+      // ... optionally calculating some values
+      return NotificationResponse(
+        // ... mapping values
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
+  }
+}
+```
+
 ### services 
 
 Каждая функция заворачивается в `try-catch`. Внутри `catch` проверяется, является ли ошибка `HttpPluginException`. Если нет - ошибка пробрасывается дальше. Если да, то выбрасывается `ServiceException` с `error.message`. 

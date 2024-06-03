@@ -1,4 +1,5 @@
 import 'package:unityspace/models/i_base_model.dart';
+import 'package:unityspace/service/data_exceptions.dart';
 import 'package:unityspace/utils/date_time_converter.dart';
 
 class ProjectResponse {
@@ -47,34 +48,38 @@ class ProjectResponse {
   });
 
   factory ProjectResponse.fromJson(Map<String, dynamic> map) {
-    final stagesList = map['stages'] as List<dynamic>;
-    final embeddingsList = map['embeddings'] as List<dynamic>;
-    return ProjectResponse(
-      archiveStageId: map['archiveStageId'] as int,
-      id: map['id'] as int,
-      createdAt: map['createdAt'] as String,
-      updatedAt: map['updatedAt'] as String,
-      name: map['name'] as String,
-      creatorId: map['creatorId'] as int,
-      columnId: map['columnId'] as int,
-      order: map['order'] as String,
-      stages: stagesList
-          .map((stage) => ProjectStageResponse.fromJson(stage))
-          .toList(),
-      spaceId: map['spaceId'] as int,
-      embeddings: embeddingsList
-          .map((embedding) => ProjectEmbedResponse.fromJson(embedding))
-          .toList(),
-      showProjectReviewTab: map['showProjectReviewTab'] as bool,
-      timelineViewType: map['timelineViewType'] as bool,
-      taskCount: map['taskCount'] as int,
-      allTaskCount: map['allTaskCount'] as int,
-      memo: map['memo'] as String,
-      favorite: map['favorite'] as bool,
-      color: map['color'] as String?,
-      responsibleId: map['responsibleId'] as int?,
-      postponingTaskDayCount: map['postponingTaskDayCount'] as int,
-    );
+    try {
+      final stagesList = map['stages'] as List<dynamic>;
+      final embeddingsList = map['embeddings'] as List<dynamic>;
+      return ProjectResponse(
+        archiveStageId: map['archiveStageId'] as int,
+        id: map['id'] as int,
+        createdAt: map['createdAt'] as String,
+        updatedAt: map['updatedAt'] as String,
+        name: map['name'] as String,
+        creatorId: map['creatorId'] as int,
+        columnId: map['columnId'] as int,
+        order: map['order'] as String,
+        stages: stagesList
+            .map((stage) => ProjectStageResponse.fromJson(stage))
+            .toList(),
+        spaceId: map['spaceId'] as int,
+        embeddings: embeddingsList
+            .map((embedding) => ProjectEmbedResponse.fromJson(embedding))
+            .toList(),
+        showProjectReviewTab: map['showProjectReviewTab'] as bool,
+        timelineViewType: map['timelineViewType'] as bool,
+        taskCount: map['taskCount'] as int,
+        allTaskCount: map['allTaskCount'] as int,
+        memo: map['memo'] as String,
+        favorite: map['favorite'] as bool,
+        color: map['color'] as String?,
+        responsibleId: map['responsibleId'] as int?,
+        postponingTaskDayCount: map['postponingTaskDayCount'] as int,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
 
@@ -96,14 +101,18 @@ class ProjectEmbedResponse {
   });
 
   factory ProjectEmbedResponse.fromJson(Map<String, dynamic> json) {
-    return ProjectEmbedResponse(
-      id: json['id'],
-      projectId: json['projectId'],
-      name: json['name'],
-      url: json['url'],
-      category: json['category'],
-      order: json['order'],
-    );
+    try {
+      return ProjectEmbedResponse(
+        id: json['id'],
+        projectId: json['projectId'],
+        name: json['name'],
+        url: json['url'],
+        category: json['category'],
+        order: json['order'],
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
 
@@ -121,12 +130,16 @@ class ProjectStageResponse {
   });
 
   factory ProjectStageResponse.fromJson(Map<String, dynamic> json) {
-    return ProjectStageResponse(
-      id: json['id'] as int,
-      projectId: json['projectId'] as int,
-      name: json['name'] as String,
-      order: json['order'] as String,
-    );
+    try {
+      return ProjectStageResponse(
+        id: json['id'] as int,
+        projectId: json['projectId'] as int,
+        name: json['name'] as String,
+        order: json['order'] as String,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
 

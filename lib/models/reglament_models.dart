@@ -13,11 +13,15 @@ class UserPassedResponse {
   });
 
   factory UserPassedResponse.fromJson(Map<String, dynamic> map) {
-    return UserPassedResponse(
-      createdAt: map['createdAt'] as String,
-      reglamentId: map['reglamentId'] as int,
-      userId: map['userId'] as int,
-    );
+    try {
+      return UserPassedResponse(
+        createdAt: map['createdAt'] as String,
+        reglamentId: map['reglamentId'] as int,
+        userId: map['userId'] as int,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
 
@@ -27,9 +31,13 @@ class DeleteReglamentResponse {
   DeleteReglamentResponse({required this.id});
 
   factory DeleteReglamentResponse.fromJson(Map<String, dynamic> map) {
-    return DeleteReglamentResponse(
-      id: map['id'] as int,
-    );
+    try {
+      return DeleteReglamentResponse(
+        id: map['id'] as int,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
 
@@ -263,10 +271,14 @@ class RenameReglamentResponse {
   });
 
   factory RenameReglamentResponse.fromJson(Map<String, dynamic> map) {
-    return RenameReglamentResponse(
-      id: map['id'] as int,
-      name: map['name'] as String,
-    );
+    try {
+      return RenameReglamentResponse(
+        id: map['id'] as int,
+        name: map['name'] as String,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
 
@@ -296,22 +308,26 @@ class ReglamentResponse {
   });
 
   factory ReglamentResponse.fromJson(Map<String, dynamic> map) {
-    return ReglamentResponse(
-      createdAt: map['createdAt'] as String,
-      creatorId: map['creatorId'] as int,
-      id: map['id'] as int,
-      name: map['name'] as String,
-      order: map['order'] as String,
-      reglamentColumnId: map['reglamentColumnId'] as int,
-      required: map['required'] as bool,
-      intro: map['intro'] as bool,
-      updatedAt: map['updatedAt'] as String,
-      usersPassed: List<UserPassedResponse>.from(
-        (map['usersPassed'] as List).map<UserPassedResponse>(
-          (x) => UserPassedResponse.fromJson(x as Map<String, dynamic>),
+    try {
+      return ReglamentResponse(
+        createdAt: map['createdAt'] as String,
+        creatorId: map['creatorId'] as int,
+        id: map['id'] as int,
+        name: map['name'] as String,
+        order: map['order'] as String,
+        reglamentColumnId: map['reglamentColumnId'] as int,
+        required: map['required'] as bool,
+        intro: map['intro'] as bool,
+        updatedAt: map['updatedAt'] as String,
+        usersPassed: List<UserPassedResponse>.from(
+          (map['usersPassed'] as List).map<UserPassedResponse>(
+            (x) => UserPassedResponse.fromJson(x as Map<String, dynamic>),
+          ),
         ),
-      ),
-    );
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
 

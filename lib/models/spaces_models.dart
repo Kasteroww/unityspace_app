@@ -1,4 +1,5 @@
 import 'package:unityspace/models/i_base_model.dart';
+import 'package:unityspace/service/data_exceptions.dart';
 import 'package:unityspace/utils/helpers.dart' as helpers;
 
 class SpaceResponse {
@@ -35,35 +36,39 @@ class SpaceResponse {
   });
 
   factory SpaceResponse.fromJson(Map<String, dynamic> map) {
-    final membersList = map['members'] as List<dynamic>;
-    final invitesList = map['invites'] as List<dynamic>;
-    final columnsList = map['columns'] as List<dynamic>;
-    final reglamentColumnsList = map['reglamentColumns'] as List<dynamic>;
-    final shareLinkData = map['shareLink'] as Map<String, dynamic>;
-    return SpaceResponse(
-      id: map['id'] as int,
-      createdAt: map['createdAt'] as String,
-      name: map['name'] as String,
-      order: map['order'] as String,
-      creatorId: map['creatorId'] as int,
-      members: membersList
-          .map((member) => SpaceMemberResponse.fromJson(member))
-          .toList(),
-      columns: columnsList
-          .map((column) => SpaceColumnResponse.fromJson(column))
-          .toList(),
-      reglamentColumns: reglamentColumnsList
-          .map((column) => SpaceColumnResponse.fromJson(column))
-          .toList(),
-      invites: invitesList
-          .map((invite) => SpaceInviteResponse.fromJson(invite))
-          .toList(),
-      backgroundId: map['backgroundId'] as int?,
-      favorite: map['favorite'] as int,
-      archiveColumnId: map['archiveColumnId'] as int,
-      archiveReglamentColumnId: map['archiveReglamentColumnId'] as int,
-      shareLink: SpaceShareLinkResponse.fromJson(shareLinkData),
-    );
+    try {
+      final membersList = map['members'] as List<dynamic>;
+      final invitesList = map['invites'] as List<dynamic>;
+      final columnsList = map['columns'] as List<dynamic>;
+      final reglamentColumnsList = map['reglamentColumns'] as List<dynamic>;
+      final shareLinkData = map['shareLink'] as Map<String, dynamic>;
+      return SpaceResponse(
+        id: map['id'] as int,
+        createdAt: map['createdAt'] as String,
+        name: map['name'] as String,
+        order: map['order'] as String,
+        creatorId: map['creatorId'] as int,
+        members: membersList
+            .map((member) => SpaceMemberResponse.fromJson(member))
+            .toList(),
+        columns: columnsList
+            .map((column) => SpaceColumnResponse.fromJson(column))
+            .toList(),
+        reglamentColumns: reglamentColumnsList
+            .map((column) => SpaceColumnResponse.fromJson(column))
+            .toList(),
+        invites: invitesList
+            .map((invite) => SpaceInviteResponse.fromJson(invite))
+            .toList(),
+        backgroundId: map['backgroundId'] as int?,
+        favorite: map['favorite'] as int,
+        archiveColumnId: map['archiveColumnId'] as int,
+        archiveReglamentColumnId: map['archiveReglamentColumnId'] as int,
+        shareLink: SpaceShareLinkResponse.fromJson(shareLinkData),
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
 
@@ -77,10 +82,14 @@ class SpaceShareLinkResponse {
   });
 
   factory SpaceShareLinkResponse.fromJson(Map<String, dynamic> map) {
-    return SpaceShareLinkResponse(
-      token: map['token'] as String,
-      active: map['active'] as bool,
-    );
+    try {
+      return SpaceShareLinkResponse(
+        token: map['token'] as String,
+        active: map['active'] as bool,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
 
@@ -94,10 +103,14 @@ class SpaceInviteResponse {
   });
 
   factory SpaceInviteResponse.fromJson(Map<String, dynamic> map) {
-    return SpaceInviteResponse(
-      id: map['id'] as int,
-      email: map['email'] as String,
-    );
+    try {
+      return SpaceInviteResponse(
+        id: map['id'] as int,
+        email: map['email'] as String,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
 
@@ -115,12 +128,16 @@ class SpaceColumnResponse {
   });
 
   factory SpaceColumnResponse.fromJson(Map<String, dynamic> map) {
-    return SpaceColumnResponse(
-      id: map['id'] as int,
-      name: map['name'] as String,
-      order: map['order'] as int,
-      spaceId: map['spaceId'] as int,
-    );
+    try {
+      return SpaceColumnResponse(
+        id: map['id'] as int,
+        name: map['name'] as String,
+        order: map['order'] as int,
+        spaceId: map['spaceId'] as int,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
 
@@ -138,12 +155,16 @@ class SpaceMemberResponse {
   });
 
   factory SpaceMemberResponse.fromJson(Map<String, dynamic> map) {
-    return SpaceMemberResponse(
-      id: map['id'] as int,
-      email: map['email'] as String,
-      name: map['name'] as String,
-      avatar: map['avatar'] as String?,
-    );
+    try {
+      return SpaceMemberResponse(
+        id: map['id'] as int,
+        email: map['email'] as String,
+        name: map['name'] as String,
+        avatar: map['avatar'] as String?,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
 

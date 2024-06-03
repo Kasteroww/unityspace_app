@@ -1,4 +1,5 @@
 import 'package:unityspace/models/i_base_model.dart';
+import 'package:unityspace/service/data_exceptions.dart';
 import 'package:unityspace/utils/date_time_converter.dart';
 
 class InitiatorAndRecipient {
@@ -24,13 +25,17 @@ class PaginatedNotifications {
   });
 
   factory PaginatedNotifications.fromJson(Map<String, dynamic> json) {
-    final List<dynamic> list = json['notifications'];
-    final List<NotificationResponse> notificationsList =
-        list.map((i) => NotificationResponse.fromJson(i)).toList();
-    return PaginatedNotifications(
-      notifications: notificationsList,
-      maxPagesCount: json['maxPagesCount'] as int,
-    );
+    try {
+      final List<dynamic> list = json['notifications'];
+      final List<NotificationResponse> notificationsList =
+          list.map((i) => NotificationResponse.fromJson(i)).toList();
+      return PaginatedNotifications(
+        notifications: notificationsList,
+        maxPagesCount: json['maxPagesCount'] as int,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
 
@@ -68,25 +73,29 @@ class NotificationResponse {
   });
 
   factory NotificationResponse.fromJson(Map<String, dynamic> json) {
-    final List<dynamic> locList = json['locations'];
-    final List<NotificationLocation> locationList =
-        locList.map((i) => NotificationLocation.fromJson(i)).toList();
-    return NotificationResponse(
-      archived: json['archived'] as bool,
-      createdAt: json['createdAt'] as String,
-      id: json['id'] as int,
-      initiatorId: json['initiatorId'] as int,
-      locations: locationList,
-      message: json['message'] as int?,
-      notificationType: json['notificationType'] as String,
-      parentId: json['parentId'] as int,
-      parentType: json['parentType'] as String,
-      recipientId: json['recipientId'] as int,
-      stageName: json['stageName'] as String?,
-      taskName: json['taskName'] as String?,
-      text: json['text'] as String,
-      unread: json['unread'] as bool,
-    );
+    try {
+      final List<dynamic> locList = json['locations'];
+      final List<NotificationLocation> locationList =
+          locList.map((i) => NotificationLocation.fromJson(i)).toList();
+      return NotificationResponse(
+        archived: json['archived'] as bool,
+        createdAt: json['createdAt'] as String,
+        id: json['id'] as int,
+        initiatorId: json['initiatorId'] as int,
+        locations: locationList,
+        message: json['message'] as int?,
+        notificationType: json['notificationType'] as String,
+        parentId: json['parentId'] as int,
+        parentType: json['parentType'] as String,
+        recipientId: json['recipientId'] as int,
+        stageName: json['stageName'] as String?,
+        taskName: json['taskName'] as String?,
+        text: json['text'] as String,
+        unread: json['unread'] as bool,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
 
@@ -97,10 +106,14 @@ class NotificationLocation {
   NotificationLocation({required this.spaceId, this.projectId});
 
   factory NotificationLocation.fromJson(Map<String, dynamic> json) {
-    return NotificationLocation(
-      spaceId: json['spaceId'] as int,
-      projectId: json['projectId'] as int?,
-    );
+    try {
+      return NotificationLocation(
+        spaceId: json['spaceId'] as int,
+        projectId: json['projectId'] as int?,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
 
@@ -110,9 +123,13 @@ class DeleteNotificationsResponse {
     required this.count,
   });
   factory DeleteNotificationsResponse.fromJson(Map<String, dynamic> map) {
-    return DeleteNotificationsResponse(
-      count: map['count'] as int,
-    );
+    try {
+      return DeleteNotificationsResponse(
+        count: map['count'] as int,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
 

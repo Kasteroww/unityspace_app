@@ -1,6 +1,7 @@
 import 'dart:core';
 
 import 'package:unityspace/models/i_base_model.dart';
+import 'package:unityspace/service/data_exceptions.dart';
 import 'package:unityspace/utils/date_time_converter.dart';
 
 enum TaskChangesTypes {
@@ -173,15 +174,19 @@ class TaskCover {
   });
 
   factory TaskCover.fromJson(Map<String, dynamic> json) {
-    return TaskCover(
-      id: json['id'] as int,
-      dominantColor: json['dominantColor'] as String,
-      height: json['height'] as int,
-      pictureUid: json['pictureUid'] as String,
-      taskId: json['taskId'] as int,
-      width: json['width'] as int,
-      fullLink: json['fullLink'] as String?,
-    );
+    try {
+      return TaskCover(
+        id: json['id'] as int,
+        dominantColor: json['dominantColor'] as String,
+        height: json['height'] as int,
+        pictureUid: json['pictureUid'] as String,
+        taskId: json['taskId'] as int,
+        width: json['width'] as int,
+        fullLink: json['fullLink'] as String?,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
 
@@ -197,11 +202,15 @@ class TaskStages {
   });
 
   factory TaskStages.fromJson(Map<String, dynamic> json) {
-    return TaskStages(
-      stageId: json['stageId'] as int,
-      order: int.parse(json['order'] as String),
-      projectId: json['projectId'] as int,
-    );
+    try {
+      return TaskStages(
+        stageId: json['stageId'] as int,
+        order: int.parse(json['order'] as String),
+        projectId: json['projectId'] as int,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
 
@@ -313,36 +322,41 @@ class TaskResponse {
   });
 
   factory TaskResponse.fromJson(Map<String, dynamic> json) {
-    return TaskResponse(
-      id: json['id'] as int,
-      name: json['name'] as String,
-      color: json['color'] as String?,
-      stages: (json['stages'] as List<dynamic>)
-          .map((e) => TaskStages.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      importance: TaskImportance.values.firstWhere(
-        (type) => type.value == json['importance'] as int,
-        orElse: () => TaskImportance.normal,
-      ),
-      createdAt: json['createdAt'] as String,
-      creatorId: json['creatorId'] as int,
-      tags: (json['tags'] as List<dynamic>).map((e) => e as int).toList(),
-      responsibleUserId: (json['responsibleUserId'] as List<dynamic>)
-          .map((e) => e as int)
-          .toList(),
-      hasMessages: json['hasMessages'] as bool,
-      hasDescription: json['hasDescription'] as bool,
-      status: json['status'] as int,
-      dateBegin: json['dateBegin'] as String?,
-      dateEnd: json['dateEnd'] as String?,
-      dateStatusChanged: json['dateStatusChanged'] as String?,
-      blockReason: json['blockReason'] as String?,
-      dateMove: json['dateMove'] as String?,
-      members: (json['members'] as List<dynamic>).map((e) => e as int).toList(),
-      cover: json['cover'] != null
-          ? TaskCover.fromJson(json['cover'] as Map<String, dynamic>)
-          : null,
-    );
+    try {
+      return TaskResponse(
+        id: json['id'] as int,
+        name: json['name'] as String,
+        color: json['color'] as String?,
+        stages: (json['stages'] as List<dynamic>)
+            .map((e) => TaskStages.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        importance: TaskImportance.values.firstWhere(
+          (type) => type.value == json['importance'] as int,
+          orElse: () => TaskImportance.normal,
+        ),
+        createdAt: json['createdAt'] as String,
+        creatorId: json['creatorId'] as int,
+        tags: (json['tags'] as List<dynamic>).map((e) => e as int).toList(),
+        responsibleUserId: (json['responsibleUserId'] as List<dynamic>)
+            .map((e) => e as int)
+            .toList(),
+        hasMessages: json['hasMessages'] as bool,
+        hasDescription: json['hasDescription'] as bool,
+        status: json['status'] as int,
+        dateBegin: json['dateBegin'] as String?,
+        dateEnd: json['dateEnd'] as String?,
+        dateStatusChanged: json['dateStatusChanged'] as String?,
+        blockReason: json['blockReason'] as String?,
+        dateMove: json['dateMove'] as String?,
+        members:
+            (json['members'] as List<dynamic>).map((e) => e as int).toList(),
+        cover: json['cover'] != null
+            ? TaskCover.fromJson(json['cover'] as Map<String, dynamic>)
+            : null,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
 
@@ -376,12 +390,16 @@ class SearchTaskResponse {
   });
 
   factory SearchTaskResponse.fromJson(Map<String, dynamic> map) {
-    final tasksList = map['tasks'] as List<dynamic>;
-    return SearchTaskResponse(
-      tasks: tasksList.map((data) => TaskResponse.fromJson(data)).toList(),
-      maxPagesCount: map['maxPagesCount'] as int,
-      tasksCount: map['tasksCount'] as int,
-    );
+    try {
+      final tasksList = map['tasks'] as List<dynamic>;
+      return SearchTaskResponse(
+        tasks: tasksList.map((data) => TaskResponse.fromJson(data)).toList(),
+        maxPagesCount: map['maxPagesCount'] as int,
+        tasksCount: map['tasksCount'] as int,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
 
@@ -448,16 +466,20 @@ class MyTaskHistoryResponse {
   });
 
   factory MyTaskHistoryResponse.fromJson(Map<String, dynamic> map) {
-    final historyList = map['history'] as List<dynamic>;
-    final tasksList = map['tasks'] as List<dynamic>;
+    try {
+      final historyList = map['history'] as List<dynamic>;
+      final tasksList = map['tasks'] as List<dynamic>;
 
-    return MyTaskHistoryResponse(
-      maxPageCount: map['maxPagesCount'] as int,
-      history: historyList
-          .map((history) => TaskHistoryResponse.fromJson(history))
-          .toList(),
-      tasks: tasksList.map((task) => TaskResponse.fromJson(task)).toList(),
-    );
+      return MyTaskHistoryResponse(
+        maxPageCount: map['maxPagesCount'] as int,
+        history: historyList
+            .map((history) => TaskHistoryResponse.fromJson(history))
+            .toList(),
+        tasks: tasksList.map((task) => TaskResponse.fromJson(task)).toList(),
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
 
@@ -485,16 +507,20 @@ class TaskHistoryResponse {
   });
 
   factory TaskHistoryResponse.fromJson(Map<dynamic, dynamic> map) {
-    return TaskHistoryResponse(
-      id: map['id'] as int,
-      updateDate: map['updateDate'] as String,
-      taskId: map['taskId'] as int,
-      taskName: map['taskName'] as String?,
-      userId: map['userId'] as int,
-      type: map['type'] as int,
-      state: map['state'] as String?,
-      projectName: map['projectName'] as String?,
-      commitName: map['commitName'] as String?,
-    );
+    try {
+      return TaskHistoryResponse(
+        id: map['id'] as int,
+        updateDate: map['updateDate'] as String,
+        taskId: map['taskId'] as int,
+        taskName: map['taskName'] as String?,
+        userId: map['userId'] as int,
+        type: map['type'] as int,
+        state: map['state'] as String?,
+        projectName: map['projectName'] as String?,
+        commitName: map['commitName'] as String?,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
   }
 }
