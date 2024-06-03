@@ -31,6 +31,7 @@ class TabButton extends StatelessWidget {
           height: 32,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               if (iconAsset != null)
                 SvgPicture.asset(

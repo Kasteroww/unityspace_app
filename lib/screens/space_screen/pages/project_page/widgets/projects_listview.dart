@@ -81,7 +81,7 @@ class ProjectsListview extends StatelessWidget {
                               subtitle:
                                   store.projectsByColumn[index].memo != null &&
                                           store.projectsByColumn[index].memo!
-                                              .isEmpty
+                                              .isNotEmpty
                                       ? Text(
                                           store.projectsByColumn[index].memo!,
                                           overflow: TextOverflow.ellipsis,

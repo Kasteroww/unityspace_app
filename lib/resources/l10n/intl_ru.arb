@@ -420,5 +420,7 @@
   "disabled": "Отключено",
   "rename_reglament": "Переименовать регламент",
   "reglament_link_copied_successfully": "Ссылка на регламент успешно скопирована",
-  "questions": "Вопросы"
+  "questions": "Вопросы",
+  "documents": "Документация",
+  "completed_today": "Завершено сегодня"
 }
