@@ -4,7 +4,7 @@ import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/screens/space_screen/pages/reglaments_page/widgets/dialogs/add_reglament_dialog.dart';
 import 'package:unityspace/screens/space_screen/pages/reglaments_page/widgets/reglament_listview.dart';
 import 'package:unityspace/screens/space_screen/widgets/delete_no_rules_dialog.dart';
-import 'package:unityspace/store/reglament_store.dart';
+import 'package:unityspace/store/reglaments_store.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/resources/constants.dart';
 import 'package:unityspace/utils/helpers.dart';

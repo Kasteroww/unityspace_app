@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/screens/notifications_screen/utils/notification_helper.dart';
 import 'package:unityspace/screens/notifications_screen/utils/notifications_strings.dart';
-import 'package:unityspace/store/project_store.dart';
+import 'package:unityspace/store/projects_store.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
@@ -23,7 +23,7 @@ class Locations extends StatelessWidget {
     final locationGroups = notificationHelper.groupLocations(
       notificationsGroup.locations,
       SpacesStore(),
-      ProjectStore(),
+      ProjectsStore(),
     );
     final groupName =
         NotificationsStrings.groupName(notificationsGroup, localization);

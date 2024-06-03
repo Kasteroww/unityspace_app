@@ -3,7 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_dropdown_menu.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
-import 'package:unityspace/store/project_store.dart';
+import 'package:unityspace/store/projects_store.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
@@ -52,7 +52,7 @@ class MoveProjectDialogStore extends WStore {
 
     subscribe(
       future:
-          ProjectStore().changeProjectColumn([projectId], selectedColumn.id),
+          ProjectsStore().changeProjectColumn([projectId], selectedColumn.id),
       subscriptionId: 1,
       onData: (_) {
         setStore(() {

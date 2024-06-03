@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:unityspace/screens/widgets/color_button_widget.dart';
-import 'package:unityspace/store/project_store.dart';
-import 'package:unityspace/store/reglament_store.dart';
+import 'package:unityspace/store/projects_store.dart';
+import 'package:unityspace/store/reglaments_store.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/resources/constants.dart';
@@ -46,7 +46,7 @@ class LoadingScreenStore extends WStore {
     subscribe(
       subscriptionId: 2,
       future: Future.wait([
-        ProjectStore().getAllProjects(),
+        ProjectsStore().getAllProjects(),
         ReglamentsStore().getReglaments(),
       ]),
       onError: (e, stack) {

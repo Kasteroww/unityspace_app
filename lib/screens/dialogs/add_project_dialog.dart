@@ -3,7 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
-import 'package:unityspace/store/project_store.dart';
+import 'package:unityspace/store/projects_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
@@ -45,7 +45,7 @@ class AddProjectDialogStore extends WStore {
     }
 
     subscribe(
-      future: ProjectStore().addProject(
+      future: ProjectsStore().addProject(
         AddProject(name: projectName, spaceColumnId: widget.columnId),
       ),
       subscriptionId: 1,

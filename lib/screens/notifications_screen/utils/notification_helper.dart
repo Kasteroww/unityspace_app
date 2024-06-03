@@ -2,8 +2,8 @@ import 'package:collection/collection.dart';
 
 import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/models/user_models.dart';
-import 'package:unityspace/store/project_store.dart';
-import 'package:unityspace/store/reglament_store.dart';
+import 'package:unityspace/store/projects_store.dart';
+import 'package:unityspace/store/reglaments_store.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/helpers.dart';
@@ -174,7 +174,7 @@ class NotificationHelper {
   List<LocationGroup> groupLocations(
     List<NotificationLocation> locations,
     SpacesStore spacesStore,
-    ProjectStore projectStore,
+    ProjectsStore projectStore,
   ) {
     if (locations.isEmpty) {
       return [

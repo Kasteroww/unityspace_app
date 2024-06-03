@@ -3,12 +3,12 @@ import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/service/project_service.dart' as api;
 import 'package:wstore/wstore.dart';
 
-class ProjectStore extends GStore {
-  static ProjectStore? _instance;
+class ProjectsStore extends GStore {
+  static ProjectsStore? _instance;
 
-  factory ProjectStore() => _instance ??= ProjectStore._();
+  factory ProjectsStore() => _instance ??= ProjectsStore._();
 
-  ProjectStore._();
+  ProjectsStore._();
 
   List<Project> projects = [];
 

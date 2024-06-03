@@ -4,7 +4,7 @@ import 'package:unityspace/models/reglament_models.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
 import 'package:unityspace/service/data_exceptions.dart';
-import 'package:unityspace/store/reglament_store.dart';
+import 'package:unityspace/store/reglaments_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';

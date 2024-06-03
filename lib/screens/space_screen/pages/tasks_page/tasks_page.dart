@@ -13,7 +13,7 @@ import 'package:unityspace/screens/space_screen/pages/tasks_page/widgets/popup_s
 import 'package:unityspace/screens/space_screen/pages/tasks_page/widgets/tasks_list.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/common/paddings.dart';
-import 'package:unityspace/store/project_store.dart';
+import 'package:unityspace/store/projects_store.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/tasks_store.dart';
 import 'package:unityspace/store/user_store.dart';
@@ -33,7 +33,7 @@ class TasksPageStore extends WStore {
   TasksErrors error = TasksErrors.none;
   WStoreStatus status = WStoreStatus.init;
   TasksStore tasksStore = TasksStore();
-  ProjectStore projectsStore = ProjectStore();
+  ProjectsStore projectsStore = ProjectsStore();
   SpacesStore spacesStore = SpacesStore();
   int spaceId = 0;
 

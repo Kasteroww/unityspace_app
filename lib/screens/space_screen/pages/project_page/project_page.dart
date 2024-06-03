@@ -8,7 +8,7 @@ import 'package:unityspace/screens/space_screen/pages/project_page/widgets/proje
 import 'package:unityspace/screens/space_screen/widgets/delete_no_rules_dialog.dart';
 import 'package:unityspace/screens/widgets/columns_list/column_button.dart';
 import 'package:unityspace/screens/widgets/columns_list/columns_list_row.dart';
-import 'package:unityspace/store/project_store.dart';
+import 'package:unityspace/store/projects_store.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/resources/constants.dart';
 import 'package:unityspace/resources/errors.dart';
@@ -36,7 +36,7 @@ class ProjectsPageStore extends WStore {
   }
 
   void changeProjectColumn(List<int> projectIds, int archiveColumnId) {
-    ProjectStore().changeProjectColumn(projectIds, archiveColumnId);
+    ProjectsStore().changeProjectColumn(projectIds, archiveColumnId);
   }
 
   void tryToDeleteProject({
@@ -51,7 +51,7 @@ class ProjectsPageStore extends WStore {
   }
 
   void _deleteProject(int projectId) {
-    ProjectStore().deleteProject(projectId);
+    ProjectsStore().deleteProject(projectId);
   }
 
   bool _checkRulesByDelete() {
@@ -72,7 +72,7 @@ class ProjectsPageStore extends WStore {
       error = ProjectErrors.none;
     });
     try {
-      await ProjectStore().getProjectsBySpaceId(space.id);
+      await ProjectsStore().getProjectsBySpaceId(space.id);
       setStore(() {
         status = WStoreStatus.loaded;
       });
@@ -91,7 +91,7 @@ class ProjectsPageStore extends WStore {
   }
 
   void setProjectFavorite(int projectId, bool favorite) {
-    ProjectStore().setProjectFavorite(projectId, favorite);
+    ProjectsStore().setProjectFavorite(projectId, favorite);
   }
 
   List<Project> get projectsByColumn => computed(
@@ -109,7 +109,7 @@ class ProjectsPageStore extends WStore {
       );
 
   List<Project> get projects => computedFromStore(
-        store: ProjectStore(),
+        store: ProjectsStore(),
         getValue: (store) => store.projects,
         keyName: 'projects',
       );
