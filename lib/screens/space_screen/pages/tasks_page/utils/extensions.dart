@@ -33,3 +33,19 @@ extension SortLocalization on TaskSort {
     }
   }
 }
+
+/// extension с методом локализации
+/// для каждого возможного значения TaskFilter
+/// возвращает его локализованное значение
+extension FilterLocalization on TaskFilter {
+  String localize({required AppLocalizations localization}) {
+    switch (this) {
+      case TaskFilter.onlyActive:
+        return localization.filter_active_tasks;
+      case TaskFilter.onlyCompleted:
+        return localization.filter_completed_tasks;
+      case TaskFilter.allTasks:
+        return localization.all_tasks;
+    }
+  }
+}

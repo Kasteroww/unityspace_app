@@ -10,6 +10,7 @@ import 'package:unityspace/resources/theme/theme.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/utils/enums.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/widgets/divider.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/widgets/grouped_tasks_list.dart';
+import 'package:unityspace/screens/space_screen/pages/tasks_page/widgets/popup_filter_button.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/widgets/popup_grouping_button.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/widgets/popup_sort_button.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/widgets/tasks_list.dart';
@@ -41,6 +42,7 @@ class TasksPageStore extends WStore {
   // default values
   TaskGrouping groupingType = TaskGrouping.byProject;
   TaskSort sortType = TaskSort.defaultSort;
+  TaskFilter filterType = TaskFilter.onlyActive;
 
   // SEARCHING
   final SearchTaskErrors searchError = SearchTaskErrors.none;
@@ -96,6 +98,13 @@ class TasksPageStore extends WStore {
     });
   }
 
+  void setFilterType(TaskFilter value) {
+    setStore(() {
+      filterType = value;
+    });
+    getTasksByFilter(filterType);
+  }
+
   String? getProjectNameById(int projectId) {
     return projectsStore.getProjectById(projectId)?.name;
   }
@@ -106,131 +115,6 @@ class TasksPageStore extends WStore {
       return 'Пользователя нет';
     }
     return user.name;
-  }
-
-  /// поиск задач по строке
-  Future<void> searchTasks() async {
-    tasksStore.clearSearchedTasksStateLocally();
-    if (searchString.isNotEmpty) {
-      setStore(() {
-        isSearching = true;
-      });
-
-      final searchResult = tasks.where((task) {
-        return task.stages.any((taskStage) {
-              final Project? project =
-                  projectsStore.projectsMap[taskStage.projectId];
-              return project != null && project.spaceId == spaceId;
-            }) &&
-            (searchString.isEmpty ||
-                task.name.toLowerCase().contains(searchString.toLowerCase()));
-      }).toList();
-      setStore(() {
-        searchedTasks = searchResult;
-      });
-    } else {
-      setStore(() {
-        isSearching = false;
-      });
-    }
-  }
-
-  /// получение информации о колонках в проектах по
-  /// TaskStages stages в задаче
-  TaskStageWithOrder getStageName({
-    required List<TaskStages> stages,
-    int? projectId,
-  }) {
-    // если известнен id проета, то подходящая колонка только одна
-    if (projectId != null) {
-      final taskStage = stages.firstWhereOrNull(
-        (stage) => stage.projectId == projectId,
-      );
-      final stage =
-          taskStage != null ? projectsStore.stagesMap[taskStage.stageId] : null;
-      if (stage == null || taskStage == null) {
-        return TaskStageWithOrder(
-          stageName: '',
-          stagesOrder: 0,
-          taskOrder: 0,
-        );
-      }
-      return TaskStageWithOrder(
-        stageName: stage.name,
-        stagesOrder: stage.order,
-        taskOrder: taskStage.order,
-      );
-    }
-    // если projectId неизвестен, данные берутся для всех колонок
-    final stagesPropsArrays = stages.fold(
-      (
-        stagesNames: <String>[],
-        stagesOrders: <int>[],
-        taskOrders: <int>[],
-      ),
-      (acc, taskStage) {
-        final stage = projectsStore.stagesMap[taskStage.stageId];
-        if (stage != null) {
-          acc.stagesNames.add(stage.name);
-          acc.stagesOrders.add(stage.order);
-          acc.taskOrders.add(taskStage.order);
-        }
-        return acc;
-      },
-    );
-
-    return TaskStageWithOrder(
-      stageName: stagesPropsArrays.stagesNames.join(', '),
-      stagesOrder: stagesPropsArrays.stagesOrders.fold(0, (a, b) => a + b),
-      taskOrder: stagesPropsArrays.taskOrders.fold(0, (a, b) => a + b),
-    );
-  }
-
-  List<SortedTask> sortTasks(List<Task> tasks) {
-    final List<SortedTask> sortedTasks = tasks.map(
-      (task) {
-        final stageParams = getStageName(stages: task.stages);
-        return SortedTask(
-          id: task.id,
-          task: task,
-          stageName: stageParams.stageName,
-          stageOrder: stageParams.stagesOrder,
-          taskOrder: stageParams.taskOrder,
-        );
-      },
-    ).toList();
-    sortedTasks.sort((a, b) {
-      if (sortType == TaskSort.byDate) {
-        if (a.task.dateEnd == null && b.task.dateEnd != null) {
-          return 1;
-        } else if (a.task.dateEnd != null && b.task.dateEnd == null) {
-          return -1;
-        } else if (a.task.dateEnd == null || b.task.dateEnd == null) {
-          return 0;
-        } else {
-          final DateTime aDate = dateFromDateTime(a.task.dateEnd!);
-          final DateTime bDate = dateFromDateTime(b.task.dateEnd!);
-
-          final int compareByDate = aDate.difference(bDate).inDays;
-          if (compareByDate != 0) return compareByDate;
-        }
-      } else if (sortType == TaskSort.byStatus) {
-        final compareByStatus = a.task.status - b.task.status;
-        if (compareByStatus != 0) return compareByStatus;
-      } else if (sortType == TaskSort.byImportance) {
-        final compareByImportance =
-            b.task.importance.value - a.task.importance.value;
-        if (compareByImportance != 0) return compareByImportance;
-      }
-      final compareByStageNames = a.stageName.compareTo(b.stageName);
-      if (compareByStageNames != 0) return compareByStageNames;
-      final compareByStagesOrder = a.stageOrder - b.stageOrder;
-      if (compareByStagesOrder != 0) return compareByStagesOrder;
-      final compareByTaskOrder = a.taskOrder - b.taskOrder;
-      if (compareByTaskOrder != 0) return compareByTaskOrder;
-      return 0;
-    });
-    return sortedTasks;
   }
 
   /// группирует задачи по проектам
@@ -384,8 +268,155 @@ class TasksPageStore extends WStore {
     return groups;
   }
 
+  /// поиск задач по строке
+  Future<void> searchTasks() async {
+    tasksStore.clearSearchedTasksStateLocally();
+    if (searchString.isNotEmpty) {
+      setStore(() {
+        isSearching = true;
+      });
+
+      final searchResult = tasks.where((task) {
+        return task.stages.any((taskStage) {
+              final Project? project =
+                  projectsStore.projectsMap[taskStage.projectId];
+              return project != null && project.spaceId == spaceId;
+            }) &&
+            (searchString.isEmpty ||
+                task.name.toLowerCase().contains(searchString.toLowerCase()));
+      }).toList();
+      setStore(() {
+        searchedTasks = searchResult;
+      });
+    } else {
+      setStore(() {
+        isSearching = false;
+      });
+    }
+  }
+
+  /// получение информации о колонках в проектах по
+  /// TaskStages stages в задаче
+  TaskStageWithOrder getStageName({
+    required List<TaskStages> stages,
+    int? projectId,
+  }) {
+    // если известнен id проета, то подходящая колонка только одна
+    if (projectId != null) {
+      final taskStage = stages.firstWhereOrNull(
+        (stage) => stage.projectId == projectId,
+      );
+      final stage =
+          taskStage != null ? projectsStore.stagesMap[taskStage.stageId] : null;
+      if (stage == null || taskStage == null) {
+        return TaskStageWithOrder(
+          stageName: '',
+          stagesOrder: 0,
+          taskOrder: 0,
+        );
+      }
+      return TaskStageWithOrder(
+        stageName: stage.name,
+        stagesOrder: stage.order,
+        taskOrder: taskStage.order,
+      );
+    }
+    // если projectId неизвестен, данные берутся для всех колонок
+    final stagesPropsArrays = stages.fold(
+      (
+        stagesNames: <String>[],
+        stagesOrders: <int>[],
+        taskOrders: <int>[],
+      ),
+      (acc, taskStage) {
+        final stage = projectsStore.stagesMap[taskStage.stageId];
+        if (stage != null) {
+          acc.stagesNames.add(stage.name);
+          acc.stagesOrders.add(stage.order);
+          acc.taskOrders.add(taskStage.order);
+        }
+        return acc;
+      },
+    );
+
+    return TaskStageWithOrder(
+      stageName: stagesPropsArrays.stagesNames.join(', '),
+      stagesOrder: stagesPropsArrays.stagesOrders.fold(0, (a, b) => a + b),
+      taskOrder: stagesPropsArrays.taskOrders.fold(0, (a, b) => a + b),
+    );
+  }
+
+  List<SortedTask> sortTasks(List<Task> tasks) {
+    final List<SortedTask> sortedTasks = tasks.map(
+      (task) {
+        final stageParams = getStageName(stages: task.stages);
+        return SortedTask(
+          id: task.id,
+          task: task,
+          stageName: stageParams.stageName,
+          stageOrder: stageParams.stagesOrder,
+          taskOrder: stageParams.taskOrder,
+        );
+      },
+    ).toList();
+    sortedTasks.sort((a, b) {
+      if (sortType == TaskSort.byDate) {
+        if (a.task.dateEnd == null && b.task.dateEnd != null) {
+          return 1;
+        } else if (a.task.dateEnd != null && b.task.dateEnd == null) {
+          return -1;
+        } else if (a.task.dateEnd == null || b.task.dateEnd == null) {
+          return 0;
+        } else {
+          final DateTime aDate = dateFromDateTime(a.task.dateEnd!);
+          final DateTime bDate = dateFromDateTime(b.task.dateEnd!);
+
+          final int compareByDate = aDate.difference(bDate).inDays;
+          if (compareByDate != 0) return compareByDate;
+        }
+      } else if (sortType == TaskSort.byStatus) {
+        final compareByStatus = a.task.status - b.task.status;
+        if (compareByStatus != 0) return compareByStatus;
+      } else if (sortType == TaskSort.byImportance) {
+        final compareByImportance =
+            b.task.importance.value - a.task.importance.value;
+        if (compareByImportance != 0) return compareByImportance;
+      }
+      final compareByStageNames = a.stageName.compareTo(b.stageName);
+      if (compareByStageNames != 0) return compareByStageNames;
+      final compareByStagesOrder = a.stageOrder - b.stageOrder;
+      if (compareByStagesOrder != 0) return compareByStagesOrder;
+      final compareByTaskOrder = a.taskOrder - b.taskOrder;
+      if (compareByTaskOrder != 0) return compareByTaskOrder;
+      return 0;
+    });
+    return sortedTasks;
+  }
+
+  /// получение задач по фильтрам
+  Future<void> getTasksByFilter(TaskFilter filter) async {
+    switch (filter) {
+      case TaskFilter.onlyActive:
+        await loadTasks(statuses: [TaskStatuses.inWork.value]);
+      case TaskFilter.onlyCompleted:
+        await loadTasks(
+          statuses: [TaskStatuses.completed.value, TaskStatuses.rejected.value],
+        );
+      case TaskFilter.allTasks:
+        await loadTasks(
+          statuses: [
+            TaskStatuses.inWork.value,
+            TaskStatuses.completed.value,
+            TaskStatuses.rejected.value,
+          ],
+        );
+      default:
+        await loadTasks(statuses: [TaskStatuses.inWork.value]);
+    }
+  }
+
   /// загрузка задач по пространству и статусам
-  Future<void> loadData() async {
+  Future<void> loadTasks({List<int>? statuses}) async {
     if (status == WStoreStatus.loading) return;
     setStore(() {
       status = WStoreStatus.loading;
@@ -394,7 +425,7 @@ class TasksPageStore extends WStore {
     try {
       await tasksStore.getSpaceTasks(
         spaceId: spaceId,
-        statuses: [TaskStatuses.inWork.value],
+        statuses: statuses ?? [TaskStatuses.inWork.value],
       );
       setStore(() {
         status = WStoreStatus.loaded;
@@ -431,7 +462,7 @@ class TasksPage extends WStoreWidget<TasksPageStore> {
   @override
   TasksPageStore createWStore() => TasksPageStore()
     ..initValues(currentSpaceId: spaceId)
-    ..loadData();
+    ..loadTasks();
 
   @override
   Widget build(BuildContext context, TasksPageStore store) {
@@ -465,11 +496,11 @@ class TasksPage extends WStoreWidget<TasksPageStore> {
                       child: Row(
                         children: [
                           Flexible(
-                            child: WStoreValueBuilder<TasksPageStore,
-                                TaskGrouping>(
-                              watch: (store) => store.groupingType,
+                            child:
+                                WStoreValueBuilder<TasksPageStore, TaskFilter>(
+                              watch: (store) => store.filterType,
                               builder: (BuildContext context, value) {
-                                return PopUpTaskGroupingButton(
+                                return PopupTaskFilterButton(
                                   value: value,
                                 );
                               },
@@ -483,6 +514,20 @@ class TasksPage extends WStoreWidget<TasksPageStore> {
                               watch: (store) => store.sortType,
                               builder: (BuildContext context, value) {
                                 return PopUpTaskSortButton(
+                                  value: value,
+                                );
+                              },
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 20,
+                          ),
+                          Flexible(
+                            child: WStoreValueBuilder<TasksPageStore,
+                                TaskGrouping>(
+                              watch: (store) => store.groupingType,
+                              builder: (BuildContext context, value) {
+                                return PopUpTaskGroupingButton(
                                   value: value,
                                 );
                               },

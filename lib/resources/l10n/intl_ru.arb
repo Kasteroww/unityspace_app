@@ -1,4 +1,8 @@
 {
+  "filter_active_tasks": "Активные",
+  "filter_completed_tasks": "Завершенные",
+  "all_tasks": "Все задачи",
+
   "sort_tasks_by_date": "По дате",
   "sort_tasks_by_status": "По статусу",
   "sort_tasks_by_importance": "По важности",
