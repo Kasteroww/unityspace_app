@@ -11,6 +11,17 @@ class TasksList extends StatelessWidget {
     super.key,
   });
 
+  Color? getImportanceColor(TaskImportance importance) {
+    switch (importance) {
+      case TaskImportance.high:
+        return Colors.red;
+      case TaskImportance.low:
+        return Colors.black;
+      default:
+        return null;
+    }
+  }
+
   final List<SortedTask> tasks;
   @override
   Widget build(BuildContext context) {
@@ -24,6 +35,8 @@ class TasksList extends StatelessWidget {
             (sortedTask.task.color != null && sortedTask.task.color!.isNotEmpty)
                 ? HexColor.fromHex(sortedTask.task.color!)
                 : null;
+        final taskImportance = sortedTask.task.importance;
+
         return IntrinsicHeight(
           child: Row(
             children: [
@@ -39,19 +52,41 @@ class TasksList extends StatelessWidget {
                           sortedTask.task.name,
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 20),
-                        child: SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: (taskColor != null)
-                              ? Icon(
-                                  Icons.water_drop,
-                                  color: taskColor,
-                                  size: 20,
-                                )
-                              : const SizedBox.shrink(),
-                        ),
+                      const SizedBox(
+                        width: 24,
+                      ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (sortedTask.task.hasMessages)
+                            const TaskIconWidget(
+                              icon: Icons.message,
+                            )
+                          else
+                            const SizedBox.shrink(),
+                          if (sortedTask.task.hasDescription)
+                            const TaskIconWidget(icon: Icons.description)
+                          else
+                            const SizedBox.shrink(),
+                          if (sortedTask.task.tags.isNotEmpty)
+                            const TaskIconWidget(icon: Icons.tag)
+                          else
+                            const SizedBox.shrink(),
+                          if (taskImportance != TaskImportance.normal)
+                            TaskIconWidget(
+                              icon: Icons.flag,
+                              color: getImportanceColor(taskImportance),
+                            )
+                          else
+                            const SizedBox.shrink(),
+                          if (taskColor != null)
+                            TaskIconWidget(
+                              icon: Icons.water_drop,
+                              color: taskColor,
+                            )
+                          else
+                            const SizedBox.shrink(),
+                        ],
                       ),
                     ],
                   ),
@@ -75,6 +110,33 @@ class TasksList extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class TaskIconWidget extends StatelessWidget {
+  const TaskIconWidget({
+    required this.icon,
+    this.color = ColorConstants.grey04,
+    super.key,
+  });
+
+  final IconData icon;
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    return PaddingRight(
+      8,
+      child: SizedBox(
+        width: 20,
+        height: 20,
+        child: Icon(
+          icon,
+          color: color,
+          size: 20,
+        ),
+      ),
     );
   }
 }

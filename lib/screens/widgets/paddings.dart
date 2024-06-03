@@ -54,6 +54,24 @@ class PaddingLeft extends StatelessWidget {
   }
 }
 
+class PaddingRight extends StatelessWidget {
+  const PaddingRight(
+    this.padding, {
+    super.key,
+    this.child,
+  });
+
+  final double padding;
+  final Widget? child;
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(right: padding),
+      child: child,
+    );
+  }
+}
+
 class PaddingHorizontal extends StatelessWidget {
   const PaddingHorizontal(this.padding, {super.key, this.child});
 
