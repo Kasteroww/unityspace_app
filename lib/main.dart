@@ -12,6 +12,7 @@ import 'package:unityspace/screens/login_screen/login_screen.dart';
 import 'package:unityspace/screens/notifications_screen/notifications_screen.dart';
 import 'package:unityspace/screens/register_screen/register_screen.dart';
 import 'package:unityspace/screens/restore_password_screen/restore_password_screen.dart';
+import 'package:unityspace/screens/space_screen/pages/project_content/project_content.dart';
 import 'package:unityspace/screens/space_screen/space_screen.dart';
 import 'package:unityspace/src/theme/theme.dart';
 import 'package:unityspace/store/auth_store.dart';
@@ -106,6 +107,10 @@ class MyApp extends WStoreWidget<MyAppStore> {
           '/space': (context) => SpaceScreen(
                 space: (ModalRoute.of(context)!.settings.arguments!
                     as Map)['space'],
+              ),
+          '/project': (context) => ProjectContent(
+                project: (ModalRoute.of(context)!.settings.arguments!
+                    as Map)['project'],
               ),
           '/notifications': (context) => const NotificationsScreen(),
           '/account': (context) {

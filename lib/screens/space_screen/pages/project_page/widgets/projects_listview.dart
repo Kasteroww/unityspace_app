@@ -62,35 +62,47 @@ class ProjectsListview extends StatelessWidget {
                       child: ListView.separated(
                         itemCount: store.projectsByColumn.length,
                         itemBuilder: (BuildContext context, int index) {
-                          return ListTile(
-                            title: Text(
-                              store.projectsByColumn[index].name,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(fontSize: 18),
-                            ),
-                            subtitle: store.projectsByColumn[index].memo !=
-                                        null &&
-                                    store.projectsByColumn[index].memo!.isEmpty
-                                ? Text(
-                                    store.projectsByColumn[index].memo!,
-                                    overflow: TextOverflow.ellipsis,
-                                  )
-                                : null,
-                            trailing: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                if (store.projectsByColumn[index].favorite)
-                                  const Icon(
-                                    Icons.star,
-                                    color: Colors.orange,
-                                  )
-                                else
-                                  Container(),
-                                PopUpProjectsButton(
-                                  project: store.projectsByColumn[index],
-                                ),
-                              ],
+                          return InkWell(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                                '/project',
+                                arguments: {
+                                  'project': store.projectsByColumn[index],
+                                },
+                              );
+                            },
+                            child: ListTile(
+                              title: Text(
+                                store.projectsByColumn[index].name,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                              subtitle:
+                                  store.projectsByColumn[index].memo != null &&
+                                          store.projectsByColumn[index].memo!
+                                              .isEmpty
+                                      ? Text(
+                                          store.projectsByColumn[index].memo!,
+                                          overflow: TextOverflow.ellipsis,
+                                        )
+                                      : null,
+                              trailing: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (store.projectsByColumn[index].favorite)
+                                    const Icon(
+                                      Icons.star,
+                                      color: Colors.orange,
+                                    )
+                                  else
+                                    Container(),
+                                  PopUpProjectsButton(
+                                    project: store.projectsByColumn[index],
+                                  ),
+                                ],
+                              ),
                             ),
                           );
                         },
