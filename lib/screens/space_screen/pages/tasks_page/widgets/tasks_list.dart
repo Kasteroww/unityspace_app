@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:unityspace/models/task_models.dart';
-import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/resources/theme/theme.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/widgets/divider.dart';
 import 'package:unityspace/screens/widgets/paddings.dart';
 import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
-import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/extensions/color_extension.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 
@@ -27,10 +25,6 @@ class TasksList extends StatelessWidget {
       default:
         return null;
     }
-  }
-
-  OrganizationMember? getOrganizationMember(int id) {
-    return UserStore().organizationMembersMap[id];
   }
 
   String getFormattedEndDate({
@@ -108,9 +102,12 @@ class TasksList extends StatelessWidget {
                               color: taskColor,
                             ),
                           if (sortedTask.task.responsibleUsersId.isNotEmpty)
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: reponsibleAvatars,
+                            PaddingRight(
+                              8,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: reponsibleAvatars,
+                              ),
                             ),
                         ],
                       ),
@@ -143,14 +140,12 @@ class TasksList extends StatelessWidget {
     final List<Widget> avatars = [];
 
     for (final int responsibleId in responsibleIds) {
-      final OrganizationMember? member = getOrganizationMember(responsibleId);
-      if (member != null) {
-        avatars.add(
-          UserAvatar(width: 20, height: 20, fontSize: 10, member: member),
-        );
-        if (responsibleId != responsibleIds.last) {
-          avatars.add(const SizedBox(width: 4)); // Add spacing between avatars
-        }
+      avatars.add(
+        UserAvatarWidget(
+            id: responsibleId, width: 20, height: 20, fontSize: 10),
+      );
+      if (responsibleId != responsibleIds.last) {
+        avatars.add(const SizedBox(width: 8)); // Add spacing between avatars
       }
     }
     return avatars;

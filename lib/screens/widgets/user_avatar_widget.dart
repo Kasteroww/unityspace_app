@@ -92,33 +92,45 @@ class UserAvatarWidget extends WStoreWidget<UserAvatarWidgetStore> {
       store: store,
       watch: (store) => [store.userAvatarUrl, store.userNameFirstLetter],
       builder: (context, store) {
-        return Container(
-          width: width,
-          height: height,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(radius),
-            color: colorBackground,
-            border: Border.all(
-              color: Colors.white, // Specify the border color
-            ),
-            image: store.userAvatarUrl.isNotEmpty
-                ? DecorationImage(
-                    image: CachedNetworkImageProvider(store.userAvatarUrl),
-                    fit: BoxFit.cover,
-                  )
-                : null,
-          ),
-          child: Center(
-            child: Text(
-              store.userNameFirstLetter,
-              style: TextStyle(
-                color: colorText,
-                fontSize: fontSize,
-              ),
-              textScaler: TextScaler.noScaling,
-            ),
-          ),
-        );
+        return (store.userAvatarUrl.isNotEmpty)
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(radius),
+                child: SizedBox(
+                  width: width,
+                  height: height,
+                  child: DecoratedBox(
+                    decoration:
+                        BoxDecoration(border: Border.all(color: Colors.white)),
+                    child: Image(
+                      image: CachedNetworkImageProvider(
+                        store.userAvatarUrl,
+                      ),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              )
+            : Container(
+                width: width,
+                height: height,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(radius),
+                  color: colorBackground,
+                  border: Border.all(
+                    color: Colors.white, // Specify the border color
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    store.userNameFirstLetter,
+                    style: TextStyle(
+                      color: colorText,
+                      fontSize: fontSize,
+                    ),
+                    textScaler: TextScaler.noScaling,
+                  ),
+                ),
+              );
       },
     );
   }
