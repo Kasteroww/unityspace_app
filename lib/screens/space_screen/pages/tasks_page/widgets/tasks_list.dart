@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/resources/theme/theme.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/widgets/divider.dart';
 import 'package:unityspace/screens/widgets/paddings.dart';
 import 'package:unityspace/utils/extensions/color_extension.dart';
+import 'package:unityspace/utils/localization_helper.dart';
 
 class TasksList extends StatelessWidget {
   const TasksList({
     required this.tasks,
     super.key,
   });
+
+  final List<SortedTask> tasks;
 
   Color? getImportanceColor(TaskImportance importance) {
     switch (importance) {
@@ -22,9 +26,16 @@ class TasksList extends StatelessWidget {
     }
   }
 
-  final List<SortedTask> tasks;
+  String getFormattedEndDate({
+    required DateTime endDate,
+    required String locale,
+  }) {
+    return DateFormat('d MMM', locale).format(endDate);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final localization = LocalizationHelper.getLocalizations(context);
     return ListView.builder(
       shrinkWrap: true,
       physics: const ClampingScrollPhysics(),
@@ -36,6 +47,7 @@ class TasksList extends StatelessWidget {
                 ? HexColor.fromHex(sortedTask.task.color!)
                 : null;
         final taskImportance = sortedTask.task.importance;
+        final taskEndDate = sortedTask.task.dateEnd;
 
         return IntrinsicHeight(
           child: Row(
@@ -58,34 +70,34 @@ class TasksList extends StatelessWidget {
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          if (taskEndDate != null)
+                            PaddingRight(
+                              8,
+                              child: Text(
+                                getFormattedEndDate(
+                                  endDate: taskEndDate,
+                                  locale: localization.localeName,
+                                ),
+                              ),
+                            ),
                           if (sortedTask.task.hasMessages)
                             const TaskIconWidget(
                               icon: Icons.message,
-                            )
-                          else
-                            const SizedBox.shrink(),
+                            ),
                           if (sortedTask.task.hasDescription)
-                            const TaskIconWidget(icon: Icons.description)
-                          else
-                            const SizedBox.shrink(),
+                            const TaskIconWidget(icon: Icons.description),
                           if (sortedTask.task.tags.isNotEmpty)
-                            const TaskIconWidget(icon: Icons.tag)
-                          else
-                            const SizedBox.shrink(),
+                            const TaskIconWidget(icon: Icons.tag),
                           if (taskImportance != TaskImportance.normal)
                             TaskIconWidget(
                               icon: Icons.flag,
                               color: getImportanceColor(taskImportance),
-                            )
-                          else
-                            const SizedBox.shrink(),
+                            ),
                           if (taskColor != null)
                             TaskIconWidget(
                               icon: Icons.water_drop,
                               color: taskColor,
-                            )
-                          else
-                            const SizedBox.shrink(),
+                            ),
                         ],
                       ),
                     ],
