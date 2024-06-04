@@ -114,7 +114,7 @@ class TasksPageStore extends WStore {
   }
 
   String getUserNameById({required int userId}) {
-    final user = UserStore().organizationMembers[userId];
+    final user = UserStore().organizationMembersMap[userId];
     if (user == null) {
       return 'Пользователя нет';
     }
