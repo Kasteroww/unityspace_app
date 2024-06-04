@@ -89,13 +89,11 @@ class ProjectPropertiesDialogStore extends WStore {
 
     subscribe(
       future: ProjectsStore().updateProject(
-        UpdateProject(
-          id: projectId,
-          name: name,
-          color: color,
-          responsibleId: responsibleId,
-          postponingTaskDayCount: postponingTaskDayCount,
-        ),
+        id: projectId,
+        name: name,
+        color: color,
+        responsibleId: responsibleId,
+        postponingTaskDayCount: postponingTaskDayCount,
       ),
       subscriptionId: 1,
       onData: (_) {

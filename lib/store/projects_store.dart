@@ -136,8 +136,20 @@ class ProjectsStore extends GStore {
 
   /// Изменение названия, цвета, ответственного Проекта
   /// и через сколько отмечать задачи Проекта как неактивные
-  Future<void> updateProject(UpdateProject project) async {
-    final projectData = await api.updateProject(project: project);
+  Future<void> updateProject({
+    required int id,
+    required String name,
+    required int postponingTaskDayCount,
+    String? color,
+    int? responsibleId,
+  }) async {
+    final projectData = await api.updateProject(
+      id: id,
+      name: name,
+      postponingTaskDayCount: postponingTaskDayCount,
+      color: color,
+      responsibleId: responsibleId,
+    );
     _updateProjectLocally(projectData);
   }
 

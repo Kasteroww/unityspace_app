@@ -375,28 +375,3 @@ class AddProjectStage {
     };
   }
 }
-
-class UpdateProject {
-  final int id;
-  final String name;
-  final String? color;
-  final int? responsibleId;
-  final int postponingTaskDayCount;
-
-  UpdateProject({
-    required this.id,
-    required this.name,
-    this.color,
-    this.responsibleId,
-    this.postponingTaskDayCount = 0,
-  });
-
-  Map<String, dynamic> toJson() {
-    return <String, dynamic>{
-      'name': name,
-      'color': color,
-      'responsibleId': responsibleId,
-      'postponingTaskDayCount': postponingTaskDayCount,
-    };
-  }
-}

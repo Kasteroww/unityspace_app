@@ -107,15 +107,21 @@ Future<Map<String, dynamic>> setProjectFavorite({
 
 /// Изменение названия, цвета, ответственного Проекта
 /// и через сколько отмечать задачи Проекта как неактивные
-Future<ProjectResponse> updateProject({required UpdateProject project}) async {
+Future<ProjectResponse> updateProject({
+  required int id,
+  required String name,
+  int postponingTaskDayCount = 0,
+  String? color,
+  int? responsibleId,
+}) async {
   try {
     final response = await HttpPlugin().patch(
-      '/projects/${project.id}',
+      '/projects/$id',
       {
-        'name': project.name,
-        'color': project.color,
-        'responsibleId': project.responsibleId,
-        'postponingTaskDayCount': project.postponingTaskDayCount,
+        'name': name,
+        'color': color,
+        'responsibleId': responsibleId,
+        'postponingTaskDayCount': postponingTaskDayCount,
       },
     );
     final Map<String, dynamic> jsonData = json.decode(response.body);
