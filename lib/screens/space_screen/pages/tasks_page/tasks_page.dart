@@ -60,18 +60,22 @@ class TasksPageStore extends WStore {
         keyName: 'tasks',
       );
 
-  List<ITasksGroup> get groupedTasks {
-    switch (groupingType) {
-      case TaskGrouping.byProject:
-        return _tasksByProject(isSearching ? searchedTasks : tasks);
-      case TaskGrouping.byUser:
-        return _tasksByUser(isSearching ? searchedTasks : tasks);
-      case TaskGrouping.byDate:
-        return _tasksByDate(isSearching ? searchedTasks : tasks);
-      default:
-        return _tasksByProject(isSearching ? searchedTasks : tasks);
-    }
-  }
+  List<ITasksGroup> get groupedTasks => computed(
+        getValue: () {
+          switch (groupingType) {
+            case TaskGrouping.byProject:
+              return _tasksByProject(isSearching ? searchedTasks : tasks);
+            case TaskGrouping.byUser:
+              return _tasksByUser(isSearching ? searchedTasks : tasks);
+            case TaskGrouping.byDate:
+              return _tasksByDate(isSearching ? searchedTasks : tasks);
+            default:
+              return _tasksByProject(isSearching ? searchedTasks : tasks);
+          }
+        },
+        watch: () => [groupingType],
+        keyName: 'groupedTasks',
+      );
 
   List<TasksProjectGroup> get tasksByProject => _tasksByProject(tasks);
 
@@ -492,10 +496,10 @@ class TasksPage extends WStoreWidget<TasksPageStore> {
                 Row(
                   children: [
                     Expanded(
-                      flex: 2,
                       child: Row(
                         children: [
                           Flexible(
+                            flex: 2,
                             child:
                                 WStoreValueBuilder<TasksPageStore, TaskFilter>(
                               watch: (store) => store.filterType,
@@ -507,9 +511,10 @@ class TasksPage extends WStoreWidget<TasksPageStore> {
                             ),
                           ),
                           const SizedBox(
-                            width: 20,
+                            width: 12,
                           ),
                           Flexible(
+                            flex: 2,
                             child: WStoreValueBuilder<TasksPageStore, TaskSort>(
                               watch: (store) => store.sortType,
                               builder: (BuildContext context, value) {
@@ -520,9 +525,10 @@ class TasksPage extends WStoreWidget<TasksPageStore> {
                             ),
                           ),
                           const SizedBox(
-                            width: 20,
+                            width: 12,
                           ),
                           Flexible(
+                            flex: 3,
                             child: WStoreValueBuilder<TasksPageStore,
                                 TaskGrouping>(
                               watch: (store) => store.groupingType,
@@ -539,7 +545,8 @@ class TasksPage extends WStoreWidget<TasksPageStore> {
                     const SizedBox(
                       width: 20,
                     ),
-                    Flexible(
+                    SizedBox(
+                      width: 150,
                       child: AddDialogInputField(
                         labelText: localization.find,
                         onChanged: (value) {
@@ -607,7 +614,7 @@ class TasksPage extends WStoreWidget<TasksPageStore> {
                         );
                       }
                     },
-                    watch: (store) => [store.sortType],
+                    watch: (store) => [store.groupingType, store.sortType],
                   ),
                 ),
               ],

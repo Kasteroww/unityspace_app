@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/tasks_page.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/utils/enums.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/utils/extensions.dart';
+import 'package:unityspace/screens/space_screen/pages/tasks_page/widgets/close_icon.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
 
@@ -20,8 +21,23 @@ class PopupTaskFilterButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       color: Colors.white,
-      child: Text(
-        value.localize(localization: localization),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          GestureDetector(
+            onTap: () => store.setFilterType(TaskFilter.allTasks),
+            child: const SmallCloseIcon(),
+          ),
+          const SizedBox(
+            width: 4,
+          ),
+          Flexible(
+            child: Text(
+              value.localize(localization: localization),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
       ),
       itemBuilder: (context) {
         return [

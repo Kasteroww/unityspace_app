@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/tasks_page.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/utils/enums.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/utils/extensions.dart';
+import 'package:unityspace/screens/space_screen/pages/tasks_page/widgets/close_icon.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
 
@@ -23,10 +24,25 @@ class PopUpTaskGroupingButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       color: Colors.white,
-      child: Text(
-        value == TaskGrouping.noGroup
-            ? localization.do_not_group
-            : '${localization.group_tasks} ${value.localize(localization: localization).toLowerCase()}',
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          GestureDetector(
+            onTap: () => store.setGroupingType(TaskGrouping.noGroup),
+            child: const SmallCloseIcon(),
+          ),
+          const SizedBox(
+            width: 4,
+          ),
+          Flexible(
+            child: Text(
+              value == TaskGrouping.noGroup
+                  ? localization.do_not_group
+                  : '${localization.group_tasks} ${value.localize(localization: localization).toLowerCase()}',
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
       ),
       itemBuilder: (context) {
         return [

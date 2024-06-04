@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/resources/theme/theme.dart';
+import 'package:unityspace/screens/space_screen/pages/tasks_page/utils/date_time_helper.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/widgets/divider.dart';
 import 'package:unityspace/screens/widgets/paddings.dart';
 import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
@@ -25,13 +25,6 @@ class TasksList extends StatelessWidget {
       default:
         return null;
     }
-  }
-
-  String getFormattedEndDate({
-    required DateTime endDate,
-    required String locale,
-  }) {
-    return DateFormat('d MMM', locale).format(endDate);
   }
 
   @override
@@ -77,11 +70,28 @@ class TasksList extends StatelessWidget {
                             PaddingRight(
                               8,
                               child: Text(
-                                getFormattedEndDate(
+                                TasksListDateTimeHelper.getFormattedEndDate(
                                   endDate: taskEndDate,
                                   locale: localization.localeName,
                                 ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(
+                                      color: TasksListDateTimeHelper
+                                              .isPastDeadline(
+                                        sortedTask.task.dateEnd!,
+                                      )
+                                          ? Colors.red
+                                          : ColorConstants.grey04,
+                                    ),
                               ),
+                            ),
+                          if (sortedTask.task.blockReason != null &&
+                              sortedTask.task.blockReason!.isNotEmpty)
+                            const TaskIconWidget(
+                              icon: Icons.front_hand,
+                              color: Colors.red,
                             ),
                           if (sortedTask.task.hasMessages)
                             const TaskIconWidget(
@@ -148,8 +158,11 @@ class TasksList extends StatelessWidget {
           fontSize: 10,
         ),
       );
+
+      // если аватар не последний в списке, добавить отступ
       if (responsibleId != responsibleIds.last) {
-        avatars.add(const SizedBox(width: 8)); // Add spacing between avatars
+        avatars.add(const SizedBox(width: 8));
+
       }
     }
     return avatars;

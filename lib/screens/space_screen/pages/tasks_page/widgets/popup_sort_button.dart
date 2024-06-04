@@ -25,6 +25,7 @@ class PopUpTaskSortButton extends StatelessWidget {
       color: Colors.white,
       child: Text(
         value.localize(localization: localization),
+        overflow: TextOverflow.ellipsis,
       ),
       itemBuilder: (context) {
         return [
