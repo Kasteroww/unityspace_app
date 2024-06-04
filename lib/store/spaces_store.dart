@@ -20,15 +20,7 @@ class SpacesStore extends GStore {
         watch: () => [spaces],
         keyName: 'spacesMap',
         getValue: () {
-          if (spaces.isEmpty) return {};
-
-          return spaces.fold<Map<int, Space?>>(
-            {},
-            (acc, space) {
-              acc[space.id] = space;
-              return acc;
-            },
-          );
+          return createMapById(spaces);
         },
       );
 

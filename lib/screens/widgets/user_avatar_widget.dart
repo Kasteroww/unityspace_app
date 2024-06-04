@@ -5,9 +5,9 @@ import 'package:unityspace/store/user_store.dart';
 import 'package:wstore/wstore.dart';
 
 class UserAvatarWidgetStore extends WStore {
-  Map<int, OrganizationMember> get organizationMembers => computedFromStore(
+  Map<int, OrganizationMember?> get organizationMembers => computedFromStore(
         store: UserStore(),
-        getValue: (store) => store.organizationMembers,
+        getValue: (store) => store.organizationMembersMap,
         keyName: 'organizationMembers',
       );
 

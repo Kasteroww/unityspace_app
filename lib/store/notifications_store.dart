@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/service/notification_service.dart' as api;
+import 'package:unityspace/utils/helpers.dart';
 import 'package:wstore/wstore.dart';
 
 class NotificationsStore extends GStore {
@@ -12,6 +13,10 @@ class NotificationsStore extends GStore {
   NotificationsStore._();
 
   List<NotificationModel> notifications = [];
+
+  Map<int, NotificationModel?> get notificationModelMap {
+    return createMapById(notifications);
+  }
 
   /// Возвращает отформатированный список,
   /// из которого уже убраны отформатированные/вернувшиеся из форматирования

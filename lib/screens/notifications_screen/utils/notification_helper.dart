@@ -6,7 +6,6 @@ import 'package:unityspace/store/projects_store.dart';
 import 'package:unityspace/store/reglaments_store.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/user_store.dart';
-import 'package:unityspace/utils/helpers.dart';
 
 class NotificationHelper {
   UserStore userStore;
@@ -89,9 +88,9 @@ class NotificationHelper {
         if (groupsMap.containsKey(groupId)) {
           groupsMap[groupId]?.notifications.add(notification);
         } else {
-          final reglamentMap = createMapById(ReglamentsStore().reglaments);
           final String reglamentName =
-              reglamentMap[notification.parentId]?.name ?? notification.text;
+              ReglamentsStore().reglamentsMap[notification.parentId]?.name ??
+                  notification.text;
           final NotificationsGroup newGroup = NotificationsGroup(
             groupId: groupId,
             locations: notification.locations,
@@ -109,10 +108,10 @@ class NotificationHelper {
         if (groupsMap.containsKey(groupId)) {
           groupsMap[groupId]?.notifications.add(notification);
         } else {
-          final spacesMap = createMapById(SpacesStore().spaces);
-          final String spaceName =
-              spacesMap[notification.locations[0].spaceId]?.name ??
-                  notification.text;
+          final String spaceName = SpacesStore()
+                  .spacesMap[notification.locations[0].spaceId]
+                  ?.name ??
+              notification.text;
           final NotificationsGroup newGroup = NotificationsGroup(
             groupId: groupId,
             locations: [],
@@ -186,14 +185,11 @@ class NotificationHelper {
       ];
     }
 
-    final spacesStoreMap = createMapById(spacesStore.spaces);
-    final projectsStoreMap = createMapById(projectStore.projects);
-
     return locations.map((location) {
-      final space = spacesStoreMap[location.spaceId];
+      final space = SpacesStore().spacesMap[location.spaceId];
       final spaceName = space?.name ?? '';
       final project = location.projectId != null
-          ? projectsStoreMap[location.projectId!]
+          ? ProjectsStore().projectsMap[location.projectId!]
           : null;
       final projectName = project?.name ?? '';
 

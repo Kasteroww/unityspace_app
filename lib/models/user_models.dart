@@ -1,3 +1,4 @@
+import 'package:unityspace/models/i_base_model.dart';
 import 'package:unityspace/service/data_exceptions.dart';
 import 'package:unityspace/utils/helpers.dart' as helpers;
 
@@ -292,7 +293,8 @@ class Organization {
   }
 }
 
-class OrganizationMember {
+class OrganizationMember implements Identifiable {
+  @override
   final int id;
   final String? avatarLink;
   final String email;

@@ -5,6 +5,7 @@ import 'package:unityspace/models/achievement_models.dart';
 import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/service/user_service.dart' as api;
 import 'package:unityspace/store/auth_store.dart';
+import 'package:unityspace/utils/helpers.dart';
 import 'package:wstore/wstore.dart';
 
 class UserStore extends GStore {
@@ -44,16 +45,19 @@ class UserStore extends GStore {
     return user!.isAdmin;
   }
 
-  OrganizationMember? get organizationOwner {
-    return organizationMembers[organization?.ownerId];
+
+  Map<int, OrganizationMember?> get organizationMembersMap {
+    final members = organization?.members;
+    if (members == null || members.isEmpty) {
+      return {};
+    } else {
+      return createMapById(members);
+    }
   }
 
-  Map<int, OrganizationMember> get organizationMembers {
-    final members = organization?.members ?? [];
-    return members.fold(<int, OrganizationMember>{}, (map, member) {
-      map[member.id] = member;
-      return map;
-    });
+
+  OrganizationMember? get organizationOwner {
+    return organizationMembersMap[organization?.ownerId];
   }
 
   Future<void> getUserData() async {
@@ -126,12 +130,15 @@ class UserStore extends GStore {
     required int userId,
     required String newEmail,
   }) {
-    if (organizationMembers.isEmpty) return;
-    final member = organization?.members.firstWhereOrNull((m) => m.id == userId);
+
+    if (organizationMembersMap.isEmpty) return;
+    final member =
+        organization?.members.firstWhereOrNull((m) => m.id == userId);
+
     if (member != null) {
       final updatedMember = member.copyWith(email: newEmail);
       setStore(() {
-        organizationMembers[userId] = updatedMember;
+        organizationMembersMap[userId] = updatedMember;
       });
     }
   }

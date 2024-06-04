@@ -16,6 +16,10 @@ class ReglamentsStore extends GStore {
 
   List<ReglamentQuestion>? questions;
 
+  Map<int, Reglament?> get reglamentsMap {
+    return createMapById(reglaments);
+  }
+
   ///Создание регламента
   Future<Reglament> createReglament({
     required String name,
@@ -236,11 +240,11 @@ class ReglamentsStore extends GStore {
   Map<int, Reglament?> _changeReglamentColumnLocally({
     required ChangeReglamentColumnAndOrderResponse response,
   }) {
-    final reglamentMap = createMapById(reglaments);
-    final reglament = reglamentMap[response.id];
+    final reglamentMap = reglamentsMap;
+    final reglament = reglamentsMap[response.id];
 
     if (reglament != null) {
-      reglamentMap[response.id] = reglament.copyWith(
+      reglamentsMap[response.id] = reglament.copyWith(
         reglamentColumnId: response.columnId,
         order: response.order,
       );

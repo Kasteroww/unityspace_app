@@ -1,9 +1,9 @@
 import 'dart:collection';
 
-import 'package:collection/collection.dart';
 import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/service/task_service.dart' as api;
 import 'package:unityspace/utils/extensions/gstore_extension.dart';
+import 'package:unityspace/utils/helpers.dart';
 import 'package:wstore/wstore.dart';
 
 class TasksStore extends GStore {
@@ -17,6 +17,10 @@ class TasksStore extends GStore {
   List<Task>? tasks;
   List<Task> searchedTasks = [];
 
+  Map<int, Task?> get tasksMap {
+    return createMapById(tasks);
+  }
+
   Future<int> getTasksHistory(int page) async {
     final response = await api.getMyTasksHistory(page);
     final maxPageCount = response.maxPageCount;
@@ -26,7 +30,7 @@ class TasksStore extends GStore {
   }
 
   Task? getTaskById(int id) {
-    return tasks?.firstWhereOrNull((element) => element.id == id);
+    return tasksMap[id];
   }
 
   void _setTasks(MyTaskHistoryResponse response) {

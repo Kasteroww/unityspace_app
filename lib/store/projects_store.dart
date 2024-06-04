@@ -1,6 +1,6 @@
-import 'package:collection/collection.dart';
 import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/service/project_service.dart' as api;
+import 'package:unityspace/utils/helpers.dart';
 import 'package:wstore/wstore.dart';
 
 class ProjectsStore extends GStore {
@@ -13,18 +13,13 @@ class ProjectsStore extends GStore {
   List<Project> projects = [];
 
   Map<int, Project?> get projectsMap {
-    if (projects == []) return {};
-    return projects.fold<Map<int, Project?>>(
-      {},
-      (acc, project) {
-        acc[project.id] = project;
-        return acc;
-      },
-    );
+    return createMapById(projects);
   }
 
   Map<int, ProjectStage?> get stagesMap {
     if (projects.isEmpty) return {};
+
+    // return createMapById(projects.expand((project) => project.stages).toList());
     return Map.fromEntries(
       projects.expand(
         (project) => project.stages.map(
@@ -35,7 +30,7 @@ class ProjectsStore extends GStore {
   }
 
   Project? getProjectById(int projectId) {
-    return projects.firstWhereOrNull((project) => project.id == projectId);
+    return projectsMap[projectId];
   }
 
   Future<void> getProjectsBySpaceId(int spaceId) async {
@@ -49,6 +44,7 @@ class ProjectsStore extends GStore {
   Future<void> getAllProjects() async {
     final projectsData = await api.getAllProjects();
     final projects = projectsData.map(Project.fromResponse).toList();
+
     setStore(() {
       this.projects = projects;
     });

@@ -295,7 +295,8 @@ class ProjectEmbed {
   }
 }
 
-class ProjectStage {
+class ProjectStage implements Identifiable {
+  @override
   final int id;
   final int projectId;
   final String name;
