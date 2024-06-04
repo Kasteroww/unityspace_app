@@ -426,5 +426,7 @@
   "collected": "Собрано",
   "section_is_development": "Раздел находится в разработке",
   "section_is_development_desc": "Скоро мы добавим еще больше достижений",
-  "author_regulations": "Автор регламентов"
+  "author_regulations": "Автор регламентов",
+  "received": "Получено: {date}",
+  "received_desc": "За написание регламента. Пишите регламенты - несите свет знаний коллегам."
 }
