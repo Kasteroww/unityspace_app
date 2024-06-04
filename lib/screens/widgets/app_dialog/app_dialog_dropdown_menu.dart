@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:unityspace/models/i_base_model.dart';
 
 class AddDialogDropdownMenu<T> extends StatefulWidget {
   final GlobalKey? fieldKey;
   final String labelText;
-  final String? labelTextIfValueNull;
-  final List<Nameable?> listValues;
-  final dynamic currentValue;
+  final List<(T, String)> listValues;
+  final T currentValue;
   final bool autofocus;
-  final void Function(dynamic value)? onSaved;
-  final void Function(dynamic value)? onChanged;
+  final void Function(T? value)? onSaved;
+  final void Function(T? value)? onChanged;
 
   const AddDialogDropdownMenu({
     required this.labelText,
     required this.listValues,
-    this.labelTextIfValueNull,
+    required this.currentValue,
     super.key,
-    this.currentValue,
     this.fieldKey,
     this.onSaved,
     this.onChanged,
@@ -84,14 +81,14 @@ class _AddDialogDropdownMenuState extends State<AddDialogDropdownMenu> {
               vertical: 8,
             ),
           ),
-          items: widget.listValues.map<DropdownMenuItem>((Nameable? value) {
-            return DropdownMenuItem(
-              value: value,
-              child: Text(
-                value?.name ?? widget.labelTextIfValueNull ?? '',
-              ),
-            );
-          }).toList(),
+          items: widget.listValues
+              .map<DropdownMenuItem>(
+                (elem) => DropdownMenuItem(
+                  value: elem.$1,
+                  child: Text(elem.$2),
+                ),
+              )
+              .toList(),
         ),
       ],
     );

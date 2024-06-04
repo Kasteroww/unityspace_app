@@ -1,6 +1,4 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:unityspace/models/i_base_model.dart';
 import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/resources/l10n/app_localizations.dart';
@@ -9,7 +7,7 @@ import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dar
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
 import 'package:unityspace/store/projects_store.dart';
 import 'package:unityspace/store/spaces_store.dart';
-import 'package:unityspace/utils/helpers.dart';
+import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
@@ -31,113 +29,55 @@ Future<void> showProjectPropertiesDialog(
 class ProjectPropertiesDialogStore extends WStore {
   String projectPropertiesError = '';
   WStoreStatus statusProjectProperties = WStoreStatus.init;
-  late List<SpaceMember?> listMembers;
-  late SpaceMember? selectedMember;
-  late String projectName;
-  late int markAsSnail;
-  late List<Nameable> listMarkAsSnail;
-  late ColorType? selectedColor;
 
-  List<ColorType?> listProjectColors = [
-    ColorType(colorHex: '#D8EFF4', name: getColorName('#D8EFF4')),
-    ColorType(colorHex: '#F3E2D9', name: getColorName('#F3E2D9')),
-    ColorType(colorHex: '#F1DBF2', name: getColorName('#F1DBF2')),
-    ColorType(colorHex: '#D9DDF3', name: getColorName('#D9DDF3')),
-    ColorType(colorHex: '#E5F5DD', name: getColorName('#E5F5DD')),
-    ColorType(colorHex: '#CAECD8', name: getColorName('#CAECD8')),
-    ColorType(colorHex: '#ECDECA', name: getColorName('#ECDECA')),
-  ];
+  int? responsibleId;
+  String name = '';
+  int postponingTaskDayCount = 0;
+  String? color;
 
-  void setProjectName(String name) {
-    setStore(() {
-      projectName = name;
-    });
-  }
-
-  void setProjectColor(ColorType? color) {
-    setStore(() {
-      selectedColor = color;
-    });
-  }
-
-  void setMarkAsSnail(Nameable markAsSnailCount) {
-    setStore(() {
-      markAsSnail = listMarkAsSnail.indexOf(markAsSnailCount);
-    });
-  }
-
-  void setProjectResponsible(SpaceMember? member) {
-    setStore(() {
-      selectedMember = member;
-    });
-  }
-
-  List<Nameable> _initMarkAsSnail(AppLocalizations localization) {
-    return MarkAsSnail.values
-        .map(
-          (element) => Nameable(
-            name: switch (element) {
-              MarkAsSnail.zero => localization.disabled,
-              MarkAsSnail.one => localization.days(1),
-              MarkAsSnail.two => localization.days(2),
-              MarkAsSnail.three => localization.days(3),
-              MarkAsSnail.four => localization.days(4),
-              MarkAsSnail.five => localization.days(5),
-              MarkAsSnail.six => localization.days(6),
-              MarkAsSnail.seven => localization.days(7),
-            },
-          ),
-        )
-        .toList();
-  }
-
-  SpaceMember? _checkSelectedMember(
-    Project project,
-    AppLocalizations localization,
-  ) {
-    final SpaceMember? member = listMembers
-        .firstWhereOrNull((member) => member?.id == project.responsibleId);
-    if (member != null) {
-      return member;
-    } else {
-      SpaceMember? newMember;
-      listMembers.add(newMember);
-      return newMember;
-    }
-  }
-
-  ColorType? _checkSelectedColor(Project project) {
-    ColorType? colorType = listProjectColors
-        .firstWhereOrNull((color) => color?.colorHex == project.color);
-
-    if (colorType != null) {
-      return colorType;
-    }
-    if (project.color != null) {
-      colorType = ColorType(
-        colorHex: project.color,
-        name: project.color!,
+  List<SpaceMember> get spaceMembers => computedFromStore(
+        store: SpacesStore(),
+        getValue: (store) =>
+            store.spacesMap[widget.project.spaceId]?.members ?? [],
+        keyName: 'spaceMembers',
       );
-    }
-    listProjectColors.add(colorType);
-    return colorType;
+
+  String get responsibleName => computedFromStore(
+        store: UserStore(),
+        getValue: (store) =>
+            store.organizationMembersMap[responsibleId]?.name ?? '???',
+        keyName: 'responsibleName',
+      );
+
+  void setProjectName(String projectName) {
+    setStore(() {
+      name = projectName;
+    });
   }
 
-  void initData(Project project, AppLocalizations localization) {
+  void setProjectColor(String? projectColor) {
     setStore(() {
-      projectName = project.name;
-      // создание nullable листа SpaceMember для отображения без ответственного
-      listMembers = List.from(
-        SpacesStore()
-            .spaces
-            .firstWhere((space) => space.id == project.spaceId)
-            .members,
-      );
-      selectedMember = _checkSelectedMember(project, localization);
-      listMarkAsSnail = _initMarkAsSnail(localization);
-      markAsSnail = project.postponingTaskDayCount;
-      selectedColor = _checkSelectedColor(project);
+      color = projectColor;
     });
+  }
+
+  void setMarkAsSnail(int count) {
+    setStore(() {
+      postponingTaskDayCount = count;
+    });
+  }
+
+  void setProjectResponsible(int? memberId) {
+    setStore(() {
+      responsibleId = memberId;
+    });
+  }
+
+  void initData(Project project) {
+    name = project.name;
+    color = project.color;
+    responsibleId = project.responsibleId;
+    postponingTaskDayCount = project.postponingTaskDayCount;
   }
 
   void saveProjectProperties(AppLocalizations localization, int projectId) {
@@ -151,10 +91,10 @@ class ProjectPropertiesDialogStore extends WStore {
       future: ProjectsStore().updateProject(
         UpdateProject(
           id: projectId,
-          name: projectName,
-          color: selectedColor?.colorHex,
-          responsibleId: selectedMember?.id,
-          postponingTaskDayCount: markAsSnail,
+          name: name,
+          color: color,
+          responsibleId: responsibleId,
+          postponingTaskDayCount: postponingTaskDayCount,
         ),
       ),
       subscriptionId: 1,
@@ -189,12 +129,12 @@ class ProjectPropertiesDialog
   });
 
   @override
-  ProjectPropertiesDialogStore createWStore() => ProjectPropertiesDialogStore();
+  ProjectPropertiesDialogStore createWStore() =>
+      ProjectPropertiesDialogStore()..initData(project);
 
   @override
   Widget build(BuildContext context, ProjectPropertiesDialogStore store) {
     final localization = LocalizationHelper.getLocalizations(context);
-    store.initData(project, localization);
     return WStoreStatusBuilder(
       store: store,
       watch: (store) => store.statusProjectProperties,
@@ -216,11 +156,11 @@ class ProjectPropertiesDialog
           children: [
             WStoreValueBuilder(
               store: store,
-              watch: (store) => store.projectName,
-              builder: (context, projectName) {
+              watch: (store) => store.name,
+              builder: (context, name) {
                 return AddDialogInputField(
                   autofocus: true,
-                  initialValue: projectName,
+                  initialValue: name,
                   textInputAction: TextInputAction.done,
                   textCapitalization: TextCapitalization.words,
                   onChanged: (projectName) {
@@ -235,63 +175,97 @@ class ProjectPropertiesDialog
             ),
             const SizedBox(height: 16),
             WStoreValueBuilder(
-              watch: (store) => store.selectedColor,
+              watch: (store) => store.color,
               store: store,
-              builder: (context, selectedColor) {
-                return AddDialogDropdownMenu<ColorType?>(
+              builder: (context, color) {
+                final defColors = [
+                  '#D8EFF4',
+                  '#F3E2D9',
+                  '#F1DBF2',
+                  '#D9DDF3',
+                  '#E5F5DD',
+                  '#CAECD8',
+                  '#ECDECA',
+                ];
+                final List<(String?, String)> listProjectColors = [
+                  (null, localization.color_is_empty),
+                  ...defColors.map(
+                    (color) => (color, getColorName(color, localization)),
+                  ),
+                  if (color != null && !defColors.contains(color))
+                    (color, getColorName(color, localization)),
+                ];
+                return AddDialogDropdownMenu<String?>(
                   onChanged: (color) {
                     FocusScope.of(context).unfocus();
-                    if (color is ColorType?) {
-                      store.setProjectColor(color);
-                    } else {
-                      throw Exception('Value has wrong type');
-                    }
+                    store.setProjectColor(color);
                   },
                   labelText: localization.color,
-                  listValues: store.listProjectColors,
-                  currentValue: selectedColor,
-                  labelTextIfValueNull: localization.color_is_empty,
+                  listValues: listProjectColors,
+                  currentValue: color,
                 );
               },
             ),
             const SizedBox(height: 16),
-            WStoreValueBuilder(
-              watch: (store) => store.selectedMember,
+            WStoreBuilder(
+              watch: (store) => [
+                store.responsibleId,
+                store.spaceMembers,
+                store.responsibleName,
+              ],
               store: store,
-              builder: (context, selectedMember) {
-                return AddDialogDropdownMenu<SpaceMember?>(
-                  onChanged: (member) {
+              builder: (context, store) {
+                final List<(int?, String)> listMembers = [
+                  (null, localization.without_responsible),
+                  ...store.spaceMembers.map(
+                    (member) => (member.id, member.name),
+                  ),
+                  if (store.responsibleId != null &&
+                      store.spaceMembers.indexWhere(
+                            (member) => member.id == store.responsibleId,
+                          ) ==
+                          -1)
+                    (store.responsibleId, store.responsibleName),
+                ];
+                return AddDialogDropdownMenu<int?>(
+                  onChanged: (memberId) {
                     FocusScope.of(context).unfocus();
-                    if (member is SpaceMember?) {
-                      store.setProjectResponsible(member);
-                    } else {
-                      throw Exception('Value has wrong type');
-                    }
+                    store.setProjectResponsible(memberId);
                   },
                   labelText: localization.project_responsible,
-                  listValues: store.listMembers,
-                  currentValue: selectedMember,
-                  labelTextIfValueNull: localization.without_responsible,
+                  listValues: listMembers,
+                  currentValue: store.responsibleId,
                 );
               },
             ),
             const SizedBox(height: 16),
             WStoreValueBuilder(
-              watch: (store) => store.markAsSnail,
+              watch: (store) => store.postponingTaskDayCount,
               store: store,
-              builder: (context, markAsSnail) {
-                return AddDialogDropdownMenu<Nameable>(
-                  onChanged: (postponingTaskDayCount) {
+              builder: (context, postponingTaskDayCount) {
+                final List<(int, String)> listValues = [
+                  (0, localization.disabled),
+                  (1, localization.days(1)),
+                  (2, localization.days(2)),
+                  (3, localization.days(3)),
+                  (4, localization.days(4)),
+                  (5, localization.days(5)),
+                  (6, localization.days(6)),
+                  (7, localization.days(7)),
+                  if (postponingTaskDayCount < 0 || postponingTaskDayCount > 7)
+                    (
+                      postponingTaskDayCount,
+                      localization.days(postponingTaskDayCount),
+                    ),
+                ];
+                return AddDialogDropdownMenu<int>(
+                  onChanged: (count) {
                     FocusScope.of(context).unfocus();
-                    if (postponingTaskDayCount is Nameable) {
-                      store.setMarkAsSnail(postponingTaskDayCount);
-                    } else {
-                      throw Exception('Value has wrong type');
-                    }
+                    if (count != null) store.setMarkAsSnail(count);
                   },
                   labelText: localization.mark_tasks_as_snail,
-                  listValues: store.listMarkAsSnail,
-                  currentValue: store.listMarkAsSnail[markAsSnail],
+                  listValues: listValues,
+                  currentValue: postponingTaskDayCount,
                 );
               },
             ),

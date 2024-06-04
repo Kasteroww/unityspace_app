@@ -142,7 +142,11 @@ class TasksList extends StatelessWidget {
     for (final int responsibleId in responsibleIds) {
       avatars.add(
         UserAvatarWidget(
-            id: responsibleId, width: 20, height: 20, fontSize: 10),
+          id: responsibleId,
+          width: 20,
+          height: 20,
+          fontSize: 10,
+        ),
       );
       if (responsibleId != responsibleIds.last) {
         avatars.add(const SizedBox(width: 8)); // Add spacing between avatars

@@ -104,22 +104,28 @@ class MoveReglamentDialog extends WStoreWidget<MoveReglamentDialogStore> {
         //Выбор пространства
         AddDialogDropdownMenu<Space>(
           onChanged: (space) {
-            store.setSelectedSpace(space);
+            if (space != null) store.setSelectedSpace(space);
             FocusScope.of(context).unfocus();
           },
           labelText: localization.space,
-          listValues: store.spaces,
+          listValues: store.spaces.map((space) => (space, space.name)).toList(),
           currentValue: store.spaces.first,
         ),
         const SizedBox(height: 16),
         //Выбор группы
-        AddDialogDropdownMenu<SpaceColumn>(
+        AddDialogDropdownMenu<SpaceColumn?>(
           onChanged: (reglamentColumn) {
-            store.setSelectedReglamentColumn(reglamentColumn);
+            if (reglamentColumn != null) {
+              store.setSelectedReglamentColumn(reglamentColumn);
+            }
             FocusScope.of(context).unfocus();
           },
           labelText: localization.group,
-          listValues: store.getColumnsBySpaceId(store.selectedSpace.id),
+          listValues: store
+              .getColumnsBySpaceId(store.selectedSpace.id)
+              .map((column) => (column, column.name))
+              .toList(),
+          currentValue: null,
         ),
       ],
     );

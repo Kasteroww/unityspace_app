@@ -118,15 +118,14 @@ class MoveProjectDialog extends WStoreWidget<MoveProjectDialogStore> {
                 AddDialogDropdownMenu<Space>(
                   onChanged: (space) {
                     FocusScope.of(context).unfocus();
-                    if (space is Space) {
+                    if (space != null) {
                       store.selectedSpace = space;
                       store.selectedColumn = space.columns.first;
-                    } else {
-                      throw Exception('Value has wrong type');
                     }
                   },
                   labelText: localization.space,
-                  listValues: store.spaces,
+                  listValues:
+                      store.spaces.map((space) => (space, space.name)).toList(),
                   currentValue: store.selectedSpace,
                 ),
                 const SizedBox(height: 16),
@@ -140,7 +139,10 @@ class MoveProjectDialog extends WStoreWidget<MoveProjectDialogStore> {
                     }
                   },
                   labelText: localization.group,
-                  listValues: store.getColumnsBySpaceId(store.selectedSpace.id),
+                  listValues: store
+                      .getColumnsBySpaceId(store.selectedSpace.id)
+                      .map((column) => (column, column.name))
+                      .toList(),
                   currentValue: store.selectedColumn,
                 ),
                 if (error)
