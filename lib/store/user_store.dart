@@ -44,17 +44,6 @@ class UserStore extends GStore {
     return user!.isAdmin;
   }
 
-  Map<int, OrganizationMember?> get organizationMembersMap {
-    if (organization?.members == null || organization!.members.isEmpty) {
-      return {};
-    }
-    return organization!.members.fold<Map<int, OrganizationMember?>>({},
-        (acc, member) {
-      acc[member.id] = member;
-      return acc;
-    });
-  }
-
   OrganizationMember? get organizationOwner {
     return organizationMembers[organization?.ownerId];
   }
@@ -138,8 +127,7 @@ class UserStore extends GStore {
     required String newEmail,
   }) {
     if (organizationMembers.isEmpty) return;
-    final member =
-        organization?.members.firstWhereOrNull((m) => m.id == userId);
+    final member = organization?.members.firstWhereOrNull((m) => m.id == userId);
     if (member != null) {
       final updatedMember = member.copyWith(email: newEmail);
       setStore(() {
@@ -223,8 +211,7 @@ class UserStore extends GStore {
       return {};
     }
     final organizationMembers = store.organization?.members ?? [];
-    return organizationMembers.fold<Map<String, OrganizationMember?>>({},
-        (acc, member) {
+    return organizationMembers.fold<Map<String, OrganizationMember?>>({}, (acc, member) {
       acc[member.email] = member;
       return acc;
     });

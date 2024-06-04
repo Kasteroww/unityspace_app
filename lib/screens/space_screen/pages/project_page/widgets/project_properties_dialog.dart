@@ -45,7 +45,7 @@ class ProjectPropertiesDialogStore extends WStore {
   String get responsibleName => computedFromStore(
         store: UserStore(),
         getValue: (store) =>
-            store.organizationMembersMap[responsibleId]?.name ?? '???',
+            store.organizationMembers[responsibleId]?.name ?? '???',
         keyName: 'responsibleName',
       );
 
