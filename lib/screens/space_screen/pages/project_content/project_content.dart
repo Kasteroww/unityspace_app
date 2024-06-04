@@ -49,12 +49,14 @@ class ProjectContent extends WStoreWidget<ProjectContentStore> {
       appBar: AppBar(
         title: Text(project.name),
       ),
-      body: Column(
-        children: [
-          const NavbarSwitches(),
-          const SizedBox(height: 16),
-          ProjectBoards(project: project),
-        ],
+      body: SafeArea(
+        child: Column(
+          children: [
+            const NavbarSwitches(),
+            const SizedBox(height: 16),
+            ProjectBoards(project: project),
+          ],
+        ),
       ),
     );
   }

@@ -8,6 +8,7 @@ import 'package:unityspace/screens/space_screen/pages/project_content/utils/help
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/tasks_store.dart';
 import 'package:unityspace/store/user_store.dart';
+import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
 
@@ -142,6 +143,7 @@ class ProjectBoards extends WStoreWidget<ProjectBoardsStore> {
 
   @override
   Widget build(BuildContext context, ProjectBoardsStore store) {
+    final localization = LocalizationHelper.getLocalizations(context);
     return Expanded(
       child: WStoreStatusBuilder(
         store: store,
@@ -159,18 +161,57 @@ class ProjectBoards extends WStoreWidget<ProjectBoardsStore> {
             itemBuilder: (BuildContext context, int index) {
               final ProjectStage stage = store.tasksTree[index].stage;
               final List<Task> tasks = store.tasksTree[index].tasks;
-              return DecoratedBox(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Column(
-                    children: [
-                      Text(stage.name),
-                      Text('${tasks.length}'),
-                    ],
+              return Padding(
+                padding: const EdgeInsets.all(8),
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Container(
+                      width: 180,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(stage.name),
+                          Text('${tasks.length}'),
+                          Flexible(
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: tasks.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                final task = tasks[index];
+                                return Padding(
+                                  padding: const EdgeInsets.only(
+                                    bottom: 8,
+                                    right: 8,
+                                    left: 8,
+                                  ),
+                                  child: DecoratedBox(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(color: Colors.grey),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(4),
+                                      child: Text(task.name),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          ColoredBox(
+                            color: Colors.blue,
+                            child: Center(
+                              child: Text('+ ${localization.add_task}'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               );
