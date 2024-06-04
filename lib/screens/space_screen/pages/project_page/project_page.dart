@@ -23,6 +23,36 @@ class ProjectsPageStore extends WStore {
   late int archiveColumnId;
   late SpaceColumn selectedColumn;
 
+  Space get currentSpace => widget.space;
+
+  /// Получение колонок с Проектами
+  List<SpaceColumn> get projectColumns => computed(
+        getValue: () => _getColumns(currentSpace: currentSpace),
+        watch: () => [currentSpace],
+        keyName: 'projectColumns',
+      );
+
+  ///Получение проектов из колонки
+  List<Project> get projectsByColumn => computed(
+        getValue: () => _getProjectsByColumnId(
+          isArchivedPage ? archiveColumnId : selectedColumn.id,
+        ),
+        watch: () => [projects, selectedColumn, isArchivedPage],
+        keyName: 'projectsByColumn',
+      );
+
+  int get archiveProjectsCount => computed(
+        getValue: () => _getProjectsByColumnId(archiveColumnId).length,
+        watch: () => [projects],
+        keyName: 'archiveProjectsCount',
+      );
+
+  List<Project> get projects => computedFromStore(
+        store: ProjectsStore(),
+        getValue: (store) => _getProjects(store.projects),
+        keyName: 'projects',
+      );
+
   void selectColumn(final SpaceColumn column) {
     setStore(() {
       selectedColumn = column;
@@ -94,25 +124,18 @@ class ProjectsPageStore extends WStore {
     ProjectsStore().setProjectFavorite(projectId, favorite);
   }
 
-  List<Project> get projectsByColumn => computed(
-        getValue: () => _getProjectsByColumnId(
-          isArchivedPage ? archiveColumnId : selectedColumn.id,
-        ),
-        watch: () => [projects, selectedColumn, isArchivedPage],
-        keyName: 'projectsByColumn',
-      );
+  ///Сортировка проектов по order
+  List<Project> _getProjects(List<Project> projects) {
+    projects.sort((a, b) => a.order.compareTo(b.order));
+    return projects;
+  }
 
-  int get archiveProjectsCount => computed(
-        getValue: () => _getProjectsByColumnId(archiveColumnId).length,
-        watch: () => [projects],
-        keyName: 'archiveProjectsCount',
-      );
-
-  List<Project> get projects => computedFromStore(
-        store: ProjectsStore(),
-        getValue: (store) => store.projects,
-        keyName: 'projects',
-      );
+  /// Сортировка колонок проектов по order
+  List<SpaceColumn> _getColumns({required Space? currentSpace}) {
+    final cols = currentSpace?.columns ?? [];
+    cols.sort((a, b) => a.order.compareTo(b.order));
+    return cols;
+  }
 
   @override
   ProjectsPage get widget => super.widget as ProjectsPage;
@@ -193,7 +216,7 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
                       children: [
                         ColumnsListRow(
                           children: [
-                            ...space.columns.map(
+                            ...store.projectColumns.map(
                               (column) => ColumnButton(
                                 title: column.name,
                                 onPressed: () {

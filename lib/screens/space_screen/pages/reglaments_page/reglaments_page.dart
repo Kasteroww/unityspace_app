@@ -135,7 +135,7 @@ class ReglamentsPageStore extends WStore {
   }
 
   Map<int, List<Reglament>> _columnReglaments(List<Reglament> spaceReglaments) {
-    // Создаем пустую карту для сгруппированных регламентов
+    // Создаем пустую мапу для сгруппированных регламентов
     final Map<int, List<Reglament>> columnReglaments = {};
 
     // Группируем регламенты по reglamentColumnId
