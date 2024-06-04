@@ -3,6 +3,7 @@ import 'dart:core';
 import 'package:unityspace/models/i_base_model.dart';
 import 'package:unityspace/service/data_exceptions.dart';
 import 'package:unityspace/utils/date_time_converter.dart';
+import 'package:unityspace/utils/logger_plugin.dart';
 
 enum TaskChangesTypes {
   // Вы создали задачу #291039
@@ -73,7 +74,7 @@ class Task implements Identifiable {
   final List<int> responsibleUsersId;
   final bool hasMessages;
   final bool hasDescription;
-  final int status;
+  final TaskStatuses status;
   final DateTime? dateBegin;
   final DateTime? dateEnd;
   final DateTime dateMove;
@@ -105,6 +106,22 @@ class Task implements Identifiable {
     required this.cover,
   });
 
+  static TaskStatuses getTaskStatus(int status) {
+    switch (status) {
+      case 0:
+        return TaskStatuses.inWork;
+      case 1:
+        return TaskStatuses.completed;
+      case 2:
+        return TaskStatuses.rejected;
+      default:
+        logger.e(
+          'get task status error, there is no status: $status',
+        );
+        return TaskStatuses.inWork;
+    }
+  }
+
   factory Task.fromResponse(TaskResponse response) {
     return Task(
       id: response.id,
@@ -117,7 +134,7 @@ class Task implements Identifiable {
       responsibleUsersId: response.responsibleUserId,
       hasMessages: response.hasMessages,
       hasDescription: response.hasDescription,
-      status: response.status,
+      status: Task.getTaskStatus(response.status),
       dateBegin: response.dateBegin != null
           ? DateTimeConverter.stringToLocalDateTime(response.dateBegin!)
           : null,

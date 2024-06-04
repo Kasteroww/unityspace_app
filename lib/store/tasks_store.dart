@@ -96,6 +96,21 @@ class TasksStore extends GStore {
     return allTasks;
   }
 
+  /// Получение задач в конкретном проекте по projectID
+  Future<List<Task>> getProjectTasks({
+    required int projectId,
+  }) async {
+    final List<TaskResponse> tasksResponse =
+        await api.getProjectTasks(projectId: projectId);
+    final allTasks =
+        tasksResponse.map((res) => Task.fromResponse(res)).toList();
+    setStore(() {
+      // задачи в сторе перезаписываются полученными
+      tasks = allTasks;
+    });
+    return allTasks;
+  }
+
   void clearSearchedTasksStateLocally() {
     setStore(() {
       searchedTasks = [];

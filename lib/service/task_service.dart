@@ -19,7 +19,7 @@ Future<MyTaskHistoryResponse> getMyTasksHistory(int page) async {
   }
 }
 
-/// получение задач по spaceId и статусам
+/// Получение задач во всем пространстве по spaceId и статусам
 Future getSpaceTasks({
   required int spaceId,
   required List<int> statuses,
@@ -27,6 +27,25 @@ Future getSpaceTasks({
   try {
     final response = await HttpPlugin()
         .get('/spaces/$spaceId/tasks', {'statuses': statuses.join(', ')});
+    final List<dynamic> jsonDataList = json.decode(response.body);
+    // с сервера приходит список
+    return jsonDataList.map((data) => TaskResponse.fromJson(data)).toList();
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
+}
+
+/// Получение задач в конкретном проекте по projectID
+Future getProjectTasks({
+  required int projectId,
+}) async {
+  try {
+    final response = await HttpPlugin().get(
+      '/projects/$projectId/tasks',
+    );
     final List<dynamic> jsonDataList = json.decode(response.body);
     // с сервера приходит список
     return jsonDataList.map((data) => TaskResponse.fromJson(data)).toList();

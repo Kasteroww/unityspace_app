@@ -379,7 +379,7 @@ class TasksPageStore extends WStore {
           if (compareByDate != 0) return compareByDate;
         }
       } else if (sortType == TaskSort.byStatus) {
-        final compareByStatus = a.task.status - b.task.status;
+        final compareByStatus = a.task.status.value - b.task.status.value;
         if (compareByStatus != 0) return compareByStatus;
       } else if (sortType == TaskSort.byImportance) {
         final compareByImportance =
