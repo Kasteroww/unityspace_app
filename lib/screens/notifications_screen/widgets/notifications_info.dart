@@ -38,8 +38,8 @@ class NotificationInfo extends StatelessWidget {
               if (member != null)
                 Padding(
                   padding: const EdgeInsets.all(8),
-                  child: UserAvatar(
-                    member: member,
+                  child: UserAvatarWidget(
+                    id: member.id,
                     width: 20,
                     height: 20,
                     fontSize: 10,
