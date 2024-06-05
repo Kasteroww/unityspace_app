@@ -5,10 +5,10 @@ import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/utils/helpers/role.dart';
+import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_board/parts/add_task_button.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/tasks_store.dart';
 import 'package:unityspace/store/user_store.dart';
-import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
 
@@ -143,7 +143,6 @@ class ProjectBoards extends WStoreWidget<ProjectBoardsStore> {
 
   @override
   Widget build(BuildContext context, ProjectBoardsStore store) {
-    final localization = LocalizationHelper.getLocalizations(context);
     return Expanded(
       child: WStoreStatusBuilder(
         store: store,
@@ -203,12 +202,7 @@ class ProjectBoards extends WStoreWidget<ProjectBoardsStore> {
                               },
                             ),
                           ),
-                          ColoredBox(
-                            color: Colors.blue,
-                            child: Center(
-                              child: Text('+ ${localization.add_task}'),
-                            ),
-                          ),
+                          const AddTaskButton(),
                         ],
                       ),
                     ),

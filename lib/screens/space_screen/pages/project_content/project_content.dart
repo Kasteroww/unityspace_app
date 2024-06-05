@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/navbar_switches.dart';
-import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_boards.dart';
+import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_board/project_boards.dart';
 import 'package:unityspace/store/projects_store.dart';
 import 'package:wstore/wstore.dart';
 

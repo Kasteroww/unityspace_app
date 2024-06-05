@@ -21,6 +21,41 @@ class TasksStore extends GStore {
     return createMapById(tasks);
   }
 
+  Future<int> createTask({
+    required String name,
+    required int stageId,
+    int? order,
+    String? color,
+    String? dateBegin,
+    String? dateEnd,
+    bool? createTaskAbove,
+  }) async {
+    if (name.isEmpty) {
+      return 0;
+    }
+    final taskResponse = await api.createTask(
+      name: name,
+      stageId: stageId,
+      order: order,
+      color: color,
+      dateBegin: dateBegin,
+      dateEnd: dateEnd,
+      createTaskAbove: createTaskAbove,
+    );
+
+    final task = Task.fromResponse(taskResponse);
+
+    setStore(() {
+      tasks = _createOrUpdateTaskLocally(task);
+    });
+
+    return taskResponse.id;
+  }
+
+  List<Task> _createOrUpdateTaskLocally(Task task) {
+    return tasks ?? [];
+  }
+
   Future<int> getTasksHistory(int page) async {
     final response = await api.getMyTasksHistory(page);
     final maxPageCount = response.maxPageCount;
