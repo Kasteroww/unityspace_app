@@ -120,6 +120,22 @@ class ProjectBoardsStore extends WStore {
     }
   }
 
+  Future<void> createTask({
+    required String name,
+    required int stageId,
+  }) async {
+    try {
+      await TasksStore().createTask(name: name, stageId: stageId);
+    } catch (e, stack) {
+      logger.d('''
+          on ProjectBoardsStore 
+          ProjectBoardsStore 
+          createTask error=$e\nstack=$stack
+          ''');
+      throw Exception(e);
+    }
+  }
+
   /// Фильтр задач
   bool isTaskInCurrentFilter(Task task) {
     return task.status == TaskStatuses.inWork;
@@ -159,7 +175,6 @@ class ProjectBoards extends WStoreWidget<ProjectBoardsStore> {
             },
             itemBuilder: (BuildContext context, int index) {
               final ProjectStage stage = store.tasksTree[index].stage;
-              final List<Task> tasks = store.tasksTree[index].tasks;
               return Padding(
                 padding: const EdgeInsets.all(8),
                 child: Align(
@@ -171,39 +186,58 @@ class ProjectBoards extends WStoreWidget<ProjectBoardsStore> {
                       decoration: const BoxDecoration(
                         color: Colors.white,
                       ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(stage.name),
-                          Text('${tasks.length}'),
-                          Flexible(
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: tasks.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                final task = tasks[index];
-                                return Padding(
-                                  padding: const EdgeInsets.only(
-                                    bottom: 8,
-                                    right: 8,
-                                    left: 8,
-                                  ),
-                                  child: DecoratedBox(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(color: Colors.grey),
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(4),
-                                      child: Text(task.name),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          const AddTaskButton(),
+                      child: WStoreBuilder(
+                        store: store,
+                        watch: (store) => [
+                          store.tasksTree,
                         ],
+                        builder: (context, store) {
+                          final List<Task> tasks = store.tasksTree[index].tasks;
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(stage.name),
+                              Text('${tasks.length}'),
+                              Flexible(
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: tasks.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    final task = tasks[index];
+                                    return Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 8,
+                                        right: 8,
+                                        left: 8,
+                                      ),
+                                      child: DecoratedBox(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          border:
+                                              Border.all(color: Colors.grey),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(4),
+                                          child: Text(task.name),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              AddTaskButton(
+                                onSubmitted: (name) {
+                                  store.createTask(
+                                    name: name,
+                                    stageId: stage.id,
+                                  );
+                                },
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     ),
                   ),

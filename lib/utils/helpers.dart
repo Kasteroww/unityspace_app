@@ -57,11 +57,13 @@ extension StringExtension on String {
   }
 }
 
-Map<int, T?> createMapById<T extends Identifiable>(List<T>? list) {
+/// Дженерик для конвертации Identifiable в мапу
+/// Map <int, Identifiable>, где int - это id каждого элемента
+Map<int, T> createMapById<T extends Identifiable>(List<T>? list) {
   if (list == null || list.isEmpty) {
     return {};
   }
-  return list.fold<Map<int, T?>>({}, (acc, item) {
+  return list.fold<Map<int, T>>({}, (acc, item) {
     acc[item.id] = item;
     return acc;
   });

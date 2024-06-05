@@ -406,6 +406,34 @@ class TaskResponse {
   }
 }
 
+class CreateTaskResponse {
+  TaskResponse task;
+  TaskHistoryResponse history;
+
+  CreateTaskResponse({
+    required this.task,
+    required this.history,
+  });
+
+  CreateTaskResponse copyWith({
+    TaskResponse? task,
+    TaskHistoryResponse? history,
+  }) {
+    return CreateTaskResponse(
+      task: task ?? this.task,
+      history: history ?? this.history,
+    );
+  }
+
+  factory CreateTaskResponse.fromJson(Map<String, dynamic> map) {
+    return CreateTaskResponse(
+      task: TaskResponse.fromJson(map['task'] as Map<String, dynamic>),
+      history:
+          TaskHistoryResponse.fromJson(map['history'] as Map<String, dynamic>),
+    );
+  }
+}
+
 class TaskResponses {
   final List<TaskResponse> tasks;
 

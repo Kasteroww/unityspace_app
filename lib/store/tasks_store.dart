@@ -17,8 +17,12 @@ class TasksStore extends GStore {
   List<Task>? tasks;
   List<Task> searchedTasks = [];
 
-  Map<int, Task?> get tasksMap {
+  Map<int, Task> get tasksMap {
     return createMapById(tasks);
+  }
+
+  Map<int, TaskHistory> get historyMap {
+    return createMapById(history);
   }
 
   Future<int> createTask({
@@ -43,17 +47,25 @@ class TasksStore extends GStore {
       createTaskAbove: createTaskAbove,
     );
 
-    final task = Task.fromResponse(taskResponse);
+    final newTask = Task.fromResponse(taskResponse.task);
+    final newHistory = TaskHistory.fromResponse(taskResponse.history);
 
     setStore(() {
-      tasks = _createOrUpdateTaskLocally(task);
+      tasks = List<Task>.from(
+        updateLocally(
+          [newTask],
+          tasksMap,
+        ),
+      );
+      history = List<TaskHistory>.from(
+        updateLocally(
+          [newHistory],
+          historyMap,
+        ),
+      );
     });
 
-    return taskResponse.id;
-  }
-
-  List<Task> _createOrUpdateTaskLocally(Task task) {
-    return tasks ?? [];
+    return taskResponse.task.id;
   }
 
   Future<int> getTasksHistory(int page) async {

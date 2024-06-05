@@ -4,7 +4,7 @@ import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/service/service_exceptions.dart';
 import 'package:unityspace/utils/http_plugin.dart';
 
-Future<TaskResponse> createTask({
+Future<CreateTaskResponse> createTask({
   required String name,
   required int stageId,
   int? order,
@@ -13,28 +13,33 @@ Future<TaskResponse> createTask({
   String? dateEnd,
   bool? createTaskAbove,
 }) async {
-  final data = {
-    'name': name,
-    'stageId': stageId,
-    'color': color,
-    'dateBegin': dateBegin,
-    'dateEnd': dateEnd,
-    'order': order,
-  };
+  try {
+    final data = {
+      'name': name,
+      'stageId': stageId,
+      'color': color,
+      'dateBegin': dateBegin,
+      'dateEnd': dateEnd,
+      'order': order,
+    };
 
-  final response = await HttpPlugin().post(
-    '/tasks',
-    data,
-    {
-      'params': {
+    final response = await HttpPlugin().post(
+      '/tasks',
+      data,
+      {
         'toTop': createTaskAbove,
       },
-    },
-  );
+    );
 
-  final result = json.decode(response.body);
+    final result = json.decode(response.body);
 
-  return TaskResponse.fromJson(result);
+    return CreateTaskResponse.fromJson(result);
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
 }
 
 Future<MyTaskHistoryResponse> getMyTasksHistory(int page) async {

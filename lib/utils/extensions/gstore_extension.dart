@@ -6,7 +6,7 @@ import 'package:wstore/wstore.dart';
 extension GStoreExtension on GStore {
   List<Identifiable> updateLocally(
     List<Identifiable> list,
-    HashMap<int, Identifiable> map,
+    Map<int, Identifiable> map,
   ) {
     final List<Identifiable> baseList = List<Identifiable>.from(list);
     final HashMap<int, Identifiable> baseMap =
