@@ -101,8 +101,12 @@ class SpacesStore extends GStore {
       if (UserStore().isOrganizationOwner || UserStore().isAdmin) {
         return UserRoles.member;
       }
-      return getUserRole(spacesMapUser[spaceId]?[userId]?.role);
+      final role = spacesMapUser[spaceId]?[userId]?.role;
+      if (role != null) {
+        return getUserRole(role);
+      }
     }
+    return UserRoles.reader;
   }
 
   @override

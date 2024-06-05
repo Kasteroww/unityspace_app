@@ -1,11 +1,11 @@
 import 'dart:core';
 
-import 'package:unityspace/models/i_base_model.dart';
+import 'package:unityspace/models/model_interfaces.dart';
 import 'package:unityspace/service/data_exceptions.dart';
 import 'package:unityspace/utils/date_time_converter.dart';
-import 'package:unityspace/utils/logger_plugin.dart';
+import 'package:unityspace/utils/helpers.dart';
 
-enum TaskChangesTypes {
+enum TaskChangesTypes implements EnumWithValue {
   // Вы создали задачу #291039
   createTask(0),
   // Вы изменили название задачи на название задачи изменен
@@ -57,6 +57,7 @@ enum TaskChangesTypes {
   defaultValue(-1),
   ;
 
+  @override
   final int value;
 
   const TaskChangesTypes(this.value);
@@ -106,22 +107,6 @@ class Task implements Identifiable {
     required this.cover,
   });
 
-  static TaskStatuses getTaskStatus(int status) {
-    switch (status) {
-      case 0:
-        return TaskStatuses.inWork;
-      case 1:
-        return TaskStatuses.completed;
-      case 2:
-        return TaskStatuses.rejected;
-      default:
-        logger.e(
-          'get task status error, there is no status: $status',
-        );
-        return TaskStatuses.inWork;
-    }
-  }
-
   factory Task.fromResponse(TaskResponse response) {
     return Task(
       id: response.id,
@@ -149,23 +134,37 @@ class Task implements Identifiable {
       cover: response.cover,
     );
   }
+
+  static TaskStatuses getTaskStatus(int status) {
+    return getEnumValue(status, enumValues: TaskStatuses.values);
+  }
+
+  static TaskImportance getTaskImportance(int importance) {
+    return getEnumValue(importance, enumValues: TaskImportance.values);
+  }
+
+  static TaskChangesTypes getTaskChangesType(int type) {
+    return getEnumValue(type, enumValues: TaskChangesTypes.values);
+  }
 }
 
-enum TaskStatuses {
+enum TaskStatuses implements EnumWithValue {
   inWork(0),
   completed(1),
   rejected(2);
 
+  @override
   final int value;
 
   const TaskStatuses(this.value);
 }
 
-enum TaskImportance {
+enum TaskImportance implements EnumWithValue {
   high(1),
   normal(0),
   low(-1);
 
+  @override
   final int value;
 
   const TaskImportance(this.value);

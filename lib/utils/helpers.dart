@@ -1,9 +1,10 @@
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:string_validator/string_validator.dart';
-import 'package:unityspace/models/i_base_model.dart';
+import 'package:unityspace/models/model_interfaces.dart';
 import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/utils/http_plugin.dart';
+import 'package:unityspace/utils/logger_plugin.dart';
 
 String? makeAvatarUrl(final String? avatar) {
   return avatar != null
@@ -64,6 +65,27 @@ Map<int, T?> createMapById<T extends Identifiable>(List<T>? list) {
     acc[item.id] = item;
     return acc;
   });
+}
+
+/// дженерик для получения значения enum по параметру
+/// можно использовать если enum имплеменирует интерфейс
+/// [EnumWithValue]
+/// принимает value (параметр) и список значений enum
+/// значения можно получть по EnumName.values
+/// если подходящее значение не найдено,
+/// возвращает первое из списка enumValues и пишет
+/// ошибку в лог
+T getEnumValue<T extends EnumWithValue>(
+  Object value, {
+  required List<T> enumValues,
+}) {
+  return enumValues.firstWhere(
+    (e) => e.value == value,
+    orElse: () {
+      logger.e('Invalid enum value: $value');
+      return enumValues.first;
+    },
+  );
 }
 
 Future<void> copyToClipboard(final String text) async {

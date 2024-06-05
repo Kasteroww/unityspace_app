@@ -36,7 +36,7 @@ class NotificationBottomSheet extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
-              if (notificationsGroup.type == NotificationType.task)
+              if (notificationsGroup.type == NotificationCategory.task)
                 Align(
                   alignment: const Alignment(-1, 0),
                   child: Padding(

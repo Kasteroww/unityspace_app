@@ -1,6 +1,6 @@
 import 'dart:collection';
 
-import 'package:unityspace/models/i_base_model.dart';
+import 'package:unityspace/models/model_interfaces.dart';
 import 'package:wstore/wstore.dart';
 
 extension GStoreExtension on GStore {

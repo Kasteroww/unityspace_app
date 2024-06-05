@@ -76,7 +76,7 @@ class NotificationHelper {
             locations: notification.locations,
             createdAt: notification.createdAt,
             title: notification.taskName ?? '',
-            type: NotificationType.task,
+            type: NotificationCategory.task,
             notifications: [notification],
             showNotifications: true,
           );
@@ -96,7 +96,7 @@ class NotificationHelper {
             locations: notification.locations,
             createdAt: notification.createdAt,
             title: reglamentName,
-            type: NotificationType.reglament,
+            type: NotificationCategory.reglament,
             notifications: [notification],
             showNotifications: true,
           );
@@ -117,7 +117,7 @@ class NotificationHelper {
             locations: [],
             createdAt: notification.createdAt,
             title: spaceName,
-            type: NotificationType.space,
+            type: NotificationCategory.space,
             notifications: [notification],
             showNotifications: true,
           );
@@ -131,7 +131,7 @@ class NotificationHelper {
           locations: [],
           createdAt: notification.createdAt,
           title: notification.text,
-          type: NotificationType.achievement,
+          type: NotificationCategory.achievement,
           notifications: [notification],
           showNotifications: false,
         );
@@ -144,7 +144,7 @@ class NotificationHelper {
           locations: [],
           createdAt: notification.createdAt,
           title: notification.text,
-          type: NotificationType.other,
+          type: NotificationCategory.other,
           notifications: [notification],
           showNotifications: false,
         );
@@ -157,15 +157,15 @@ class NotificationHelper {
 
   String getPictureAssetByType(NotificationsGroup notificationGroup) {
     switch (notificationGroup.type) {
-      case NotificationType.achievement:
+      case NotificationCategory.achievement:
         return 'assets/icons/notifications/achievement.svg';
-      case NotificationType.task:
+      case NotificationCategory.task:
         return 'assets/icons/notifications/task.svg';
-      case NotificationType.space:
+      case NotificationCategory.space:
         return 'assets/icons/notifications/space.svg';
-      case NotificationType.reglament:
+      case NotificationCategory.reglament:
         return 'assets/icons/notifications/reglament.svg';
-      case NotificationType.other:
+      case NotificationCategory.other:
         return 'assets/icons/notifications/other.svg';
     }
   }

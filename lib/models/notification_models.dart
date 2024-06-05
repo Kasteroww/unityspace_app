@@ -1,6 +1,7 @@
-import 'package:unityspace/models/i_base_model.dart';
+import 'package:unityspace/models/model_interfaces.dart';
 import 'package:unityspace/service/data_exceptions.dart';
 import 'package:unityspace/utils/date_time_converter.dart';
+import 'package:unityspace/utils/helpers.dart';
 
 class InitiatorAndRecipient {
   int id;
@@ -141,7 +142,7 @@ class NotificationModel implements Identifiable {
   final int initiatorId;
   final List<NotificationLocation> locations;
   final int? message;
-  final String notificationType;
+  final NotificationType notificationType;
   final int parentId;
   final String parentType;
   final int recipientId;
@@ -175,7 +176,7 @@ class NotificationModel implements Identifiable {
       initiatorId: data.initiatorId,
       locations: data.locations,
       message: data.message,
-      notificationType: data.notificationType,
+      notificationType: getNotificationType(data.notificationType),
       parentId: data.parentId,
       parentType: data.parentType,
       recipientId: data.recipientId,
@@ -193,7 +194,7 @@ class NotificationModel implements Identifiable {
     int? initiatorId,
     List<NotificationLocation>? locations,
     int? message,
-    String? notificationType,
+    NotificationType? notificationType,
     int? parentId,
     String? parentType,
     int? recipientId,
@@ -219,6 +220,10 @@ class NotificationModel implements Identifiable {
       unread: unread ?? this.unread,
     );
   }
+
+  static NotificationType getNotificationType(String notificationType) {
+    return getEnumValue(notificationType, enumValues: NotificationType.values);
+  }
 }
 
 class NotificationsGroup {
@@ -226,7 +231,7 @@ class NotificationsGroup {
   final List<NotificationLocation> locations;
   final DateTime createdAt;
   final String title;
-  final NotificationType type;
+  final NotificationCategory type;
   final List<NotificationModel> notifications;
   final bool showNotifications;
 
@@ -257,10 +262,39 @@ class LocationGroup {
   });
 }
 
-enum NotificationType {
+enum NotificationCategory {
   task,
   space,
   reglament,
   achievement,
   other,
+}
+
+enum NotificationType implements EnumWithValue {
+  reglamentCreated('REGLAMENT_CREATED'),
+  reglamentRequiredSet('REGLAMENT_REQUIRED_SET'),
+  reglamentRequiredUnset('REGLAMENT_REQUIRED_UNSET'),
+  reglamentUpdate('REGLAMENT_UPDATE'),
+  message('MESSAGE'),
+  taskChangedResponsible('TASK_CHANGED_RESPONSIBLE'),
+  taskDeletedResponsible('TASK_DELETED_RESPONSIBLE'),
+  taskCompleted('TASK_COMPLETED'),
+  taskRejected('TASK_REJECTED'),
+  taskInWork('TASK_IN_WORK'),
+  taskProjectChanged('TASK_PROJECT_CHANGED'),
+  taskDelegated('TASK_DELEGATED'),
+  memberDeleted('MEMBER_DELETED'),
+  memberDeletedForOwner('MEMBER_DELETED_FOR_OWNER'),
+  memberAdded('MEMBER_ADDED'),
+  memberAcceptInvite('MEMBER_ACCEPT_INVITE'),
+  memberAddedFromSpaceLink('MEMBER_ADDED_FROM_SPACE_LINK'),
+  memberAddedForOwner('MEMBER_ADDED_FOR_OWNER'),
+  taskDeleted('TASK_DELETED'),
+  taskSentToArchive('TASK_SEND_TO_ARCHIVE'),
+  taskMemberRemoved('TASK_MEMBER_REMOVED');
+
+  @override
+  final String value;
+
+  const NotificationType(this.value);
 }

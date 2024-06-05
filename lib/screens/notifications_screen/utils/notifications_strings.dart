@@ -21,15 +21,15 @@ class NotificationsStrings {
     AppLocalizations localization,
   ) {
     switch (notificationGroup.type) {
-      case NotificationType.task:
+      case NotificationCategory.task:
         return localization.tasks;
-      case NotificationType.reglament:
+      case NotificationCategory.reglament:
         return localization.reglaments;
-      case NotificationType.space:
+      case NotificationCategory.space:
         return localization.spaces;
-      case NotificationType.achievement:
+      case NotificationCategory.achievement:
         return localization.achievements;
-      case NotificationType.other:
+      case NotificationCategory.other:
         return localization.other;
     }
   }
@@ -38,23 +38,25 @@ class NotificationsStrings {
     final List<OrganizationMember> organizationMembers =
         userStore.organization?.members ?? [];
     try {
-      if (notification.notificationType == 'REGLAMENT_CREATED') {
+      if (notification.notificationType == NotificationType.reglamentCreated) {
         return 'Создал(а) регламент';
       }
-      if (notification.notificationType == 'REGLAMENT_REQUIRED_SET') {
+      if (notification.notificationType ==
+          NotificationType.reglamentRequiredSet) {
         return 'Отметил(а) регламент как обязательный';
       }
-      if (notification.notificationType == 'REGLAMENT_REQUIRED_UNSET') {
+      if (notification.notificationType ==
+          NotificationType.reglamentRequiredUnset) {
         return 'Отметил(а) регламент как необязательный';
       }
-      if (notification.notificationType == 'REGLAMENT_UPDATE') {
+      if (notification.notificationType == NotificationType.reglamentUpdate) {
         const message =
             'Обновил(а) регламент и сбросил(а) участников, прошедших регламент';
         return notification.text.isNotEmpty
             ? '$message\r\n"${notification.text}"'
             : message;
       }
-      if (notification.notificationType == 'MESSAGE') {
+      if (notification.notificationType == NotificationType.message) {
         // убираем кавычки в начале и в конце
         // заменяем упоминания на осмысленный текст
         final String message = notification.text
@@ -75,7 +77,8 @@ class NotificationsStrings {
         });
         return '"$message"';
       }
-      if (notification.notificationType == 'TASK_CHANGED_RESPONSIBLE') {
+      if (notification.notificationType ==
+          NotificationType.taskChangedResponsible) {
         if (notification.text.startsWith('add responsible ')) {
           final int userId =
               int.parse(notification.text.substring('add responsible '.length));
@@ -93,7 +96,8 @@ class NotificationsStrings {
         }
         return 'Сменил(а) исполнителя на: ${notification.text.substring('Новый исполнитель '.length)}';
       }
-      if (notification.notificationType == 'TASK_DELETED_RESPONSIBLE') {
+      if (notification.notificationType ==
+          NotificationType.taskDeletedResponsible) {
         final userId = int.tryParse(notification.text);
 
         if (userId != null) {
@@ -103,26 +107,28 @@ class NotificationsStrings {
         }
         return 'Снял(а) исполнителя';
       }
-      if (notification.notificationType == 'TASK_COMPLETED') {
+      if (notification.notificationType == NotificationType.taskCompleted) {
         return 'Завершил(а) задачу';
       }
-      if (notification.notificationType == 'TASK_REJECTED') {
+      if (notification.notificationType == NotificationType.taskRejected) {
         return 'Отменил(а) задачу';
       }
-      if (notification.notificationType == 'TASK_IN_WORK') {
+      if (notification.notificationType == NotificationType.taskInWork) {
         return 'Вернул(а) задачу в работу';
       }
-      if (notification.notificationType == 'TASK_PROJECT_CHANGED') {
+      if (notification.notificationType ==
+          NotificationType.taskProjectChanged) {
         return 'Перенес(ла) задачу в проект: ${notification.text}';
       }
-      if (notification.notificationType == 'TASK_DELEGATED') {
+      if (notification.notificationType == NotificationType.taskDelegated) {
         return 'Поручил(а) Вам задачу';
       }
-      if (notification.notificationType == 'MEMBER_DELETED') {
+      if (notification.notificationType == NotificationType.memberDeleted) {
         return 'Убрал(а) Вам доступ к пространству';
       }
 
-      if (notification.notificationType == 'MEMBER_DELETED_FOR_OWNER') {
+      if (notification.notificationType ==
+          NotificationType.memberDeletedForOwner) {
         if (notification.parentId == notification.initiatorId) {
           return 'Вышел(а) из пространства';
         }
@@ -135,20 +141,23 @@ class NotificationsStrings {
         return 'Исключил(а) пользователя \'$memberName\' из пространства';
       }
 
-      if (notification.notificationType == 'MEMBER_ADDED' &&
+      if (notification.notificationType == NotificationType.memberAdded &&
           !NotificationHelper.isUserOrganizationOwner(user: userStore.user)) {
         return 'Добавил(а) Вас в пространство';
       }
 
-      if (notification.notificationType == 'MEMBER_ACCEPT_INVITE') {
+      if (notification.notificationType ==
+          NotificationType.memberAcceptInvite) {
         return 'Принял(а) приглашение в пространство';
       }
 
-      if (notification.notificationType == 'MEMBER_ADDED_FROM_SPACE_LINK') {
+      if (notification.notificationType ==
+          NotificationType.memberAddedFromSpaceLink) {
         return 'Вступил(а) в пространство по ссылке';
       }
 
-      if (notification.notificationType == 'MEMBER_ADDED_FOR_OWNER') {
+      if (notification.notificationType ==
+          NotificationType.memberAddedForOwner) {
         final member = NotificationHelper.findMemberById(
           organizationMembers,
           notification.parentId,
@@ -157,15 +166,15 @@ class NotificationsStrings {
         return 'Добавил(а) пользователя \'$memberName\' в пространство';
       }
 
-      if (notification.notificationType == 'TASK_DELETED') {
+      if (notification.notificationType == NotificationType.taskDeleted) {
         return 'Удалил(а) задачу';
       }
 
-      if (notification.notificationType == 'TASK_SEND_TO_ARCHIVE') {
+      if (notification.notificationType == NotificationType.taskSentToArchive) {
         return 'Отправил(а) задачу в архив';
       }
 
-      if (notification.notificationType == 'TASK_MEMBER_REMOVED') {
+      if (notification.notificationType == NotificationType.taskMemberRemoved) {
         return 'Удалил(а) Вас из участников задачи';
       }
 

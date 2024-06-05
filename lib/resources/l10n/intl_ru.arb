@@ -219,9 +219,9 @@
       }
     }
   },
-  "remove_member": "Вы исключили члена пространства -",
-  "add_responsible": "Вы добавили исполнителя к задаче -",
-  "remove_responsible": "Вы убрали исполнителя с задачи -",
+  "remove_member": "Вы исключили члена пространства",
+  "add_responsible": "Вы добавили исполнителя к задаче",
+  "remove_responsible": "Вы убрали исполнителя с задачи",
   "unhandled_type": "Такой тип истории не определен :( #{userId}",
   "@unhandled_type": {
     "placeholders": {
