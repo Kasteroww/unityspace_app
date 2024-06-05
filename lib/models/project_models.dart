@@ -1,5 +1,6 @@
 import 'package:unityspace/models/model_interfaces.dart';
 import 'package:unityspace/models/task_models.dart';
+import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/add_tab_dialog.dart';
 import 'package:unityspace/service/data_exceptions.dart';
 import 'package:unityspace/utils/date_time_converter.dart';
 
@@ -271,7 +272,7 @@ class ProjectEmbed {
   final int projectId;
   final String name;
   final String url;
-  final String category;
+  final AddTabDialogTypes category;
   final int order;
 
   ProjectEmbed({
@@ -289,10 +290,21 @@ class ProjectEmbed {
       projectId: response.projectId,
       name: response.name,
       url: response.url,
-      category: response.category,
+      category: response.category == ProjectEmbedTypes.categoryLink.value
+          ? AddTabDialogTypes.categoryLink
+          : AddTabDialogTypes.categoryEmbed,
       order: response.order,
     );
   }
+}
+
+enum ProjectEmbedTypes {
+  categoryLink('Link'),
+  categoryEmbed('Встроить');
+
+  const ProjectEmbedTypes(this.value);
+
+  final String value;
 }
 
 class ProjectStage implements Identifiable {

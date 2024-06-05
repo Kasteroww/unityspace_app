@@ -133,3 +133,51 @@ Future<ProjectResponse> updateProject({
     rethrow;
   }
 }
+
+/// Создание элемента tab панели проекта
+Future<ProjectEmbedResponse> createProjectEmbed({
+  required int projectId,
+  required String name,
+  required String url,
+  required String category,
+}) async {
+  try {
+    final response = await HttpPlugin().post(
+      '/projects/$projectId/embed',
+      {
+        'name': name,
+        'url': url,
+        'category': category,
+      },
+    );
+    final Map<String, dynamic> jsonData = json.decode(response.body);
+    return ProjectEmbedResponse.fromJson(jsonData);
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
+}
+
+/// Отображение элемента tab панели проекта "Документация"
+Future<Map<String, dynamic>> showProjectReviewTab({
+  required int projectId,
+  required bool show,
+}) async {
+  try {
+    final response = await HttpPlugin().patch(
+      '/projects/$projectId/showProjectReviewTab',
+      {
+        'show': show,
+      },
+    );
+    final Map<String, dynamic> jsonData = json.decode(response.body);
+    return jsonData;
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
+}

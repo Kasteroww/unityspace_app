@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/resources/errors.dart';
@@ -23,14 +24,14 @@ Future<void> showAddTabDialog(
   );
 }
 
-enum AddTabDialogTypes { tabDocs, tabLink, tabEmbed }
+enum AddTabDialogTypes { categoryDocs, categoryLink, categoryEmbed }
 
 class AddTabDialogStore extends WStore {
   AddProjectTabErrors addTabError = AddProjectTabErrors.none;
   WStoreStatus statusAddTabDialog = WStoreStatus.init;
-  AddTabDialogTypes selectedTab = AddTabDialogTypes.tabLink;
+  AddTabDialogTypes selectedCategory = AddTabDialogTypes.categoryLink;
   String name = '';
-  String link = '';
+  String url = '';
 
   Project? get project => computedFromStore(
         store: ProjectsStore(),
@@ -44,9 +45,9 @@ class AddTabDialogStore extends WStore {
         watch: () => [project],
       );
 
-  void selectTab(AddTabDialogTypes tab) {
+  void selectCategory(AddTabDialogTypes tab) {
     setStore(() {
-      selectedTab = tab;
+      selectedCategory = tab;
     });
   }
 
@@ -58,9 +59,28 @@ class AddTabDialogStore extends WStore {
 
   void setTabLink(String tabLink) {
     setStore(() {
-      link = tabLink;
+      url = tabLink;
     });
   }
+
+  Future<void> _createProjectEmbed() {
+    return ProjectsStore().createProjectEmbed(
+      projectId: project!.id,
+      name: name,
+      url: url,
+      category: selectedCategory == AddTabDialogTypes.categoryLink
+          ? ProjectEmbedTypes.categoryLink.value
+          : ProjectEmbedTypes.categoryEmbed.value,
+    );
+  }
+
+  Future<void> _showProjectReviewTab() {
+    return ProjectsStore()
+        .showProjectReviewTab(projectId: project!.id, show: true);
+  }
+
+  bool isSelectedCategoryDocs() =>
+      selectedCategory == AddTabDialogTypes.categoryDocs;
 
   void addTabDialog() {
     if (statusAddTabDialog == WStoreStatus.loading) return;
@@ -69,8 +89,27 @@ class AddTabDialogStore extends WStore {
       addTabError = AddProjectTabErrors.none;
     });
 
+    if (project == null) {
+      setStore(() {
+        statusAddTabDialog = WStoreStatus.loading;
+        addTabError = AddProjectTabErrors.addProjectTabError;
+      });
+      return;
+    }
+
+    if (selectedCategory != AddTabDialogTypes.categoryDocs &&
+        (name.isEmpty || url.isEmpty)) {
+      setStore(() {
+        addTabError = AddProjectTabErrors.valueIsEmpty;
+        statusAddTabDialog = WStoreStatus.error;
+      });
+      return;
+    }
+
     subscribe(
-      future: ProjectsStore().createProjectEmbed(),
+      future: isSelectedCategoryDocs()
+          ? _showProjectReviewTab()
+          : _createProjectEmbed(),
       subscriptionId: 1,
       onData: (_) {
         setStore(() {
@@ -128,22 +167,22 @@ class AddTabDialog extends WStoreWidget<AddTabDialogStore> {
           children: [
             WStoreBuilder(
               store: store,
-              watch: (store) => [store.selectedTab],
+              watch: (store) => [store.selectedCategory],
               builder: (context, store) {
                 final List<(AddTabDialogTypes, String, String)> listTabs = [
                   if (!store.isShowProjectReviewTab)
                     (
-                      AddTabDialogTypes.tabDocs,
+                      AddTabDialogTypes.categoryDocs,
                       localization.documents,
                       localization.add_tab_enter_docs
                     ),
                   (
-                    AddTabDialogTypes.tabLink,
+                    AddTabDialogTypes.categoryLink,
                     localization.link,
                     localization.add_tab_enter_link
                   ),
                   (
-                    AddTabDialogTypes.tabEmbed,
+                    AddTabDialogTypes.categoryEmbed,
                     localization.embed,
                     localization.add_tab_enter_embed
                   ),
@@ -160,9 +199,10 @@ class AddTabDialog extends WStoreWidget<AddTabDialogStore> {
                             padding: const EdgeInsets.all(4),
                             child: TabButton(
                               title: listTabs[index].$2,
-                              selected: listTabs[index].$1 == store.selectedTab,
+                              selected:
+                                  listTabs[index].$1 == store.selectedCategory,
                               onPressed: () {
-                                store.selectTab(listTabs[index].$1);
+                                store.selectCategory(listTabs[index].$1);
                               },
                             ),
                           );
@@ -171,8 +211,10 @@ class AddTabDialog extends WStoreWidget<AddTabDialogStore> {
                     ),
                     AddTabDialogFieldsColumn(
                       listTabs
-                          .firstWhere((tab) => tab.$1 == store.selectedTab)
-                          .$3,
+                          .firstWhereOrNull(
+                            (tab) => tab.$1 == store.selectedCategory,
+                          )
+                          ?.$3,
                     ),
                   ],
                 );
@@ -181,9 +223,13 @@ class AddTabDialog extends WStoreWidget<AddTabDialogStore> {
             const SizedBox(height: 16),
             if (error)
               Text(
-                store.addTabError == AddProjectTabErrors.addProjectTabError
-                    ? localization.add_project_tab_error
-                    : '',
+                switch (store.addTabError) {
+                  AddProjectTabErrors.none => '',
+                  AddProjectTabErrors.valueIsEmpty =>
+                    localization.value_cannot_be_empty,
+                  AddProjectTabErrors.addProjectTabError =>
+                    localization.add_project_tab_error,
+                },
                 style: const TextStyle(
                   color: Color(0xFFD83400),
                 ),

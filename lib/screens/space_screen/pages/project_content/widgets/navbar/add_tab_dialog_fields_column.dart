@@ -7,7 +7,7 @@ import 'package:wstore/wstore.dart';
 class AddTabDialogFieldsColumn extends StatelessWidget {
   const AddTabDialogFieldsColumn(this.tabDescription, {super.key});
 
-  final String tabDescription;
+  final String? tabDescription;
 
   @override
   Widget build(BuildContext context) {
@@ -17,10 +17,10 @@ class AddTabDialogFieldsColumn extends StatelessWidget {
       height: 200,
       child: ListView(
         children: [
-          Text(tabDescription),
+          Text(tabDescription ?? ''),
           const SizedBox(height: 16),
-          if (context.wstore<AddTabDialogStore>().selectedTab ==
-              AddTabDialogTypes.tabDocs)
+          if (context.wstore<AddTabDialogStore>().selectedCategory ==
+              AddTabDialogTypes.categoryDocs)
             Text(localization.add_tab_body_text)
           else ...[
             WStoreBuilder(
@@ -28,7 +28,6 @@ class AddTabDialogFieldsColumn extends StatelessWidget {
               watch: (store) => [store.name],
               builder: (context, store) {
                 return AddDialogInputField(
-                  autofocus: true,
                   initialValue: store.name,
                   textInputAction: TextInputAction.done,
                   textCapitalization: TextCapitalization.words,
@@ -45,11 +44,10 @@ class AddTabDialogFieldsColumn extends StatelessWidget {
             const SizedBox(height: 16),
             WStoreBuilder(
               store: context.wstore<AddTabDialogStore>(),
-              watch: (store) => [store.link],
+              watch: (store) => [store.url],
               builder: (context, store) {
                 return AddDialogInputField(
-                  autofocus: true,
-                  initialValue: store.link,
+                  initialValue: store.url,
                   textInputAction: TextInputAction.done,
                   textCapitalization: TextCapitalization.words,
                   onChanged: (tabLink) {

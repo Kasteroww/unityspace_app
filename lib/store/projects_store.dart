@@ -159,7 +159,63 @@ class ProjectsStore extends GStore {
   }
 
   /// Создание элемента tab панели проекта
-  Future<void> createProjectEmbed() async {}
+  Future<void> createProjectEmbed({
+    required int projectId,
+    required String name,
+    required String url,
+    required String category,
+  }) async {
+    final projectData = await api.createProjectEmbed(
+      projectId: projectId,
+      name: name,
+      url: url,
+      category: category,
+    );
+    _createProjectEmbedLocally(projectData);
+  }
+
+  void _createProjectEmbedLocally(ProjectEmbedResponse embedResponse) {
+    final List<Project> projectsNew = projects.map((project) {
+      if (embedResponse.projectId == project.id) {
+        final List<ProjectEmbed> embeddingsNew = project.embeddings
+          ..add(ProjectEmbed.fromResponse(embedResponse));
+        return project.copyWith(embeddings: [...embeddingsNew]);
+      } else {
+        return project;
+      }
+    }).toList();
+    setStore(() {
+      projects = projectsNew;
+    });
+  }
+
+  /// Отображение элемента tab панели проекта "Документация"
+  Future<void> showProjectReviewTab({
+    required int projectId,
+    required bool show,
+  }) async {
+    await api.showProjectReviewTab(
+      projectId: projectId,
+      show: show,
+    );
+    _showProjectReviewTabLocally(projectId: projectId, show: show);
+  }
+
+  void _showProjectReviewTabLocally({
+    required int projectId,
+    required bool show,
+  }) {
+    final List<Project> projectsNew = projects.map((project) {
+      if (projectId == project.id) {
+        return project.copyWith(showProjectReviewTab: show);
+      } else {
+        return project;
+      }
+    }).toList();
+    setStore(() {
+      projects = projectsNew;
+    });
+  }
 
   @override
   void clear() {

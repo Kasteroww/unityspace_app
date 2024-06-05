@@ -34,4 +34,4 @@ enum TasksErrors { none, loadingDataError }
 
 enum SearchTaskErrors { none }
 
-enum AddProjectTabErrors { none, addProjectTabError }
+enum AddProjectTabErrors { none, addProjectTabError, valueIsEmpty }
