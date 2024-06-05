@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/project_content.dart';
+import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/navbar_popup_button.dart';
 import 'package:unityspace/screens/widgets/tabs_list/tab_button.dart';
 import 'package:unityspace/screens/widgets/tabs_list/tabs_list_row.dart';
 import 'package:unityspace/utils/localization_helper.dart';
@@ -17,58 +18,55 @@ class NavbarSwitches extends StatelessWidget {
       children: [
         WStoreBuilder(
           store: store,
-          watch: (store) => [store.selectedTab, store.currentTabs],
-          builder: (context, store) => Row(
-            children: [
-              TabsListRow(
-                children: [
-                  ...store.currentTabs.map(
-                    (tab) => TabButton(
-                      title: switch (tab) {
-                        ProjectEmbedTab.tasks => localization.tasks,
-                      },
-                      onPressed: () {
-                        store.selectTab(tab);
-                      },
-                      selected: tab == store.selectedTab,
-                    ),
-                  ),
-                  ...store.embeddings.map(
-                    (tab) => TabButton(
-                      title: tab.name,
-                      onPressed: () {},
-                      selected: false,
-                    ),
-                  ),
-                ],
+          watch: (store) => [
+            store.selectedTab,
+            store.embeddings,
+            store.isShowProjectReviewTab,
+          ],
+          builder: (context, store) {
+            final List<(String, String)> listTabs = [
+              (ProjectContentStore.tabTasks, localization.tasks),
+              if (store.isShowProjectReviewTab)
+                (ProjectContentStore.tabDocuments, localization.documents),
+              ...store.embeddings.map(
+                (embedding) => ('embed-${embedding.id}', embedding.name),
               ),
-              const Icon(Icons.add),
-              if (store.selectedTab == ProjectEmbedTab.tasks)
+            ];
+            return Row(
+              children: [
                 Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TabButton(
-                        onPressed: () {},
-                        title: '${localization.completed_today}: 0',
-                        selected: false,
-                      ),
-                      const SizedBox(width: 12),
-                      const Icon(Icons.search),
-                      const SizedBox(width: 12),
-                      const Icon(Icons.filter_alt),
-                      const SizedBox(width: 12),
-                      const Icon(Icons.more_vert),
-                      const SizedBox(width: 12),
-                    ],
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        TabsListRow(
+                          children: [
+                            ...listTabs.map(
+                              (tab) => TabButton(
+                                title: tab.$2,
+                                onPressed: () {
+                                  store.selectTab(tab.$1);
+                                },
+                                selected: tab.$1 == store.selectedTab,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const Icon(Icons.add),
+                      ],
+                    ),
                   ),
                 ),
-            ],
-          ),
+                const SizedBox(width: 12),
+                if (store.selectedTab == ProjectContentStore.tabTasks ||
+                    (store.selectedTab == ProjectContentStore.tabDocuments))
+                  const NavbarPopupButton(),
+                const SizedBox(width: 12),
+              ],
+            );
+          },
         ),
       ],
     );
   }
 }
-
-enum ProjectEmbedTab { tasks }

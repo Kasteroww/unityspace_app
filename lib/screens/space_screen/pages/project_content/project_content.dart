@@ -6,15 +6,15 @@ import 'package:unityspace/store/projects_store.dart';
 import 'package:wstore/wstore.dart';
 
 class ProjectContentStore extends WStore {
-  ProjectEmbedTab selectedTab = ProjectEmbedTab.tasks;
+  static const tabTasks = 'tasks';
+  static const tabDocuments = 'docs';
+  String selectedTab = tabTasks;
 
-  void selectTab(ProjectEmbedTab tab) {
+  void selectTab(String tab) {
     setStore(() {
       selectedTab = tab;
     });
   }
-
-  List<ProjectEmbedTab> get currentTabs => ProjectEmbedTab.values.toList();
 
   Project? get project => computedFromStore(
         store: ProjectsStore(),
@@ -25,6 +25,12 @@ class ProjectContentStore extends WStore {
   List<ProjectEmbed> get embeddings => computed(
         getValue: () => project?.embeddings ?? [],
         keyName: 'embeddings',
+        watch: () => [project],
+      );
+
+  bool get isShowProjectReviewTab => computed(
+        getValue: () => project?.showProjectReviewTab ?? false,
+        keyName: 'isShowProjectReviewTab',
         watch: () => [project],
       );
 

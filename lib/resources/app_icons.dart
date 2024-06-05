@@ -24,5 +24,7 @@ abstract class AppIcons {
   static const String accountTelegram = 'assets/icons/account_telegram.svg';
   static const String accountGithub = 'assets/icons/account_github.svg';
   static const String accountPassword = 'assets/icons/account_password.svg';
+  static const String search = 'assets/icons/search.svg';
+  static const String filter = 'assets/icons/filter.svg';
   static const String crown = 'assets/icons/crown.svg';
 }
