@@ -45,16 +45,9 @@ class UserStore extends GStore {
     return user!.isAdmin;
   }
 
-
   Map<int, OrganizationMember?> get organizationMembersMap {
-    final members = organization?.members;
-    if (members == null || members.isEmpty) {
-      return {};
-    } else {
-      return createMapById(members);
-    }
+    return createMapById(organization?.members);
   }
-
 
   OrganizationMember? get organizationOwner {
     return organizationMembersMap[organization?.ownerId];
@@ -130,7 +123,6 @@ class UserStore extends GStore {
     required int userId,
     required String newEmail,
   }) {
-
     if (organizationMembersMap.isEmpty) return;
     final member =
         organization?.members.firstWhereOrNull((m) => m.id == userId);
@@ -218,7 +210,8 @@ class UserStore extends GStore {
       return {};
     }
     final organizationMembers = store.organization?.members ?? [];
-    return organizationMembers.fold<Map<String, OrganizationMember?>>({}, (acc, member) {
+    return organizationMembers.fold<Map<String, OrganizationMember?>>({},
+        (acc, member) {
       acc[member.email] = member;
       return acc;
     });

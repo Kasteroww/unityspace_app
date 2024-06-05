@@ -57,7 +57,7 @@ extension StringExtension on String {
 }
 
 Map<int, T?> createMapById<T extends Identifiable>(List<T>? list) {
-  if (list == null) {
+  if (list == null || list.isEmpty) {
     return {};
   }
   return list.fold<Map<int, T?>>({}, (acc, item) {

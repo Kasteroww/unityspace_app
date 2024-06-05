@@ -17,16 +17,7 @@ class ProjectsStore extends GStore {
   }
 
   Map<int, ProjectStage?> get stagesMap {
-    if (projects.isEmpty) return {};
-
-    // return createMapById(projects.expand((project) => project.stages).toList());
-    return Map.fromEntries(
-      projects.expand(
-        (project) => project.stages.map(
-          (stage) => MapEntry(stage.id, stage),
-        ),
-      ),
-    );
+    return createMapById(projects.expand((project) => project.stages).toList());
   }
 
   Project? getProjectById(int projectId) {
