@@ -66,7 +66,7 @@ class NotificationHelper {
 
     for (final notification in notifications) {
       String groupId = '';
-      if (notification.parentType == 'TASK') {
+      if (notification.parentType == NotificationParentType.task) {
         groupId = 'task-${notification.parentId}';
         if (groupsMap.containsKey(groupId)) {
           groupsMap[groupId]?.notifications.add(notification);
@@ -76,14 +76,14 @@ class NotificationHelper {
             locations: notification.locations,
             createdAt: notification.createdAt,
             title: notification.taskName ?? '',
-            type: NotificationCategory.task,
+            type: NotificationGroupType.task,
             notifications: [notification],
             showNotifications: true,
           );
           groups.add(newGroup);
           groupsMap[newGroup.groupId] = newGroup;
         }
-      } else if (notification.parentType == 'REGLAMENT') {
+      } else if (notification.parentType == NotificationParentType.reglament) {
         groupId = 'reglament-${notification.parentId}';
         if (groupsMap.containsKey(groupId)) {
           groupsMap[groupId]?.notifications.add(notification);
@@ -96,14 +96,14 @@ class NotificationHelper {
             locations: notification.locations,
             createdAt: notification.createdAt,
             title: reglamentName,
-            type: NotificationCategory.reglament,
+            type: NotificationGroupType.reglament,
             notifications: [notification],
             showNotifications: true,
           );
           groups.add(newGroup);
           groupsMap[newGroup.groupId] = newGroup;
         }
-      } else if (notification.parentType == 'MEMBER') {
+      } else if (notification.parentType == NotificationParentType.member) {
         groupId = 'space-${notification.locations[0].spaceId}';
         if (groupsMap.containsKey(groupId)) {
           groupsMap[groupId]?.notifications.add(notification);
@@ -117,21 +117,22 @@ class NotificationHelper {
             locations: [],
             createdAt: notification.createdAt,
             title: spaceName,
-            type: NotificationCategory.space,
+            type: NotificationGroupType.space,
             notifications: [notification],
             showNotifications: true,
           );
           groups.add(newGroup);
           groupsMap[newGroup.groupId] = newGroup;
         }
-      } else if (notification.parentType == 'ACHIEVEMENT') {
+      } else if (notification.parentType ==
+          NotificationParentType.achievement) {
         groupId = 'achievement-${notification.id}';
         final NotificationsGroup newGroup = NotificationsGroup(
           groupId: groupId,
           locations: [],
           createdAt: notification.createdAt,
           title: notification.text,
-          type: NotificationCategory.achievement,
+          type: NotificationGroupType.achievement,
           notifications: [notification],
           showNotifications: false,
         );
@@ -144,7 +145,7 @@ class NotificationHelper {
           locations: [],
           createdAt: notification.createdAt,
           title: notification.text,
-          type: NotificationCategory.other,
+          type: NotificationGroupType.other,
           notifications: [notification],
           showNotifications: false,
         );
@@ -157,15 +158,15 @@ class NotificationHelper {
 
   String getPictureAssetByType(NotificationsGroup notificationGroup) {
     switch (notificationGroup.type) {
-      case NotificationCategory.achievement:
+      case NotificationGroupType.achievement:
         return 'assets/icons/notifications/achievement.svg';
-      case NotificationCategory.task:
+      case NotificationGroupType.task:
         return 'assets/icons/notifications/task.svg';
-      case NotificationCategory.space:
+      case NotificationGroupType.space:
         return 'assets/icons/notifications/space.svg';
-      case NotificationCategory.reglament:
+      case NotificationGroupType.reglament:
         return 'assets/icons/notifications/reglament.svg';
-      case NotificationCategory.other:
+      case NotificationGroupType.other:
         return 'assets/icons/notifications/other.svg';
     }
   }

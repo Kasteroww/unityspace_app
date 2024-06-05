@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/screens/notifications_screen/utils/notification_helper.dart';
-import 'package:unityspace/screens/notifications_screen/utils/notifications_strings.dart';
 import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
 import 'package:unityspace/store/user_store.dart';
+import 'package:unityspace/utils/extensions/localization_extensions.dart';
+import 'package:unityspace/utils/localization_helper.dart';
 
 class NotificationInfo extends StatelessWidget {
   NotificationInfo({
@@ -14,9 +15,9 @@ class NotificationInfo extends StatelessWidget {
   final NotificationsGroup notificationGroup;
 
   final notificationHelper = NotificationHelper(userStore: UserStore());
-  final notificationStrings = NotificationsStrings(userStore: UserStore());
   @override
   Widget build(BuildContext context) {
+    final localization = LocalizationHelper.getLocalizations(context);
     final notifications = notificationGroup.notifications;
     return ListView.builder(
       shrinkWrap: true,
@@ -47,7 +48,10 @@ class NotificationInfo extends StatelessWidget {
                 ),
               Expanded(
                 child: Text(
-                  notificationStrings.notificationText(notification),
+                  notification.notificationType.localize(
+                    notification: notification,
+                    localization: localization,
+                  ),
                   maxLines: 2, // Ограничиваем текст двумя строками
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(

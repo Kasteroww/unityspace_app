@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/tasks_page.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/utils/enums.dart';
-import 'package:unityspace/screens/space_screen/pages/tasks_page/utils/extensions.dart';
+import 'package:unityspace/utils/extensions/localization_extensions.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
 

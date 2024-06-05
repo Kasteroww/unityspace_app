@@ -203,14 +203,12 @@ class UserStore extends GStore {
     });
   }
 
-  Map<String, OrganizationMember?> organizationMembersByEmailMap(
-    UserStore store,
-  ) {
-    if (store.organization?.members == null) {
+  Map<String, OrganizationMember> get organizationMembersByEmailMap {
+    if (organization?.members == null || organization!.members.isEmpty) {
       return {};
     }
-    final organizationMembers = store.organization?.members ?? [];
-    return organizationMembers.fold<Map<String, OrganizationMember?>>({},
+    final organizationMembers = organization?.members ?? [];
+    return organizationMembers.fold<Map<String, OrganizationMember>>({},
         (acc, member) {
       acc[member.email] = member;
       return acc;

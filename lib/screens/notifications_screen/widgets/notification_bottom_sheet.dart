@@ -3,10 +3,10 @@ import 'package:flutter_svg/svg.dart';
 import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/resources/theme/theme.dart';
 import 'package:unityspace/screens/notifications_screen/utils/notification_helper.dart';
-import 'package:unityspace/screens/notifications_screen/utils/notifications_strings.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_info.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/parts/locations.dart';
 import 'package:unityspace/store/user_store.dart';
+import 'package:unityspace/utils/extensions/localization_extensions.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 
 class NotificationBottomSheet extends StatelessWidget {
@@ -36,7 +36,7 @@ class NotificationBottomSheet extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
-              if (notificationsGroup.type == NotificationCategory.task)
+              if (notificationsGroup.type == NotificationGroupType.task)
                 Align(
                   alignment: const Alignment(-1, 0),
                   child: Padding(
@@ -102,7 +102,7 @@ class NotificationBottomSheet extends StatelessWidget {
                 ),
                 child: Center(
                   child: Text(
-                    '${localization.go_to} ${NotificationsStrings.groupName(notificationsGroup, localization)}',
+                    '${localization.go_to} ${notificationsGroup.type.localize(localization: localization)}',
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,

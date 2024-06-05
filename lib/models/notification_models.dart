@@ -144,7 +144,7 @@ class NotificationModel implements Identifiable {
   final int? message;
   final NotificationType notificationType;
   final int parentId;
-  final String parentType;
+  final NotificationParentType parentType;
   final int recipientId;
   final String? stageName;
   final String? taskName;
@@ -178,7 +178,7 @@ class NotificationModel implements Identifiable {
       message: data.message,
       notificationType: getNotificationType(data.notificationType),
       parentId: data.parentId,
-      parentType: data.parentType,
+      parentType: getNotificationParentType(data.parentType),
       recipientId: data.recipientId,
       stageName: data.stageName,
       taskName: data.taskName,
@@ -196,7 +196,7 @@ class NotificationModel implements Identifiable {
     int? message,
     NotificationType? notificationType,
     int? parentId,
-    String? parentType,
+    NotificationParentType? parentType,
     int? recipientId,
     String? stageName,
     String? taskName,
@@ -221,8 +221,12 @@ class NotificationModel implements Identifiable {
     );
   }
 
-  static NotificationType getNotificationType(String notificationType) {
-    return getEnumValue(notificationType, enumValues: NotificationType.values);
+  static NotificationType getNotificationType(String type) {
+    return getEnumValue(type, enumValues: NotificationType.values);
+  }
+
+  static NotificationParentType getNotificationParentType(String type) {
+    return getEnumValue(type, enumValues: NotificationParentType.values);
   }
 }
 
@@ -231,7 +235,7 @@ class NotificationsGroup {
   final List<NotificationLocation> locations;
   final DateTime createdAt;
   final String title;
-  final NotificationCategory type;
+  final NotificationGroupType type;
   final List<NotificationModel> notifications;
   final bool showNotifications;
 
@@ -262,13 +266,7 @@ class LocationGroup {
   });
 }
 
-enum NotificationCategory {
-  task,
-  space,
-  reglament,
-  achievement,
-  other,
-}
+enum NotificationGroupType { task, space, reglament, achievement, other }
 
 enum NotificationType implements EnumWithValue {
   reglamentCreated('REGLAMENT_CREATED'),
@@ -297,4 +295,15 @@ enum NotificationType implements EnumWithValue {
   final String value;
 
   const NotificationType(this.value);
+}
+
+enum NotificationParentType implements EnumWithValue {
+  task('TASK'),
+  reglament('REGLAMENT'),
+  member('MEMBER'),
+  achievement('ACHIEVEMENT');
+
+  @override
+  final String value;
+  const NotificationParentType(this.value);
 }
