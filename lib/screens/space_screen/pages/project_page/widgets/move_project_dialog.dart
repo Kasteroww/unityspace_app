@@ -28,31 +28,59 @@ Future<void> showMoveProjectDialog(
 class MoveProjectDialogStore extends WStore {
   String moveProjectError = '';
   WStoreStatus statusMoveProject = WStoreStatus.init;
-  List<Space> spaces = SpacesStore().spaces;
-  late Space selectedSpace;
-  late SpaceColumn selectedColumn;
+  int? selectedSpaceId;
+  int? selectedColumnId;
 
-  List<SpaceColumn> getColumnsBySpaceId(int spaceId) {
+  List<Space> get spaces => computedFromStore(
+        store: SpacesStore(),
+        keyName: 'spaces',
+        getValue: (store) => store.spaces,
+      );
+
+  List<SpaceColumn> getColumnsBySpaceId(int? spaceId) {
     return spaces.firstWhere((space) => space.id == spaceId).columns;
   }
 
   void initData(SpaceColumn column) {
-    setStore(() {
-      selectedSpace = spaces.firstWhere((space) => space.id == column.spaceId);
-      selectedColumn = column;
-    });
+    selectedSpaceId = spaces.firstWhere((space) => space.id == column.spaceId).id;
+    selectedColumnId = column.id;
+  }
+
+  void setSelectedSpace(int? spaceId) {
+    if (spaceId != null) {
+      setStore(() {
+        selectedSpaceId = spaceId;
+        selectedColumnId = getColumnsBySpaceId(spaceId).first.id;
+      });
+    }
+  }
+
+  void setSelectedColumn(int? columnId) {
+    if (columnId != null) {
+      setStore(() {
+        selectedColumnId = columnId;
+      });
+    }
   }
 
   void moveProject(AppLocalizations localization, int projectId) {
     if (statusMoveProject == WStoreStatus.loading) return;
+
+    if (selectedColumnId == null) {
+      setStore(() {
+        statusMoveProject = WStoreStatus.error;
+        moveProjectError = localization.column_id_null;
+        return;
+      });
+    }
+
     setStore(() {
       statusMoveProject = WStoreStatus.loading;
       moveProjectError = '';
     });
 
     subscribe(
-      future:
-          ProjectsStore().changeProjectColumn([projectId], selectedColumn.id),
+      future: ProjectsStore().changeProjectColumn([projectId], selectedColumnId!),
       subscriptionId: 1,
       onData: (_) {
         setStore(() {
@@ -86,8 +114,7 @@ class MoveProjectDialog extends WStoreWidget<MoveProjectDialogStore> {
   });
 
   @override
-  MoveProjectDialogStore createWStore() =>
-      MoveProjectDialogStore()..initData(selectedColumn);
+  MoveProjectDialogStore createWStore() => MoveProjectDialogStore()..initData(selectedColumn);
 
   @override
   Widget build(BuildContext context, MoveProjectDialogStore store) {
@@ -102,7 +129,7 @@ class MoveProjectDialog extends WStoreWidget<MoveProjectDialogStore> {
         final loading = status == WStoreStatus.loading;
         final error = status == WStoreStatus.error;
         return WStoreBuilder<MoveProjectDialogStore>(
-          watch: (store) => [store.selectedSpace],
+          watch: (store) => [store.selectedSpaceId],
           store: context.wstore(),
           builder: (context, store) {
             return AppDialogWithButtons(
@@ -115,35 +142,27 @@ class MoveProjectDialog extends WStoreWidget<MoveProjectDialogStore> {
               primaryButtonLoading: loading,
               secondaryButtonText: '',
               children: [
-                AddDialogDropdownMenu<Space>(
-                  onChanged: (space) {
+                AddDialogDropdownMenu<int?>(
+                  onChanged: (spaceId) {
                     FocusScope.of(context).unfocus();
-                    if (space != null) {
-                      store.selectedSpace = space;
-                      store.selectedColumn = space.columns.first;
-                    }
+                    store.setSelectedSpace(spaceId);
                   },
                   labelText: localization.space,
-                  listValues:
-                      store.spaces.map((space) => (space, space.name)).toList(),
-                  currentValue: store.selectedSpace,
+                  listValues: store.spaces.map((space) => (space.id, space.name)).toList(),
+                  currentValue: store.selectedSpaceId,
                 ),
                 const SizedBox(height: 16),
-                AddDialogDropdownMenu<SpaceColumn>(
-                  onChanged: (column) {
+                AddDialogDropdownMenu<int?>(
+                  onChanged: (int? columnId) {
                     FocusScope.of(context).unfocus();
-                    if (column is SpaceColumn) {
-                      store.selectedColumn = column;
-                    } else {
-                      throw Exception('Value has wrong type');
-                    }
+                    store.setSelectedColumn(columnId);
                   },
                   labelText: localization.group,
                   listValues: store
-                      .getColumnsBySpaceId(store.selectedSpace.id)
-                      .map((column) => (column, column.name))
+                      .getColumnsBySpaceId(store.selectedSpaceId)
+                      .map((column) => (column.id, column.name))
                       .toList(),
-                  currentValue: store.selectedColumn,
+                  currentValue: store.selectedColumnId,
                 ),
                 if (error)
                   Text(

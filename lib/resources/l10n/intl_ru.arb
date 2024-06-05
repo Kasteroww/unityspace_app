@@ -525,5 +525,6 @@
   "light_mauve": "Светлая мальва",
   "crayola_cantaloupe": "Дыня Крайола",
   "biscuit": "Бисквитный",
-  "platinum": "Платиновый"
+  "platinum": "Платиновый",
+  "column_id_null": "Параметр Column ID равен null"
 }
