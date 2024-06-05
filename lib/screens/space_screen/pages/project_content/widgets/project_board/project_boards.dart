@@ -6,6 +6,8 @@ import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/utils/helpers/role.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_board/parts/add_task_button.dart';
+import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_detail/project_detail.dart';
+import 'package:unityspace/screens/widgets/app_dialog/app_bottom_sheet.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/tasks_store.dart';
 import 'package:unityspace/store/user_store.dart';
@@ -205,22 +207,30 @@ class ProjectBoards extends WStoreWidget<ProjectBoardsStore> {
                                   itemBuilder:
                                       (BuildContext context, int index) {
                                     final task = tasks[index];
-                                    return Padding(
-                                      padding: const EdgeInsets.only(
-                                        bottom: 8,
-                                        right: 8,
-                                        left: 8,
-                                      ),
-                                      child: DecoratedBox(
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                          border:
-                                              Border.all(color: Colors.grey),
+                                    return InkWell(
+                                      onTap: () => AppBottomSheet.show(
+                                        context,
+                                        builder: (BuildContext context) => ProjectDetail(
+                                          task: task,
                                         ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(4),
-                                          child: Text(task.name),
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                          bottom: 8,
+                                          right: 8,
+                                          left: 8,
+                                        ),
+                                        child: DecoratedBox(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            border:
+                                                Border.all(color: Colors.grey),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(4),
+                                            child: Text(task.name),
+                                          ),
                                         ),
                                       ),
                                     );

@@ -1,4 +1,5 @@
 import 'package:unityspace/models/notification_models.dart';
+import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/resources/l10n/app_localizations.dart';
 import 'package:unityspace/screens/notifications_screen/utils/notification_helper.dart';
@@ -196,6 +197,22 @@ extension NotificationGroupLocalization on NotificationGroupType {
         return localization.achievements;
       case NotificationGroupType.other:
         return localization.other;
+    }
+  }
+}
+
+/// extension с методом локализации
+/// для каждого возможного значения TaskImportance
+/// возвращает его локализованное значение
+extension ImportanceLocalization on TaskImportance {
+  String localize({required AppLocalizations localization}) {
+    switch (this) {
+      case TaskImportance.high:
+        return localization.high;
+      case TaskImportance.normal:
+        return localization.normal;
+      case TaskImportance.low:
+        return localization.low;
     }
   }
 }

@@ -602,5 +602,13 @@
   "crayola_cantaloupe": "Дыня Крайола",
   "biscuit": "Бисквитный",
   "platinum": "Платиновый",
-  "column_id_null": "Параметр Column ID равен null"
+  "column_id_null": "Параметр Column ID равен null",
+  "normal": "Обычная",
+  "high": "Высокая",
+  "low": "Низкая",
+  "responsible": "Исполнитель",
+  "importance": "Важность",
+  "date": "Дата",
+  "shortcuts": "Ярлыки",
+  "add_desc": "Добавить описание"
 }
