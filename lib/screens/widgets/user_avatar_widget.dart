@@ -88,50 +88,52 @@ class UserAvatarWidget extends WStoreWidget<UserAvatarWidgetStore> {
   UserAvatarWidgetStore createWStore() => UserAvatarWidgetStore();
   @override
   Widget build(BuildContext context, UserAvatarWidgetStore store) {
-    return WStoreBuilder(
-      store: store,
-      watch: (store) => [store.userAvatarUrl, store.userNameFirstLetter],
-      builder: (context, store) {
-        return (store.userAvatarUrl.isNotEmpty)
-            ? ClipRRect(
-                borderRadius: BorderRadius.circular(radius),
-                child: SizedBox(
-                  width: width,
-                  height: height,
-                  child: DecoratedBox(
-                    decoration:
-                        BoxDecoration(border: Border.all(color: Colors.white)),
-                    child: Image(
-                      image: CachedNetworkImageProvider(
-                        store.userAvatarUrl,
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(radius),
+        color: Colors.white,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(1),
+        child: WStoreBuilder(
+          store: store,
+          watch: (store) => [store.userAvatarUrl, store.userNameFirstLetter],
+          builder: (context, store) {
+            return (store.userAvatarUrl.isNotEmpty)
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(radius),
+                    child: SizedBox(
+                      width: width,
+                      height: height,
+                      child: Image(
+                        image: CachedNetworkImageProvider(
+                          store.userAvatarUrl,
+                        ),
+                        fit: BoxFit.cover,
                       ),
-                      fit: BoxFit.cover,
                     ),
-                  ),
-                ),
-              )
-            : Container(
-                width: width,
-                height: height,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(radius),
-                  color: colorBackground,
-                  border: Border.all(
-                    color: Colors.white, // Specify the border color
-                  ),
-                ),
-                child: Center(
-                  child: Text(
-                    store.userNameFirstLetter,
-                    style: TextStyle(
-                      color: colorText,
-                      fontSize: fontSize,
+                  )
+                : Container(
+                    width: width,
+                    height: height,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(radius),
+                      color: colorBackground,
                     ),
-                    textScaler: TextScaler.noScaling,
-                  ),
-                ),
-              );
-      },
+                    child: Center(
+                      child: Text(
+                        store.userNameFirstLetter,
+                        style: TextStyle(
+                          color: colorText,
+                          fontSize: fontSize,
+                        ),
+                        textScaler: TextScaler.noScaling,
+                      ),
+                    ),
+                  );
+          },
+        ),
+      ),
     );
   }
 }
