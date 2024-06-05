@@ -158,6 +158,9 @@ class ProjectsStore extends GStore {
     });
   }
 
+  /// Создание элемента tab панели проекта
+  Future<void> createProjectEmbed() async {}
+
   @override
   void clear() {
     super.clear();

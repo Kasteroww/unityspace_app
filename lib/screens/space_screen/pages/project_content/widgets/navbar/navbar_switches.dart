@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/project_content.dart';
+import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/add_tab_dialog.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/navbar_popup_button.dart';
 import 'package:unityspace/screens/widgets/tabs_list/tab_button.dart';
 import 'package:unityspace/screens/widgets/tabs_list/tabs_list_row.dart';
@@ -52,7 +53,10 @@ class NavbarSwitches extends StatelessWidget {
                             ),
                           ],
                         ),
-                        const Icon(Icons.add),
+                        InkWell(
+                          onTap: () => showAddTabDialog(context, store.project?.id),
+                          child: const Icon(Icons.add),
+                        ),
                       ],
                     ),
                   ),
