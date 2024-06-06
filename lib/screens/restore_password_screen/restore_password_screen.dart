@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/resources/app_icons.dart';
+import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/resources/l10n/app_localizations.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_input_field.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_logo_widget.dart';
@@ -13,7 +14,7 @@ import 'package:wstore/wstore.dart';
 
 class RestorePasswordScreenStore extends WStore {
   WStoreStatus status = WStoreStatus.init;
-  String restoreError = '';
+  RestorePasswordErrors restorePasswordError = RestorePasswordErrors.none;
   String email = '';
 
   void again() {
@@ -24,7 +25,7 @@ class RestorePasswordScreenStore extends WStore {
     });
   }
 
-  void restore(AppLocalizations localization) {
+  void restore() {
     if (status == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -40,13 +41,13 @@ class RestorePasswordScreenStore extends WStore {
         });
       },
       onError: (error, __) {
-        String errorText = localization.restore_password_error;
+        RestorePasswordErrors currentError = RestorePasswordErrors.restoreError;
         if (error is AuthIncorrectCredentialsServiceException) {
-          errorText = localization.nonexistent_account;
+          currentError = RestorePasswordErrors.accountDoesNotExist;
         }
         setStore(() {
           status = WStoreStatus.error;
-          restoreError = errorText;
+          restorePasswordError = currentError;
         });
       },
     );
@@ -63,6 +64,20 @@ class RestorePasswordScreen extends WStoreWidget<RestorePasswordScreenStore> {
 
   @override
   RestorePasswordScreenStore createWStore() => RestorePasswordScreenStore();
+
+  String getErrorLocalization({
+    required RestorePasswordErrors error,
+    required AppLocalizations localization,
+  }) {
+    switch (error) {
+      case RestorePasswordErrors.restoreError:
+        return localization.restore_password_error;
+      case RestorePasswordErrors.accountDoesNotExist:
+        return localization.nonexistent_account;
+      default:
+        return '';
+    }
+  }
 
   @override
   Widget build(BuildContext context, RestorePasswordScreenStore store) {
@@ -93,7 +108,12 @@ class RestorePasswordScreen extends WStoreWidget<RestorePasswordScreenStore> {
                   onStatusError: (context) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(store.restoreError),
+                        content: Text(
+                          getErrorLocalization(
+                            error: store.restorePasswordError,
+                            localization: localization,
+                          ),
+                        ),
                       ),
                     );
                   },
@@ -127,7 +147,7 @@ class RestorePasswordForm extends StatelessWidget {
       onSubmit: () {
         FocusScope.of(context).unfocus();
         // загрузка и вход
-        context.wstore<RestorePasswordScreenStore>().restore(localization);
+        context.wstore<RestorePasswordScreenStore>().restore();
       },
       submittingNow: loading,
       children: (submit) => [

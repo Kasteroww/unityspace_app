@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/models/reglament_models.dart';
+import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/resources/l10n/app_localizations.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
@@ -26,7 +27,7 @@ Future<void> showRenameReglamentDialog(
 class RenameReglamentDialogStore extends WStore {
   WStoreStatus status = WStoreStatus.init;
   late Reglament reglament;
-  String error = '';
+  RenameReglamentErrors renameReglamentError = RenameReglamentErrors.none;
   String reglamentName = '';
 
   void setReglamentName(String value) {
@@ -35,16 +36,16 @@ class RenameReglamentDialogStore extends WStore {
     });
   }
 
-  Future<void> renameReglament(AppLocalizations localization) async {
+  Future<void> renameReglament() async {
     if (status == WStoreStatus.loading) return;
     setStore(() {
       status = WStoreStatus.loading;
-      error = '';
+      renameReglamentError = RenameReglamentErrors.none;
     });
 
     if (reglamentName.isEmpty) {
       setStore(() {
-        error = localization.empty_reglament_name_error;
+        renameReglamentError = RenameReglamentErrors.emptyName;
         status = WStoreStatus.error;
       });
       return;
@@ -54,7 +55,7 @@ class RenameReglamentDialogStore extends WStore {
           .renameReglament(reglamentId: reglament.id, name: reglamentName);
       setStore(() {
         status = WStoreStatus.loaded;
-        error = '';
+        renameReglamentError = RenameReglamentErrors.none;
       });
     } catch (e, stack) {
       logger.d('''
@@ -62,7 +63,7 @@ class RenameReglamentDialogStore extends WStore {
         ''');
       setStore(() {
         status = WStoreStatus.error;
-        error = localization.problem_uploading_data_try_again;
+        renameReglamentError = RenameReglamentErrors.problemUploadingData;
       });
       throw LoadDataException(
         'on rename reglament excetpion',
@@ -92,6 +93,20 @@ class RenameReglamentDialog extends WStoreWidget<RenameReglamentDialogStore> {
   RenameReglamentDialogStore createWStore() =>
       RenameReglamentDialogStore()..initValues(reglament);
 
+  String getErrorLocalization({
+    required RenameReglamentErrors error,
+    required AppLocalizations localization,
+  }) {
+    switch (error) {
+      case RenameReglamentErrors.emptyName:
+        return localization.empty_reglament_name_error;
+      case RenameReglamentErrors.problemUploadingData:
+        return localization.problem_uploading_data_try_again;
+      default:
+        return '';
+    }
+  }
+
   @override
   Widget build(BuildContext context, RenameReglamentDialogStore store) {
     final localization = LocalizationHelper.getLocalizations(context);
@@ -99,13 +114,17 @@ class RenameReglamentDialog extends WStoreWidget<RenameReglamentDialogStore> {
       store: store,
       watch: (store) => store.status,
       builder: (context, status) {
+        final error = getErrorLocalization(
+          error: store.renameReglamentError,
+          localization: localization,
+        );
         return AppDialogWithButtons(
           title: localization.rename_reglament,
           primaryButtonLoading: status == WStoreStatus.loading,
           primaryButtonText: localization.save,
           onPrimaryButtonPressed: () async {
             FocusScope.of(context).unfocus();
-            await store.renameReglament(localization);
+            await store.renameReglament();
             if (store.status == WStoreStatus.loaded && context.mounted) {
               Navigator.pop(context);
             }
@@ -125,9 +144,9 @@ class RenameReglamentDialog extends WStoreWidget<RenameReglamentDialogStore> {
               },
               labelText: '${localization.reglament_name}:',
             ),
-            if (store.error.isNotEmpty)
+            if (error.isNotEmpty)
               Text(
-                store.error,
+                error,
                 style: const TextStyle(
                   color: Color(0xFFD83400),
                 ),

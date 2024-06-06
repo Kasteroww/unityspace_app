@@ -15,6 +15,7 @@ class ConfirmScreenStore extends WStore {
   String confirmError = '';
   String code = '';
 
+// remove localization
   void confirm(AppLocalizations localization) {
     if (status == WStoreStatus.loading) return;
     //

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:unityspace/resources/l10n/app_localizations.dart';
+import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
 import 'package:unityspace/store/user_store.dart';
@@ -21,7 +21,7 @@ Future<void> showUserChangeNameDialog(
 
 class UserChangeNameDialogStore extends WStore {
   String name = '';
-  String changeNameError = '';
+  ChangeNameErrors changeNameError = ChangeNameErrors.none;
   WStoreStatus statusChangeName = WStoreStatus.init;
 
   void setName(String value) {
@@ -30,29 +30,29 @@ class UserChangeNameDialogStore extends WStore {
     });
   }
 
-  void changeName(AppLocalizations localization) {
+  void changeName() {
     if (statusChangeName == WStoreStatus.loading) return;
-    //
+
     setStore(() {
       statusChangeName = WStoreStatus.loading;
-      changeNameError = '';
+      changeNameError = ChangeNameErrors.none;
     });
-    //
+
     if (name.isEmpty) {
       setStore(() {
-        changeNameError = localization.empty_name_error;
+        changeNameError = ChangeNameErrors.emptyName;
         statusChangeName = WStoreStatus.error;
       });
       return;
     }
-    //
+
     if (name == widget.name) {
       setStore(() {
         statusChangeName = WStoreStatus.loaded;
       });
       return;
     }
-    //
+
     subscribe(
       future: UserStore().setUserName(name),
       subscriptionId: 1,
@@ -67,7 +67,7 @@ class UserChangeNameDialogStore extends WStore {
         );
         setStore(() {
           statusChangeName = WStoreStatus.error;
-          changeNameError = localization.change_name_error;
+          changeNameError = ChangeNameErrors.changeNameError;
         });
       },
     );
@@ -106,7 +106,7 @@ class UserChangeNameDialog extends WStoreWidget<UserChangeNameDialogStore> {
           primaryButtonText: localization.save,
           onPrimaryButtonPressed: () {
             FocusScope.of(context).unfocus();
-            store.changeName(localization);
+            store.changeName();
           },
           primaryButtonLoading: loading,
           secondaryButtonText: '',
@@ -121,13 +121,18 @@ class UserChangeNameDialog extends WStoreWidget<UserChangeNameDialogStore> {
               },
               onEditingComplete: () {
                 FocusScope.of(context).unfocus();
-                store.changeName(localization);
+                store.changeName();
               },
               labelText: localization.enter_a_new_name,
             ),
             if (error)
               Text(
-                store.changeNameError,
+                switch (store.changeNameError) {
+                  ChangeNameErrors.emptyName => localization.empty_name_error,
+                  ChangeNameErrors.changeNameError =>
+                    localization.change_name_error,
+                  ChangeNameErrors.none => ''
+                },
                 style: const TextStyle(
                   color: Color(0xFFD83400),
                 ),

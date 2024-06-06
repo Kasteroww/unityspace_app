@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/resources/app_icons.dart';
+import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/resources/l10n/app_localizations.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_input_field.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_logo_widget.dart';
@@ -14,7 +15,7 @@ import 'package:wstore/wstore.dart';
 class LoginByEmailScreenStore extends WStore {
   WStoreStatus status = WStoreStatus.init;
   bool showPassword = false;
-  String loginError = '';
+  LoginByEmailErrors loginError = LoginByEmailErrors.none;
   String email = '';
   String password = '';
 
@@ -24,7 +25,7 @@ class LoginByEmailScreenStore extends WStore {
     });
   }
 
-  void login(AppLocalizations localization) {
+  void login() {
     if (status == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -40,9 +41,9 @@ class LoginByEmailScreenStore extends WStore {
         });
       },
       onError: (error, __) {
-        String errorText = localization.login_error;
+        LoginByEmailErrors errorText = LoginByEmailErrors.loginError;
         if (error is AuthIncorrectCredentialsServiceException) {
-          errorText = localization.invalid_email_or_password;
+          errorText = LoginByEmailErrors.invalidEmailOrPassword;
         }
         setStore(() {
           status = WStoreStatus.error;
@@ -64,8 +65,23 @@ class LoginByEmailScreen extends WStoreWidget<LoginByEmailScreenStore> {
   @override
   LoginByEmailScreenStore createWStore() => LoginByEmailScreenStore();
 
+  String getErrorLocalization({
+    required LoginByEmailErrors error,
+    required AppLocalizations localization,
+  }) {
+    switch (error) {
+      case LoginByEmailErrors.loginError:
+        return localization.login_error;
+      case LoginByEmailErrors.invalidEmailOrPassword:
+        return localization.invalid_email_or_password;
+      default:
+        return '';
+    }
+  }
+
   @override
   Widget build(BuildContext context, LoginByEmailScreenStore store) {
+    final localization = LocalizationHelper.getLocalizations(context);
     return Scaffold(
       backgroundColor: const Color(0xFF111012),
       body: SafeArea(
@@ -87,7 +103,12 @@ class LoginByEmailScreen extends WStoreWidget<LoginByEmailScreenStore> {
                   onStatusError: (context) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(store.loginError),
+                        content: Text(
+                          getErrorLocalization(
+                            error: store.loginError,
+                            localization: localization,
+                          ),
+                        ),
                       ),
                     );
                   },
@@ -121,7 +142,7 @@ class LoginByEmailForm extends StatelessWidget {
       onSubmit: () {
         FocusScope.of(context).unfocus();
         // загрузка и вход
-        context.wstore<LoginByEmailScreenStore>().login(localization);
+        context.wstore<LoginByEmailScreenStore>().login();
       },
       submittingNow: loading,
       children: (submit) => [
@@ -155,10 +176,9 @@ class LoginByEmailForm extends StatelessWidget {
             return MainFormInputField(
               enabled: !loading,
               labelText:
-                  '${localization.password} (${localization.at_least_8_characters})',
-              iconAssetName: showPassword
-                  ? AppIcons.passwordHide
-                  : AppIcons.passwordShow,
+                  '${localization.password_must_be_at_least_8_characters})',
+              iconAssetName:
+                  showPassword ? AppIcons.passwordHide : AppIcons.passwordShow,
               textInputAction: TextInputAction.done,
               keyboardType: TextInputType.visiblePassword,
               obscureText: !showPassword,
@@ -175,7 +195,8 @@ class LoginByEmailForm extends StatelessWidget {
                   return localization.the_field_is_not_filled_in;
                 }
                 if (text.length < 8) {
-                  return '${localization.password_must_be} ${localization.at_least_8_characters}';
+                  return localization
+                      .password_must_be_not_less_than_8_characters;
                 }
                 return '';
               },

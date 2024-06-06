@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/models/project_models.dart';
-import 'package:unityspace/resources/l10n/app_localizations.dart';
+import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
 import 'package:unityspace/store/projects_store.dart';
@@ -21,7 +21,7 @@ Future<void> showAddProjectDialog(BuildContext context, int columnId) async {
 
 class AddProjectDialogStore extends WStore {
   String projectName = '';
-  String createProjectError = '';
+  CreateProjectErrors createProjectError = CreateProjectErrors.none;
   WStoreStatus statusCreateProject = WStoreStatus.init;
 
   void setProjectName(String value) {
@@ -30,15 +30,15 @@ class AddProjectDialogStore extends WStore {
     });
   }
 
-  void createProject(AppLocalizations localization) {
+  void createProject() {
     if (statusCreateProject == WStoreStatus.loading) return;
     setStore(() {
       statusCreateProject = WStoreStatus.loading;
-      createProjectError = '';
+      createProjectError = CreateProjectErrors.none;
     });
     if (projectName.isEmpty) {
       setStore(() {
-        createProjectError = localization.empty_project_name_error;
+        createProjectError = CreateProjectErrors.emptyName;
         statusCreateProject = WStoreStatus.error;
       });
       return;
@@ -60,7 +60,7 @@ class AddProjectDialogStore extends WStore {
         );
         setStore(() {
           statusCreateProject = WStoreStatus.error;
-          createProjectError = localization.create_project_error;
+          createProjectError = CreateProjectErrors.createError;
         });
       },
     );
@@ -98,7 +98,7 @@ class AddProjectDialog extends WStoreWidget<AddProjectDialogStore> {
           primaryButtonText: localization.create,
           onPrimaryButtonPressed: () {
             FocusScope.of(context).unfocus();
-            store.createProject(localization);
+            store.createProject();
           },
           primaryButtonLoading: loading,
           secondaryButtonText: '',
@@ -112,13 +112,19 @@ class AddProjectDialog extends WStoreWidget<AddProjectDialogStore> {
               },
               onEditingComplete: () {
                 FocusScope.of(context).unfocus();
-                store.createProject(localization);
+                store.createProject();
               },
               labelText: '${localization.project_name}:',
             ),
             if (error)
               Text(
-                store.createProjectError,
+                switch (store.createProjectError) {
+                  CreateProjectErrors.emptyName =>
+                    localization.empty_project_name_error,
+                  CreateProjectErrors.createError =>
+                    localization.create_project_error,
+                  CreateProjectErrors.none => '',
+                },
                 style: const TextStyle(
                   color: Color(0xFFD83400),
                 ),

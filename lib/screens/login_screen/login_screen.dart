@@ -57,18 +57,6 @@ class LoginScreenStore extends WStore {
     }
   }
 
-  // Future<void> _yandexSignInAction() async {
-  //   final flutterLoginYandexPlugin = FlutterLoginYandex();
-  //   final response = await flutterLoginYandexPlugin.signIn();
-  //   if (response!=null) {
-  //     final token = response['token'] as String?;
-  //     if (token == null) {
-  //       throw 'no token';
-  //     }
-  //     logger.d('yandex token=$token');
-  //   }
-  // }
-
   @override
   LoginScreen get widget => super.widget as LoginScreen;
 }

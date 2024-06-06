@@ -46,6 +46,34 @@ installers/exe_creator/desktop_inno_script.iss
 
 ## Правила написания кода
 
+### Локализация
+Каждый самостоятельно пишет локализацию для своих виджетов. 
+
+Локализуются все строки, которые видит пользователь.
+
+Вся локализация происходит внутри виджетов, в зоне доступа контекста. Исключение составляют некоторые enums, для их локализации пишется extension.
+
+```dart
+extension NotificationGroupLocalization on NotificationGroupType {
+  String localize({required AppLocalizations localization}) {
+    switch (this) {
+      case NotificationGroupType.task:
+        return localization.tasks;
+      case NotificationGroupType.reglament:
+        return localization.reglaments;
+      case NotificationGroupType.space:
+        return localization.spaces;
+      case NotificationGroupType.achievement:
+        return localization.achievements;
+      case NotificationGroupType.other:
+        return localization.other;
+    }
+  }
+}
+```
+
+В сторах локализаций быть не должно.
+
 ### Стилистическое 
 
 #### Параметры 

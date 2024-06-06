@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:unityspace/resources/l10n/app_localizations.dart';
+import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
 import 'package:unityspace/store/user_store.dart';
@@ -22,7 +22,7 @@ Future<void> showUserChangeGitHubLinkDialog(
 
 class UserChangeGitHubLinkDialogStore extends WStore {
   String link = '';
-  String changeGitHubLinkError = '';
+  ChangeGitHubLinkErrors changeGitHubLinkError = ChangeGitHubLinkErrors.none;
   WStoreStatus statusChangeGitHubLink = WStoreStatus.init;
 
   void setLink(String value) {
@@ -31,12 +31,12 @@ class UserChangeGitHubLinkDialogStore extends WStore {
     });
   }
 
-  void changeGitHubLink(AppLocalizations localization) {
+  void changeGitHubLink() {
     if (statusChangeGitHubLink == WStoreStatus.loading) return;
     //
     setStore(() {
       statusChangeGitHubLink = WStoreStatus.loading;
-      changeGitHubLinkError = '';
+      changeGitHubLinkError = ChangeGitHubLinkErrors.none;
     });
     //
     String formattedLink = link;
@@ -46,7 +46,7 @@ class UserChangeGitHubLinkDialogStore extends WStore {
       }
       if (!isLinkValid(formattedLink)) {
         setStore(() {
-          changeGitHubLinkError = localization.invalid_link_error;
+          changeGitHubLinkError = ChangeGitHubLinkErrors.invalidLink;
           statusChangeGitHubLink = WStoreStatus.error;
         });
         return;
@@ -69,13 +69,12 @@ class UserChangeGitHubLinkDialogStore extends WStore {
         });
       },
       onError: (error, stack) {
-        final String errorText = localization.change_link_error;
         logger.d(
           'UserChangeGitHubLinkDialogStore.changeGitHubLink error: $error stack: $stack',
         );
         setStore(() {
           statusChangeGitHubLink = WStoreStatus.error;
-          changeGitHubLinkError = errorText;
+          changeGitHubLinkError = ChangeGitHubLinkErrors.changeLinkError;
         });
       },
     );
@@ -116,7 +115,7 @@ class UserChangeGitHubLinkDialog
           primaryButtonText: localization.save,
           onPrimaryButtonPressed: () {
             FocusScope.of(context).unfocus();
-            store.changeGitHubLink(localization);
+            store.changeGitHubLink();
           },
           primaryButtonLoading: loading,
           secondaryButtonText: '',
@@ -132,13 +131,19 @@ class UserChangeGitHubLinkDialog
               },
               onEditingComplete: () {
                 FocusScope.of(context).unfocus();
-                store.changeGitHubLink(localization);
+                store.changeGitHubLink();
               },
               labelText: localization.link_on_name_profile,
             ),
             if (error)
               Text(
-                store.changeGitHubLinkError,
+                switch (store.changeGitHubLinkError) {
+                  ChangeGitHubLinkErrors.invalidLink =>
+                    localization.invalid_link_error,
+                  ChangeGitHubLinkErrors.changeLinkError =>
+                    localization.change_link_error,
+                  ChangeGitHubLinkErrors.none => ''
+                },
                 style: const TextStyle(
                   color: Color(0xFFD83400),
                 ),

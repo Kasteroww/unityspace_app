@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:unityspace/resources/l10n/app_localizations.dart';
+import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
 import 'package:unityspace/store/user_store.dart';
@@ -22,7 +22,7 @@ Future<void> showUserChangeTgLinkDialog(
 
 class UserChangeTgLinkDialogStore extends WStore {
   String link = '';
-  String changeLinkError = '';
+  ChangeTgLinkErrors changeLinkError = ChangeTgLinkErrors.none;
   WStoreStatus statusChangeLink = WStoreStatus.init;
 
   void setLink(String value) {
@@ -31,12 +31,12 @@ class UserChangeTgLinkDialogStore extends WStore {
     });
   }
 
-  void changeTgLink(AppLocalizations localization) {
+  void changeTgLink() {
     if (statusChangeLink == WStoreStatus.loading) return;
     //
     setStore(() {
       statusChangeLink = WStoreStatus.loading;
-      changeLinkError = '';
+      changeLinkError = ChangeTgLinkErrors.none;
     });
     //
     String formattedLink = link;
@@ -46,7 +46,7 @@ class UserChangeTgLinkDialogStore extends WStore {
       }
       if (!isLinkValid(formattedLink)) {
         setStore(() {
-          changeLinkError = localization.invalid_link_error;
+          changeLinkError = ChangeTgLinkErrors.invalidLink;
           statusChangeLink = WStoreStatus.error;
         });
         return;
@@ -70,13 +70,12 @@ class UserChangeTgLinkDialogStore extends WStore {
         });
       },
       onError: (error, stack) {
-        final String errorText = localization.change_link_error;
         logger.d(
           'UserChangeTgLinkDialogStore.changeTgLink error: $error stack: $stack',
         );
         setStore(() {
           statusChangeLink = WStoreStatus.error;
-          changeLinkError = errorText;
+          changeLinkError = ChangeTgLinkErrors.changeLinkError;
         });
       },
     );
@@ -114,7 +113,7 @@ class UserChangeTgLinkDialog extends WStoreWidget<UserChangeTgLinkDialogStore> {
           primaryButtonText: localization.save,
           onPrimaryButtonPressed: () {
             FocusScope.of(context).unfocus();
-            store.changeTgLink(localization);
+            store.changeTgLink();
           },
           primaryButtonLoading: loading,
           secondaryButtonText: '',
@@ -130,13 +129,19 @@ class UserChangeTgLinkDialog extends WStoreWidget<UserChangeTgLinkDialogStore> {
               },
               onEditingComplete: () {
                 FocusScope.of(context).unfocus();
-                store.changeTgLink(localization);
+                store.changeTgLink();
               },
               labelText: localization.link_on_name_profile,
             ),
             if (error)
               Text(
-                store.changeLinkError,
+                switch (store.changeLinkError) {
+                  ChangeTgLinkErrors.invalidLink =>
+                    localization.invalid_link_error,
+                  ChangeTgLinkErrors.changeLinkError =>
+                    localization.change_link_error,
+                  ChangeTgLinkErrors.none => ''
+                },
                 style: const TextStyle(
                   color: Color(0xFFD83400),
                 ),

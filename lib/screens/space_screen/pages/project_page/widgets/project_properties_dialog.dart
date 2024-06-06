@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/models/spaces_models.dart';
-import 'package:unityspace/resources/l10n/app_localizations.dart';
+import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_dropdown_menu.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
@@ -19,15 +19,16 @@ Future<void> showProjectPropertiesDialog(
   return showDialog(
     context: context,
     builder: (context) {
-      return ProjectPropertiesDialog(
+      return EditProjectPropertiesDialog(
         project: project,
       );
     },
   );
 }
 
-class ProjectPropertiesDialogStore extends WStore {
-  String projectPropertiesError = '';
+class EditProjectPropertiesDialogStore extends WStore {
+  EditProjectPropertiesErrors projectPropertiesError =
+      EditProjectPropertiesErrors.none;
   WStoreStatus statusProjectProperties = WStoreStatus.init;
 
   int? responsibleId;
@@ -80,11 +81,11 @@ class ProjectPropertiesDialogStore extends WStore {
     postponingTaskDayCount = project.postponingTaskDayCount;
   }
 
-  void saveProjectProperties(AppLocalizations localization, int projectId) {
+  void saveProjectProperties(int projectId) {
     if (statusProjectProperties == WStoreStatus.loading) return;
     setStore(() {
       statusProjectProperties = WStoreStatus.loading;
-      projectPropertiesError = '';
+      projectPropertiesError = EditProjectPropertiesErrors.none;
     });
 
     subscribe(
@@ -107,31 +108,33 @@ class ProjectPropertiesDialogStore extends WStore {
         );
         setStore(() {
           statusProjectProperties = WStoreStatus.error;
-          projectPropertiesError = localization.save_project_properties_error;
+          projectPropertiesError =
+              EditProjectPropertiesErrors.savePropertiesError;
         });
       },
     );
   }
 
   @override
-  ProjectPropertiesDialog get widget => super.widget as ProjectPropertiesDialog;
+  EditProjectPropertiesDialog get widget =>
+      super.widget as EditProjectPropertiesDialog;
 }
 
-class ProjectPropertiesDialog
-    extends WStoreWidget<ProjectPropertiesDialogStore> {
+class EditProjectPropertiesDialog
+    extends WStoreWidget<EditProjectPropertiesDialogStore> {
   final Project project;
 
-  const ProjectPropertiesDialog({
+  const EditProjectPropertiesDialog({
     required this.project,
     super.key,
   });
 
   @override
-  ProjectPropertiesDialogStore createWStore() =>
-      ProjectPropertiesDialogStore()..initData(project);
+  EditProjectPropertiesDialogStore createWStore() =>
+      EditProjectPropertiesDialogStore()..initData(project);
 
   @override
-  Widget build(BuildContext context, ProjectPropertiesDialogStore store) {
+  Widget build(BuildContext context, EditProjectPropertiesDialogStore store) {
     final localization = LocalizationHelper.getLocalizations(context);
     return WStoreStatusBuilder(
       store: store,
@@ -147,7 +150,7 @@ class ProjectPropertiesDialog
           primaryButtonText: localization.save,
           onPrimaryButtonPressed: () {
             FocusScope.of(context).unfocus();
-            store.saveProjectProperties(localization, project.id);
+            store.saveProjectProperties(project.id);
           },
           primaryButtonLoading: loading,
           secondaryButtonText: '',
@@ -269,7 +272,11 @@ class ProjectPropertiesDialog
             ),
             if (error)
               Text(
-                store.projectPropertiesError,
+                switch (store.projectPropertiesError) {
+                  EditProjectPropertiesErrors.savePropertiesError =>
+                    localization.save_project_properties_error,
+                  EditProjectPropertiesErrors.none => '',
+                },
                 style: const TextStyle(
                   color: Color(0xFFD83400),
                 ),

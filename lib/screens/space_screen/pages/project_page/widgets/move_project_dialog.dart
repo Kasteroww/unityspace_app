@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/models/spaces_models.dart';
-import 'package:unityspace/resources/l10n/app_localizations.dart';
+import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_dropdown_menu.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
 import 'package:unityspace/store/projects_store.dart';
@@ -26,7 +26,7 @@ Future<void> showMoveProjectDialog(
 }
 
 class MoveProjectDialogStore extends WStore {
-  String moveProjectError = '';
+  MoveProjectErrors moveProjectError = MoveProjectErrors.none;
   WStoreStatus statusMoveProject = WStoreStatus.init;
   int? selectedSpaceId;
   int? selectedColumnId;
@@ -42,7 +42,8 @@ class MoveProjectDialogStore extends WStore {
   }
 
   void initData(SpaceColumn column) {
-    selectedSpaceId = spaces.firstWhere((space) => space.id == column.spaceId).id;
+    selectedSpaceId =
+        spaces.firstWhere((space) => space.id == column.spaceId).id;
     selectedColumnId = column.id;
   }
 
@@ -63,24 +64,25 @@ class MoveProjectDialogStore extends WStore {
     }
   }
 
-  void moveProject(AppLocalizations localization, int projectId) {
+  void moveProject(int projectId) {
     if (statusMoveProject == WStoreStatus.loading) return;
 
     if (selectedColumnId == null) {
       setStore(() {
         statusMoveProject = WStoreStatus.error;
-        moveProjectError = localization.column_id_null;
+        moveProjectError = MoveProjectErrors.columnIdIsNull;
         return;
       });
     }
 
     setStore(() {
       statusMoveProject = WStoreStatus.loading;
-      moveProjectError = '';
+      moveProjectError = MoveProjectErrors.none;
     });
 
     subscribe(
-      future: ProjectsStore().changeProjectColumn([projectId], selectedColumnId!),
+      future:
+          ProjectsStore().changeProjectColumn([projectId], selectedColumnId!),
       subscriptionId: 1,
       onData: (_) {
         setStore(() {
@@ -93,7 +95,7 @@ class MoveProjectDialogStore extends WStore {
         );
         setStore(() {
           statusMoveProject = WStoreStatus.error;
-          moveProjectError = localization.move_project_error;
+          moveProjectError = MoveProjectErrors.moveProjectError;
         });
       },
     );
@@ -114,7 +116,8 @@ class MoveProjectDialog extends WStoreWidget<MoveProjectDialogStore> {
   });
 
   @override
-  MoveProjectDialogStore createWStore() => MoveProjectDialogStore()..initData(selectedColumn);
+  MoveProjectDialogStore createWStore() =>
+      MoveProjectDialogStore()..initData(selectedColumn);
 
   @override
   Widget build(BuildContext context, MoveProjectDialogStore store) {
@@ -137,7 +140,7 @@ class MoveProjectDialog extends WStoreWidget<MoveProjectDialogStore> {
               primaryButtonText: localization.move,
               onPrimaryButtonPressed: () {
                 FocusScope.of(context).unfocus();
-                store.moveProject(localization, projectId);
+                store.moveProject(projectId);
               },
               primaryButtonLoading: loading,
               secondaryButtonText: '',
@@ -148,7 +151,9 @@ class MoveProjectDialog extends WStoreWidget<MoveProjectDialogStore> {
                     store.setSelectedSpace(spaceId);
                   },
                   labelText: localization.space,
-                  listValues: store.spaces.map((space) => (space.id, space.name)).toList(),
+                  listValues: store.spaces
+                      .map((space) => (space.id, space.name))
+                      .toList(),
                   currentValue: store.selectedSpaceId,
                 ),
                 const SizedBox(height: 16),
@@ -166,7 +171,13 @@ class MoveProjectDialog extends WStoreWidget<MoveProjectDialogStore> {
                 ),
                 if (error)
                   Text(
-                    store.moveProjectError,
+                    switch (store.moveProjectError) {
+                      MoveProjectErrors.columnIdIsNull =>
+                        localization.column_id_null,
+                      MoveProjectErrors.moveProjectError =>
+                        localization.move_project_error,
+                      MoveProjectErrors.none => ''
+                    },
                     style: const TextStyle(
                       color: Color(0xFFD83400),
                     ),

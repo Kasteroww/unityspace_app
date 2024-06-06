@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/models/reglament_models.dart';
 import 'package:unityspace/models/spaces_models.dart';
+import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/resources/l10n/app_localizations.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
@@ -33,7 +34,8 @@ class DuplicateReglamentDialogStore extends WStore {
 
   late SpaceColumn selectedColumn;
   late Reglament selectedReglament;
-  String error = '';
+  DuplicateReglamentErrors duplicateReglamentError =
+      DuplicateReglamentErrors.none;
   String reglamentName = '';
 
   void setReglamentName(String value) {
@@ -71,16 +73,16 @@ class DuplicateReglamentDialogStore extends WStore {
     return newOrder;
   }
 
-  Future<void> duplicateReglament(AppLocalizations localization) async {
+  Future<void> duplicateReglament() async {
     if (status == WStoreStatus.loading) return;
     setStore(() {
       status = WStoreStatus.loading;
-      error = '';
+      duplicateReglamentError = DuplicateReglamentErrors.none;
     });
 
     if (reglamentName.isEmpty) {
       setStore(() {
-        error = localization.empty_reglament_name_error;
+        duplicateReglamentError = DuplicateReglamentErrors.emptyName;
         status = WStoreStatus.error;
       });
       return;
@@ -93,7 +95,7 @@ class DuplicateReglamentDialogStore extends WStore {
       );
       setStore(() {
         status = WStoreStatus.loaded;
-        error = '';
+        duplicateReglamentError = DuplicateReglamentErrors.none;
       });
     } catch (e, stack) {
       logger.d('''
@@ -101,7 +103,7 @@ class DuplicateReglamentDialogStore extends WStore {
         ''');
       setStore(() {
         status = WStoreStatus.error;
-        error = localization.problem_uploading_data_try_again;
+        duplicateReglamentError = DuplicateReglamentErrors.problemUploadingData;
       });
       throw LoadDataException(
         'on Duplicate reglament excetpion',
@@ -213,6 +215,20 @@ class DuplicateReglamentDialog
           selectedColumn: selectedColumn,
         );
 
+  String getErrorLocalization({
+    required DuplicateReglamentErrors error,
+    required AppLocalizations localization,
+  }) {
+    switch (error) {
+      case DuplicateReglamentErrors.emptyName:
+        return localization.empty_reglament_name_error;
+      case DuplicateReglamentErrors.problemUploadingData:
+        return localization.problem_uploading_data_try_again;
+      default:
+        return '';
+    }
+  }
+
   @override
   Widget build(BuildContext context, DuplicateReglamentDialogStore store) {
     final localization = LocalizationHelper.getLocalizations(context);
@@ -220,15 +236,17 @@ class DuplicateReglamentDialog
       store: store,
       watch: (store) => store.status,
       builder: (context, status) {
+        final error = getErrorLocalization(
+          error: store.duplicateReglamentError,
+          localization: localization,
+        );
         return AppDialogWithButtons(
           title: localization.duplicate_reglament,
           primaryButtonLoading: status == WStoreStatus.loading,
           primaryButtonText: localization.save,
           onPrimaryButtonPressed: () async {
             FocusScope.of(context).unfocus();
-            await store.duplicateReglament(
-              localization,
-            );
+            await store.duplicateReglament();
             if (store.status == WStoreStatus.loaded && context.mounted) {
               Navigator.pop(context);
             }
@@ -275,9 +293,9 @@ class DuplicateReglamentDialog
                 );
               },
             ),
-            if (store.error.isNotEmpty)
+            if (error.isNotEmpty)
               Text(
-                store.error,
+                error,
                 style: const TextStyle(
                   color: Color(0xFFD83400),
                 ),

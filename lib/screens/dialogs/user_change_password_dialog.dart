@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:unityspace/resources/l10n/app_localizations.dart';
+import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
 import 'package:unityspace/service/service_exceptions.dart';
@@ -23,7 +23,7 @@ class UserChangePasswordDialogStore extends WStore {
   String oldPassword = '';
   String newPassword = '';
   String confirmPassword = '';
-  String changePasswordError = '';
+  ChangePasswordErrors changePasswordError = ChangePasswordErrors.none;
   WStoreStatus statusChange = WStoreStatus.init;
 
   void setOldPassword(String value) {
@@ -44,17 +44,17 @@ class UserChangePasswordDialogStore extends WStore {
     });
   }
 
-  void changePassword(AppLocalizations localization) {
+  void changePassword() {
     if (statusChange == WStoreStatus.loading) return;
     //
     setStore(() {
       statusChange = WStoreStatus.loading;
-      changePasswordError = '';
+      changePasswordError = ChangePasswordErrors.none;
     });
     //
     if (oldPassword.isEmpty || newPassword.isEmpty) {
       setStore(() {
-        changePasswordError = localization.empty_password_error;
+        changePasswordError = ChangePasswordErrors.emptyPassword;
         statusChange = WStoreStatus.error;
       });
       return;
@@ -62,7 +62,7 @@ class UserChangePasswordDialogStore extends WStore {
     //
     if (newPassword.length < 8) {
       setStore(() {
-        changePasswordError = localization.at_least_8_characters_error;
+        changePasswordError = ChangePasswordErrors.lengthAtLeast8;
         statusChange = WStoreStatus.error;
       });
       return;
@@ -70,7 +70,7 @@ class UserChangePasswordDialogStore extends WStore {
     //
     if (confirmPassword != newPassword) {
       setStore(() {
-        changePasswordError = localization.match_password_error;
+        changePasswordError = ChangePasswordErrors.passwordsDoNotMatch;
         statusChange = WStoreStatus.error;
       });
       return;
@@ -78,7 +78,7 @@ class UserChangePasswordDialogStore extends WStore {
     //
     if (oldPassword == newPassword) {
       setStore(() {
-        changePasswordError = localization.new_password_equal_old_error;
+        changePasswordError = ChangePasswordErrors.matchesOldPassword;
         statusChange = WStoreStatus.error;
       });
       return;
@@ -93,9 +93,10 @@ class UserChangePasswordDialogStore extends WStore {
         });
       },
       onError: (error, stack) {
-        String errorText = localization.change_password_error;
+        ChangePasswordErrors currentError =
+            ChangePasswordErrors.changePasswordError;
         if (error is UserIncorrectOldPasswordServiceException) {
-          errorText = localization.incorrect_old_password_error;
+          currentError = ChangePasswordErrors.incorrectOldPassword;
         } else {
           logger.d(
             'UserChangePasswordDialogStore.changePassword error: $error stack: $stack',
@@ -103,7 +104,7 @@ class UserChangePasswordDialogStore extends WStore {
         }
         setStore(() {
           statusChange = WStoreStatus.error;
-          changePasswordError = errorText;
+          changePasswordError = currentError;
         });
       },
     );
@@ -141,13 +142,13 @@ class UserChangePasswordDialog
           primaryButtonText: localization.save,
           onPrimaryButtonPressed: () {
             FocusScope.of(context).unfocus();
-            store.changePassword(localization);
+            store.changePassword();
           },
           primaryButtonLoading: loading,
           secondaryButtonText: '',
           children: [
             Text(
-              '${localization.come_up_with_a_new_password} (${localization.at_least_8_characters})',
+              '${localization.come_up_with_a_new_password_with_length_at_least_8_characters})',
             ),
             const SizedBox(height: 16),
             AddDialogInputField(
@@ -180,13 +181,27 @@ class UserChangePasswordDialog
               },
               onEditingComplete: () {
                 FocusScope.of(context).unfocus();
-                store.changePassword(localization);
+                store.changePassword();
               },
               labelText: localization.repeat_new_password,
             ),
             if (error)
               Text(
-                store.changePasswordError,
+                switch (store.changePasswordError) {
+                  ChangePasswordErrors.emptyPassword =>
+                    localization.empty_password_error,
+                  ChangePasswordErrors.lengthAtLeast8 =>
+                    localization.at_least_8_characters,
+                  ChangePasswordErrors.passwordsDoNotMatch =>
+                    localization.match_password_error,
+                  ChangePasswordErrors.matchesOldPassword =>
+                    localization.new_password_equal_old_error,
+                  ChangePasswordErrors.changePasswordError =>
+                    localization.change_password_error,
+                  ChangePasswordErrors.incorrectOldPassword =>
+                    localization.incorrect_old_password_error,
+                  ChangePasswordErrors.none => ''
+                },
                 style: const TextStyle(
                   color: Color(0xFFD83400),
                 ),

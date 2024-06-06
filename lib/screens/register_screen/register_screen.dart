@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/resources/app_icons.dart';
 import 'package:unityspace/resources/constants.dart';
+import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/resources/l10n/app_localizations.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_input_field.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_logo_widget.dart';
@@ -15,7 +16,7 @@ import 'package:wstore/wstore.dart';
 
 class RegisterScreenStore extends WStore {
   WStoreStatus status = WStoreStatus.init;
-  String registerError = '';
+  RegistrationErrors registrationError = RegistrationErrors.none;
   String email = '';
   String password = '';
   bool showPassword = false;
@@ -26,7 +27,7 @@ class RegisterScreenStore extends WStore {
     });
   }
 
-  void register(AppLocalizations localization) {
+  void register() {
     if (status == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -42,19 +43,19 @@ class RegisterScreenStore extends WStore {
         });
       },
       onError: (error, __) {
-        String errorText = localization.create_account_error;
+        RegistrationErrors currentError = RegistrationErrors.createAccountError;
         if (error is AuthUserAlreadyExistsServiceException) {
-          errorText = localization.exist_email_error;
+          currentError = RegistrationErrors.emailAlreadyExists;
         }
         if (error is AuthIncorrectEmailServiceException) {
-          errorText = localization.incorrect_email_error;
+          currentError = RegistrationErrors.incorrectEmail;
         }
         if (error is AuthTooManyMessagesServiceException) {
-          errorText = localization.overloaded_service_error;
+          currentError = RegistrationErrors.overloadedService;
         }
         setStore(() {
           status = WStoreStatus.error;
-          registerError = errorText;
+          registrationError = currentError;
         });
       },
     );
@@ -71,6 +72,24 @@ class RegisterScreen extends WStoreWidget<RegisterScreenStore> {
 
   @override
   RegisterScreenStore createWStore() => RegisterScreenStore();
+
+  String getLocalizationError({
+    required RegistrationErrors error,
+    required AppLocalizations localization,
+  }) {
+    switch (error) {
+      case RegistrationErrors.emailAlreadyExists:
+        return localization.exist_email_error;
+      case RegistrationErrors.createAccountError:
+        return localization.create_account_error;
+      case RegistrationErrors.incorrectEmail:
+        return localization.incorrect_email_error;
+      case RegistrationErrors.overloadedService:
+        return localization.overloaded_service_error;
+      default:
+        return '';
+    }
+  }
 
   @override
   Widget build(BuildContext context, RegisterScreenStore store) {
@@ -106,7 +125,12 @@ class RegisterScreen extends WStoreWidget<RegisterScreenStore> {
                   onStatusError: (context) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(store.registerError),
+                        content: Text(
+                          getLocalizationError(
+                            error: store.registrationError,
+                            localization: localization,
+                          ),
+                        ),
                       ),
                     );
                   },
@@ -140,7 +164,7 @@ class RegisterByEmailForm extends StatelessWidget {
       onSubmit: () {
         FocusScope.of(context).unfocus();
         // загрузка и вход
-        context.wstore<RegisterScreenStore>().register(localization);
+        context.wstore<RegisterScreenStore>().register();
       },
       submittingNow: loading,
       children: (submit) => [
@@ -170,10 +194,9 @@ class RegisterByEmailForm extends StatelessWidget {
             return MainFormInputField(
               enabled: !loading,
               labelText:
-                  '${localization.come_up_with_a_new_password} (${localization.at_least_8_characters})',
-              iconAssetName: showPassword
-                  ? AppIcons.passwordHide
-                  : AppIcons.passwordShow,
+                  '${localization.come_up_with_a_new_password_with_length_at_least_8_characters})',
+              iconAssetName:
+                  showPassword ? AppIcons.passwordHide : AppIcons.passwordShow,
               textInputAction: TextInputAction.done,
               keyboardType: TextInputType.visiblePassword,
               obscureText: !showPassword,
@@ -190,7 +213,8 @@ class RegisterByEmailForm extends StatelessWidget {
                   return localization.the_field_is_not_filled_in;
                 }
                 if (text.length < 8) {
-                  return '${localization.password_must_be} ${localization.at_least_8_characters}';
+                  return localization
+                      .password_must_be_not_less_than_8_characters;
                 }
                 return '';
               },

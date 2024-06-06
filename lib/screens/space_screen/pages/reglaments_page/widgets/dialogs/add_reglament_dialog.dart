@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/resources/l10n/app_localizations.dart';
 import 'package:unityspace/screens/space_screen/pages/edit_reglament_page/edit_reglament_page.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
@@ -22,7 +23,7 @@ Future<void> showAddReglamentDialog(BuildContext context, int columnId) async {
 class AddReglamentDialogStore extends WStore {
   WStoreStatus status = WStoreStatus.init;
   late int columnId;
-  String createReglamentError = '';
+  AddReglamentErrors addReglamentError = AddReglamentErrors.none;
   String reglamentName = '';
 
   void setReglamentName(String value) {
@@ -31,16 +32,16 @@ class AddReglamentDialogStore extends WStore {
     });
   }
 
-  Future<void> createReglament(AppLocalizations localization) async {
+  Future<void> createReglament() async {
     if (status == WStoreStatus.loading) return;
     setStore(() {
       status = WStoreStatus.loading;
-      createReglamentError = '';
+      addReglamentError = AddReglamentErrors.none;
     });
 
     if (reglamentName.isEmpty) {
       setStore(() {
-        createReglamentError = localization.empty_reglament_name_error;
+        addReglamentError = AddReglamentErrors.emptyName;
         status = WStoreStatus.error;
       });
       return;
@@ -53,7 +54,7 @@ class AddReglamentDialogStore extends WStore {
       );
       setStore(() {
         status = WStoreStatus.loaded;
-        createReglamentError = '';
+        addReglamentError = AddReglamentErrors.none;
       });
     } catch (e, stack) {
       logger.d('''
@@ -62,7 +63,7 @@ class AddReglamentDialogStore extends WStore {
         ''');
       setStore(() {
         status = WStoreStatus.error;
-        createReglamentError = localization.problem_uploading_data_try_again;
+        addReglamentError = AddReglamentErrors.problemUploadingData;
       });
     }
   }
@@ -87,6 +88,20 @@ class AddReglamentDialog extends WStoreWidget<AddReglamentDialogStore> {
   AddReglamentDialogStore createWStore() =>
       AddReglamentDialogStore()..initValues(columnId);
 
+  String getErrorLocalization({
+    required AddReglamentErrors error,
+    required AppLocalizations localization,
+  }) {
+    switch (error) {
+      case AddReglamentErrors.emptyName:
+        return localization.empty_reglament_name_error;
+      case AddReglamentErrors.problemUploadingData:
+        return localization.problem_uploading_data_try_again;
+      default:
+        return '';
+    }
+  }
+
   @override
   Widget build(BuildContext context, AddReglamentDialogStore store) {
     final localization = LocalizationHelper.getLocalizations(context);
@@ -94,13 +109,17 @@ class AddReglamentDialog extends WStoreWidget<AddReglamentDialogStore> {
       store: store,
       watch: (store) => store.status,
       builder: (context, status) {
+        final error = getErrorLocalization(
+          error: store.addReglamentError,
+          localization: localization,
+        );
         return AppDialogWithButtons(
           title: localization.add_reglament,
           primaryButtonLoading: status == WStoreStatus.loading,
           primaryButtonText: localization.create,
           onPrimaryButtonPressed: () async {
             FocusScope.of(context).unfocus();
-            await store.createReglament(localization);
+            await store.createReglament();
             if (store.status == WStoreStatus.loaded && context.mounted) {
               Navigator.pop(context);
               await Navigator.of(context).push(
@@ -128,9 +147,9 @@ class AddReglamentDialog extends WStoreWidget<AddReglamentDialogStore> {
               },
               labelText: '${localization.reglament_name}:',
             ),
-            if (store.createReglamentError.isNotEmpty)
+            if (error.isNotEmpty)
               Text(
-                store.createReglamentError,
+                error,
                 style: const TextStyle(
                   color: Color(0xFFD83400),
                 ),

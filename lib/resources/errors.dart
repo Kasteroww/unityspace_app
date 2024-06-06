@@ -35,3 +35,45 @@ enum TasksErrors { none, loadingDataError }
 enum SearchTaskErrors { none }
 
 enum AddProjectTabErrors { none, addProjectTabError, valueIsEmpty }
+
+enum CreateProjectErrors { none, emptyName, createError }
+
+enum AddSpaceErrors { none, emptyName, paidTariffError, createError }
+
+enum ChangeGitHubLinkErrors { none, invalidLink, changeLinkError }
+
+enum ChangeNameErrors { none, emptyName, changeNameError }
+
+enum ChangePasswordErrors {
+  none,
+  emptyPassword,
+  lengthAtLeast8,
+  passwordsDoNotMatch,
+  matchesOldPassword,
+  changePasswordError,
+  incorrectOldPassword
+}
+
+enum ChangeTgLinkErrors { none, invalidLink, changeLinkError }
+
+enum LoginByEmailErrors { none, loginError, invalidEmailOrPassword }
+
+enum RenameReglamentErrors { none, emptyName, problemUploadingData }
+
+enum RegistrationErrors {
+  none,
+  emailAlreadyExists,
+  createAccountError,
+  incorrectEmail,
+  overloadedService
+}
+
+enum RestorePasswordErrors { none, restoreError, accountDoesNotExist }
+
+enum MoveProjectErrors { none, columnIdIsNull, moveProjectError }
+
+enum EditProjectPropertiesErrors { none, savePropertiesError }
+
+enum AddReglamentErrors { none, emptyName, problemUploadingData }
+
+enum DuplicateReglamentErrors { none, emptyName, problemUploadingData }
