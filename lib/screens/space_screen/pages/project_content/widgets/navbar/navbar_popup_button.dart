@@ -35,7 +35,7 @@ class NavbarPopupButton extends StatelessWidget {
             ),
             PopupMenuItem(
               child: NavbarPopupItem(
-                text: localization.search_task,
+                text: '${localization.search_task}...',
                 icon: AppIcons.search,
               ),
             ),
