@@ -210,7 +210,7 @@ class AddTabDialog extends WStoreWidget<AddTabDialogStore> {
                       ),
                     ),
                     AddTabDialogFieldsColumn(
-                      listTabs
+                      tabDescription: listTabs
                           .firstWhereOrNull(
                             (tab) => tab.$1 == store.selectedCategory,
                           )

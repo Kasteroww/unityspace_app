@@ -5,7 +5,7 @@ import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
 
 class AddTabDialogFieldsColumn extends StatelessWidget {
-  const AddTabDialogFieldsColumn(this.tabDescription, {super.key});
+  const AddTabDialogFieldsColumn({this.tabDescription, super.key});
 
   final String? tabDescription;
 

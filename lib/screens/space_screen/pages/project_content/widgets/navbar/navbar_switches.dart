@@ -25,10 +25,13 @@ class NavbarSwitches extends StatelessWidget {
             store.isShowProjectReviewTab,
           ],
           builder: (context, store) {
+            // составление листа элементов tab панели
             final List<(String, String)> listTabs = [
               (ProjectContentStore.tabTasks, localization.tasks),
+              // если у модели проекта параметр true, добавляем вкладку документы
               if (store.isShowProjectReviewTab)
                 (ProjectContentStore.tabDocuments, localization.documents),
+              // добавляем в лист вкладок embeddings из модели проекта
               ...store.embeddings.map(
                 (embedding) => ('embed-${embedding.id}', embedding.name),
               ),
@@ -54,7 +57,8 @@ class NavbarSwitches extends StatelessWidget {
                           ],
                         ),
                         InkWell(
-                          onTap: () => showAddTabDialog(context, store.project?.id),
+                          onTap: () =>
+                              showAddTabDialog(context, store.project?.id),
                           child: const Icon(Icons.add),
                         ),
                       ],
