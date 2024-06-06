@@ -11,11 +11,9 @@ import 'package:wstore/wstore.dart';
 
 class UserInOrganizationInfoCard extends StatelessWidget {
   final OrganizationMember organizationMember;
-  final OrganizationRoleEnum role;
 
   const UserInOrganizationInfoCard({
     required this.organizationMember,
-    required this.role,
     super.key,
   });
 
@@ -81,7 +79,10 @@ class UserInOrganizationInfoCard extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          role.localize(localization: localization),
+                          context
+                              .wstore<UsersInOrganizationPageStore>()
+                              .getMemberRole(organizationMember)
+                              .localize(localization: localization),
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             fontSize: 14,
@@ -93,7 +94,7 @@ class UserInOrganizationInfoCard extends StatelessWidget {
                   ),
                   if (context
                       .wstore<UsersInOrganizationPageStore>()
-                      .hasMemberEditingRights(role))
+                      .hasMemberEditingRights(organizationMember))
                     const SizedBox(
                       height: 30,
                       width: 30,
@@ -122,16 +123,19 @@ class UserInOrganizationInfoCard extends StatelessWidget {
                           ),
                           PopupMenuItem<String>(
                             child: Text(
-                              role == OrganizationRoleEnum.admin
+                              context
+                                          .wstore<
+                                              UsersInOrganizationPageStore>()
+                                          .getMemberRole(organizationMember) ==
+                                      OrganizationRoleEnum.admin
                                   ? localization.remove_administrator_rights
                                   : localization.grant_administrator_rights,
                             ),
                             onTap: () {
                               context
                                   .wstore<UsersInOrganizationPageStore>()
-                                  .setMemberAdmin(
+                                  .toggleMemberAdmin(
                                     organizationMember,
-                                    role != OrganizationRoleEnum.admin,
                                   );
                             },
                           ),

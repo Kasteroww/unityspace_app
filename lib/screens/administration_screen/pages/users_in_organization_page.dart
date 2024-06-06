@@ -38,8 +38,9 @@ class UsersInOrganizationPageStore extends WStore {
     await spacesStore.removeUserFromSpace(member.id);
   }
 
-  Future<void> setMemberAdmin(OrganizationMember member, bool isAdmin) async {
-    await userStore.setIsAdmin(member.id, isAdmin);
+  Future<void> toggleMemberAdmin(OrganizationMember member) async {
+    final isAdmin = getMemberRole(member) == OrganizationRoleEnum.admin;
+    await userStore.setIsAdmin(member.id, !isAdmin);
   }
 
   String getMemberSpaces(int memberId) {
@@ -63,7 +64,8 @@ class UsersInOrganizationPageStore extends WStore {
     return (spacesCount != 0);
   }
 
-  bool hasMemberEditingRights(OrganizationRoleEnum memberRole) {
+  bool hasMemberEditingRights(OrganizationMember member) {
+    final memberRole = getMemberRole(member);
     if ((userStore.isOrganizationOwner &&
             memberRole == OrganizationRoleEnum.owner) ||
         (userStore.isAdmin && memberRole != OrganizationRoleEnum.worker) ||
@@ -71,6 +73,16 @@ class UsersInOrganizationPageStore extends WStore {
       return true;
     }
     return false;
+  }
+
+  OrganizationRoleEnum getMemberRole(OrganizationMember member) {
+    if (member.id == organizationOwnerId) {
+      return OrganizationRoleEnum.owner;
+    } else {
+      return member.isAdmin
+          ? OrganizationRoleEnum.admin
+          : OrganizationRoleEnum.worker;
+    }
   }
 
   @override

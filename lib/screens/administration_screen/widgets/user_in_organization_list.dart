@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/models/user_models.dart';
-import 'package:unityspace/screens/administration_screen/helpers/organization_role_enum.dart';
 import 'package:unityspace/screens/administration_screen/widgets/user_in_organization_info_card.dart';
 
 /// Список дней уведомлений
@@ -13,16 +12,6 @@ class UsersInOrganizationList extends StatelessWidget {
     required this.organizationOwner,
     super.key,
   });
-
-  OrganizationRoleEnum role(OrganizationMember member) {
-    if (member.id == organizationOwner) {
-      return OrganizationRoleEnum.owner;
-    } else {
-      return member.isAdmin
-          ? OrganizationRoleEnum.admin
-          : OrganizationRoleEnum.worker;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +26,6 @@ class UsersInOrganizationList extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
               child: UserInOrganizationInfoCard(
                 organizationMember: member,
-                role: role(member),
               ),
             ),
           );
