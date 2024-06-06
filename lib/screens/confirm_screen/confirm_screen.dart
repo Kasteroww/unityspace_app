@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/resources/app_icons.dart';
+import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/resources/l10n/app_localizations.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_input_field.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_logo_widget.dart';
@@ -12,11 +13,12 @@ import 'package:wstore/wstore.dart';
 
 class ConfirmScreenStore extends WStore {
   WStoreStatus status = WStoreStatus.init;
-  String confirmError = '';
+  ConfirmEmailErrors confirmError = ConfirmEmailErrors.none;
   String code = '';
 
-// remove localization
-  void confirm(AppLocalizations localization) {
+
+  void confirm() {
+
     if (status == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -32,13 +34,13 @@ class ConfirmScreenStore extends WStore {
         });
       },
       onError: (error, __) {
-        String errorText = localization.confirm_email_error;
+        ConfirmEmailErrors currentError = ConfirmEmailErrors.confirmEmailError;
         if (error is AuthIncorrectConfirmationCodeServiceException) {
-          errorText = localization.incorrect_code_error;
+          currentError = ConfirmEmailErrors.incorrectCode;
         }
         setStore(() {
           status = WStoreStatus.error;
-          confirmError = errorText;
+          confirmError = currentError;
         });
       },
     );
@@ -58,6 +60,19 @@ class ConfirmScreen extends WStoreWidget<ConfirmScreenStore> {
 
   @override
   ConfirmScreenStore createWStore() => ConfirmScreenStore();
+
+  String getErrorLocalization(
+      {required ConfirmEmailErrors error,
+      required AppLocalizations localization}) {
+    switch (error) {
+      case ConfirmEmailErrors.confirmEmailError:
+        return localization.confirm_email_error;
+      case ConfirmEmailErrors.incorrectCode:
+        return localization.incorrect_code_error;
+      default:
+        return '';
+    }
+  }
 
   @override
   Widget build(BuildContext context, ConfirmScreenStore store) {
@@ -87,7 +102,12 @@ class ConfirmScreen extends WStoreWidget<ConfirmScreenStore> {
                   onStatusError: (context) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(store.confirmError),
+                        content: Text(
+                          getErrorLocalization(
+                            error: store.confirmError,
+                            localization: localization,
+                          ),
+                        ),
                       ),
                     );
                   },
@@ -121,7 +141,7 @@ class ConfirmForm extends StatelessWidget {
       onSubmit: () {
         FocusScope.of(context).unfocus();
         // загрузка и вход
-        context.wstore<ConfirmScreenStore>().confirm(localization);
+        context.wstore<ConfirmScreenStore>().confirm();
       },
       submittingNow: loading,
       children: (submit) => [

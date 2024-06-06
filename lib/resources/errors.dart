@@ -77,3 +77,7 @@ enum EditProjectPropertiesErrors { none, savePropertiesError }
 enum AddReglamentErrors { none, emptyName, problemUploadingData }
 
 enum DuplicateReglamentErrors { none, emptyName, problemUploadingData }
+
+
+enum ConfirmEmailErrors { none, confirmEmailError, incorrectCode }
+
