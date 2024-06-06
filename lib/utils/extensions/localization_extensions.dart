@@ -1,6 +1,5 @@
 import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/models/task_models.dart';
-import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/resources/l10n/app_localizations.dart';
 import 'package:unityspace/screens/notifications_screen/utils/notification_helper.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/utils/enums.dart';
@@ -64,8 +63,6 @@ extension NotificationTypeLocalization on NotificationType {
     required NotificationModel notification,
     required AppLocalizations localization,
   }) {
-    final List<OrganizationMember> organizationMembers =
-        UserStore().organization?.members ?? [];
     try {
       switch (this) {
         case NotificationType.reglamentCreated:
@@ -105,16 +102,14 @@ extension NotificationTypeLocalization on NotificationType {
             final int userId = int.parse(
               notification.text.substring('add responsible '.length),
             );
-            final member =
-                NotificationHelper.findMemberById(organizationMembers, userId);
+            final member = NotificationHelper.findMemberById(userId);
             return localization.task_added_responsible(member?.name ?? '');
           }
           if (notification.text.startsWith('change responsible ')) {
             final int userId = int.parse(
               notification.text.substring('change responsible '.length),
             );
-            final member =
-                NotificationHelper.findMemberById(organizationMembers, userId);
+            final member = NotificationHelper.findMemberById(userId);
             return localization.task_changed_responsible(member?.name ?? '');
           }
           return localization.task_changed_responsible(
@@ -124,8 +119,7 @@ extension NotificationTypeLocalization on NotificationType {
           final userId = int.tryParse(notification.text);
 
           if (userId != null) {
-            final member =
-                NotificationHelper.findMemberById(organizationMembers, userId);
+            final member = NotificationHelper.findMemberById(userId);
             return localization.task_deleted_responsible(member?.name ?? '');
           }
           return localization.task_deleted_unknown_responsible;
@@ -146,7 +140,6 @@ extension NotificationTypeLocalization on NotificationType {
             return localization.member_deleted_themselves_for_owner;
           }
           final member = NotificationHelper.findMemberById(
-            organizationMembers,
             notification.parentId,
           );
           return localization.member_deleted_for_owner(member?.name ?? '');
@@ -162,7 +155,6 @@ extension NotificationTypeLocalization on NotificationType {
           return localization.member_added_from_space_link;
         case NotificationType.memberAddedForOwner:
           final member = NotificationHelper.findMemberById(
-            organizationMembers,
             notification.parentId,
           );
           return localization.member_added_for_owner(member?.name ?? '');
@@ -182,7 +174,7 @@ extension NotificationTypeLocalization on NotificationType {
 }
 
 /// extension с методом локализации
-/// для каждого возможного значения NotificationCategory
+/// для каждого возможного значения NotificationGroupType
 /// возвращает его локализованное значение
 extension NotificationGroupLocalization on NotificationGroupType {
   String localize({required AppLocalizations localization}) {

@@ -8,7 +8,6 @@ import 'package:unityspace/screens/notifications_screen/widgets/notifications_li
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/parts/notifications_day_text.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/parts/notifications_info_card.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/skeleton_listview/notification_skeleton_card.dart';
-import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
 
@@ -28,7 +27,7 @@ class NotificationsList extends StatelessWidget {
     super.key,
   });
 
-  final notificationHelper = NotificationHelper(userStore: UserStore());
+  final notificationHelper = NotificationHelper();
 
   @override
   Widget build(BuildContext context) {

@@ -3,7 +3,6 @@ import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/screens/notifications_screen/utils/notification_helper.dart';
 import 'package:unityspace/store/projects_store.dart';
 import 'package:unityspace/store/spaces_store.dart';
-import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/extensions/localization_extensions.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 
@@ -15,7 +14,7 @@ class Locations extends StatelessWidget {
     super.key,
   });
 
-  final notificationHelper = NotificationHelper(userStore: UserStore());
+  final notificationHelper = NotificationHelper();
   @override
   Widget build(BuildContext context) {
     final localization = LocalizationHelper.getLocalizations(context);

@@ -45,7 +45,7 @@ class UserStore extends GStore {
     return user!.isAdmin;
   }
 
-  Map<int, OrganizationMember?> get organizationMembersMap {
+  Map<int, OrganizationMember> get organizationMembersMap {
     return createMapById(organization?.members);
   }
 

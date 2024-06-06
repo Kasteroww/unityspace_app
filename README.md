@@ -48,29 +48,70 @@ installers/exe_creator/desktop_inno_script.iss
 
 ### Стилистическое 
 
-#### dynamic
-
-В ситуациях когда требуется dynamic, но значение используется (например, есть обращение к его параметрам) используется проверка на тип 
-
+#### Параметры 
+Рекомендуется отдавать предпочтение именованным параметрам, особенно в конструкторах. 
 ```dart
-onChanged: (value) {
-  FocusScope.of(context).unfocus();
-  if (value is SpaceColumn) {
-    store.setSelectedColumnId(value.id);
-  } 
-},
+  String localize({required AppLocalizations localization}) {
+    // ... body 
+  }
+```
+Это обеспечивает лучшую читаемость кода и снижает вероятность неверной трактовки параметра. 
+
+Исключением могут являться случаи когда параметр один и самоочевиден из названия функции:
+```dart
+  /// Поиск пользователя по id
+  static OrganizationMember? findMemberById(
+    // findById принимает id
+    int id,
+  ) {
+    return UserStore().organizationMembersMap[id];
+  }
+```
+```dart
+// dateFromDateTime принимает DateTime date
+DateTime dateFromDateTime(DateTime date) {
+  return DateTime(date.year, date.month, date.day);
+}
 ```
 
-Если требуется блок else - обработать или выбросить ошибку 
-
-```dart
- key: (element) => element is TaskHistory
-    ? element.id
-    : throw TypeErrors.castTypeError,
-```
 
 ### models 
+В ситуациях, когда в веб версии метод возвращает анонимный объект рекомендуется создать для него модель
+```ts
+export async function searchTasks(
+  searchText: string,
+  page: number
+): Promise<{
+  tasks: Task[]
+  tasksCount: number
+  maxPagesCount: number
+}> {
+// ... logic
+  return {
+    tasks: responses.convertTaskResponseToTask(result.tasks),
+    maxPagesCount: result.maxPagesCount,
+    tasksCount: result.tasksCount
+  }
+}
+```
+```dart
+class SearchTaskResponse {
+  final List<TaskResponse> tasks;
+  final int maxPagesCount;
+  final int tasksCount;
 
+  SearchTaskResponse({
+    required this.tasks,
+    required this.maxPagesCount,
+    required this.tasksCount,
+  });
+
+  // ...methods
+}
+```
+Использование рекордов (records) не рекомендуется из-за их плохой читаемости
+
+#### fromJson
 Фабрики `fromJson` должны иметь обработку ошибок парсинга. Все тело фабрики заворачивается в `try-catch`. В блоке `catch` выбрасывается `JsonParsingException` с `message` 'Error parsing Model', ошибкой `e` и стектрейсом `stack`
 ```dart
 class NotificationResponse {
@@ -92,6 +133,10 @@ class NotificationResponse {
   }
 }
 ```
+
+#### Создание собственных моделей 
+
+В случае, если сервис в веб версии возвращает 
 
 ### services 
 

@@ -1,4 +1,4 @@
-import 'package:collection/collection.dart';
+import 'package:intl/intl.dart';
 
 import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/models/user_models.dart';
@@ -8,10 +8,7 @@ import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/user_store.dart';
 
 class NotificationHelper {
-  UserStore userStore;
-  NotificationHelper({
-    required this.userStore,
-  });
+  NotificationHelper();
 
   /// Является ли пользователь владельцем организации
   static bool isUserOrganizationOwner({required User? user}) {
@@ -20,15 +17,18 @@ class NotificationHelper {
 
   /// Поиск пользователя по id
   static OrganizationMember? findMemberById(
-    List<OrganizationMember> members,
     int id,
   ) {
-    return members.firstWhereOrNull((member) => member.id == id);
+    return UserStore().organizationMembersMap[id];
+  }
+
+  static List<OrganizationMember> get getOrganizationMembers {
+    return UserStore().organization?.members ?? [];
   }
 
   /// Группировка Списка уведомлений по дням
   ///
-  /// Если уведомления произоши в один день, то они будут в одном списке
+  /// Если уведомления произошли в один день, то они будут в одном списке
   List<List<NotificationModel>> groupNotificationsByDay(
     List<NotificationModel> notifications,
   ) {
@@ -37,8 +37,7 @@ class NotificationHelper {
 
     for (final notification in notifications) {
       // Преобразование даты в строку в формате yyyy-MM-dd
-      final String day =
-          '${notification.createdAt.year}-${notification.createdAt.month}-${notification.createdAt.day}';
+      final String day = DateFormat.yMd().format(notification.createdAt);
 
       // Если такого дня еще нет в словаре, добавляем
       if (!groupedByDay.containsKey(day)) {
@@ -51,10 +50,6 @@ class NotificationHelper {
 
     // Возвращаем значения словаря как список списков
     return groupedByDay.values.toList();
-  }
-
-  List<OrganizationMember> getOrganizationMembers() {
-    return userStore.organization?.members ?? [];
   }
 
   ///Сортировка пользователей по ParentData

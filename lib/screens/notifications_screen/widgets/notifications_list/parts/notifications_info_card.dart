@@ -5,7 +5,6 @@ import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/screens/notifications_screen/utils/notification_helper.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_info.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/parts/locations.dart';
-import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/date_time_converter.dart';
 
 class NotificationsInfoCard extends StatelessWidget {
@@ -16,7 +15,7 @@ class NotificationsInfoCard extends StatelessWidget {
 
   final NotificationsGroup notificationsGroup;
 
-  final notificationHelper = NotificationHelper(userStore: UserStore());
+  final notificationHelper = NotificationHelper();
 
   @override
   Widget build(BuildContext context) {

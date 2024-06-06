@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/screens/notifications_screen/utils/notification_helper.dart';
 import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
-import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/extensions/localization_extensions.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 
@@ -14,7 +13,7 @@ class NotificationInfo extends StatelessWidget {
 
   final NotificationsGroup notificationGroup;
 
-  final notificationHelper = NotificationHelper(userStore: UserStore());
+  final notificationHelper = NotificationHelper();
   @override
   Widget build(BuildContext context) {
     final localization = LocalizationHelper.getLocalizations(context);
@@ -26,7 +25,6 @@ class NotificationInfo extends StatelessWidget {
       itemBuilder: (BuildContext context, int index) {
         final notification = notifications[index];
         final member = NotificationHelper.findMemberById(
-          notificationHelper.getOrganizationMembers(),
           notification.initiatorId,
         );
         return DecoratedBox(
