@@ -227,6 +227,39 @@ class Space implements Identifiable, Nameable {
   String toString() {
     return 'Space{id: $id, name: $name, order: $order, members: $members, columns: $columns, reglamentColumns: $reglamentColumns, invites: $invites, backgroundId: $backgroundId, favorite: $favorite, archiveColumnId: $archiveColumnId, archiveReglamentColumnId: $archiveReglamentColumnId, shareLinkToken: $shareLinkToken, shareLinkActive: $shareLinkActive}';
   }
+
+  Space copyWith({
+    int? id,
+    String? name,
+    double? order,
+    List<SpaceMember>? members,
+    List<SpaceColumn>? columns,
+    List<SpaceColumn>? reglamentColumns,
+    List<SpaceInvite>? invites,
+    int? backgroundId,
+    bool? favorite,
+    int? archiveColumnId,
+    int? archiveReglamentColumnId,
+    String? shareLinkToken,
+    bool? shareLinkActive,
+  }) {
+    return Space(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      order: order ?? this.order,
+      members: members ?? this.members,
+      columns: columns ?? this.columns,
+      reglamentColumns: reglamentColumns ?? this.reglamentColumns,
+      invites: invites ?? this.invites,
+      backgroundId: backgroundId ?? this.backgroundId,
+      favorite: favorite ?? this.favorite,
+      archiveColumnId: archiveColumnId ?? this.archiveColumnId,
+      archiveReglamentColumnId:
+          archiveReglamentColumnId ?? this.archiveReglamentColumnId,
+      shareLinkToken: shareLinkToken ?? this.shareLinkToken,
+      shareLinkActive: shareLinkActive ?? this.shareLinkActive,
+    );
+  }
 }
 
 class SpaceInvite {

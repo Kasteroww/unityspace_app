@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/utils/helpers/role.dart';
@@ -56,6 +58,39 @@ class SpacesStore extends GStore {
     setStore(() {
       this.spaces = spaces;
     });
+  }
+
+  Future<void> removeUserFromSpace(final int memberId) async {
+    for (var spaceIndex = 0; spaceIndex < spaces.length; spaceIndex++) {
+      final index = spaces[spaceIndex]
+          .members
+          .indexWhere((member) => member.id == memberId);
+      if (index != -1) {
+        await api.removeUserFromSpace(spaces[spaceIndex].id, memberId);
+        _removeUserFromSpaceLocally(spaceIndex: spaceIndex, memberId: memberId);
+      }
+    }
+  }
+
+  void _removeUserFromSpaceLocally({
+    required int spaceIndex,
+    required int memberId,
+  }) {
+    if (spaces.isNotEmpty) {
+      final index = spaces[spaceIndex]
+          .members
+          .indexWhere((member) => member.id == memberId);
+      if (index != -1) {
+        setStore(() {
+          spaces[spaceIndex] = spaces[spaceIndex].copyWith(
+            members: spaces[spaceIndex]
+                .members
+                .where((member) => member.id != memberId)
+                .toList(),
+          );
+        });
+      }
+    }
   }
 
   Future<int> createSpace(final String title) async {

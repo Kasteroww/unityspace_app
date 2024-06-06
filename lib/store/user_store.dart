@@ -53,6 +53,11 @@ class UserStore extends GStore {
     return organizationMembersMap[organization?.ownerId];
   }
 
+  int get organizationOwnerId {
+    final owner = organization?.ownerId ?? 0;
+    return owner;
+  }
+
   Future<void> getUserData() async {
     final userData = await api.getUserData();
     final user = User.fromResponse(userData);
@@ -211,6 +216,10 @@ class UserStore extends GStore {
       acc[member.email] = member;
       return acc;
     });
+  }
+
+  Future<void> setIsAdmin(int memberId, bool isAdmin) async {
+    await api.setIsAdmin(memberId, isAdmin);
   }
 
   @override

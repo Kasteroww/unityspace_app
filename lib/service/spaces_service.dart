@@ -37,3 +37,14 @@ Future<SpaceResponse> createSpaces(final String title, final int order) async {
     rethrow;
   }
 }
+
+Future removeUserFromSpace(final int spaceId, final int memberId) async {
+  try {
+    await HttpPlugin().delete('/spaces/$spaceId/members/$memberId');
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
+}

@@ -104,6 +104,12 @@ class AppNavigationDrawerStore extends WStore {
         keyName: 'isOrganizationOwner',
       );
 
+  bool get isAdmin => computedFromStore(
+        store: UserStore(),
+        getValue: (store) => store.isAdmin,
+        keyName: 'isAdmin',
+      );
+
   bool get trialNeverStarted => computedFromStore(
         store: UserStore(),
         getValue: (store) => store.trialNeverStarted,
@@ -166,6 +172,20 @@ class AppNavigationDrawer extends WStoreWidget<AppNavigationDrawerStore> {
                   }
                 },
               ),
+              if (store.isOrganizationOwner || store.isAdmin)
+                NavigatorMenuItem(
+                  iconAssetName: AppIcons.administration,
+                  title: localization.administration,
+                  selected: currentRoute == '/administration',
+                  favorite: false,
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    if (currentRoute != '/administration') {
+                      Navigator.of(context)
+                          .pushReplacementNamed('/administration');
+                    }
+                  },
+                ),
               const SizedBox(height: 16),
               Expanded(
                 child: WStoreBuilder(
@@ -448,7 +468,7 @@ class NavigatorMenuItem extends StatelessWidget {
       ),
       trailing: favorite
           ? SvgPicture.asset(
-        AppIcons.navigatorFavorite,
+              AppIcons.navigatorFavorite,
               width: 12,
               height: 12,
               fit: BoxFit.scaleDown,
@@ -502,7 +522,7 @@ class NavigatorMenuCurrentUser extends StatelessWidget {
       ),
       trailing: license
           ? SvgPicture.asset(
-        AppIcons.navigatorLicense,
+              AppIcons.navigatorLicense,
               width: 24,
               height: 24,
               fit: BoxFit.scaleDown,

@@ -259,3 +259,14 @@ Future<List<AchievementResponse>> getAchievements() async {
     rethrow;
   }
 }
+
+Future setIsAdmin(int memberId, bool isAdmin) async {
+  try {
+    await HttpPlugin().patch('user/is-admin/$memberId', {'isAdmin': isAdmin});
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
+}

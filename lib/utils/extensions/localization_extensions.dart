@@ -1,6 +1,7 @@
 import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/resources/l10n/app_localizations.dart';
+import 'package:unityspace/screens/administration_screen/helpers/organization_role_enum.dart';
 import 'package:unityspace/screens/notifications_screen/utils/notification_helper.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/utils/enums.dart';
 import 'package:unityspace/store/user_store.dart';
@@ -189,6 +190,19 @@ extension NotificationGroupLocalization on NotificationGroupType {
         return localization.achievements;
       case NotificationGroupType.other:
         return localization.other;
+    }
+  }
+}
+
+extension OrganizationRoleEnumExt on OrganizationRoleEnum {
+  String localize({required AppLocalizations localization}) {
+    switch (this) {
+      case OrganizationRoleEnum.owner:
+        return localization.owner;
+      case OrganizationRoleEnum.admin:
+        return localization.admin;
+      case OrganizationRoleEnum.worker:
+        return localization.worker;
     }
   }
 }

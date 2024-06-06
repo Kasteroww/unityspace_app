@@ -186,6 +186,7 @@ class OrganizationMemberResponse {
   final String? birthDate;
   final String? jobTitle;
   final String lastActivityDate;
+  final bool isAdmin;
 
   OrganizationMemberResponse({
     required this.avatar,
@@ -200,6 +201,7 @@ class OrganizationMemberResponse {
     required this.birthDate,
     required this.jobTitle,
     required this.lastActivityDate,
+    required this.isAdmin,
   });
 
   factory OrganizationMemberResponse.fromJson(Map<String, dynamic> map) {
@@ -220,6 +222,7 @@ class OrganizationMemberResponse {
         birthDate: map['birthDate'] as String?,
         jobTitle: map['jobTitle'] as String?,
         lastActivityDate: map['lastActivityDate'] as String,
+        isAdmin: map['isAdmin'] as bool,
       );
     } catch (e, stack) {
       throw JsonParsingException('Error parsing Model', e, stack);
@@ -304,6 +307,7 @@ class OrganizationMember implements Identifiable {
   final String? githubLink;
   final DateTime? birthDate;
   final String? jobTitle;
+  final bool isAdmin;
 
   OrganizationMember({
     required this.id,
@@ -315,6 +319,7 @@ class OrganizationMember implements Identifiable {
     required this.githubLink,
     required this.birthDate,
     required this.jobTitle,
+    required this.isAdmin,
   });
 
   factory OrganizationMember.fromResponse(
@@ -331,6 +336,7 @@ class OrganizationMember implements Identifiable {
       avatarLink: helpers.makeAvatarUrl(data.avatar),
       birthDate:
           data.birthDate != null ? DateTime.parse(data.birthDate!) : null,
+      isAdmin: data.isAdmin,
     );
   }
 
@@ -345,6 +351,7 @@ class OrganizationMember implements Identifiable {
       githubLink: data.githubLink,
       birthDate: data.birthDate,
       jobTitle: data.jobTitle,
+      isAdmin: data.isAdmin,
     );
   }
 
@@ -363,6 +370,7 @@ class OrganizationMember implements Identifiable {
     String? githubLink,
     DateTime? birthDate,
     String? jobTitle,
+    bool? isAdmin,
   }) {
     return OrganizationMember(
       id: id ?? this.id,
@@ -374,6 +382,7 @@ class OrganizationMember implements Identifiable {
       githubLink: githubLink ?? this.githubLink,
       birthDate: birthDate ?? this.birthDate,
       jobTitle: jobTitle ?? this.jobTitle,
+      isAdmin: isAdmin ?? this.isAdmin,
     );
   }
 }

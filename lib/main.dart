@@ -5,6 +5,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:unityspace/resources/l10n/app_localizations.dart';
 import 'package:unityspace/resources/theme/theme.dart';
 import 'package:unityspace/screens/account_screen/account_screen.dart';
+import 'package:unityspace/screens/administration_screen/administration_screen.dart';
 import 'package:unityspace/screens/confirm_screen/confirm_screen.dart';
 import 'package:unityspace/screens/home_screen/home_screen.dart';
 import 'package:unityspace/screens/loading_screen/loading_screen.dart';
@@ -113,6 +114,7 @@ class MyApp extends WStoreWidget<MyAppStore> {
                     as Map)['project'],
               ),
           '/notifications': (context) => const NotificationsScreen(),
+          '/administration': (context) => const AdministrationScreen(),
           '/account': (context) {
             final arguments = ModalRoute.of(context)?.settings.arguments
                 as Map<String, String>?;
