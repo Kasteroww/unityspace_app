@@ -615,5 +615,9 @@
   "importance": "Важность",
   "date": "Дата",
   "shortcuts": "Ярлыки",
-  "add_desc": "Добавить описание"
+  "add_desc": "Добавить описание",
+  "all_messages": "Все сообщения",
+  "write_message": "Напишите сообщение",
+  "unsubscribe": "Отписаться",
+  "members": "Участники"
 }
