@@ -220,6 +220,21 @@ class UserStore extends GStore {
 
   Future<void> setIsAdmin(int memberId, bool isAdmin) async {
     await api.setIsAdmin(memberId, isAdmin);
+    setIsAdminLocally(memberId, isAdmin);
+  }
+
+  void setIsAdminLocally(int memberId, bool isAdmin) {
+    if (organization == null) return;
+
+    final memberIndex =
+        organization!.members.indexWhere((member) => member.id == memberId);
+    if (memberIndex != -1) {
+      final OrganizationMember updatedMember =
+          organization!.members[memberIndex].copyWith(isAdmin: isAdmin);
+      setStore(() {
+        organization!.members[memberIndex] = updatedMember;
+      });
+    }
   }
 
   @override
