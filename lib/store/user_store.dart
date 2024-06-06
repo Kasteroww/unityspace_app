@@ -104,10 +104,8 @@ class UserStore extends GStore {
     required int userId,
   }) async {
     await api.confirmUserEmail(
-      email: email,
+      newEmail: email,
       code: code,
-      userGlobalId: userGlobalId,
-      userId: userId,
     );
   }
 

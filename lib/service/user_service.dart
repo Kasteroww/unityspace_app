@@ -225,17 +225,13 @@ Future<String?> requestEmailVerification({
 }
 
 Future confirmUserEmail({
-  required String email,
+  required String newEmail,
   required String code,
-  required int userGlobalId,
-  required int userId,
 }) async {
   try {
     final response = await HttpPlugin().post('/auth/verify-email-change', {
-      'email': email,
+      'newEmail': newEmail,
       'code': code,
-      'userGlobalId': userGlobalId,
-      'userId': userId,
     });
     return response.body;
   } catch (e) {
@@ -253,7 +249,9 @@ Future<List<AchievementResponse>> getAchievements() async {
   try {
     final response = await HttpPlugin().get('/achievements');
 
-    return (jsonDecode(response.body) as List).map((e) => AchievementResponse.fromJson(e)).toList();
+    return (jsonDecode(response.body) as List)
+        .map((e) => AchievementResponse.fromJson(e))
+        .toList();
   } catch (e) {
     if (e is HttpPluginException) {
       throw ServiceException(e.message);
