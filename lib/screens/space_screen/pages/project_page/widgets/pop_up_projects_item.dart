@@ -12,23 +12,14 @@ class PopupProjectsItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const SizedBox(
-          height: 16,
-          width: 16,
-        ),
-        const SizedBox(width: 12),
-        Text(
-          text,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-            height: 16.41 / 14,
-            color: color,
-          ),
-        ),
-      ],
+    return Text(
+      text,
+      style: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        height: 16.41 / 14,
+        color: color,
+      ),
     );
   }
 }

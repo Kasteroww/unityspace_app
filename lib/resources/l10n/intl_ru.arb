@@ -56,7 +56,7 @@
   "task_delegated": "Поручил(а) Вам задачу",
   "member_deleted": "Убрал(а) Вам доступ к пространству",
   "member_deleted_themselves_for_owner": "Вышел(а) из пространства",
-  "member_deleted_for_owner": "Убрал(а) пользователя {name} из пространства",
+  "member_deleted_for_owner": "Исключил(а) пользователя {name} из пространства",
   "@member_deleted_for_owner": {
     "placeholders": {
       "name": {
@@ -412,8 +412,8 @@
   "restore_from_archive": "восстановить из архива",
   "archive_all": "Архивировать все",
   "read_all": "Прочитать все",
-  "delete": "Удалить",
-  "delete_all": "Удалить все",
+  "delete": "удалить",
+  "delete_all": "удалить все",
   "logout_error": "При выходе из учетной записи возникла проблема, пожалуйста, попробуйте ещё раз",
   "restore_password_error": "При восстановлении пароля возникла проблема, пожалуйста, попробуйте ещё раз",
   "nonexistent_account": "Такого аккаунта не существует",
@@ -486,6 +486,7 @@
   "delete_project_no_rights_error": "Функция доступна только владельцу или администратору",
   "group": "Группа",
   "move": "Переместить",
+  "move_it_to_bottom_column" : "Переместить вниз колонки",
   "go_to": "Перейти в",
   "change_the_title": "Изменить название",
   "change_project": "Изменить проект",
@@ -495,6 +496,9 @@
   "project_responsible": "Ответственный за проект",
   "duplicate_reglament": "Дублировать регламент",
   "copy_reglament_link": "Копировать ссылку на регламент",
+  "copy_task_link" : "Копировать ссылку на задачу",
+  "copy_task_number": "Копировать номер задачи",
+  "duplicate_task": "Дублировать задачу",
   "move_reglament": "Переместить регламент",
   "send_to_archive": "Отправить в архив",
   "reglament_count_in_archive": "Регламентов в архиве",

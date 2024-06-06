@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:unityspace/models/project_models.dart';
-import 'package:unityspace/screens/space_screen/pages/project_page/project_page.dart';
-import 'package:unityspace/screens/space_screen/pages/project_page/widgets/move_project_dialog.dart';
+import 'package:unityspace/resources/app_icons.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/widgets/pop_up_projects_item.dart';
-import 'package:unityspace/screens/space_screen/pages/project_page/widgets/project_properties_dialog.dart';
 import 'package:unityspace/utils/localization_helper.dart';
-import 'package:wstore/wstore.dart';
 
 class PopUpProjectsButton extends StatelessWidget {
   const PopUpProjectsButton({required this.project, super.key});
@@ -16,88 +13,51 @@ class PopUpProjectsButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localization = LocalizationHelper.getLocalizations(context);
-    final store = context.wstore<ProjectsPageStore>();
-
     return PopupMenuButton<String>(
       elevation: 1,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      color: Colors.white,
       child: SizedBox(
         height: 24,
         width: 24,
-        child: SvgPicture.asset('assets/icons/settings.svg'),
+        child: SvgPicture.asset(AppIcons.settings),
       ),
       itemBuilder: (BuildContext context) {
         return <PopupMenuEntry<String>>[
           PopupMenuItem(
-            onTap: () =>
-                store.setProjectFavorite(project.id, !project.favorite),
             child: PopupProjectsItem(
-              text: project.favorite
-                  ? localization.from_favorite
-                  : localization.to_favorite,
+              text: localization.move_it_to_bottom_column,
             ),
           ),
-          if (!store.isArchivedPage) ...[
-            PopupMenuItem(
-              onTap: () => showProjectPropertiesDialog(context, project),
-              child: PopupProjectsItem(
-                text: localization.project_properties,
-              ),
+          PopupMenuItem(
+            child: PopupProjectsItem(
+              text: localization.move,
             ),
-            PopupMenuItem(
-              onTap: () => showMoveProjectDialog(
-                context,
-                store.selectedColumn,
-                project.id,
-              ),
-              child: PopupProjectsItem(
-                text: localization.move_project,
-              ),
+          ),
+          PopupMenuItem(
+            child: PopupProjectsItem(
+              text: localization.copy_task_link,
             ),
-            PopupMenuItem(
-              onTap: () => store
-                  .changeProjectColumn([project.id], store.archiveColumnId),
-              child: PopupProjectsItem(
-                text: localization.to_archive,
-              ),
+          ),
+          PopupMenuItem(
+            child: PopupProjectsItem(
+              text: localization.copy_task_number,
             ),
-            PopupMenuItem(
-              onTap: () => store.tryToDeleteProject(
-                context: context,
-                projectId: project.id,
-              ),
-              child: PopupProjectsItem(
-                text: localization.delete_project,
-                color: Colors.red,
-              ),
+          ),
+          PopupMenuItem(
+            child: PopupProjectsItem(
+              text: localization.duplicate_task,
             ),
-          ] else ...[
-            PopupMenuItem(
-              onTap: () {
-                showMoveProjectDialog(
-                  context,
-                  store.selectedColumn,
-                  project.id,
-                );
-              },
-              child: PopupProjectsItem(
-                text: localization.from_archive,
-              ),
+          ),
+          PopupMenuItem(
+            child: PopupProjectsItem(
+              text: localization.to_archive,
             ),
-            PopupMenuItem(
-              onTap: () => store.tryToDeleteProject(
-                context: context,
-                projectId: project.id,
-              ),
-              child: PopupProjectsItem(
-                text: localization.delete_project,
-                color: Colors.red,
-              ),
+          ),
+          PopupMenuItem(
+            child: PopupProjectsItem(
+              text: localization.delete,
+              color: Colors.red,
             ),
-          ],
+          ),
         ];
       },
     );
