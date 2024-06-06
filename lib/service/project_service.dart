@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/service/service_exceptions.dart';
+import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/http_plugin.dart';
 
 Future<List<ProjectResponse>> getProjects({required int spaceId}) async {
@@ -126,6 +127,30 @@ Future<ProjectResponse> updateProject({
     );
     final Map<String, dynamic> jsonData = json.decode(response.body);
     return ProjectResponse.fromJson(jsonData);
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
+}
+
+Future<ProjectStageResponse> createProjectStage({
+  required int projectId,
+  required String name,
+  required double order,
+}) async {
+  try {
+    final response = await HttpPlugin().post('/projects/$projectId/stages', {
+      'name': name,
+      'order': convertToOrderRequest(order),
+      'tasks': [],
+      'projectId': projectId,
+    });
+
+    final result = json.decode(response.body);
+
+    return ProjectStageResponse.fromJson(result);
   } catch (e) {
     if (e is HttpPluginException) {
       throw ServiceException(e.message);

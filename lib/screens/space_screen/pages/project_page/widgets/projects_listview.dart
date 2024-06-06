@@ -68,7 +68,7 @@ class ProjectsListview extends StatelessWidget {
                                 context,
                                 '/project',
                                 arguments: {
-                                  'project': store.projectsByColumn[index],
+                                  'projectId': store.projectsByColumn[index].id,
                                 },
                               );
                             },

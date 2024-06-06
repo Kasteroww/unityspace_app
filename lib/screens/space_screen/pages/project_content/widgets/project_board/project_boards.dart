@@ -5,9 +5,11 @@ import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/utils/helpers/role.dart';
+import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_board/parts/add_stage_button.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_board/parts/add_task_button.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_detail/project_detail.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_bottom_sheet.dart';
+import 'package:unityspace/store/projects_store.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/tasks_store.dart';
 import 'package:unityspace/store/user_store.dart';
@@ -15,12 +17,16 @@ import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
 
 class ProjectBoardsStore extends WStore {
-  //обязательно нужно инициализировать при загрузке данных на странице
-  late Project project;
-  List<ProjectStage> get projectStages => project.stages;
-
   NotificationErrors error = NotificationErrors.none;
   WStoreStatus status = WStoreStatus.init;
+  List<ProjectStage> get projectStages => project?.stages ?? [];
+  Project? get project => computedFromStore(
+        store: ProjectsStore(),
+        getValue: (store) {
+          return store.projectsMap[widget.projectId];
+        },
+        keyName: 'project',
+      );
 
   List<Task> get tasks => computedFromStore(
         store: TasksStore(),
@@ -40,7 +46,7 @@ class ProjectBoardsStore extends WStore {
 
           final projectTasks = tasks.where((task) {
             final isTaskInProject = task.stages
-                .any((taskStage) => taskStage.projectId == project.id);
+                .any((taskStage) => taskStage.projectId == project?.id);
 
             final isInitiatorMember =
                 userRole == UserRoles.initiator && user != null
@@ -88,15 +94,14 @@ class ProjectBoardsStore extends WStore {
         store: SpacesStore(),
         getValue: (store) {
           return store.getCurrentUserRoleAtSpace(
-            spaceId: project.spaceId,
+            spaceId: project?.spaceId,
           );
         },
         keyName: 'userRole',
       );
 
   ///Загрузка задач
-  Future<void> loadData({required Project project}) async {
-    this.project = project;
+  Future<void> loadData({required int projectId}) async {
     if (status == WStoreStatus.loading) return;
 
     setStore(() {
@@ -104,7 +109,7 @@ class ProjectBoardsStore extends WStore {
       error = NotificationErrors.none;
     });
     try {
-      await TasksStore().getProjectTasks(projectId: project.id);
+      await TasksStore().getProjectTasks(projectId: projectId);
       setStore(() {
         status = WStoreStatus.loaded;
       });
@@ -138,6 +143,37 @@ class ProjectBoardsStore extends WStore {
     }
   }
 
+  /// Пытается создать новую колонку
+  Future<void> tryTocreateStage({
+    required int? projectId,
+    required String name,
+  }) async {
+    if (projectId == null) return;
+    await createStage(projectId: projectId, name: name);
+  }
+
+  ///Создает новый стейдж
+  Future<void> createStage({
+    required int projectId,
+    required String name,
+  }) async {
+    try {
+      final double newOrder = projectStages
+              .map((column) => column.order)
+              .reduce((max, order) => max > order ? max : order) +
+          1;
+      await ProjectsStore()
+          .createStage(projectId: projectId, name: name, order: newOrder);
+    } catch (e, stack) {
+      logger.d('''
+          on ProjectBoardsStore 
+          ProjectBoardsStore 
+          createTask error=$e\nstack=$stack
+          ''');
+      throw Exception(e);
+    }
+  }
+
   /// Фильтр задач
   bool isTaskInCurrentFilter(Task task) {
     return task.status == TaskStatuses.inWork;
@@ -149,15 +185,15 @@ class ProjectBoardsStore extends WStore {
 
 class ProjectBoards extends WStoreWidget<ProjectBoardsStore> {
   const ProjectBoards({
-    required this.project,
+    required this.projectId,
     super.key,
   });
 
-  final Project project;
+  final int projectId;
 
   @override
   ProjectBoardsStore createWStore() =>
-      ProjectBoardsStore()..loadData(project: project);
+      ProjectBoardsStore()..loadData(projectId: projectId);
 
   @override
   Widget build(BuildContext context, ProjectBoardsStore store) {
@@ -167,35 +203,45 @@ class ProjectBoards extends WStoreWidget<ProjectBoardsStore> {
         watch: (store) => store.status,
         builder: (context, status) => const SizedBox.shrink(),
         builderLoaded: (context) {
-          return ListView.separated(
-            itemCount: store.tasksTree.length,
-            scrollDirection: Axis.horizontal,
-            separatorBuilder: (BuildContext context, int index) {
-              return const SizedBox(
-                width: 4,
-              );
-            },
-            itemBuilder: (BuildContext context, int index) {
-              final ProjectStage stage = store.tasksTree[index].stage;
-              return Padding(
-                padding: const EdgeInsets.all(8),
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Container(
-                      width: 180,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                      ),
-                      child: WStoreBuilder(
-                        store: store,
-                        watch: (store) => [
-                          store.tasksTree,
-                        ],
-                        builder: (context, store) {
-                          final List<Task> tasks = store.tasksTree[index].tasks;
-                          return Column(
+          return WStoreBuilder(
+            store: store,
+            watch: (store) => [store.tasksTree],
+            builder: (context, store) {
+              return ListView.separated(
+                // Длинна списка - это кол - во стейджей в пространстве
+                // + 1 место для кнопки добавления нового стейджа (колонки)
+                itemCount: store.tasksTree.length + 1,
+                scrollDirection: Axis.horizontal,
+                separatorBuilder: (BuildContext context, int index) {
+                  return const SizedBox(
+                    width: 4,
+                  );
+                },
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == store.tasksTree.length) {
+                    return AddStageButton(
+                      onSubmitted: (name) {
+                        store.tryTocreateStage(
+                          projectId: store.project?.id,
+                          name: name,
+                        );
+                      },
+                    );
+                  }
+                  final ProjectStage stage = store.tasksTree[index].stage;
+                  final List<Task> tasks = store.tasksTree[index].tasks;
+                  return Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          width: 180,
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                          ),
+                          child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(stage.name),
@@ -210,7 +256,8 @@ class ProjectBoards extends WStoreWidget<ProjectBoardsStore> {
                                     return InkWell(
                                       onTap: () => AppBottomSheet.show(
                                         context,
-                                        builder: (BuildContext context) => ProjectDetail(
+                                        builder: (BuildContext context) =>
+                                            ProjectDetail(
                                           task: task,
                                         ),
                                       ),
@@ -224,8 +271,9 @@ class ProjectBoards extends WStoreWidget<ProjectBoardsStore> {
                                           decoration: BoxDecoration(
                                             borderRadius:
                                                 BorderRadius.circular(8),
-                                            border:
-                                                Border.all(color: Colors.grey),
+                                            border: Border.all(
+                                              color: Colors.grey,
+                                            ),
                                           ),
                                           child: Padding(
                                             padding: const EdgeInsets.all(4),
@@ -246,12 +294,12 @@ class ProjectBoards extends WStoreWidget<ProjectBoardsStore> {
                                 },
                               ),
                             ],
-                          );
-                        },
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
+                  );
+                },
               );
             },
           );

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/service/service_exceptions.dart';
+import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/http_plugin.dart';
 
 Future<List<SpaceResponse>> getSpacesData() async {
@@ -19,10 +20,18 @@ Future<List<SpaceResponse>> getSpacesData() async {
   }
 }
 
-Future<SpaceResponse> createSpaces(final String title, final int order) async {
+Future<SpaceResponse> createSpaces(
+  final String title,
+  final double order,
+) async {
   try {
-    final response =
-        await HttpPlugin().post('/spaces', {'name': title, 'order': order});
+    final response = await HttpPlugin().post(
+      '/spaces',
+      {
+        'name': title,
+        'order': convertToOrderRequest(order),
+      },
+    );
     final jsonData = json.decode(response.body);
     final result = SpaceResponse.fromJson(jsonData);
     return result;

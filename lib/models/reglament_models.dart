@@ -1,5 +1,6 @@
 import 'package:unityspace/models/model_interfaces.dart';
 import 'package:unityspace/service/data_exceptions.dart';
+import 'package:unityspace/utils/helpers.dart';
 
 class UserPassedResponse {
   final String createdAt;
@@ -214,7 +215,7 @@ class ReglamentQuestion {
   final String createdAt;
   final int id;
   final String name;
-  final String order;
+  final double order;
   final int reglamentId;
   final String updatedAt;
   ReglamentQuestion({
@@ -234,7 +235,7 @@ class ReglamentQuestion {
       createdAt: data.createdAt,
       id: data.id,
       name: data.name,
-      order: data.order,
+      order: convertFromOrderResponse(int.parse(data.order)),
       reglamentId: data.reglamentId,
       updatedAt: data.updatedAt,
     );
@@ -245,7 +246,7 @@ class ReglamentQuestion {
     String? createdAt,
     int? id,
     String? name,
-    String? order,
+    double? order,
     int? reglamentId,
     String? updatedAt,
   }) {
@@ -368,7 +369,7 @@ class SearchReglamentResponse extends ReglamentResponse {
 class ChangeReglamentColumnAndOrderResponse {
   final int id;
   final int columnId;
-  final int order;
+  final double order;
 
   ChangeReglamentColumnAndOrderResponse({
     required this.id,
@@ -382,7 +383,7 @@ class ChangeReglamentColumnAndOrderResponse {
     return ChangeReglamentColumnAndOrderResponse(
       id: map['id'] as int,
       columnId: map['columnId'] as int,
-      order: int.parse(map['order']),
+      order: convertFromOrderResponse(int.parse(map['order'])),
     );
   }
 }
@@ -479,7 +480,7 @@ class FullReglament {
   final int id;
   final String lastEditDate;
   final String name;
-  final String order;
+  final double order;
   final String updatedAt;
 
   FullReglament({
@@ -494,7 +495,7 @@ class FullReglament {
     required this.updatedAt,
   });
 
-  factory FullReglament.fromJson(FullReglamentResponse data) {
+  factory FullReglament.fromResponse(FullReglamentResponse data) {
     try {
       return FullReglament(
         content: data.content,
@@ -504,7 +505,7 @@ class FullReglament {
         id: data.id,
         lastEditDate: data.lastEditDate,
         name: data.name,
-        order: data.order,
+        order: convertFromOrderResponse(int.parse(data.order)),
         updatedAt: data.updatedAt,
       );
     } catch (e, stack) {
@@ -519,7 +520,7 @@ class Reglament implements Identifiable {
   final String createdAt;
   final int creatorId;
   final String name;
-  final int order;
+  final double order;
   final int reglamentColumnId;
   final bool required;
   final bool intro;
@@ -545,7 +546,7 @@ class Reglament implements Identifiable {
       creatorId: data.creatorId,
       id: data.id,
       name: data.name,
-      order: int.parse(data.order),
+      order: convertFromOrderResponse(int.parse(data.order)),
       reglamentColumnId: data.reglamentColumnId,
       required: data.required,
       intro: data.intro,
@@ -559,7 +560,7 @@ class Reglament implements Identifiable {
     String? createdAt,
     int? creatorId,
     String? name,
-    int? order,
+    double? order,
     int? reglamentColumnId,
     bool? required,
     bool? intro,

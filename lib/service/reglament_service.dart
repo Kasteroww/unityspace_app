@@ -17,7 +17,7 @@ Future<ReglamentResponse> createReglament(
       'name': name,
       'reglamentColumnId': columnId,
       'content': content,
-      if (order != null) 'order': makeIntFromOrder(order),
+      if (order != null) 'order': convertToOrderRequest(order),
     });
     return ReglamentResponse.fromJson(
       jsonDecode(response.body),
@@ -63,14 +63,14 @@ Future<List<ReglamentResponse>> getReglaments() async {
 Future<ChangeReglamentColumnAndOrderResponse> changeReglamentColumnAndOrder({
   required int reglamentId,
   required int columnId,
-  required int order,
+  required double order,
 }) async {
   try {
     final response = await HttpPlugin().patch(
       '/reglaments/$reglamentId/changeReglamentColumnAndOrder',
       {
         'columnId': columnId,
-        'order': order,
+        'order': convertToOrderRequest(order),
       },
     );
     final validated = ChangeReglamentColumnAndOrderResponse.fromJson(

@@ -329,7 +329,7 @@ class TasksPageStore extends WStore {
     final stagesPropsArrays = stages.fold(
       (
         stagesNames: <String>[],
-        stagesOrders: <int>[],
+        stagesOrders: <double>[],
         taskOrders: <int>[],
       ),
       (acc, taskStage) {
@@ -389,7 +389,9 @@ class TasksPageStore extends WStore {
       final compareByStageNames = a.stageName.compareTo(b.stageName);
       if (compareByStageNames != 0) return compareByStageNames;
       final compareByStagesOrder = a.stageOrder - b.stageOrder;
-      if (compareByStagesOrder != 0) return compareByStagesOrder;
+      if (compareByStagesOrder != 0) {
+        return compareByStagesOrder > 0 ? 1 : -1;
+      }
       final compareByTaskOrder = a.taskOrder - b.taskOrder;
       if (compareByTaskOrder != 0) return compareByTaskOrder;
       return 0;

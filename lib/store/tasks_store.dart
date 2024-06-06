@@ -25,10 +25,11 @@ class TasksStore extends GStore {
     return createMapById(history);
   }
 
+  /// Создание задачи в проекте
   Future<int> createTask({
     required String name,
     required int stageId,
-    int? order,
+    double? order,
     String? color,
     String? dateBegin,
     String? dateEnd,

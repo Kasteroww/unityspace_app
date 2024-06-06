@@ -2,12 +2,13 @@ import 'dart:convert';
 
 import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/service/service_exceptions.dart';
+import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/http_plugin.dart';
 
 Future<CreateTaskResponse> createTask({
   required String name,
   required int stageId,
-  int? order,
+  double? order,
   String? color,
   String? dateBegin,
   String? dateEnd,
@@ -20,8 +21,11 @@ Future<CreateTaskResponse> createTask({
       'color': color,
       'dateBegin': dateBegin,
       'dateEnd': dateEnd,
-      'order': order,
     };
+
+    if (order != null) {
+      data['order'] = convertToOrderRequest(order);
+    }
 
     final response = await HttpPlugin().post(
       '/tasks',

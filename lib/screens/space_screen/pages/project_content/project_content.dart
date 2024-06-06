@@ -18,7 +18,9 @@ class ProjectContentStore extends WStore {
 
   Project? get project => computedFromStore(
         store: ProjectsStore(),
-        getValue: (store) => store.projectsMap[widget.project.id],
+        getValue: (store) {
+          return store.projectsMap[widget.projectId];
+        },
         keyName: 'project',
       );
 
@@ -39,10 +41,10 @@ class ProjectContentStore extends WStore {
 }
 
 class ProjectContent extends WStoreWidget<ProjectContentStore> {
-  final Project project;
+  final int projectId;
 
   const ProjectContent({
-    required this.project,
+    required this.projectId,
     super.key,
   });
 
@@ -53,14 +55,14 @@ class ProjectContent extends WStoreWidget<ProjectContentStore> {
   Widget build(BuildContext context, ProjectContentStore store) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(project.name),
+        title: Text(store.project?.name ?? ' '),
       ),
       body: SafeArea(
         child: Column(
           children: [
             const NavbarSwitches(),
             const SizedBox(height: 16),
-            ProjectBoards(project: project),
+            ProjectBoards(projectId: projectId),
           ],
         ),
       ),

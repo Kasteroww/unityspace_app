@@ -246,7 +246,7 @@ class TasksProjectGroup implements ITasksGroup {
   final int spaceOrder;
   @override
   final String groupTitle;
-  final int projectOrder;
+  final double projectOrder;
   final int columnOrder;
   final int spaceId;
   @override
@@ -296,7 +296,7 @@ class TasksDateGroup implements ITasksGroup {
 
 class TaskStageWithOrder {
   final String stageName;
-  final int stagesOrder;
+  final double stagesOrder;
   final int taskOrder;
 
   TaskStageWithOrder({
@@ -311,7 +311,7 @@ class TaskStageWithOrder {
 class SortedTask {
   final int id;
   final String stageName;
-  final int stageOrder;
+  final double stageOrder;
   final Task task;
   final int taskOrder;
 

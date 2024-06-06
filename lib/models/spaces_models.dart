@@ -208,7 +208,7 @@ class Space implements Identifiable, Nameable {
     return Space(
       id: data.id,
       name: data.name,
-      order: helpers.makeOrderFromInt(int.parse(data.order)),
+      order: helpers.convertFromOrderResponse(int.parse(data.order)),
       members: data.members.map(SpaceMember.fromResponse).toList(),
       columns: data.columns.map(SpaceColumn.fromResponse).toList(),
       reglamentColumns:
@@ -303,7 +303,7 @@ class SpaceColumn implements Identifiable, Nameable {
     return SpaceColumn(
       id: data.id,
       name: data.name,
-      order: helpers.makeOrderFromInt(data.order),
+      order: helpers.convertFromOrderResponse(data.order),
       spaceId: data.spaceId,
     );
   }

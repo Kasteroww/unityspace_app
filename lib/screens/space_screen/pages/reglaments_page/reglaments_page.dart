@@ -67,7 +67,7 @@ class ReglamentsPageStore extends WStore {
 
   Future<void> moveToArchive({
     required int reglamentId,
-    int newOrder = 0,
+    double newOrder = 0,
   }) async {
     final columnId = archiveColumnId;
     await ReglamentsStore().changeReglamentColumnAndOrder(

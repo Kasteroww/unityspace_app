@@ -57,7 +57,7 @@ class MoveReglamentDialogStore extends WStore {
 
   Future<void> moveReglament({
     required int reglamentId,
-    int newOrder = 0,
+    double newOrder = 0,
   }) async {
     await ReglamentsStore().changeReglamentColumnAndOrder(
       reglamentId: reglamentId,

@@ -12,7 +12,7 @@ class ProjectsStore extends GStore {
 
   List<Project> projects = [];
 
-  Map<int, Project?> get projectsMap {
+  Map<int, Project> get projectsMap {
     return createMapById(projects);
   }
 
@@ -119,6 +119,33 @@ class ProjectsStore extends GStore {
     setStore(() {
       projects = projectsNew;
     });
+  }
+
+  Future<void> createStage({
+    required int projectId,
+    required String name,
+    required double order,
+  }) async {
+    final response = await api.createProjectStage(
+      projectId: projectId,
+      name: name,
+      order: order,
+    );
+    final newStage = ProjectStage.fromResponse(response);
+    createProjectStageLocally(newStage);
+  }
+
+  void createProjectStageLocally(ProjectStage stage) {
+    final projectIndex =
+        projects.indexWhere((project) => project.id == stage.projectId);
+    // Если нет элемента в stages
+    if (!projects[projectIndex].stages.contains(stage)) {
+      final project = projects[projectIndex];
+      setStore(() {
+        projects[projectIndex] =
+            project.copyWith(stages: [...project.stages, stage]);
+      });
+    }
   }
 
   /// Изменение названия, цвета, ответственного Проекта

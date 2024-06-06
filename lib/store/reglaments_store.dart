@@ -71,7 +71,7 @@ class ReglamentsStore extends GStore {
   Future<void> getReglamentContent({required int reglamentId}) async {
     final reglamentData = await api.getFullReglament(reglamentId);
     setStore(() {
-      fullReglament = FullReglament.fromJson(reglamentData);
+      fullReglament = FullReglament.fromResponse(reglamentData);
     });
   }
 
@@ -159,7 +159,7 @@ class ReglamentsStore extends GStore {
   Future<void> changeReglamentColumnAndOrder({
     required int reglamentId,
     required int newColumnId,
-    required int newOrder,
+    required double newOrder,
   }) async {
     final response = await api.changeReglamentColumnAndOrder(
       reglamentId: reglamentId,

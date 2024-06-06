@@ -101,7 +101,7 @@ class SpacesStore extends GStore {
     final newOrder = maxOrder + 1;
     final spaceData = await api.createSpaces(
       title,
-      makeIntFromOrder(newOrder),
+      newOrder,
     );
     final newSpace = Space.fromResponse(spaceData);
     final spaces = [...this.spaces, newSpace];
@@ -129,8 +129,9 @@ class SpacesStore extends GStore {
     }
   }
 
-  UserRoles? getCurrentUserRoleAtSpace({required int spaceId}) {
+  UserRoles? getCurrentUserRoleAtSpace({required int? spaceId}) {
     {
+      if (spaceId == null) return null;
       final userId = UserStore().user?.id;
       if (userId == null) return null;
       if (UserStore().isOrganizationOwner || UserStore().isAdmin) {

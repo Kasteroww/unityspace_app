@@ -621,6 +621,7 @@
   "date": "Дата",
   "shortcuts": "Ярлыки",
   "add_desc": "Добавить описание",
+  "add_column":"Добавить колонку",
   "all_messages": "Все сообщения",
   "write_message": "Напишите сообщение",
   "unsubscribe": "Отписаться",

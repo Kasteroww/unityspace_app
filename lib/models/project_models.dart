@@ -3,6 +3,7 @@ import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/add_tab_dialog.dart';
 import 'package:unityspace/service/data_exceptions.dart';
 import 'package:unityspace/utils/date_time_converter.dart';
+import 'package:unityspace/utils/helpers.dart';
 
 class ProjectResponse {
   final int archiveStageId;
@@ -154,7 +155,7 @@ class Project implements Identifiable {
   final int creatorId;
   final int columnId;
   final int spaceId;
-  final int order;
+  final double order;
   final List<ProjectStage> stages;
   final List<ProjectEmbed> embeddings;
   final bool showProjectReviewTab;
@@ -200,7 +201,7 @@ class Project implements Identifiable {
       creatorId: data.creatorId,
       columnId: data.columnId,
       spaceId: data.spaceId,
-      order: int.parse(data.order),
+      order: convertFromOrderResponse(int.parse(data.order)),
       stages: data.stages.map(ProjectStage.fromResponse).toList(),
       embeddings: data.embeddings
           .map((embedding) => ProjectEmbed.fromResponse(embedding))
@@ -227,7 +228,7 @@ class Project implements Identifiable {
     int? creatorId,
     int? columnId,
     int? spaceId,
-    int? order,
+    double? order,
     List<ProjectStage>? stages,
     List<ProjectEmbed>? embeddings,
     bool? showProjectReviewTab,
@@ -312,7 +313,7 @@ class ProjectStage implements Identifiable {
   final int id;
   final int projectId;
   final String name;
-  final int order;
+  final double order;
 
   ProjectStage({
     required this.id,
@@ -326,7 +327,7 @@ class ProjectStage implements Identifiable {
       id: data.id,
       projectId: data.projectId,
       name: data.name,
-      order: int.parse(data.order),
+      order: convertFromOrderResponse(int.parse(data.order)),
     );
   }
 }

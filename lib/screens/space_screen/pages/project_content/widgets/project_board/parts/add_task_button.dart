@@ -47,6 +47,7 @@ class AddTaskButton extends WStoreWidget<AddTaskButtonStore> {
             child: Center(
               child: store.isAddingTask
                   ? TextField(
+                      autofocus: true,
                       onSubmitted: (value) {
                         onSubmitted(value);
                         store.stopAddingTask();

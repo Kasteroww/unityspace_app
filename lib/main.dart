@@ -110,8 +110,8 @@ class MyApp extends WStoreWidget<MyAppStore> {
                     as Map)['space'],
               ),
           '/project': (context) => ProjectContent(
-                project: (ModalRoute.of(context)!.settings.arguments!
-                    as Map)['project'],
+                projectId: (ModalRoute.of(context)!.settings.arguments!
+                    as Map)['projectId'],
               ),
           '/notifications': (context) => const NotificationsScreen(),
           '/administration': (context) => const AdministrationScreen(),
