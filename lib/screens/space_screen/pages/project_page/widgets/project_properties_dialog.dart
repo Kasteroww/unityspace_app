@@ -197,7 +197,7 @@ class EditProjectPropertiesDialog
                     (color, getColorName(color, localization)),
                 ];
                 return AddDialogDropdownMenu<String?>(
-                  onChanged: (color) {
+                  onChanged: (dynamic color) {
                     FocusScope.of(context).unfocus();
                     store.setProjectColor(color);
                   },
@@ -229,7 +229,7 @@ class EditProjectPropertiesDialog
                     (store.responsibleId, store.responsibleName),
                 ];
                 return AddDialogDropdownMenu<int?>(
-                  onChanged: (memberId) {
+                  onChanged: (dynamic memberId) {
                     FocusScope.of(context).unfocus();
                     store.setProjectResponsible(memberId);
                   },
@@ -260,7 +260,7 @@ class EditProjectPropertiesDialog
                     ),
                 ];
                 return AddDialogDropdownMenu<int>(
-                  onChanged: (count) {
+                  onChanged: (dynamic count) {
                     FocusScope.of(context).unfocus();
                     if (count != null) store.setMarkAsSnail(count);
                   },

@@ -146,7 +146,7 @@ class MoveProjectDialog extends WStoreWidget<MoveProjectDialogStore> {
               secondaryButtonText: '',
               children: [
                 AddDialogDropdownMenu<int?>(
-                  onChanged: (spaceId) {
+                  onChanged: (dynamic spaceId) {
                     FocusScope.of(context).unfocus();
                     store.setSelectedSpace(spaceId);
                   },
@@ -158,7 +158,7 @@ class MoveProjectDialog extends WStoreWidget<MoveProjectDialogStore> {
                 ),
                 const SizedBox(height: 16),
                 AddDialogDropdownMenu<int?>(
-                  onChanged: (int? columnId) {
+                  onChanged: (dynamic columnId) {
                     FocusScope.of(context).unfocus();
                     store.setSelectedColumn(columnId);
                   },
