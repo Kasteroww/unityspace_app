@@ -29,7 +29,9 @@ class UsersInOrganizationPageStore extends WStore {
       );
 
   Future<void> deleteMember(OrganizationMember member) async {
-    await SpacesStore().removeUserFromSpace(member.id);
+    final uniqueSpaceUsersCountResult =
+        await SpacesStore().removeUserFromSpace(member.id);
+    UserStore().setUniqueSpaceUsersCountLocally(uniqueSpaceUsersCountResult);
   }
 
   Future<void> toggleMemberAdmin(OrganizationMember member) async {

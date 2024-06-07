@@ -260,9 +260,16 @@ Future<List<AchievementResponse>> getAchievements() async {
   }
 }
 
-Future setIsAdmin(int memberId, bool isAdmin) async {
+Future<UserResponse> setIsAdmin(
+  int memberId,
+  bool isAdmin,
+) async {
   try {
-    await HttpPlugin().patch('user/is-admin/$memberId', {'isAdmin': isAdmin});
+    final response = await HttpPlugin()
+        .patch('user/is-admin/$memberId', {'isAdmin': isAdmin});
+    final jsonData = json.decode(response.body);
+    final result = UserResponse.fromJson(jsonData);
+    return result;
   } catch (e) {
     if (e is HttpPluginException) {
       throw ServiceException(e.message);

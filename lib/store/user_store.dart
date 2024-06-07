@@ -219,8 +219,9 @@ class UserStore extends GStore {
   }
 
   Future<void> setIsAdmin(int memberId, bool isAdmin) async {
-    await api.setIsAdmin(memberId, isAdmin);
-    setIsAdminLocally(memberId, isAdmin);
+    final response = await api.setIsAdmin(memberId, isAdmin);
+    final changedUser = User.fromResponse(response);
+    setIsAdminLocally(changedUser.id, changedUser.isAdmin);
   }
 
   void setIsAdminLocally(int memberId, bool isAdmin) {
@@ -228,13 +229,17 @@ class UserStore extends GStore {
 
     final memberIndex =
         organization!.members.indexWhere((member) => member.id == memberId);
+    final OrganizationMember updatedMember =
+        organization!.members[memberIndex].copyWith(isAdmin: isAdmin);
     if (memberIndex != -1) {
-      final OrganizationMember updatedMember =
-          organization!.members[memberIndex].copyWith(isAdmin: isAdmin);
       setStore(() {
         organization!.members[memberIndex] = updatedMember;
       });
     }
+  }
+
+  void setUniqueSpaceUsersCountLocally(int newValue) {
+    organization = organization?.copyWith(uniqueSpaceUsersCount: newValue);
   }
 
   @override

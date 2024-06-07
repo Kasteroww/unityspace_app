@@ -60,27 +60,25 @@ class SpacesStore extends GStore {
     });
   }
 
-  Future<void> removeUserFromSpace(final int memberId) async {
-    for (var spaceIndex = 0; spaceIndex < spaces.length; spaceIndex++) {
-      final index = spaces[spaceIndex]
-          .members
-          .indexWhere((member) => member.id == memberId);
-      if (index != -1) {
-        await api.removeUserFromSpace(spaces[spaceIndex].id, memberId);
-        _removeUserFromSpaceLocally(spaceIndex: spaceIndex, memberId: memberId);
+  Future<int> removeUserFromSpace(final int memberId) async {
+    int uniqueSpaceUsersCountResult = 0;
+    for (final space in spacesMapUser.entries) {
+      if (space.value.values.any((member) => member?.id == memberId)) {
+        final response = await api.removeUserFromSpace(space.key, memberId);
+        uniqueSpaceUsersCountResult = response.uniqueSpaceUsersCount;
+        _removeUserFromSpaceLocally(spaceId: space.key, memberId: memberId);
       }
     }
+    return uniqueSpaceUsersCountResult;
   }
 
   void _removeUserFromSpaceLocally({
-    required int spaceIndex,
+    required int spaceId,
     required int memberId,
   }) {
     if (spaces.isNotEmpty) {
-      final index = spaces[spaceIndex]
-          .members
-          .indexWhere((member) => member.id == memberId);
-      if (index != -1) {
+      final spaceIndex = spaces.indexWhere((space) => space.id == spaceId);
+      if (spaceIndex != -1) {
         setStore(() {
           spaces[spaceIndex] = spaces[spaceIndex].copyWith(
             members: spaces[spaceIndex]

@@ -356,3 +356,31 @@ class SpaceMember implements Nameable {
     );
   }
 }
+
+class RemoveMemberFromSpaceResponse {
+  final int uniqueSpaceUsersCount;
+  final String status;
+  final String message;
+
+  const RemoveMemberFromSpaceResponse({
+    required this.uniqueSpaceUsersCount,
+    required this.status,
+    required this.message,
+  });
+
+  factory RemoveMemberFromSpaceResponse.fromJson(Map<String, dynamic> map) {
+    try {
+      return RemoveMemberFromSpaceResponse(
+        uniqueSpaceUsersCount: map['uniqueSpaceUsersCount'] as int,
+        status: map['status'] as String,
+        message: map['message'] as String,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException(
+        'Error parsing RemoveMemberFromSpaceResponse Model',
+        e,
+        stack,
+      );
+    }
+  }
+}

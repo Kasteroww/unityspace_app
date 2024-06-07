@@ -16,9 +16,7 @@ class ConfirmScreenStore extends WStore {
   ConfirmEmailErrors confirmError = ConfirmEmailErrors.none;
   String code = '';
 
-
   void confirm() {
-
     if (status == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -61,9 +59,10 @@ class ConfirmScreen extends WStoreWidget<ConfirmScreenStore> {
   @override
   ConfirmScreenStore createWStore() => ConfirmScreenStore();
 
-  String getErrorLocalization(
-      {required ConfirmEmailErrors error,
-      required AppLocalizations localization}) {
+  String getErrorLocalization({
+    required ConfirmEmailErrors error,
+    required AppLocalizations localization,
+  }) {
     switch (error) {
       case ConfirmEmailErrors.confirmEmailError:
         return localization.confirm_email_error;

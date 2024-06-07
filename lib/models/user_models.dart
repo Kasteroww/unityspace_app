@@ -294,6 +294,27 @@ class Organization {
   String toString() {
     return 'Organization{id: $id, ownerId: $ownerId, availableUsersCount: $availableUsersCount, licenseEndDate: $licenseEndDate, trialEndDate: $trialEndDate, members: $members, uniqueSpaceUsersCount: $uniqueSpaceUsersCount}';
   }
+
+  Organization copyWith({
+    int? id,
+    int? ownerId,
+    int? availableUsersCount,
+    DateTime? licenseEndDate,
+    DateTime? trialEndDate,
+    List<OrganizationMember>? members,
+    int? uniqueSpaceUsersCount,
+  }) {
+    return Organization(
+      id: id ?? this.id,
+      ownerId: ownerId ?? this.ownerId,
+      availableUsersCount: availableUsersCount ?? this.availableUsersCount,
+      licenseEndDate: licenseEndDate ?? this.licenseEndDate,
+      trialEndDate: trialEndDate ?? this.trialEndDate,
+      members: members ?? this.members,
+      uniqueSpaceUsersCount:
+          uniqueSpaceUsersCount ?? this.uniqueSpaceUsersCount,
+    );
+  }
 }
 
 class OrganizationMember implements Identifiable {

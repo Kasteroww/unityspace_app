@@ -47,9 +47,16 @@ Future<SpaceResponse> createSpaces(
   }
 }
 
-Future removeUserFromSpace(final int spaceId, final int memberId) async {
+Future<RemoveMemberFromSpaceResponse> removeUserFromSpace(
+  final int spaceId,
+  final int memberId,
+) async {
   try {
-    await HttpPlugin().delete('/spaces/$spaceId/members/$memberId');
+    final response =
+        await HttpPlugin().delete('/spaces/$spaceId/members/$memberId');
+    final jsonData = json.decode(response.body);
+    final result = RemoveMemberFromSpaceResponse.fromJson(jsonData);
+    return result;
   } catch (e) {
     if (e is HttpPluginException) {
       throw ServiceException(e.message);
