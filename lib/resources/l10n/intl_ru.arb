@@ -633,5 +633,6 @@
   "all_messages": "Все сообщения",
   "write_message": "Напишите сообщение",
   "unsubscribe": "Отписаться",
-  "members": "Участники"
+  "members": "Участники",
+  "completed_status": "Завершено"
 }
