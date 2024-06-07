@@ -42,8 +42,6 @@ class TasksList extends StatelessWidget {
                 : null;
         final taskImportance = sortedTask.task.importance;
         final taskEndDate = sortedTask.task.dateEnd;
-        final List<Widget> reponsibleAvatars =
-            _getResponsibleAvatars(sortedTask.task.responsibleUsersId);
 
         return IntrinsicHeight(
           child: Row(
@@ -55,7 +53,11 @@ class TasksList extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Flexible(
+                      StatusMark(status: sortedTask.task.status),
+                      const SizedBox(
+                        width: 12,
+                      ),
+                      Expanded(
                         child: Text(
                           sortedTask.task.name,
                         ),
@@ -114,9 +116,9 @@ class TasksList extends StatelessWidget {
                           if (sortedTask.task.responsibleUsersId.isNotEmpty)
                             PaddingRight(
                               8,
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: reponsibleAvatars,
+                              child: ResponsiblesAvatars(
+                                responsibleIds:
+                                    sortedTask.task.responsibleUsersId,
                               ),
                             ),
                         ],
@@ -145,6 +147,12 @@ class TasksList extends StatelessWidget {
       },
     );
   }
+}
+
+class ResponsiblesAvatars extends StatelessWidget {
+  const ResponsiblesAvatars({required this.responsibleIds, super.key});
+
+  final List<int> responsibleIds;
 
   List<Widget> _getResponsibleAvatars(List<int> responsibleIds) {
     final List<Widget> avatars = [];
@@ -159,13 +167,51 @@ class TasksList extends StatelessWidget {
         ),
       );
 
-      // если аватар не последний в списке, добавить отступ
+      // если аватар не последний в списке, то добавить отступ
       if (responsibleId != responsibleIds.last) {
         avatars.add(const SizedBox(width: 8));
-
       }
     }
     return avatars;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: _getResponsibleAvatars(responsibleIds),
+    );
+  }
+}
+
+class StatusMark extends StatelessWidget {
+  const StatusMark({required this.status, super.key});
+
+  final TaskStatuses status;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 25,
+      height: 25,
+      decoration: BoxDecoration(
+        border: Border.all(color: ColorConstants.grey04),
+        borderRadius: const BorderRadius.all(
+          Radius.circular(6),
+        ),
+      ),
+      child: switch (status) {
+        TaskStatuses.completed => const Icon(
+            Icons.check,
+            color: Colors.green,
+          ),
+        TaskStatuses.rejected => const Icon(
+            Icons.close,
+            color: Colors.red,
+          ),
+        TaskStatuses.inWork => const SizedBox.shrink()
+      },
+    );
   }
 }
 

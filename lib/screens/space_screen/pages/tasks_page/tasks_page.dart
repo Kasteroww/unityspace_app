@@ -73,7 +73,7 @@ class TasksPageStore extends WStore {
               return _tasksByProject(isSearching ? searchedTasks : tasks);
           }
         },
-        watch: () => [groupingType],
+        watch: () => [groupingType, tasks],
         keyName: 'groupedTasks',
       );
 
