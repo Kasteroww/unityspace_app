@@ -320,19 +320,16 @@ class ProjectBoards extends WStoreWidget<ProjectBoardsStore> {
                                                 color: Colors.grey,
                                               ),
                                             ),
-                                            child: Expanded(
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(4),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Text(task.name),
-                                                    const ContextMenuButton(),
-                                                  ],
-                                                ),
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(4),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text(task.name),
+                                                  const ContextMenuButton(),
+                                                ],
                                               ),
                                             ),
                                           ),
