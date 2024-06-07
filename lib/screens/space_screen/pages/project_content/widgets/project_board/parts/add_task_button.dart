@@ -1,63 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/utils/localization_helper.dart';
-import 'package:wstore/wstore.dart';
 
-class AddTaskButtonStore extends WStore {
-  bool isAddingTask = false;
-
-  void startAddingTask() {
-    setStore(() {
-      isAddingTask = true;
-    });
-  }
-
-  void stopAddingTask() {
-    setStore(() {
-      isAddingTask = false;
-    });
-  }
-
-  @override
-  AddTaskButton get widget => super.widget as AddTaskButton;
-}
-
-class AddTaskButton extends WStoreWidget<AddTaskButtonStore> {
+class AddTaskButton extends StatelessWidget {
+  final int? focusedIndex;
+  final int buttonIdex;
   final void Function(String name) onSubmitted;
+  final void Function() onTapButton;
   const AddTaskButton({
+    required this.buttonIdex,
+    required this.onTapButton,
+    required this.focusedIndex,
     required this.onSubmitted,
     super.key,
   });
 
   @override
-  AddTaskButtonStore createWStore() => AddTaskButtonStore();
-
-  @override
-  Widget build(BuildContext context, AddTaskButtonStore store) {
+  Widget build(BuildContext context) {
     final localization = LocalizationHelper.getLocalizations(context);
-    return WStoreBuilder(
-      store: store,
-      watch: (store) => [
-        store.isAddingTask,
-      ],
-      builder: (context, store) {
-        return InkWell(
-          onTap: store.startAddingTask,
-          child: ColoredBox(
-            color: Colors.blue,
-            child: Center(
-              child: store.isAddingTask
-                  ? TextField(
-                      autofocus: true,
-                      onSubmitted: (value) {
-                        onSubmitted(value);
-                        store.stopAddingTask();
-                      },
-                    )
-                  : Text('+ ${localization.add_task}'),
-            ),
-          ),
-        );
-      },
+    return InkWell(
+      onTap: onTapButton,
+      child: ColoredBox(
+        color: Colors.blue,
+        child: Center(
+          child: focusedIndex == buttonIdex
+              ? TextField(
+                  autocorrect: false,
+                  autofocus: true,
+                  onSubmitted: (value) {
+                    onSubmitted(value);
+                  },
+                )
+              : Text('+ ${localization.add_task}'),
+        ),
+      ),
     );
   }
 }

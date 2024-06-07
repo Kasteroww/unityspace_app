@@ -20,6 +20,10 @@ class ProjectBoardsStore extends WStore {
   NotificationErrors error = NotificationErrors.none;
   WStoreStatus status = WStoreStatus.init;
   List<ProjectStage> get projectStages => project?.stages ?? [];
+  int? focusedIndex;
+
+  bool isAddingStage = false;
+
   Project? get project => computedFromStore(
         store: ProjectsStore(),
         getValue: (store) {
@@ -179,6 +183,28 @@ class ProjectBoardsStore extends WStore {
     return task.status == TaskStatuses.inWork;
   }
 
+  /// выбирается индекс для фокусирования на конкретной
+  /// кнопке добавления задач
+  void setFocusedIndex(int? newFocusedIndex) {
+    setStore(() {
+      focusedIndex = newFocusedIndex;
+    });
+  }
+
+  /// ставится статус того, что добавляется новая колонка (стейдж)
+  void startAddingStage() {
+    setStore(() {
+      isAddingStage = true;
+    });
+  }
+
+  /// убирается статус того, что добавляется новая колонка (стейдж)
+  void stopAddingStage() {
+    setStore(() {
+      isAddingStage = false;
+    });
+  }
+
   @override
   ProjectBoards get widget => super.widget as ProjectBoards;
 }
@@ -205,101 +231,126 @@ class ProjectBoards extends WStoreWidget<ProjectBoardsStore> {
         builderLoaded: (context) {
           return WStoreBuilder(
             store: store,
-            watch: (store) => [store.tasksTree],
+            watch: (store) => [
+              store.tasksTree,
+              store.focusedIndex,
+              store.isAddingStage,
+            ],
             builder: (context, store) {
-              return ListView.separated(
-                // Длинна списка - это кол - во стейджей в пространстве
-                // + 1 место для кнопки добавления нового стейджа (колонки)
-                itemCount: store.tasksTree.length + 1,
-                scrollDirection: Axis.horizontal,
-                separatorBuilder: (BuildContext context, int index) {
-                  return const SizedBox(
-                    width: 4,
-                  );
+              return GestureDetector(
+                onTap: () {
+                  // при нажатии в любое место, кроме кнопки добавления новой задачи
+                  // устанавливается index null
+                  store.setFocusedIndex(null);
+
+                  /// останавливается добавление нового стейджа (колонки)
+                  store.stopAddingStage();
                 },
-                itemBuilder: (BuildContext context, int index) {
-                  if (index == store.tasksTree.length) {
-                    return AddStageButton(
-                      onSubmitted: (name) {
-                        store.tryTocreateStage(
-                          projectId: store.project?.id,
-                          name: name,
-                        );
-                      },
+                child: ListView.separated(
+                  // Длинна списка - это кол - во стейджей в пространстве
+                  // + 1 место для кнопки добавления нового стейджа (колонки)
+                  itemCount: store.tasksTree.length + 1,
+                  scrollDirection: Axis.horizontal,
+                  separatorBuilder: (BuildContext context, int index) {
+                    return const SizedBox(
+                      width: 4,
                     );
-                  }
-                  final ProjectStage stage = store.tasksTree[index].stage;
-                  final List<Task> tasks = store.tasksTree[index].tasks;
-                  return Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Align(
-                      alignment: Alignment.topCenter,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Container(
-                          width: 180,
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(stage.name),
-                              Text('${tasks.length}'),
-                              Flexible(
-                                child: ListView.builder(
-                                  shrinkWrap: true,
-                                  itemCount: tasks.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    final task = tasks[index];
-                                    return InkWell(
-                                      onTap: () => AppBottomSheet.show(
-                                        context,
-                                        builder: (BuildContext context) =>
-                                            ProjectDetail(
-                                          task: task,
+                  },
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == store.tasksTree.length) {
+                      return AddStageButton(
+                        onSubmitted: (name) {
+                          store.tryTocreateStage(
+                            projectId: store.project?.id,
+                            name: name,
+                          );
+                          store.stopAddingStage();
+                        },
+                        onTapButton: () {
+                          store.startAddingStage();
+                        },
+                        isAddingStage: store.isAddingStage,
+                      );
+                    }
+                    final ProjectStage stage = store.tasksTree[index].stage;
+                    final List<Task> tasks = store.tasksTree[index].tasks;
+                    return Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Container(
+                            width: 180,
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(stage.name),
+                                Text('${tasks.length}'),
+                                Flexible(
+                                  child: ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: tasks.length,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      final task = tasks[index];
+                                      return InkWell(
+                                        onTap: () => AppBottomSheet.show(
+                                          context,
+                                          builder: (BuildContext context) =>
+                                              ProjectDetail(
+                                            task: task,
+                                          ),
                                         ),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                          bottom: 8,
-                                          right: 8,
-                                          left: 8,
-                                        ),
-                                        child: DecoratedBox(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            border: Border.all(
-                                              color: Colors.grey,
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                            bottom: 8,
+                                            right: 8,
+                                            left: 8,
+                                          ),
+                                          child: DecoratedBox(
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              border: Border.all(
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(4),
+                                              child: Text(task.name),
                                             ),
                                           ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(4),
-                                            child: Text(task.name),
-                                          ),
                                         ),
-                                      ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                                AddTaskButton(
+                                  focusedIndex: store.focusedIndex,
+                                  onSubmitted: (name) {
+                                    store.createTask(
+                                      name: name,
+                                      stageId: stage.id,
                                     );
+                                    store.setFocusedIndex(null);
+                                  },
+                                  buttonIdex: index,
+                                  onTapButton: () {
+                                    store.setFocusedIndex(index);
                                   },
                                 ),
-                              ),
-                              AddTaskButton(
-                                onSubmitted: (name) {
-                                  store.createTask(
-                                    name: name,
-                                    stageId: stage.id,
-                                  );
-                                },
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               );
             },
           );
