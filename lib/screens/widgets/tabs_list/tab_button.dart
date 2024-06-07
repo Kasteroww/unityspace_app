@@ -7,11 +7,13 @@ class TabButton extends StatelessWidget {
   final String title;
   final bool selected;
   final VoidCallback onPressed;
+  final VoidCallback? onLongPress;
 
   const TabButton({
     required this.title,
     required this.selected,
     required this.onPressed,
+    this.onLongPress,
     super.key,
     this.iconAsset,
   });
@@ -24,6 +26,7 @@ class TabButton extends StatelessWidget {
       color: selected ? ColorConstants.main01 : ColorConstants.grey09,
       child: InkWell(
         onTap: selected ? null : onPressed,
+        onLongPress: onLongPress,
         child: Ink(
           padding: const EdgeInsets.symmetric(
             horizontal: 20,

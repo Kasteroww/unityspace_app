@@ -17,6 +17,9 @@ class NavbarPopupItem extends StatelessWidget {
       children: [
         if (icon != null && icon!.isNotEmpty)
           SvgPicture.asset(
+            width: 32,
+            height: 32,
+            fit: BoxFit.scaleDown,
             icon!,
           ),
         const SizedBox(

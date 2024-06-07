@@ -29,4 +29,8 @@ abstract class AppIcons {
   static const String search = 'assets/icons/search.svg';
   static const String filter = 'assets/icons/filter.svg';
   static const String crown = 'assets/icons/crown.svg';
+  static const String edit = 'assets/icons/edit.svg';
+  static const String link = 'assets/icons/link.svg';
+  static const String delete = 'assets/icons/delete.svg';
+  static const String hide = 'assets/icons/hide.svg';
 }

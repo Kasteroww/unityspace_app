@@ -1,20 +1,17 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/navbar_switches.dart';
+import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/navbar_tab.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_board/project_boards.dart';
 import 'package:unityspace/store/projects_store.dart';
+import 'package:unityspace/utils/helpers.dart';
 import 'package:wstore/wstore.dart';
 
 class ProjectContentStore extends WStore {
   static const tabTasks = 'tasks';
   static const tabDocuments = 'docs';
   String selectedTab = tabTasks;
-
-  void selectTab(String tab) {
-    setStore(() {
-      selectedTab = tab;
-    });
-  }
 
   Project? get project => computedFromStore(
         store: ProjectsStore(),
@@ -35,6 +32,50 @@ class ProjectContentStore extends WStore {
         keyName: 'isShowProjectReviewTab',
         watch: () => [project],
       );
+
+  void selectTab(String tab) {
+    setStore(() {
+      selectedTab = tab;
+    });
+  }
+
+  bool isTasksTab(String tab) {
+    return tab == ProjectContentStore.tabTasks;
+  }
+
+  void tryToHideTabDocs() {
+    if (project == null) return;
+    hideProjectTabDocs();
+  }
+
+  void hideProjectTabDocs() {
+    ProjectsStore().showProjectReviewTab(
+      projectId: project!.id,
+      show: false,
+    );
+  }
+
+  void copyTabLink(String tabId) {
+    final tabIdNum = int.tryParse(tabId);
+    final embeddingByTabId = embeddings
+        .firstWhereOrNull((embedding) => embedding.id == tabIdNum)
+        ?.url;
+    if (embeddingByTabId == null) return;
+    copyToClipboard(embeddingByTabId);
+  }
+
+  Future<void> onLongPressAction({
+    required String tabId,
+    PopupItemActionTypes? action,
+  }) async {
+    if (action == null) return;
+    return switch (action) {
+      PopupItemActionTypes.hide => hideProjectTabDocs(),
+      PopupItemActionTypes.copyLink => copyTabLink(tabId),
+      PopupItemActionTypes.edit => null,
+      PopupItemActionTypes.delete => null,
+    };
+  }
 
   @override
   ProjectContent get widget => super.widget as ProjectContent;
