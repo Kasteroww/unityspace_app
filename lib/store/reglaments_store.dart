@@ -237,14 +237,14 @@ class ReglamentsStore extends GStore {
   }
 
   /// Отображение локально того, что регламент переместился
-  Map<int, Reglament?> _changeReglamentColumnLocally({
+  Map<int, Reglament> _changeReglamentColumnLocally({
     required ChangeReglamentColumnAndOrderResponse response,
   }) {
-    final reglamentMap = reglamentsMap;
-    final reglament = reglamentsMap[response.id];
+    final reglamentMap = Map<int, Reglament>.from(reglamentsMap);
+    final reglament = reglamentMap[response.id];
 
     if (reglament != null) {
-      reglamentsMap[response.id] = reglament.copyWith(
+      reglamentMap[response.id] = reglament.copyWith(
         reglamentColumnId: response.columnId,
         order: response.order,
       );

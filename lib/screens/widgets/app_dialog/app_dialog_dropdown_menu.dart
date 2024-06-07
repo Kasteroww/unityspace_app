@@ -24,7 +24,7 @@ class AddDialogDropdownMenu<T> extends StatefulWidget {
   State<AddDialogDropdownMenu> createState() => _AddDialogDropdownMenuState();
 }
 
-class _AddDialogDropdownMenuState extends State<AddDialogDropdownMenu> {
+class _AddDialogDropdownMenuState<T> extends State<AddDialogDropdownMenu<T>> {
   final FocusNode myFocusNode = FocusNode();
 
   @override
@@ -41,22 +41,20 @@ class _AddDialogDropdownMenuState extends State<AddDialogDropdownMenu> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(widget.labelText),
-        DropdownButtonFormField(
+        DropdownButtonFormField<T>(
           dropdownColor: Colors.white,
           key: widget.fieldKey,
           focusNode: myFocusNode,
           autofocus: widget.autofocus,
           value: widget.currentValue,
-          onSaved: (value) => widget.onSaved?.call(value),
-          onChanged: (value) => widget.onChanged?.call(value),
+          onSaved: widget.onSaved,
+          onChanged: widget.onChanged,
           style: const TextStyle(
             color: Color(0xFF4C4C4D),
           ),
           decoration: InputDecoration(
             floatingLabelStyle: TextStyle(
-              color: myFocusNode.hasFocus
-                  ? const Color(0xFF159E5C)
-                  : const Color(0xA6111012),
+              color: myFocusNode.hasFocus ? const Color(0xFF159E5C) : const Color(0xA6111012),
             ),
             prefixIconConstraints: const BoxConstraints(
               minWidth: 40,
@@ -82,8 +80,8 @@ class _AddDialogDropdownMenuState extends State<AddDialogDropdownMenu> {
             ),
           ),
           items: widget.listValues
-              .map<DropdownMenuItem>(
-                (elem) => DropdownMenuItem(
+              .map<DropdownMenuItem<T>>(
+                (elem) => DropdownMenuItem<T>(
                   value: elem.$1,
                   child: Text(elem.$2),
                 ),

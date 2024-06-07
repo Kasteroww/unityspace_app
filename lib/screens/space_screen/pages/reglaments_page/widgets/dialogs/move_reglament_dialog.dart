@@ -6,6 +6,7 @@ import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.da
 import 'package:unityspace/store/reglaments_store.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
+import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
 
 Future<void> showMoveReglamentDialog({
@@ -25,8 +26,8 @@ Future<void> showMoveReglamentDialog({
 }
 
 class MoveReglamentDialogStore extends WStore {
-  late SpaceColumn selectedColumn;
-  late Space selectedSpace;
+  int? selectedColumn;
+  int? selectedSpace;
   List<SpaceColumn> reglamentColumns = [];
 
   List<Space> get spaces => computedFromStore(
@@ -35,23 +36,34 @@ class MoveReglamentDialogStore extends WStore {
         keyName: 'spaces',
       );
 
+  Map<int, Space?> get spacesMap => computedFromStore(
+        store: SpacesStore(),
+        getValue: (store) => store.spacesMap,
+        keyName: 'spacesMap',
+      );
+
   void initData(List<SpaceColumn> reglamentColumns) {
+    final space = spacesMap[reglamentColumns.first.spaceId];
+
+    if (space != null) {
+      setStore(() {
+        this.reglamentColumns = space.reglamentColumns;
+        selectedSpace = space.id;
+        selectedColumn = reglamentColumns.first.id;
+      });
+    }
+  }
+
+  void setSelectedReglamentColumn(int columnId) {
     setStore(() {
-      this.reglamentColumns = reglamentColumns;
-      selectedColumn = reglamentColumns.first;
-      selectedSpace = spaces.first;
+      selectedColumn = columnId;
     });
   }
 
-  void setSelectedReglamentColumn(SpaceColumn column) {
+  void setSelectedSpace(int spaceId) {
     setStore(() {
-      selectedColumn = column;
-    });
-  }
-
-  void setSelectedSpace(Space space) {
-    setStore(() {
-      selectedSpace = space;
+      selectedSpace = spaceId;
+      selectedColumn = getColumnsBySpaceId(spaceId).first.id;
     });
   }
 
@@ -61,7 +73,7 @@ class MoveReglamentDialogStore extends WStore {
   }) async {
     await ReglamentsStore().changeReglamentColumnAndOrder(
       reglamentId: reglamentId,
-      newColumnId: selectedColumn.id,
+      newColumnId: selectedColumn!,
       newOrder: newOrder,
     );
   }
@@ -85,8 +97,7 @@ class MoveReglamentDialog extends WStoreWidget<MoveReglamentDialogStore> {
   });
 
   @override
-  MoveReglamentDialogStore createWStore() =>
-      MoveReglamentDialogStore()..initData(reglamentColumns);
+  MoveReglamentDialogStore createWStore() => MoveReglamentDialogStore()..initData(reglamentColumns);
 
   @override
   Widget build(BuildContext context, MoveReglamentDialogStore store) {
@@ -96,36 +107,38 @@ class MoveReglamentDialog extends WStoreWidget<MoveReglamentDialogStore> {
       primaryButtonText: localization.move,
       onPrimaryButtonPressed: () {
         FocusScope.of(context).unfocus();
+        if (store.selectedColumn == null) {
+          logger.e(localization.column_id_null);
+          return;
+        }
         store.moveReglament(reglamentId: columnReglament.id);
         Navigator.pop(context);
       },
       secondaryButtonText: '',
       children: [
-        //Выбор пространства
-        AddDialogDropdownMenu<Space>(
-          onChanged: (space) {
-            if (space != null) store.setSelectedSpace(space);
+        // Выбор пространства
+        AddDialogDropdownMenu<int?>(
+          onChanged: (dynamic spaceId) {
             FocusScope.of(context).unfocus();
+            if (spaceId != null) store.setSelectedSpace(spaceId);
           },
           labelText: localization.space,
-          listValues: store.spaces.map((space) => (space, space.name)).toList(),
-          currentValue: store.spaces.first,
+          listValues: store.spaces.map((space) => (space.id, space.name)).toList(),
+          currentValue: store.selectedSpace ?? store.spaces.first.id,
         ),
         const SizedBox(height: 16),
-        //Выбор группы
-        AddDialogDropdownMenu<SpaceColumn?>(
-          onChanged: (reglamentColumn) {
-            if (reglamentColumn != null) {
-              store.setSelectedReglamentColumn(reglamentColumn);
+        // Выбор группы
+        AddDialogDropdownMenu<int?>(
+          onChanged: (dynamic reglamentColumnId) {
+            if (reglamentColumnId != null) {
+              store.setSelectedReglamentColumn(reglamentColumnId);
             }
             FocusScope.of(context).unfocus();
           },
           labelText: localization.group,
-          listValues: store
-              .getColumnsBySpaceId(store.selectedSpace.id)
-              .map((column) => (column, column.name))
-              .toList(),
-          currentValue: null,
+          listValues:
+              store.getColumnsBySpaceId(store.selectedSpace!).map((column) => (column.id, column.name)).toList(),
+          currentValue: store.selectedColumn,
         ),
       ],
     );
