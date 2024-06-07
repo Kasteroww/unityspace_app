@@ -12,6 +12,12 @@ class ProjectsStore extends GStore {
 
   List<Project> projects = [];
 
+  Map<int, ProjectEmbed?> get embeddingsMap {
+    return createMapById(
+      projects.expand((project) => project.embeddings).toList(),
+    );
+  }
+
   Map<int, Project> get projectsMap {
     return createMapById(projects);
   }
@@ -235,6 +241,49 @@ class ProjectsStore extends GStore {
     final List<Project> projectsNew = projects.map((project) {
       if (projectId == project.id) {
         return project.copyWith(showProjectReviewTab: show);
+      } else {
+        return project;
+      }
+    }).toList();
+    setStore(() {
+      projects = projectsNew;
+    });
+  }
+
+  /// Обновление элемента tab панели проекта
+  Future<void> updateProjectEmbed({
+    required int projectId,
+    required int embedId,
+    required ProjectEmbed embed,
+  }) async {
+    await api.updateProjectEmbed(
+      projectId: projectId,
+      embedId: embedId,
+      embed: embed,
+    );
+    _updateProjectEmbedLocally(
+      projectId: projectId,
+      embedId: embedId,
+      embedding: embed,
+    );
+  }
+
+  void _updateProjectEmbedLocally({
+    required int projectId,
+    required int embedId,
+    required ProjectEmbed embedding,
+  }) {
+    final List<Project> projectsNew = projects.map((project) {
+      if (projectId == project.id) {
+        final List<ProjectEmbed> embeddingsNew =
+            project.embeddings.map((embed) {
+          if (embed.id == embedId) {
+            return embed = embedding;
+          } else {
+            return embed;
+          }
+        }).toList();
+        return project.copyWith(embeddings: [...embeddingsNew]);
       } else {
         return project;
       }

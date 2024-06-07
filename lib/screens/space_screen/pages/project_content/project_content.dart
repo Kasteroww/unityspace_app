@@ -1,8 +1,6 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/navbar_switches.dart';
-import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/navbar_tab.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_board/project_boards.dart';
 import 'package:unityspace/store/projects_store.dart';
 import 'package:unityspace/utils/helpers.dart';
@@ -55,26 +53,8 @@ class ProjectContentStore extends WStore {
     );
   }
 
-  void copyTabLink(String tabId) {
-    final tabIdNum = int.tryParse(tabId);
-    final embeddingByTabId = embeddings
-        .firstWhereOrNull((embedding) => embedding.id == tabIdNum)
-        ?.url;
-    if (embeddingByTabId == null) return;
-    copyToClipboard(embeddingByTabId);
-  }
-
-  Future<void> onLongPressAction({
-    required String tabId,
-    PopupItemActionTypes? action,
-  }) async {
-    if (action == null) return;
-    return switch (action) {
-      PopupItemActionTypes.hide => hideProjectTabDocs(),
-      PopupItemActionTypes.copyLink => copyTabLink(tabId),
-      PopupItemActionTypes.edit => null,
-      PopupItemActionTypes.delete => null,
-    };
+  void copyTabLink(String url) {
+    copyToClipboard(url);
   }
 
   @override

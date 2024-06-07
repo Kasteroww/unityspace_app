@@ -36,6 +36,8 @@ enum SearchTaskErrors { none }
 
 enum AddProjectTabErrors { none, addProjectTabError, valueIsEmpty }
 
+enum ChangeProjectTabErrors { none, changeProjectTabError, valueIsEmpty }
+
 enum CreateProjectErrors { none, emptyName, createError }
 
 enum AddSpaceErrors { none, emptyName, paidTariffError, createError }
@@ -78,6 +80,4 @@ enum AddReglamentErrors { none, emptyName, problemUploadingData }
 
 enum DuplicateReglamentErrors { none, emptyName, problemUploadingData }
 
-
 enum ConfirmEmailErrors { none, confirmEmailError, incorrectCode }
-

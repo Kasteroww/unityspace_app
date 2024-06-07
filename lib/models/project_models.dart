@@ -268,7 +268,8 @@ class Project implements Identifiable {
   }
 }
 
-class ProjectEmbed {
+class ProjectEmbed implements Identifiable {
+  @override
   final int id;
   final int projectId;
   final String name;
@@ -284,6 +285,33 @@ class ProjectEmbed {
     required this.category,
     required this.order,
   });
+
+  ProjectEmbed copyWith({
+    int? id,
+    int? projectId,
+    String? name,
+    String? url,
+    AddTabDialogTypes? category,
+    int? order,
+  }) {
+    return ProjectEmbed(
+      id: id ?? this.id,
+      projectId: projectId ?? this.projectId,
+      name: name ?? this.name,
+      url: url ?? this.url,
+      category: category ?? this.category,
+      order: order ?? this.order,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'name': name,
+      'url': url,
+      'category': category.name,
+      'order': order,
+    };
+  }
 
   factory ProjectEmbed.fromResponse(ProjectEmbedResponse response) {
     return ProjectEmbed(

@@ -1,14 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/resources/app_icons.dart';
 import 'package:unityspace/resources/l10n/app_localizations.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/project_content.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/utils/helpers/screen_center_position.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/add_tab_dialog.dart';
+import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/change_tab_dialog.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/navbar_popup_button.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/navbar_popup_item.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/navbar_tab.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
+
+class NavbarProjectTab {
+  final String id;
+  final String title;
+  final VoidCallback? onLongTap;
+
+  NavbarProjectTab({required this.id, required this.title, this.onLongTap});
+}
 
 class NavbarSwitches extends StatelessWidget {
   const NavbarSwitches({super.key});
@@ -26,15 +36,26 @@ class NavbarSwitches extends StatelessWidget {
             store.isShowProjectReviewTab,
           ],
           builder: (context, store) {
-            // составление листа элементов tab панели
-            final List<(String, String)> listTabs = [
-              (ProjectContentStore.tabTasks, localization.tasks),
-              // если у модели проекта параметр true, добавляем вкладку документы
+            final listTabs = [
+              NavbarProjectTab(
+                id: ProjectContentStore.tabTasks,
+                title: localization.tasks,
+              ),
               if (store.isShowProjectReviewTab)
-                (ProjectContentStore.tabDocuments, localization.documents),
-              // добавляем в лист вкладок embeddings из модели проекта
+                NavbarProjectTab(
+                  id: ProjectContentStore.tabDocuments,
+                  title: localization.documents,
+                  onLongTap: () => showOnLongPressMenuDocs(context: context),
+                ),
               ...store.embeddings.map(
-                (embedding) => ('${embedding.id}', embedding.name),
+                (embedding) => NavbarProjectTab(
+                  id: '${embedding.id}',
+                  title: embedding.name,
+                  onLongTap: () => showOnLongPressMenuEmbed(
+                    context: context,
+                    embedding: embedding,
+                  ),
+                ),
               ),
             ];
             return Row(
@@ -48,19 +69,10 @@ class NavbarSwitches extends StatelessWidget {
                       itemCount: listTabs.length,
                       itemBuilder: (BuildContext context, int index) {
                         return NavbarTab(
-                          title: listTabs[index].$2,
-                          onPressed: () => store.selectTab(listTabs[index].$1),
-                          onLongPress: () async {
-                            final action = await showOnLongPressMenu(
-                              context: context,
-                              tabId: listTabs[index].$1,
-                            );
-                            await store.onLongPressAction(
-                              tabId: listTabs[index].$1,
-                              action: action,
-                            );
-                          },
-                          selected: listTabs[index].$1 == store.selectedTab,
+                          title: listTabs[index].title,
+                          onPressed: () => store.selectTab(listTabs[index].id),
+                          onLongPress: listTabs[index].onLongTap,
+                          selected: listTabs[index].id == store.selectedTab,
                         );
                       },
                     ),
@@ -85,40 +97,53 @@ class NavbarSwitches extends StatelessWidget {
   }
 }
 
-Future<PopupItemActionTypes?> showOnLongPressMenu({
-  required String tabId,
+Future<void> showOnLongPressMenuDocs({
   required BuildContext context,
 }) async {
-  if (tabId == ProjectContentStore.tabTasks) return null;
-  final items = getListPopupMenu(
-    tabId: tabId,
-    localization: LocalizationHelper.getLocalizations(context),
-  );
+  final localization = LocalizationHelper.getLocalizations(context);
   final size = MediaQuery.of(context).size;
-  return showMenu(
+  final items = getListPopMenuDocs(localization: localization);
+  final action = await showMenu(
     context: context,
     position: getCenterScreenPosition(size),
     items: items,
   );
-}
-
-List<PopupMenuItem<PopupItemActionTypes>> getListPopupMenu({
-  required String tabId,
-  required AppLocalizations localization,
-}) {
-  if (tabId == ProjectContentStore.tabDocuments) {
-    return getListPopMenuDocs(localization: localization);
-  } else {
-    return getListPopMenuEmbed(localization: localization);
+  if (action == null) return;
+  if (context.mounted) {
+    return context.wstore<ProjectContentStore>().hideProjectTabDocs();
   }
 }
 
-List<PopupMenuItem<PopupItemActionTypes>> getListPopMenuDocs({
+Future<void> showOnLongPressMenuEmbed({
+  required BuildContext context,
+  required ProjectEmbed embedding,
+}) async {
+  final localization = LocalizationHelper.getLocalizations(context);
+  final size = MediaQuery.of(context).size;
+  final items = getListPopMenuEmbed(localization: localization);
+  final store = context.wstore<ProjectContentStore>();
+  final action = await showMenu(
+    context: context,
+    position: getCenterScreenPosition(size),
+    items: items,
+  );
+  if (action == null) return;
+  if (context.mounted) {
+    return switch (action) {
+      PopupItemEmbedActionTypes.copyLink => store.copyTabLink(embedding.url),
+      PopupItemEmbedActionTypes.edit =>
+        showChangeTabDialog(context, embedding),
+      PopupItemEmbedActionTypes.delete => null,
+    };
+  }
+}
+
+List<PopupMenuItem<PopupItemDocsActionTypes>> getListPopMenuDocs({
   required AppLocalizations localization,
 }) {
   return [
     PopupMenuItem(
-      value: PopupItemActionTypes.hide,
+      value: PopupItemDocsActionTypes.hide,
       child: NavbarPopupItem(
         text: localization.hide,
         icon: AppIcons.hide,
@@ -127,26 +152,26 @@ List<PopupMenuItem<PopupItemActionTypes>> getListPopMenuDocs({
   ];
 }
 
-List<PopupMenuItem<PopupItemActionTypes>> getListPopMenuEmbed({
+List<PopupMenuItem<PopupItemEmbedActionTypes>> getListPopMenuEmbed({
   required AppLocalizations localization,
 }) {
   return [
     PopupMenuItem(
-      value: PopupItemActionTypes.edit,
+      value: PopupItemEmbedActionTypes.edit,
       child: NavbarPopupItem(
         text: localization.change,
         icon: AppIcons.edit,
       ),
     ),
     PopupMenuItem(
-      value: PopupItemActionTypes.copyLink,
+      value: PopupItemEmbedActionTypes.copyLink,
       child: NavbarPopupItem(
         text: localization.copy_link,
         icon: AppIcons.link,
       ),
     ),
     PopupMenuItem(
-      value: PopupItemActionTypes.delete,
+      value: PopupItemEmbedActionTypes.delete,
       child: NavbarPopupItem(
         text: localization.delete,
         icon: AppIcons.delete,

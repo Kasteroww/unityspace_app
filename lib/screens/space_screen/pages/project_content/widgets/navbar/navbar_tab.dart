@@ -29,4 +29,6 @@ class NavbarTab extends StatelessWidget {
   }
 }
 
-enum PopupItemActionTypes { edit, copyLink, delete, hide }
+enum PopupItemDocsActionTypes { hide }
+
+enum PopupItemEmbedActionTypes { edit, copyLink, delete }
