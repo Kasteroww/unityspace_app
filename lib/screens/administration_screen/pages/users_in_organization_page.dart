@@ -8,39 +8,33 @@ import 'package:unityspace/store/user_store.dart';
 import 'package:wstore/wstore.dart';
 
 class UsersInOrganizationPageStore extends WStore {
-  UsersInOrganizationPageStore({
-    UserStore? userStore,
-  }) : userStore = userStore ?? UserStore();
-
-  UserStore userStore;
-  SpacesStore spacesStore = SpacesStore();
   WStoreStatus status = WStoreStatus.init;
 
   Map<int, OrganizationMember?> get members => computedFromStore(
-        store: userStore,
+        store: UserStore(),
         getValue: (store) => store.organizationMembersMap,
         keyName: 'members',
       );
 
   List<Space> get spaces => computedFromStore(
-        store: spacesStore,
+        store: SpacesStore(),
         getValue: (store) => store.spaces,
         keyName: 'spaces',
       );
 
   int get organizationOwnerId => computedFromStore(
-        store: userStore,
+        store: UserStore(),
         getValue: (store) => store.organizationOwnerId,
         keyName: 'ownerId',
       );
 
   Future<void> deleteMember(OrganizationMember member) async {
-    await spacesStore.removeUserFromSpace(member.id);
+    await SpacesStore().removeUserFromSpace(member.id);
   }
 
   Future<void> toggleMemberAdmin(OrganizationMember member) async {
     final isAdmin = getMemberRole(member) == OrganizationRoleEnum.admin;
-    await userStore.setIsAdmin(member.id, !isAdmin);
+    await UserStore().setIsAdmin(member.id, !isAdmin);
   }
 
   String getMemberSpaces(int memberId) {
@@ -66,10 +60,10 @@ class UsersInOrganizationPageStore extends WStore {
 
   bool hasMemberEditingRights(OrganizationMember member) {
     final memberRole = getMemberRole(member);
-    if ((userStore.isOrganizationOwner &&
+    if ((UserStore().isOrganizationOwner &&
             memberRole == OrganizationRoleEnum.owner) ||
-        (userStore.isAdmin && memberRole != OrganizationRoleEnum.worker) ||
-        (!userStore.isAdmin && !userStore.isOrganizationOwner)) {
+        (UserStore().isAdmin && memberRole != OrganizationRoleEnum.worker) ||
+        (!UserStore().isAdmin && !UserStore().isOrganizationOwner)) {
       return true;
     }
     return false;
