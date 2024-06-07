@@ -7,6 +7,7 @@ import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/utils/helpers/role.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_board/parts/add_stage_button.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_board/parts/add_task_button.dart';
+import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_board/parts/context_menu_button.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_detail/project_detail.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_bottom_sheet.dart';
 import 'package:unityspace/store/projects_store.dart';
@@ -319,9 +320,20 @@ class ProjectBoards extends WStoreWidget<ProjectBoardsStore> {
                                                 color: Colors.grey,
                                               ),
                                             ),
-                                            child: Padding(
-                                              padding: const EdgeInsets.all(4),
-                                              child: Text(task.name),
+                                            child: Expanded(
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(4),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Text(task.name),
+                                                    const ContextMenuButton(),
+                                                  ],
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ),
