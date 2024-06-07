@@ -53,75 +53,84 @@ class TasksList extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      StatusMark(status: sortedTask.task.status),
-                      const SizedBox(
-                        width: 12,
-                      ),
                       Expanded(
-                        child: Text(
-                          sortedTask.task.name,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            StatusMark(status: sortedTask.task.status),
+                            const SizedBox(
+                              width: 12,
+                            ),
+                            Expanded(
+                              child: Text(
+                                sortedTask.task.name,
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 8,
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(
-                        width: 24,
-                      ),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (taskEndDate != null)
-                            PaddingRight(
-                              8,
-                              child: Text(
-                                TasksListDateTimeHelper.getFormattedEndDate(
-                                  endDate: taskEndDate,
-                                  locale: localization.localeName,
+                      Expanded(
+                        child: Wrap(
+                          alignment: WrapAlignment.end,
+                          children: [
+                            if (taskEndDate != null)
+                              PaddingRight(
+                                8,
+                                child: Text(
+                                  TasksListDateTimeHelper.getFormattedEndDate(
+                                    endDate: taskEndDate,
+                                    locale: localization.localeName,
+                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium!
+                                      .copyWith(
+                                        color: TasksListDateTimeHelper
+                                                .isPastDeadline(
+                                          sortedTask.task.dateEnd!,
+                                        )
+                                            ? Colors.red
+                                            : ColorConstants.grey04,
+                                      ),
                                 ),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium!
-                                    .copyWith(
-                                      color: TasksListDateTimeHelper
-                                              .isPastDeadline(
-                                        sortedTask.task.dateEnd!,
-                                      )
-                                          ? Colors.red
-                                          : ColorConstants.grey04,
-                                    ),
                               ),
-                            ),
-                          if (sortedTask.task.blockReason != null &&
-                              sortedTask.task.blockReason!.isNotEmpty)
-                            const TaskIconWidget(
-                              icon: Icons.front_hand,
-                              color: Colors.red,
-                            ),
-                          if (sortedTask.task.hasMessages)
-                            const TaskIconWidget(
-                              icon: Icons.message,
-                            ),
-                          if (sortedTask.task.hasDescription)
-                            const TaskIconWidget(icon: Icons.description),
-                          if (sortedTask.task.tags.isNotEmpty)
-                            const TaskIconWidget(icon: Icons.tag),
-                          if (taskImportance != TaskImportance.normal)
-                            TaskIconWidget(
-                              icon: Icons.flag,
-                              color: getImportanceColor(taskImportance),
-                            ),
-                          if (taskColor != null)
-                            TaskIconWidget(
-                              icon: Icons.water_drop,
-                              color: taskColor,
-                            ),
-                          if (sortedTask.task.responsibleUsersId.isNotEmpty)
-                            PaddingRight(
-                              8,
-                              child: ResponsiblesAvatars(
-                                responsibleIds:
-                                    sortedTask.task.responsibleUsersId,
+                            if (sortedTask.task.blockReason != null &&
+                                sortedTask.task.blockReason!.isNotEmpty)
+                              const TaskIconWidget(
+                                icon: Icons.front_hand,
+                                color: Colors.red,
                               ),
-                            ),
-                        ],
+                            if (sortedTask.task.hasMessages)
+                              const TaskIconWidget(
+                                icon: Icons.message,
+                              ),
+                            if (sortedTask.task.hasDescription)
+                              const TaskIconWidget(icon: Icons.description),
+                            if (sortedTask.task.tags.isNotEmpty)
+                              const TaskIconWidget(icon: Icons.tag),
+                            if (taskImportance != TaskImportance.normal)
+                              TaskIconWidget(
+                                icon: Icons.flag,
+                                color: getImportanceColor(taskImportance),
+                              ),
+                            if (taskColor != null)
+                              TaskIconWidget(
+                                icon: Icons.water_drop,
+                                color: taskColor,
+                              ),
+                            if (sortedTask.task.responsibleUsersId.isNotEmpty)
+                              PaddingRight(
+                                8,
+                                child: ResponsiblesAvatars(
+                                  responsibleIds:
+                                      sortedTask.task.responsibleUsersId,
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
