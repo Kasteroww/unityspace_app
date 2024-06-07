@@ -22,14 +22,16 @@ class AppDialog extends StatelessWidget {
         side: BorderSide(color: Color(0xFF212022), width: 2),
       ),
       title: Text(title),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ...children,
-          if (buttons.isNotEmpty) const SizedBox(height: 24),
-          ...buttons,
-        ],
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ...children,
+            if (buttons.isNotEmpty) const SizedBox(height: 24),
+            ...buttons,
+          ],
+        ),
       ),
     );
   }
