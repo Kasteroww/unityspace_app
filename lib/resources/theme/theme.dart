@@ -9,14 +9,14 @@ ThemeData themeData = ThemeData(
     surfaceTintColor: ColorConstants.background,
     iconTheme: IconThemeData(
       size: 20,
-      color: ColorConstants.grey03,
+      color: ColorConstants.grey02,
     ),
     titleTextStyle: TextStyle(
       fontFamily: 'roboto',
       fontWeight: FontWeight.w500,
       fontSize: 20,
       height: 23.44 / 20,
-      color: ColorConstants.grey03,
+      color: ColorConstants.grey02,
     ),
   ),
   textButtonTheme: TextButtonThemeData(
@@ -33,11 +33,14 @@ ThemeData themeData = ThemeData(
 );
 
 class ColorConstants {
+  static const main = Color(0xFF44B17D);
   static const main01 = Color(0xFFC2EED5);
+  static const grey01 = Color(0xFF1A1A1A);
   static const grey02 = Color(0xFF333333);
   static const grey03 = Color(0xFF4D4D4D);
   static const grey04 = Color(0xFF666666);
   static const grey09 = Color(0xFFE6E6E6);
+  static const grey10 = Color(0xFFF2F2F2);
   static const white = Color(0xFFFFFFFF);
   static const background = Color(0xFFF5F5F5);
 }

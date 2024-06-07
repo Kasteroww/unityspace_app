@@ -23,7 +23,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       child: PaddingTop(
         22,
         child: AppBar(
-          title: Text(titleText),
+          title: Text(
+            titleText,
+          ),
           leading: GestureDetector(
             onTap: () => Scaffold.of(context).openDrawer(),
             child: SvgPicture.asset(

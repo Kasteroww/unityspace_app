@@ -5,30 +5,35 @@ import 'package:unityspace/resources/theme/theme.dart';
 class ColumnButton extends StatelessWidget {
   final String? iconAsset;
   final String title;
-  final bool selected;
-  final VoidCallback onPressed;
+  final bool isSelected;
+  final VoidCallback onTap;
 
   const ColumnButton({
     required this.title,
-    required this.selected,
-    required this.onPressed,
+    required this.isSelected,
+    required this.onTap,
     super.key,
     this.iconAsset,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      borderRadius: BorderRadius.circular(8),
-      clipBehavior: Clip.antiAlias,
-      color: ColorConstants.background,
-      child: InkWell(
-        onTap: selected ? null : onPressed,
-        child: Ink(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 20,
+    return InkWell(
+      onTap: isSelected ? null : onTap,
+      child: Padding(
+        padding: const EdgeInsets.only(right: 20),
+        child: Container(
+          height: 46,
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: isSelected
+                  ? const BorderSide(
+                      width: 2,
+                      color: ColorConstants.main,
+                    )
+                  : BorderSide.none,
+            ),
           ),
-          height: 32,
           child: Row(
             children: [
               if (iconAsset != null)
@@ -43,12 +48,13 @@ class ColumnButton extends StatelessWidget {
               if (iconAsset != null) const SizedBox(width: 4),
               Text(
                 title,
-                style: textTheme.bodyMedium!.copyWith(
-                  color: ColorConstants.grey02,
+                style: const TextStyle(
                   fontWeight: FontWeight.w500,
-                  decoration:
-                      selected ? TextDecoration.underline : TextDecoration.none,
+                  fontSize: 14,
+                  color: Color.fromRGBO(29, 27, 32, 1),
+                  height: 14 / 20,
                 ),
+                textAlign: TextAlign.center,
               ),
             ],
           ),

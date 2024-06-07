@@ -22,7 +22,7 @@ class _ColumnsListRowState extends State<ColumnsListRow> {
     columnsKeys = List.generate(widget.children.length, (index) => GlobalKey());
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final selectedColumn =
-          widget.children.indexWhere((column) => column.selected);
+          widget.children.indexWhere((column) => column.isSelected);
       if (selectedColumn == -1) return;
       final selectedColumnContext = columnsKeys[selectedColumn].currentContext;
       if (selectedColumnContext != null) {
@@ -44,9 +44,9 @@ class _ColumnsListRowState extends State<ColumnsListRow> {
       columnsKeys.removeRange(widget.children.length, columnsKeys.length);
     }
     final selectedColumn =
-        widget.children.indexWhere((column) => column.selected);
+        widget.children.indexWhere((column) => column.isSelected);
     final selectedColumnOld =
-        oldWidget.children.indexWhere((column) => column.selected);
+        oldWidget.children.indexWhere((column) => column.isSelected);
     if (selectedColumn != selectedColumnOld) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (selectedColumn == -1) return;
@@ -74,7 +74,6 @@ class _ColumnsListRowState extends State<ColumnsListRow> {
               key: columnsKeys[widget.children.indexOf(column)],
               child: column,
             ),
-            const SizedBox(width: 8),
           ],
         ),
       ],

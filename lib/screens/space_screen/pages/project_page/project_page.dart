@@ -1,12 +1,14 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
 import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/resources/app_icons.dart';
 import 'package:unityspace/resources/errors.dart';
+import 'package:unityspace/resources/theme/theme.dart';
+import 'package:unityspace/screens/dialogs/add_project_dialog.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/widgets/projects_listview.dart';
+import 'package:unityspace/screens/space_screen/widgets/arcive_button.dart';
 import 'package:unityspace/screens/space_screen/widgets/delete_no_rules_dialog.dart';
 import 'package:unityspace/screens/widgets/columns_list/column_button.dart';
 import 'package:unityspace/screens/widgets/columns_list/columns_list_row.dart';
@@ -157,8 +159,6 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
   @override
   Widget build(BuildContext context, ProjectsPageStore store) {
     final localization = LocalizationHelper.getLocalizations(context);
-    final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
     return WStoreStatusBuilder(
       store: store,
       watch: (store) => store.status,
@@ -198,78 +198,71 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
               [store.projects, store.selectedColumn, store.isArchivedPage],
           store: context.wstore(),
           builder: (context, store) {
-            return Column(
-              children: [
-                if (store.isArchivedPage)
-                  Container()
-                else
-                  Container(
-                    padding: const EdgeInsets.only(top: 10),
-                    constraints: BoxConstraints(
-                      maxHeight: height * 0.04,
-                      maxWidth: (Platform.isAndroid || Platform.isIOS)
-                          ? width * 0.95
-                          : width * 0.75,
-                    ),
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: [
-                        ColumnsListRow(
-                          children: [
-                            ...store.projectColumns.map(
-                              (column) => ColumnButton(
-                                title: column.name,
-                                onPressed: () {
-                                  store.selectColumn(column);
-                                },
-                                selected: column == store.selectedColumn,
+            return SafeArea(
+              child: Stack(
+                children: [
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (!store.isArchivedPage)
+                        Container(
+                          height: 46,
+                          padding: const EdgeInsets.only(left: 20),
+                          child: ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: [
+                              ColumnsListRow(
+                                children: [
+                                  ...store.projectColumns.map(
+                                    (column) => ColumnButton(
+                                      title: column.name,
+                                      onTap: () {
+                                        store.selectColumn(column);
+                                      },
+                                      isSelected:
+                                          column == store.selectedColumn,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
-                  ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Container(
-                    padding: EdgeInsets.only(
-                      top: 10,
-                      right: width * 0.1,
-                    ),
-                    constraints: BoxConstraints(
-                      maxHeight: height * 0.04,
-                      maxWidth: (Platform.isAndroid || Platform.isIOS)
-                          ? width * 0.95
-                          : width * 0.75,
-                    ),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        foregroundColor: Colors.black,
-                        elevation: 0,
+                      ArchiveButton(
+                        onTap: () => store.selectArchive(),
+                        text: store.isArchivedPage
+                            ? localization.exit_from_archive
+                            : '${localization.projects_in_archive} ${store.archiveProjectsCount}',
                       ),
-                      onPressed: () {
-                        store.selectArchive();
+                      const ProjectsListview(),
+                    ],
+                  ),
+                  Align(
+                    alignment: const Alignment(0.9, 1),
+                    child: InkWell(
+                      onTap: () {
+                        showAddProjectDialog(
+                          context,
+                          store.selectedColumn.id,
+                        );
                       },
-                      child: WStoreBuilder<ProjectsPageStore>(
-                        watch: (store) => [
-                          store.projects,
-                        ],
-                        store: context.wstore(),
-                        builder: (context, store) {
-                          return Text(
-                            store.isArchivedPage
-                                ? localization.exit_from_archive
-                                : '${localization.projects_in_archive} ${store.archiveProjectsCount}',
-                          );
-                        },
+                      child: Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          color: ColorConstants.main,
+                          borderRadius: BorderRadius.circular(28),
+                        ),
+                        child: Center(
+                          child: SvgPicture.asset(
+                            'assets/icons/add_1.svg',
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const ProjectsListview(),
-              ],
+                ],
+              ),
             );
           },
         );

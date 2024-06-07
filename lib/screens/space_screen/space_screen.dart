@@ -4,16 +4,15 @@ import 'package:unityspace/screens/app_navigation_drawer.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/project_page.dart';
 import 'package:unityspace/screens/space_screen/pages/reglaments_page/reglaments_page.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/tasks_page.dart';
-import 'package:unityspace/screens/widgets/tabs_list/tab_button.dart';
-import 'package:unityspace/screens/widgets/tabs_list/tabs_list_row.dart';
-import 'package:unityspace/utils/localization_helper.dart';
+import 'package:unityspace/screens/space_screen/widgets/pop_up_button.dart';
+import 'package:unityspace/screens/widgets/appbar.dart';
 import 'package:wstore/wstore.dart';
 
 class SpaceScreenStore extends WStore {
   late Space spaceId;
   SpacesScreenTab selectedTab = SpacesScreenTab.projects;
 
-  void selectTab(final SpacesScreenTab tab) {
+  void selectTab(SpacesScreenTab tab) {
     setStore(() {
       selectedTab = tab;
     });
@@ -43,36 +42,21 @@ class SpaceScreen extends WStoreWidget<SpaceScreenStore> {
 
   @override
   Widget build(BuildContext context, SpaceScreenStore store) {
-    final localization = LocalizationHelper.getLocalizations(context);
     return Scaffold(
       drawer: const AppNavigationDrawer(),
-      appBar: AppBar(
-        title: Text(space.name),
+      appBar: CustomAppBar(
+        titleText: space.name,
+        actions: [
+          PopUpSpacesScreenButton(
+            onSelected: (tab) {
+              store.selectTab(tab);
+            },
+          ),
+        ],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          WStoreBuilder(
-            store: store,
-            watch: (store) => [store.selectedTab, store.currentUserTabs],
-            builder: (context, store) => TabsListRow(
-              children: [
-                ...store.currentUserTabs.map(
-                  (tab) => TabButton(
-                    title: switch (tab) {
-                      SpacesScreenTab.projects => localization.projects,
-                      SpacesScreenTab.tasks => localization.tasks,
-                      SpacesScreenTab.reglaments => localization.reglaments,
-                    },
-                    onPressed: () {
-                      store.selectTab(tab);
-                    },
-                    selected: tab == store.selectedTab,
-                  ),
-                ),
-              ],
-            ),
-          ),
           const SizedBox(height: 8),
           Expanded(
             child: WStoreValueBuilder(
