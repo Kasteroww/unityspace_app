@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/models/notification_models.dart';
+import 'package:unityspace/resources/theme/theme.dart';
 import 'package:unityspace/screens/notifications_screen/utils/notification_helper.dart';
 import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
+import 'package:unityspace/utils/date_time_converter.dart';
 import 'package:unityspace/utils/extensions/localization_extensions.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 
 class NotificationInfo extends StatelessWidget {
   NotificationInfo({
     required this.notificationGroup,
+    this.isShowCreatedAt = false,
     super.key,
   });
 
+  final bool isShowCreatedAt;
   final NotificationsGroup notificationGroup;
 
   final notificationHelper = NotificationHelper();
@@ -65,6 +69,20 @@ class NotificationInfo extends StatelessWidget {
                   ),
                 ),
               ),
+              // время создания уведомления
+              if (isShowCreatedAt)
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Text(
+                    DateTimeConverter.formatTimeHHmm(notification.createdAt),
+                    style: const TextStyle(
+                      color: ColorConstants.grey04,
+                      fontWeight: FontWeight.w400,
+                      fontSize: 10,
+                      height: 11.72 / 10,
+                    ),
+                  ),
+                ),
             ],
           ),
         );

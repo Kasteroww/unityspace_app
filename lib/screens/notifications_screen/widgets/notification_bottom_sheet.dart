@@ -80,15 +80,9 @@ class NotificationBottomSheet extends StatelessWidget {
               ),
               Expanded(
                 child: SingleChildScrollView(
-                  child: Container(
-                    width: width,
-                    color: Colors.white,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        NotificationInfo(notificationGroup: notificationsGroup),
-                      ],
-                    ),
+                  child: NotificationInfo(
+                    notificationGroup: notificationsGroup,
+                    isShowCreatedAt: true,
                   ),
                 ),
               ),

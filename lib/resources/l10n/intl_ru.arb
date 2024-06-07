@@ -465,6 +465,7 @@
   "from_archive": "Восстановить из архива",
   "tasks": "Задачи",
   "reglaments": "Регламенты",
+  "reglament":"Регламент",
   "other": "Другое",
   "current_many": "Текущие",
   "add_project": "Добавить проект",

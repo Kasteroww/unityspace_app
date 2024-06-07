@@ -183,7 +183,7 @@ extension NotificationGroupLocalization on NotificationGroupType {
       case NotificationGroupType.task:
         return localization.tasks;
       case NotificationGroupType.reglament:
-        return localization.reglaments;
+        return localization.reglament;
       case NotificationGroupType.space:
         return localization.spaces;
       case NotificationGroupType.achievement:
