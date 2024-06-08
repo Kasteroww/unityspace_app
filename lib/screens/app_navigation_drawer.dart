@@ -34,7 +34,7 @@ class AppNavigationDrawerStore extends WStore {
         keyName: 'currentUser',
       );
 
-  List<Space>? get spaces => computedFromStore(
+  Spaces get spaces => computedFromStore(
         store: SpacesStore(),
         getValue: (store) => store.spaces,
         keyName: 'spaces',
@@ -43,8 +43,7 @@ class AppNavigationDrawerStore extends WStore {
   bool get isAddingSpaceExceededLimit => computed(
         getValue: () {
           if (hasLicense || hasTrial) return false;
-          final spacesLength = spaces?.length ?? 0;
-          return spacesLength >= 3;
+          return spaces.length >= 3;
         },
         watch: () => [spaces, hasLicense, hasTrial],
         keyName: 'isAddingSpaceExceededLimit',
@@ -52,7 +51,7 @@ class AppNavigationDrawerStore extends WStore {
 
   List<Space> get allSortedSpaces => computed(
         getValue: () {
-          final spaces = (this.spaces ?? []).toList();
+          final spaces = this.spaces.list.toList();
           spaces.sort((a, b) {
             if (a.favorite == b.favorite) {
               return (a.order - b.order).sign.toInt();

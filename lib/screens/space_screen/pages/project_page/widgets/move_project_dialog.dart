@@ -31,19 +31,19 @@ class MoveProjectDialogStore extends WStore {
   int? selectedSpaceId;
   int? selectedColumnId;
 
-  List<Space> get spaces => computedFromStore(
+  Spaces get spaces => computedFromStore(
         store: SpacesStore(),
         keyName: 'spaces',
         getValue: (store) => store.spaces,
       );
 
   List<SpaceColumn> getColumnsBySpaceId(int? spaceId) {
-    return spaces.firstWhere((space) => space.id == spaceId).columns;
+    if (spaceId == null) return [];
+    return spaces[spaceId]?.columns ?? [];
   }
 
   void initData(SpaceColumn column) {
-    selectedSpaceId =
-        spaces.firstWhere((space) => space.id == column.spaceId).id;
+    selectedSpaceId = column.spaceId;
     selectedColumnId = column.id;
   }
 
@@ -151,7 +151,7 @@ class MoveProjectDialog extends WStoreWidget<MoveProjectDialogStore> {
                     store.setSelectedSpace(spaceId);
                   },
                   labelText: localization.space,
-                  listValues: store.spaces
+                  listValues: store.spaces.list
                       .map((space) => (space.id, space.name))
                       .toList(),
                   currentValue: store.selectedSpaceId,

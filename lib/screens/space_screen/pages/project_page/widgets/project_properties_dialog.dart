@@ -39,7 +39,7 @@ class EditProjectPropertiesDialogStore extends WStore {
   List<SpaceMember> get spaceMembers => computedFromStore(
         store: SpacesStore(),
         getValue: (store) =>
-            store.spacesMap[widget.project.spaceId]?.members ?? [],
+            store.spaces[widget.project.spaceId]?.members ?? [],
         keyName: 'spaceMembers',
       );
 

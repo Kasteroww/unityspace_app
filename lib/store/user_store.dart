@@ -239,7 +239,9 @@ class UserStore extends GStore {
   }
 
   void setUniqueSpaceUsersCountLocally(int newValue) {
-    organization = organization?.copyWith(uniqueSpaceUsersCount: newValue);
+    setStore(() {
+      organization = organization?.copyWith(uniqueSpaceUsersCount: newValue);
+    });
   }
 
   @override

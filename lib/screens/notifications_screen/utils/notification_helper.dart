@@ -103,10 +103,9 @@ class NotificationHelper {
         if (groupsMap.containsKey(groupId)) {
           groupsMap[groupId]?.notifications.add(notification);
         } else {
-          final String spaceName = SpacesStore()
-                  .spacesMap[notification.locations[0].spaceId]
-                  ?.name ??
-              notification.text;
+          final String spaceName =
+              SpacesStore().spaces[notification.locations[0].spaceId]?.name ??
+                  notification.text;
           final NotificationsGroup newGroup = NotificationsGroup(
             groupId: groupId,
             locations: [],
@@ -182,7 +181,7 @@ class NotificationHelper {
     }
 
     return locations.map((location) {
-      final space = SpacesStore().spacesMap[location.spaceId];
+      final space = SpacesStore().spaces[location.spaceId];
       final spaceName = space?.name ?? '';
       final project = location.projectId != null
           ? ProjectsStore().projectsMap[location.projectId!]

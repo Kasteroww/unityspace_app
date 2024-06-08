@@ -30,20 +30,14 @@ class MoveReglamentDialogStore extends WStore {
   int? selectedSpace;
   List<SpaceColumn> reglamentColumns = [];
 
-  List<Space> get spaces => computedFromStore(
+  Spaces get spaces => computedFromStore(
         store: SpacesStore(),
         getValue: (store) => store.spaces,
         keyName: 'spaces',
       );
 
-  Map<int, Space?> get spacesMap => computedFromStore(
-        store: SpacesStore(),
-        getValue: (store) => store.spacesMap,
-        keyName: 'spacesMap',
-      );
-
   void initData(List<SpaceColumn> reglamentColumns) {
-    final space = spacesMap[reglamentColumns.first.spaceId];
+    final space = spaces[reglamentColumns.first.spaceId];
 
     if (space != null) {
       setStore(() {
@@ -79,7 +73,7 @@ class MoveReglamentDialogStore extends WStore {
   }
 
   List<SpaceColumn> getColumnsBySpaceId(int spaceId) {
-    return spaces.firstWhere((space) => space.id == spaceId).reglamentColumns;
+    return spaces[spaceId]?.reglamentColumns ?? [];
   }
 
   @override
@@ -97,7 +91,8 @@ class MoveReglamentDialog extends WStoreWidget<MoveReglamentDialogStore> {
   });
 
   @override
-  MoveReglamentDialogStore createWStore() => MoveReglamentDialogStore()..initData(reglamentColumns);
+  MoveReglamentDialogStore createWStore() =>
+      MoveReglamentDialogStore()..initData(reglamentColumns);
 
   @override
   Widget build(BuildContext context, MoveReglamentDialogStore store) {
@@ -123,8 +118,9 @@ class MoveReglamentDialog extends WStoreWidget<MoveReglamentDialogStore> {
             if (spaceId != null) store.setSelectedSpace(spaceId);
           },
           labelText: localization.space,
-          listValues: store.spaces.map((space) => (space.id, space.name)).toList(),
-          currentValue: store.selectedSpace ?? store.spaces.first.id,
+          listValues:
+              store.spaces.list.map((space) => (space.id, space.name)).toList(),
+          currentValue: store.selectedSpace ?? store.spaces.list.first.id,
         ),
         const SizedBox(height: 16),
         // Выбор группы
@@ -136,8 +132,10 @@ class MoveReglamentDialog extends WStoreWidget<MoveReglamentDialogStore> {
             FocusScope.of(context).unfocus();
           },
           labelText: localization.group,
-          listValues:
-              store.getColumnsBySpaceId(store.selectedSpace!).map((column) => (column.id, column.name)).toList(),
+          listValues: store
+              .getColumnsBySpaceId(store.selectedSpace!)
+              .map((column) => (column.id, column.name))
+              .toList(),
           currentValue: store.selectedColumn,
         ),
       ],

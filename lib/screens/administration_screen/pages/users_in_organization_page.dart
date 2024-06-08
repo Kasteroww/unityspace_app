@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/screens/administration_screen/helpers/organization_role_enum.dart';
 import 'package:unityspace/screens/administration_screen/widgets/user_in_organization_list.dart';
@@ -16,7 +15,7 @@ class UsersInOrganizationPageStore extends WStore {
         keyName: 'members',
       );
 
-  List<Space> get spaces => computedFromStore(
+  Spaces get spaces => computedFromStore(
         store: SpacesStore(),
         getValue: (store) => store.spaces,
         keyName: 'spaces',
@@ -29,9 +28,7 @@ class UsersInOrganizationPageStore extends WStore {
       );
 
   Future<void> deleteMember(OrganizationMember member) async {
-    final uniqueSpaceUsersCountResult =
-        await SpacesStore().removeUserFromSpace(member.id);
-    UserStore().setUniqueSpaceUsersCountLocally(uniqueSpaceUsersCountResult);
+    await SpacesStore().removeUserFromSpace(member.id);
   }
 
   Future<void> toggleMemberAdmin(OrganizationMember member) async {
@@ -41,11 +38,10 @@ class UsersInOrganizationPageStore extends WStore {
 
   String getMemberSpaces(int memberId) {
     final List<String> spaceNames = [];
-    for (final element in spaces) {
-      final bool containsItem =
-          element.members.any((item) => item.id == memberId);
+    for (final space in spaces.list) {
+      final containsItem = space.members.any((member) => member.id == memberId);
       if (containsItem) {
-        spaceNames.add(element.name);
+        spaceNames.add(space.name);
       }
     }
     return spaceNames.join(', ');
@@ -53,9 +49,9 @@ class UsersInOrganizationPageStore extends WStore {
 
   bool userContainsInSpaces(int memberId) {
     int spacesCount = 0;
-    for (final space in spaces) {
-      final index = space.members.indexWhere((member) => member.id == memberId);
-      if (index != -1) spacesCount++;
+    for (final space in spaces.list) {
+      final containsItem = space.members.any((member) => member.id == memberId);
+      if (containsItem) spacesCount++;
     }
     return (spacesCount != 0);
   }

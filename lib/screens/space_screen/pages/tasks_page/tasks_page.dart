@@ -139,10 +139,9 @@ class TasksPageStore extends WStore {
             // если проекта нет в группах, добавляем проект
           } else {
             final project = projectsStore.projectsMap[taskStage.projectId];
-            final space =
-                project != null ? spacesStore.spacesMap[spaceId] : null;
+            final space = project != null ? spacesStore.spaces[spaceId] : null;
             final SpaceColumn? column = project != null
-                ? spacesStore.columnsMap[project.columnId]
+                ? spacesStore.spaces.columnsMap[project.columnId]
                 : null;
 
             if (project != null && space != null && column != null) {
