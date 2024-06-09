@@ -141,7 +141,7 @@ class TasksPageStore extends WStore {
             final project = projectsStore.projectsMap[taskStage.projectId];
             final space = project != null ? spacesStore.spaces[spaceId] : null;
             final SpaceColumn? column = project != null
-                ? spacesStore.spaces.columnsMap[project.columnId]
+                ? spacesStore.spaces.getColumnById(project.columnId)
                 : null;
 
             if (project != null && space != null && column != null) {

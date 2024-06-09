@@ -68,11 +68,11 @@ class Spaces with GStoreChangeObjectMixin {
 
   Space? operator [](int id) => _spacesMap[id];
 
+  SpaceColumn? getColumnById(int columnId) => _columnsMap[columnId];
+
   Iterable<Space> get list => _spacesMap.values;
 
   int get length => _spacesMap.length;
-
-  Map<int, SpaceColumn> get columnsMap => _columnsMap;
 }
 
 class SpacesStore extends GStore {
