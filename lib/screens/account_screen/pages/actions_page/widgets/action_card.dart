@@ -1,8 +1,6 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:unityspace/models/task_models.dart';
-import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/resources/l10n/app_localizations.dart';
 import 'package:unityspace/resources/theme/theme.dart';
@@ -19,10 +17,14 @@ class ActionCardStore extends WStore {
 
   @override
   ActionCard get widget => super.widget as ActionCard;
-  List<OrganizationMember> members = UserStore().organization?.members ?? [];
 
-  String getUserNameById(int id) =>
-      members.firstWhereOrNull((member) => member.id == id)?.name ?? '';
+  OrganizationMembers get members => computedFromStore(
+        store: UserStore(),
+        getValue: (store) => store.organizationMembers,
+        keyName: 'members',
+      );
+
+  String getUserNameById(int id) => members[id]?.name ?? '';
 }
 
 class ActionCard extends WStoreWidget<ActionCardStore> {
@@ -263,9 +265,7 @@ class ActionCard extends WStoreWidget<ActionCardStore> {
                       type == TaskChangesTypes.changeResponsible ||
                       type == TaskChangesTypes.removeMember) {
                     final name = state != null
-                        ? context
-                            .wstore<ActionCardStore>()
-                            .getUserNameById(int.parse(state))
+                        ? store.getUserNameById(int.parse(state))
                         : '';
                     return ActionText(
                       '$text - $name',

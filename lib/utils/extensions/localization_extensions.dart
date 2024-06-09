@@ -91,8 +91,9 @@ extension NotificationTypeLocalization on NotificationType {
 
               default:
                 final String? email = match.group(0)?.substring(1);
-                final String? name =
-                    UserStore().organizationMembersByEmailMap[email]?.name ??
+                if (email == null) return '@???';
+                final String name =
+                    UserStore().organizationMembers.getByEmail(email)?.name ??
                         email;
                 return '@$name';
             }

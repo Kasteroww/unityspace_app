@@ -83,7 +83,6 @@ class SpacesStore extends GStore {
   SpacesStore._();
 
   Spaces spaces = Spaces();
-  int masterSpaceId = -1;
 
   Future<void> getSpacesData() async {
     final spacesData = await api.getSpacesData();

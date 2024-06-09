@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/models/notification_models.dart';
-import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/notifications_list.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/skeleton_listview/notification_skeleton_card.dart';
@@ -20,27 +19,30 @@ import 'package:wstore/wstore.dart';
 class NotificationPageStore extends WStore {
   //
   NotificationPageStore({
-    NotificationsStore? notificationsStore,
-    UserStore? userStore,
-  })  : notificationsStore = notificationsStore ?? NotificationsStore(),
-        userStore = userStore ?? UserStore();
+    required NotificationsStore notificationsStore,
+    required UserStore userStore,
+  })  : _notificationsStore = notificationsStore,
+        _userStore = userStore;
+
+  final NotificationsStore _notificationsStore;
+  final UserStore _userStore;
+
   //
   NotificationErrors error = NotificationErrors.none;
   WStoreStatus status = WStoreStatus.init;
   int currentPage = 1;
   int maxPageCount = 1;
-  NotificationsStore notificationsStore;
-  UserStore userStore;
+
   List<NotificationModel> get notifications => computedFromStore(
-        store: notificationsStore,
+        store: _notificationsStore,
         getValue: (store) => store.notifications,
         keyName: 'notifcations',
       );
 
-  List<OrganizationMember> get organizationMembers => computedFromStore(
-        store: UserStore(),
-        getValue: (store) => store.organization?.members ?? [],
-        keyName: 'organization_members',
+  OrganizationMembers get organizationMembers => computedFromStore(
+        store: _userStore,
+        getValue: (store) => store.organizationMembers,
+        keyName: 'organizationMembers',
       );
 
   bool get needToLoadNextPage => computed<bool>(
@@ -56,7 +58,7 @@ class NotificationPageStore extends WStore {
         currentPage += 1;
       });
       maxPageCount =
-          await notificationsStore.getNotificationsData(page: currentPage);
+          await _notificationsStore.getNotificationsData(page: currentPage);
     }
   }
 
@@ -67,7 +69,7 @@ class NotificationPageStore extends WStore {
   ) {
     final notificationIds =
         notificationList.map((notification) => notification.id).toList();
-    notificationsStore.changeArchiveStatusNotifications(
+    _notificationsStore.changeArchiveStatusNotifications(
       notificationIds,
       archived,
     );
@@ -80,7 +82,7 @@ class NotificationPageStore extends WStore {
   ) {
     final notificationIds =
         notificationList.map((notification) => notification.id).toList();
-    notificationsStore.changeReadStatusNotification(notificationIds, unread);
+    _notificationsStore.changeReadStatusNotification(notificationIds, unread);
   }
 
   ///Загрузка уведомлений
@@ -93,7 +95,7 @@ class NotificationPageStore extends WStore {
     });
     try {
       maxPageCount =
-          await notificationsStore.getNotificationsData(page: currentPage);
+          await _notificationsStore.getNotificationsData(page: currentPage);
       setStore(() {
         status = WStoreStatus.loaded;
       });
@@ -105,12 +107,6 @@ class NotificationPageStore extends WStore {
         error = NotificationErrors.loadingDataError;
       });
     }
-  }
-
-  @override
-  void dispose() {
-    notificationsStore.clear();
-    super.dispose();
   }
 
   @override
@@ -128,9 +124,11 @@ class NotificationsPage extends WStoreWidget<NotificationPageStore> {
   });
 
   @override
-  NotificationPageStore createWStore() =>
-      NotificationPageStore(notificationsStore: NotificationsStore())
-        ..loadData();
+  NotificationPageStore createWStore() => NotificationPageStore(
+        notificationsStore: NotificationsStore(),
+        userStore: UserStore(),
+      )..loadData();
+
   @override
   Widget build(BuildContext context, NotificationPageStore store) {
     final localization = LocalizationHelper.getLocalizations(context);

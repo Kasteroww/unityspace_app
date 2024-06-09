@@ -111,7 +111,7 @@ class AppNavigationDrawerStore extends WStore {
 
   bool get trialNeverStarted => computedFromStore(
         store: UserStore(),
-        getValue: (store) => store.trialNeverStarted,
+        getValue: (store) => store.organizationTrialEndDate == null,
         keyName: 'trialNeverStarted',
       );
 

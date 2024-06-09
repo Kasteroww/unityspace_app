@@ -4,7 +4,7 @@ import 'package:unityspace/screens/administration_screen/widgets/user_in_organiz
 
 /// Список дней уведомлений
 class UsersInOrganizationList extends StatelessWidget {
-  final Map<int, OrganizationMember?> items;
+  final List<OrganizationMember> items;
   final int organizationOwner;
 
   const UsersInOrganizationList({
@@ -18,19 +18,16 @@ class UsersInOrganizationList extends StatelessWidget {
     return ListView.builder(
       itemCount: items.length,
       itemBuilder: (BuildContext context, int index) {
-        final member = items.values.elementAt(index);
-        if (member != null) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 12, left: 20, right: 20),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: UserInOrganizationInfoCard(
-                organizationMember: member,
-              ),
+        final member = items[index];
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12, left: 20, right: 20),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: UserInOrganizationInfoCard(
+              organizationMember: member,
             ),
-          );
-        }
-        return null;
+          ),
+        );
       },
     );
   }

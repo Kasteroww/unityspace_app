@@ -12,18 +12,18 @@ class NotificationHelper {
 
   /// Является ли пользователь владельцем организации
   static bool isUserOrganizationOwner({required User? user}) {
-    return user?.id == UserStore().organization?.ownerId;
+    return user?.id == UserStore().organizationOwnerId;
   }
 
   /// Поиск пользователя по id
   static OrganizationMember? findMemberById(
     int id,
   ) {
-    return UserStore().organizationMembersMap[id];
+    return UserStore().organizationMembers[id];
   }
 
   static List<OrganizationMember> get getOrganizationMembers {
-    return UserStore().organization?.members ?? [];
+    return UserStore().organizationMembers.list.toList();
   }
 
   /// Группировка Списка уведомлений по дням

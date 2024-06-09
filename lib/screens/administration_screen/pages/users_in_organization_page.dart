@@ -9,9 +9,9 @@ import 'package:wstore/wstore.dart';
 class UsersInOrganizationPageStore extends WStore {
   WStoreStatus status = WStoreStatus.init;
 
-  Map<int, OrganizationMember?> get members => computedFromStore(
+  OrganizationMembers get members => computedFromStore(
         store: UserStore(),
-        getValue: (store) => store.organizationMembersMap,
+        getValue: (store) => store.organizationMembers,
         keyName: 'members',
       );
 
@@ -21,7 +21,7 @@ class UsersInOrganizationPageStore extends WStore {
         keyName: 'spaces',
       );
 
-  int get organizationOwnerId => computedFromStore(
+  int? get organizationOwnerId => computedFromStore(
         store: UserStore(),
         getValue: (store) => store.organizationOwnerId,
         keyName: 'ownerId',
@@ -92,9 +92,13 @@ class UsersInOrganizationPage
 
   @override
   Widget build(BuildContext context, UsersInOrganizationPageStore store) {
+    final owner = store.organizationOwnerId;
+    if (owner == null) {
+      return const SizedBox.shrink();
+    }
     return UsersInOrganizationList(
-      items: store.members,
-      organizationOwner: store.organizationOwnerId,
+      items: store.members.list.toList(),
+      organizationOwner: owner,
     );
   }
 }

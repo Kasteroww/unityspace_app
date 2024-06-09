@@ -1,12 +1,65 @@
 import 'dart:typed_data';
 
-import 'package:collection/collection.dart';
 import 'package:unityspace/models/achievement_models.dart';
 import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/service/user_service.dart' as api;
 import 'package:unityspace/store/auth_store.dart';
-import 'package:unityspace/utils/helpers.dart';
 import 'package:wstore/wstore.dart';
+
+class OrganizationMembers with GStoreChangeObjectMixin {
+  final Map<int, OrganizationMember> _membersMap = {};
+  final Map<String, OrganizationMember> _membersByEmailMap = {};
+
+  OrganizationMembers();
+
+  void add(OrganizationMember member) {
+    _setMember(member);
+    incrementObjectChangeCount();
+  }
+
+  void addAll(Iterable<OrganizationMember> all) {
+    if (all.isNotEmpty) {
+      for (final member in all) {
+        _setMember(member);
+      }
+      incrementObjectChangeCount();
+    }
+  }
+
+  void remove(int memberId) {
+    _removeMember(memberId);
+    incrementObjectChangeCount();
+  }
+
+  void clear() {
+    if (_membersMap.isNotEmpty) {
+      _membersMap.clear();
+      _membersByEmailMap.clear();
+      incrementObjectChangeCount();
+    }
+  }
+
+  void _setMember(OrganizationMember member) {
+    _removeMember(member.id);
+    _membersMap[member.id] = member;
+    _membersByEmailMap[member.email] = member;
+  }
+
+  void _removeMember(int id) {
+    final member = _membersMap.remove(id);
+    if (member != null) {
+      _membersByEmailMap.remove(member.email);
+    }
+  }
+
+  OrganizationMember? operator [](int id) => _membersMap[id];
+
+  OrganizationMember? getByEmail(String email) => _membersByEmailMap[email];
+
+  Iterable<OrganizationMember> get list => _membersMap.values;
+
+  int get length => _membersMap.length;
+}
 
 class UserStore extends GStore {
   static UserStore? _instance;
@@ -16,47 +69,44 @@ class UserStore extends GStore {
   UserStore._();
 
   User? user;
-  Organization? organization;
+  int? organizationId;
+  int? organizationOwnerId;
+  int? organizationAvailableUsersCount;
+  DateTime? organizationLicenseEndDate;
+  DateTime? organizationTrialEndDate;
+  int? organizationUniqueSpaceUsersCount;
+  OrganizationMembers organizationMembers = OrganizationMembers();
   List<AchievementResponse>? achievements;
 
   bool get hasLicense {
-    final license = organization?.licenseEndDate;
+    final license = organizationLicenseEndDate;
     if (license == null) return false;
     return license.isAfter(DateTime.now());
   }
 
   bool get hasTrial {
-    final trial = organization?.trialEndDate;
+    final trial = organizationTrialEndDate;
     if (trial == null) return false;
     return trial.isAfter(DateTime.now());
   }
 
-  bool get trialNeverStarted {
-    return organization?.trialEndDate == null;
-  }
+  bool get isOrganizationOwner => computed(
+        watch: () => [user, organizationOwnerId],
+        getValue: () {
+          if (user == null || organizationOwnerId == null) return false;
+          return organizationOwnerId == user?.id;
+        },
+        keyName: 'isOrganizationOwner',
+      );
 
-  bool get isOrganizationOwner {
-    if (user == null || organization == null) return false;
-    return organization?.ownerId == user?.id;
-  }
-
-  bool get isAdmin {
-    if (user == null || organization == null) return false;
-    return user!.isAdmin;
-  }
-
-  Map<int, OrganizationMember> get organizationMembersMap {
-    return createMapById(organization?.members);
-  }
-
-  OrganizationMember? get organizationOwner {
-    return organizationMembersMap[organization?.ownerId];
-  }
-
-  int get organizationOwnerId {
-    final owner = organization?.ownerId ?? 0;
-    return owner;
-  }
+  bool get isAdmin => computed(
+    watch: () => [user],
+    getValue: () {
+      if (user == null) return false;
+      return user!.isAdmin;
+    },
+    keyName: 'isAdmin',
+  );
 
   Future<void> getUserData() async {
     final userData = await api.getUserData();
@@ -70,7 +120,14 @@ class UserStore extends GStore {
     final organizationData = await api.getOrganizationData();
     final organization = Organization.fromResponse(organizationData);
     setStore(() {
-      this.organization = organization;
+      organizationId = organization.id;
+      organizationOwnerId = organization.ownerId;
+      organizationAvailableUsersCount = organization.availableUsersCount;
+      organizationLicenseEndDate = organization.licenseEndDate;
+      organizationTrialEndDate = organization.trialEndDate;
+      organizationUniqueSpaceUsersCount = organization.uniqueSpaceUsersCount;
+      organizationMembers.clear();
+      organizationMembers.addAll(organization.members);
     });
   }
 
@@ -126,14 +183,11 @@ class UserStore extends GStore {
     required int userId,
     required String newEmail,
   }) {
-    if (organizationMembersMap.isEmpty) return;
-    final member =
-        organization?.members.firstWhereOrNull((m) => m.id == userId);
-
+    final member = organizationMembers[userId];
     if (member != null) {
       final updatedMember = member.copyWith(email: newEmail);
       setStore(() {
-        organizationMembersMap[userId] = updatedMember;
+        organizationMembers.add(updatedMember);
       });
     }
   }
@@ -187,34 +241,14 @@ class UserStore extends GStore {
   void _updateUserAtStore(final User user) {
     setStore(() {
       this.user = user;
-      final organizationMembersCount = organization?.members.length ?? 0;
-      for (int i = 0; i < organizationMembersCount; i++) {
-        final member = organization!.members[i];
-        if (member.id == user.id) {
-          organization!.members[i] = OrganizationMember.fromUser(user);
-          break;
-        }
-      }
+      organizationMembers.add(OrganizationMember.fromUser(user));
     });
   }
 
   Future<void> getAchievements() async {
     final userAchievements = await api.getAchievements();
-
     setStore(() {
       achievements = userAchievements;
-    });
-  }
-
-  Map<String, OrganizationMember> get organizationMembersByEmailMap {
-    if (organization?.members == null || organization!.members.isEmpty) {
-      return {};
-    }
-    final organizationMembers = organization?.members ?? [];
-    return organizationMembers.fold<Map<String, OrganizationMember>>({},
-        (acc, member) {
-      acc[member.email] = member;
-      return acc;
     });
   }
 
@@ -225,22 +259,16 @@ class UserStore extends GStore {
   }
 
   void setIsAdminLocally(int memberId, bool isAdmin) {
-    if (organization == null) return;
-
-    final memberIndex =
-        organization!.members.indexWhere((member) => member.id == memberId);
-    final OrganizationMember updatedMember =
-        organization!.members[memberIndex].copyWith(isAdmin: isAdmin);
-    if (memberIndex != -1) {
-      setStore(() {
-        organization!.members[memberIndex] = updatedMember;
-      });
-    }
+    final member = organizationMembers[memberId];
+    if (member == null || member.isAdmin == isAdmin) return;
+    setStore(() {
+      organizationMembers.add(member.copyWith(isAdmin: isAdmin));
+    });
   }
 
   void setUniqueSpaceUsersCountLocally(int newValue) {
     setStore(() {
-      organization = organization?.copyWith(uniqueSpaceUsersCount: newValue);
+      organizationUniqueSpaceUsersCount = newValue;
     });
   }
 
@@ -249,7 +277,14 @@ class UserStore extends GStore {
     super.clear();
     setStore(() {
       user = null;
-      organization = null;
+      organizationId = null;
+      organizationOwnerId = null;
+      organizationAvailableUsersCount = null;
+      organizationLicenseEndDate = null;
+      organizationTrialEndDate = null;
+      organizationUniqueSpaceUsersCount = null;
+      organizationMembers.clear();
+      achievements = null;
     });
   }
 }

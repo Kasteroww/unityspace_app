@@ -36,17 +36,37 @@ class EditProjectPropertiesDialogStore extends WStore {
   int postponingTaskDayCount = 0;
   String? color;
 
-  List<SpaceMember> get spaceMembers => computedFromStore(
+  OrganizationMembers get organizationMembers => computedFromStore(
+        store: UserStore(),
+        getValue: (store) => store.organizationMembers,
+        keyName: 'organizationMembers',
+      );
+
+  Spaces get spaces => computedFromStore(
         store: SpacesStore(),
-        getValue: (store) =>
-            store.spaces[widget.project.spaceId]?.members ?? [],
+        getValue: (store) => store.spaces,
+        keyName: 'spaces',
+      );
+
+  Space? get space => computed(
+        watch: () => [spaces],
+        getValue: () => spaces[widget.project.spaceId],
+        keyName: 'space',
+      );
+
+  List<SpaceMember> get spaceMembers => computed(
+        watch: () => [space],
+        getValue: () => space?.members ?? [],
         keyName: 'spaceMembers',
       );
 
-  String get responsibleName => computedFromStore(
-        store: UserStore(),
-        getValue: (store) =>
-            store.organizationMembersMap[responsibleId]?.name ?? '???',
+  String get responsibleName => computed(
+        watch: () => [responsibleId, organizationMembers],
+        getValue: () {
+          final userId = responsibleId;
+          if (userId == null) return '???';
+          return organizationMembers[userId]?.name ?? '???';
+        },
         keyName: 'responsibleName',
       );
 

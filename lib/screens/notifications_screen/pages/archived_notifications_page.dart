@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/models/notification_models.dart';
-import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/notifications_list.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/skeleton_listview/notification_skeleton_card.dart';
@@ -15,10 +14,13 @@ import 'package:wstore/wstore.dart';
 class ArchivedNotificationPageStore extends WStore {
   //
   ArchivedNotificationPageStore({
-    NotificationsStore? notificationsStore,
-    UserStore? userStore,
-  })  : notificationsStore = notificationsStore ?? NotificationsStore(),
-        userStore = userStore ?? UserStore();
+    required NotificationsStore notificationsStore,
+    required UserStore userStore,
+  })  : _notificationsStore = notificationsStore,
+        _userStore = userStore;
+
+  final NotificationsStore _notificationsStore;
+  final UserStore _userStore;
 
   //
   bool isArchived = true;
@@ -26,19 +28,17 @@ class ArchivedNotificationPageStore extends WStore {
   WStoreStatus status = WStoreStatus.init;
   int maxPageCount = 1;
   int currentPage = 1;
-  NotificationsStore notificationsStore;
-  UserStore userStore;
 
   List<NotificationModel> get notifications => computedFromStore(
-        store: notificationsStore,
+        store: _notificationsStore,
         getValue: (store) => store.notifications,
         keyName: 'notifcations',
       );
 
-  List<OrganizationMember> get organizationMembers => computedFromStore(
-        store: userStore,
-        getValue: (store) => store.organization?.members ?? [],
-        keyName: 'organization_members',
+  OrganizationMembers get organizationMembers => computedFromStore(
+        store: _userStore,
+        getValue: (store) => store.organizationMembers,
+        keyName: 'organizationMembers',
       );
 
   bool get needToLoadNextPage => computed<bool>(
@@ -53,7 +53,7 @@ class ArchivedNotificationPageStore extends WStore {
       setStore(() {
         currentPage += 1;
       });
-      maxPageCount = await notificationsStore.getNotificationsData(
+      maxPageCount = await _notificationsStore.getNotificationsData(
         page: currentPage,
         isArchived: isArchived,
       );
@@ -67,7 +67,7 @@ class ArchivedNotificationPageStore extends WStore {
   ) {
     final notificationIds =
         notificationList.map((notification) => notification.id).toList();
-    notificationsStore.changeArchiveStatusNotifications(
+    _notificationsStore.changeArchiveStatusNotifications(
       notificationIds,
       archived,
     );
@@ -77,7 +77,7 @@ class ArchivedNotificationPageStore extends WStore {
   void deleteNotifications(List<NotificationModel> notificationList) {
     final notificationIds =
         notificationList.map((notification) => notification.id).toList();
-    notificationsStore.deleteNotifications(notificationIds);
+    _notificationsStore.deleteNotifications(notificationIds);
   }
 
   ///Загрузка уведомлений
@@ -88,7 +88,7 @@ class ArchivedNotificationPageStore extends WStore {
       error = NotificationErrors.none;
     });
     try {
-      maxPageCount = await notificationsStore.getNotificationsData(
+      maxPageCount = await _notificationsStore.getNotificationsData(
         page: currentPage,
         isArchived: isArchived,
       );
@@ -106,12 +106,6 @@ class ArchivedNotificationPageStore extends WStore {
   }
 
   @override
-  void dispose() {
-    notificationsStore.clear();
-    super.dispose();
-  }
-
-  @override
   ArchivedNotificationsPage get widget =>
       super.widget as ArchivedNotificationsPage;
 }
@@ -123,8 +117,10 @@ class ArchivedNotificationsPage
   });
 
   @override
-  ArchivedNotificationPageStore createWStore() =>
-      ArchivedNotificationPageStore()..loadData();
+  ArchivedNotificationPageStore createWStore() => ArchivedNotificationPageStore(
+        notificationsStore: NotificationsStore(),
+        userStore: UserStore(),
+      )..loadData();
 
   @override
   Widget build(BuildContext context, ArchivedNotificationPageStore store) {
@@ -159,31 +155,26 @@ class ArchivedNotificationsPage
         );
       },
       builder: (context, _) {
-        return WStoreBuilder<ArchivedNotificationPageStore>(
+        return WStoreBuilder(
+          store: store,
           watch: (store) => [store.notifications],
-          store: context.wstore<ArchivedNotificationPageStore>(),
           builder: (context, store) {
             final List<NotificationModel> notifications = store.notifications;
             return NotificationsList(
               needToLoadNextPage: store.needToLoadNextPage,
               items: notifications,
               onDismissEvent: (List<NotificationModel> list) {
-                context
-                    .wstore<ArchivedNotificationPageStore>()
-                    .deleteNotifications(
-                      list,
-                    );
+                store.deleteNotifications(
+                  list,
+                );
               },
               onLongPressButtonTap: (List<NotificationModel> list) {
-                context
-                    .wstore<ArchivedNotificationPageStore>()
-                    .changeArchiveStatusNotifications(
-                      list,
-                      list.any((element) => element.archived),
-                    );
+                store.changeArchiveStatusNotifications(
+                  list,
+                  list.any((element) => element.archived),
+                );
               },
-              onScrolledDown:
-                  context.wstore<ArchivedNotificationPageStore>().nextPage,
+              onScrolledDown: store.nextPage,
             );
           },
         );
