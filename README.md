@@ -104,6 +104,11 @@ DateTime dateFromDateTime(DateTime date) {
 
 
 ### models 
+
+#### поле order
+Если в модели есть поле `order`, его нужно конвертировать из `String` в `double` на уровне конструктора `fromResponse` при помощи метода  `convertFromOrderResponse`.
+
+#### Создание собственных моделей 
 В ситуациях, когда в веб версии метод возвращает анонимный объект рекомендуется создать для него модель
 ```ts
 export async function searchTasks(
@@ -162,9 +167,6 @@ class NotificationResponse {
 }
 ```
 
-#### Создание собственных моделей 
-
-В случае, если сервис в веб версии возвращает 
 
 ### services 
 
@@ -173,6 +175,10 @@ class NotificationResponse {
 Некоторые конкретные `HttpPluginException` обрабатываются особо. Для каждой из таких создается отдельный класс, наследующийся от `ServiceException`. Название классу дается в формате `<ServiceName> + <Description> + ServiceException`
 
 `HttpPluginException` не должны обрабатываться нигде, кроме сервисов.
+
+#### параметр order
+
+Если при отправке запроса одним из передаваемых парамтров является `order`, его нужно конвертировать из `double` в `int` при помощи метода `convertToOrderRequest`. 
 
 #### Примеры
 <details>
