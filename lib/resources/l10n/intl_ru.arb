@@ -488,6 +488,7 @@
   "group": "Группа",
   "move": "Переместить",
   "move_it_to_bottom_column" : "Переместить вниз колонки",
+  "move_it_to_top_column" : "Переместить вверх колонки",
   "go_to": "Перейти в",
   "change_the_title": "Изменить название",
   "change_project": "Изменить проект",

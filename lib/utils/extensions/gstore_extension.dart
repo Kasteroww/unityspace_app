@@ -11,4 +11,12 @@ extension GStoreExtension<T extends Identifiable> on GStore {
     }
     return List<T>.from(map.entries.map((element) => element.value));
   }
+
+  List<T> deleteLocally(
+    T record,
+    Map<int, T> map,
+  ) {
+    map.remove(record.id);
+    return List<T>.from(map.entries.map((element) => element.value));
+  }
 }

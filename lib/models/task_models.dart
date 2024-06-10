@@ -598,3 +598,31 @@ class TaskHistoryResponse {
     }
   }
 }
+
+class DeleteTaskResponse {
+  TaskResponse task;
+  TaskHistoryResponse history;
+
+  DeleteTaskResponse({
+    required this.task,
+    required this.history,
+  });
+
+  DeleteTaskResponse copyWith({
+    TaskResponse? task,
+    TaskHistoryResponse? history,
+  }) {
+    return DeleteTaskResponse(
+      task: task ?? this.task,
+      history: history ?? this.history,
+    );
+  }
+
+  factory DeleteTaskResponse.fromJson(Map<String, dynamic> map) {
+    return DeleteTaskResponse(
+      task: TaskResponse.fromJson(map['task'] as Map<String, dynamic>),
+      history:
+          TaskHistoryResponse.fromJson(map['history'] as Map<String, dynamic>),
+    );
+  }
+}

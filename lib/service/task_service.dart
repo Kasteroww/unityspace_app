@@ -98,3 +98,21 @@ Future getProjectTasks({
     rethrow;
   }
 }
+
+Future<DeleteTaskResponse> deleteTaskFromStage({
+  required int taskId,
+  required int stageId,
+}) async {
+  try {
+    final response = await HttpPlugin().delete(
+      '/tasks/$taskId/stages/$stageId',
+    );
+    final result = json.decode(response.body);
+    return DeleteTaskResponse.fromJson(result);
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
+}

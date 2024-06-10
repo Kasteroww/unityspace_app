@@ -69,6 +69,32 @@ class TasksStore extends GStore {
     return taskResponse.task.id;
   }
 
+  Future<void> deleteTaskFromStage({
+    required int taskId,
+    required int stageId,
+  }) async {
+    final deleteTaskResponse =
+        await api.deleteTaskFromStage(taskId: taskId, stageId: stageId);
+
+    final deletedTask = Task.fromResponse(deleteTaskResponse.task);
+    final newHistory = TaskHistory.fromResponse(deleteTaskResponse.history);
+
+    setStore(() {
+      tasks = List<Task>.from(
+        deleteLocally(
+          deletedTask,
+          tasksMap,
+        ),
+      );
+      history = List<TaskHistory>.from(
+        updateLocally(
+          [newHistory],
+          historyMap,
+        ),
+      );
+    });
+  }
+
   Future<int> getTasksHistory(int page) async {
     final response = await api.getMyTasksHistory(page);
     final maxPageCount = response.maxPageCount;

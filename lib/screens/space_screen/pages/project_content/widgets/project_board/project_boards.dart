@@ -206,6 +206,25 @@ class ProjectBoardsStore extends WStore {
     });
   }
 
+  Future<void> deleteTaskFromStage({
+    required int taskId,
+    required int stageId,
+  }) async {
+    try {
+      await TasksStore().deleteTaskFromStage(
+        taskId: taskId,
+        stageId: stageId,
+      );
+    } catch (e, stack) {
+      logger.d('''
+          on ProjectBoardsStore 
+          ProjectBoardsStore 
+          deleteTaskFromStage error=$e\nstack=$stack
+          ''');
+      throw Exception(e);
+    }
+  }
+
   @override
   ProjectBoards get widget => super.widget as ProjectBoards;
 }
@@ -328,7 +347,11 @@ class ProjectBoards extends WStoreWidget<ProjectBoardsStore> {
                                                         .spaceBetween,
                                                 children: [
                                                   Text(task.name),
-                                                  const ContextMenuButton(),
+                                                  ContextMenuButton(
+                                                    tasks: tasks,
+                                                    stage: stage,
+                                                    task: task,
+                                                  ),
                                                 ],
                                               ),
                                             ),
