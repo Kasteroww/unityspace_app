@@ -38,6 +38,8 @@ enum AddProjectTabErrors { none, addProjectTabError, valueIsEmpty }
 
 enum ChangeProjectTabErrors { none, changeProjectTabError, valueIsEmpty }
 
+enum DeleteProjectTabErrors { none, deleteProjectTabError }
+
 enum CreateProjectErrors { none, emptyName, createError }
 
 enum AddSpaceErrors { none, emptyName, paidTariffError, createError }

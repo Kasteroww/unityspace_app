@@ -293,6 +293,33 @@ class ProjectsStore extends GStore {
     });
   }
 
+  /// Удаление элемента tab панели проекта
+  Future<void> deleteProjectEmbed({
+    required int projectId,
+    required int embedId,
+  }) async {
+    await api.deleteProjectEmbed(projectId: projectId, embedId: embedId);
+    _deleteProjectEmbedLocally(projectId: projectId, embedId: embedId);
+  }
+
+  void _deleteProjectEmbedLocally({
+    required int projectId,
+    required int embedId,
+  }) {
+    final List<Project> projectsNew = projects.map((project) {
+      if (projectId == project.id) {
+        final List<ProjectEmbed> embeddingsNew = project.embeddings
+          ..removeWhere((embed) => embed.id == embedId);
+        return project.copyWith(embeddings: [...embeddingsNew]);
+      } else {
+        return project;
+      }
+    }).toList();
+    setStore(() {
+      projects = projectsNew;
+    });
+  }
+
   @override
   void clear() {
     super.clear();

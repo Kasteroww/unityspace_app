@@ -5,6 +5,7 @@ import 'package:unityspace/resources/l10n/app_localizations.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/project_content.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/utils/helpers/screen_center_position.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/add_tab_dialog.dart';
+import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/app_dialog_confirm_delete.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/change_tab_dialog.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/navbar_popup_button.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/navbar_popup_item.dart';
@@ -132,8 +133,9 @@ Future<void> showOnLongPressMenuEmbed({
     return switch (action) {
       PopupItemEmbedActionTypes.copyLink => store.copyTabLink(embedding.url),
       PopupItemEmbedActionTypes.edit =>
-        showChangeTabDialog(context, embedding),
-      PopupItemEmbedActionTypes.delete => null,
+        showChangeTabDialog(context: context, embedding: embedding),
+      PopupItemEmbedActionTypes.delete =>
+        showConfirmDeleteDialog(context: context, embedding: embedding),
     };
   }
 }

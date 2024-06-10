@@ -8,10 +8,10 @@ import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
 
-Future<void> showChangeTabDialog(
-  BuildContext context,
-  ProjectEmbed embedding,
-) async {
+Future<void> showChangeTabDialog({
+  required BuildContext context,
+  required ProjectEmbed embedding,
+}) async {
   return showDialog(
     context: context,
     builder: (context) {

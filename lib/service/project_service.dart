@@ -225,3 +225,21 @@ Future<Map<String, dynamic>> updateProjectEmbed({
     rethrow;
   }
 }
+
+/// Удаление элемента tab панели проекта
+Future<int> deleteProjectEmbed({
+  required int projectId,
+  required int embedId,
+}) async {
+  try {
+    // приходит статус и пустое body
+    final response =
+        await HttpPlugin().delete('/projects/$projectId/embed/$embedId');
+    return response.statusCode;
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
+}
