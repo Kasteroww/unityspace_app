@@ -16,9 +16,15 @@ import 'package:wstore/wstore.dart';
 class NavbarProjectTab {
   final String id;
   final String title;
+  final VoidCallback onPressed;
   final VoidCallback? onLongTap;
 
-  NavbarProjectTab({required this.id, required this.title, this.onLongTap});
+  NavbarProjectTab({
+    required this.id,
+    required this.title,
+    required this.onPressed,
+    this.onLongTap,
+  });
 }
 
 class NavbarSwitches extends StatelessWidget {
@@ -41,17 +47,22 @@ class NavbarSwitches extends StatelessWidget {
               NavbarProjectTab(
                 id: ProjectContentStore.tabTasks,
                 title: localization.tasks,
+                onPressed: () => store.selectTab(ProjectContentStore.tabTasks),
               ),
               if (store.isShowProjectReviewTab)
                 NavbarProjectTab(
                   id: ProjectContentStore.tabDocuments,
                   title: localization.documents,
+                  onPressed: () {
+                    store.selectTab(ProjectContentStore.tabDocuments);
+                  },
                   onLongTap: () => showOnLongPressMenuDocs(context: context),
                 ),
               ...store.embeddings.map(
                 (embedding) => NavbarProjectTab(
                   id: '${embedding.id}',
                   title: embedding.name,
+                  onPressed: () => store.launchLinkInBrowser(embedding.url),
                   onLongTap: () => showOnLongPressMenuEmbed(
                     context: context,
                     embedding: embedding,
@@ -71,7 +82,7 @@ class NavbarSwitches extends StatelessWidget {
                       itemBuilder: (BuildContext context, int index) {
                         return NavbarTab(
                           title: listTabs[index].title,
-                          onPressed: () => store.selectTab(listTabs[index].id),
+                          onPressed: listTabs[index].onPressed,
                           onLongPress: listTabs[index].onLongTap,
                           selected: listTabs[index].id == store.selectedTab,
                         );

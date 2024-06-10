@@ -4,6 +4,7 @@ import 'package:unityspace/screens/space_screen/pages/project_content/widgets/na
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_board/project_boards.dart';
 import 'package:unityspace/store/projects_store.dart';
 import 'package:unityspace/utils/helpers.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:wstore/wstore.dart';
 
 class ProjectContentStore extends WStore {
@@ -51,10 +52,21 @@ class ProjectContentStore extends WStore {
       projectId: project!.id,
       show: false,
     );
+    selectTab(ProjectContentStore.tabTasks);
   }
 
   void copyTabLink(String url) {
     copyToClipboard(url);
+  }
+
+  Future<void> launchLinkInBrowser(String embedUrl) async {
+    final url = Uri.parse(embedUrl);
+    if (url.isAbsolute) {
+      await launchUrl(
+        url,
+        mode: LaunchMode.externalApplication,
+      );
+    }
   }
 
   @override
@@ -78,14 +90,20 @@ class ProjectContent extends WStoreWidget<ProjectContentStore> {
       appBar: AppBar(
         title: Text(store.project?.name ?? ' '),
       ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            const NavbarSwitches(),
-            const SizedBox(height: 16),
-            ProjectBoards(projectId: projectId),
-          ],
-        ),
+      body: WStoreBuilder<ProjectContentStore>(
+        watch: (store) => [store.selectedTab],
+        builder: (context, store) {
+          return SafeArea(
+            child: Column(
+              children: [
+                const NavbarSwitches(),
+                const SizedBox(height: 16),
+                if (store.selectedTab == ProjectContentStore.tabTasks)
+                  ProjectBoards(projectId: projectId),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
