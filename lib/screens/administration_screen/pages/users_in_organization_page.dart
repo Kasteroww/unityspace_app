@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/resources/app_icons.dart';
+import 'package:unityspace/screens/administration_screen/helpers/organization_members_editing_rights_enum.dart';
 import 'package:unityspace/screens/administration_screen/helpers/organization_role_enum.dart';
 import 'package:unityspace/screens/administration_screen/widgets/user_in_organization_list.dart';
 import 'package:unityspace/store/spaces_store.dart';
@@ -128,14 +129,17 @@ class UsersInOrganizationPageStore extends WStore {
     return spaceNames.join(', ');
   }
 
-  bool hasMemberEditingRights(OrganizationRoleEnum role) {
-    if ((UserStore().isOrganizationOwner &&
-            role == OrganizationRoleEnum.owner) ||
-        (UserStore().isAdmin && role != OrganizationRoleEnum.worker) ||
-        (!UserStore().isAdmin && !UserStore().isOrganizationOwner)) {
-      return true;
+  OrganizationMembersEditingRightsEnum hasMemberEditingRights(
+    OrganizationRoleEnum role,
+  ) {
+    if (UserStore().isOrganizationOwner && role != OrganizationRoleEnum.owner) {
+      return OrganizationMembersEditingRightsEnum.full;
+    } else if ((UserStore().isAdmin && role == OrganizationRoleEnum.worker) ||
+        (UserStore().isAdmin && role == OrganizationRoleEnum.invite)) {
+      return OrganizationMembersEditingRightsEnum.delete;
+    } else {
+      return OrganizationMembersEditingRightsEnum.none;
     }
-    return false;
   }
 
   OrganizationRoleEnum getMemberRole(OrganizationMember member) {

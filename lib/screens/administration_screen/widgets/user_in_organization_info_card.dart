@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:unityspace/resources/app_icons.dart';
+import 'package:unityspace/screens/administration_screen/helpers/organization_members_editing_rights_enum.dart';
 import 'package:unityspace/screens/administration_screen/helpers/organization_role_enum.dart';
 import 'package:unityspace/screens/administration_screen/pages/users_in_organization_page.dart';
 import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
@@ -19,6 +20,9 @@ class UserInOrganizationInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localization = LocalizationHelper.getLocalizations(context);
+    final OrganizationMembersEditingRightsEnum editingRights = context
+        .wstore<UsersInOrganizationPageStore>()
+        .hasMemberEditingRights(organizationMember.role);
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: ColoredBox(
@@ -89,14 +93,8 @@ class UserInOrganizationInfoCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  if (context
-                      .wstore<UsersInOrganizationPageStore>()
-                      .hasMemberEditingRights(organizationMember.role))
-                    const SizedBox(
-                      height: 30,
-                      width: 30,
-                    )
-                  else
+                  if (editingRights !=
+                      OrganizationMembersEditingRightsEnum.none)
                     PopupMenuButton<String>(
                       elevation: 1,
                       shape: RoundedRectangleBorder(
@@ -119,7 +117,9 @@ class UserInOrganizationInfoCard extends StatelessWidget {
                             },
                           ),
                           if (organizationMember.role !=
-                              OrganizationRoleEnum.invite)
+                                  OrganizationRoleEnum.invite &&
+                              editingRights ==
+                                  OrganizationMembersEditingRightsEnum.full)
                             PopupMenuItem<String>(
                               child: Text(
                                 organizationMember.role ==
@@ -137,6 +137,11 @@ class UserInOrganizationInfoCard extends StatelessWidget {
                             ),
                         ];
                       },
+                    )
+                  else
+                    const SizedBox(
+                      height: 30,
+                      width: 30,
                     ),
                 ],
               ),
