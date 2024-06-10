@@ -47,7 +47,6 @@ class TasksPageStore extends WStore {
   // SEARCHING
   final SearchTaskErrors searchError = SearchTaskErrors.none;
   String searchString = '';
-  List<Task> searchedTasks = [];
 
   /// режим поиска, от него зависит отображается ли
   /// результат поиска или список всех задач
@@ -60,7 +59,7 @@ class TasksPageStore extends WStore {
         keyName: 'tasks',
       );
 
-  List<ITasksGroup> get groupedTasks => computed(
+  List<ITasksGroup> groupedTasks(List<Task> tasks) => computed(
         getValue: () {
           switch (groupingType) {
             case TaskGrouping.byProject:
@@ -73,7 +72,7 @@ class TasksPageStore extends WStore {
               return _tasksByProject(isSearching ? searchedTasks : tasks);
           }
         },
-        watch: () => [groupingType, tasks],
+        watch: () => [groupingType, isSearching, filterType],
         keyName: 'groupedTasks',
       );
 
@@ -87,6 +86,18 @@ class TasksPageStore extends WStore {
   void setSearchString(String value) {
     setStore(() {
       searchString = value;
+      if (value.isEmpty) {
+        isSearching = false;
+      }
+    });
+    searchedTasks = [];
+  }
+
+  set searchedTasks(List<Task> tasks) => {searchedTasks = tasks};
+
+  void setIsSearching(bool value) {
+    setStore(() {
+      isSearching = true;
     });
   }
 
@@ -102,24 +113,38 @@ class TasksPageStore extends WStore {
     });
   }
 
-  void setFilterType(TaskFilter value) {
+  Future<void> setFilterType(TaskFilter value) async {
     setStore(() {
       filterType = value;
     });
-    getTasksByFilter(filterType);
+
+    await getTasksByFilter(filterType);
   }
 
-  String? getProjectNameById(int projectId) {
-    return projectsStore.getProjectById(projectId)?.name;
-  }
+  String? getProjectNameById(int projectId) => computedFromStore(
+        store: ProjectsStore(),
+        getValue: (store) => store.getProjectById(projectId)?.name,
+        keyName: 'projectName',
+      );
 
-  String getUserNameById({required int userId}) {
-    final user = UserStore().organizationMembers[userId];
-    if (user == null) {
-      return 'Пользователя нет';
-    }
-    return user.name;
-  }
+  OrganizationMembers get organizationMembers => computedFromStore(
+        store: UserStore(),
+        getValue: (store) => OrganizationMembers(),
+        keyName: 'organizationMembers',
+      );
+
+  String getUserNameById(int id) => computed(
+        getValue: () {
+          final name = organizationMembers[id]?.name;
+          if (name == null) {
+            logger.e('Unknown user, cannot get user name. ID: $id');
+            return '';
+          }
+          return name;
+        },
+        watch: () => [organizationMembers],
+        keyName: 'memberName',
+      );
 
   /// группирует задачи по проектам
   List<TasksProjectGroup> _tasksByProject(List<Task>? tasks) {
@@ -195,7 +220,7 @@ class TasksPageStore extends WStore {
               TasksUserGroup(
                 id: id,
                 userId: id,
-                groupTitle: getUserNameById(userId: id),
+                groupTitle: getUserNameById(id),
                 tasks: [task],
               ),
             );
@@ -210,7 +235,7 @@ class TasksPageStore extends WStore {
               TasksUserGroup(
                 id: -1,
                 userId: null,
-                groupTitle: 'Нет ответственного',
+                groupTitle: 'No responsible',
                 tasks: [task],
               ),
             );
@@ -269,33 +294,6 @@ class TasksPageStore extends WStore {
       ];
     }
     return groups;
-  }
-
-  /// поиск задач по строке
-  Future<void> searchTasks() async {
-    tasksStore.clearSearchedTasksStateLocally();
-    if (searchString.isNotEmpty) {
-      setStore(() {
-        isSearching = true;
-      });
-
-      final searchResult = tasks.where((task) {
-        return task.stages.any((taskStage) {
-              final Project? project =
-                  projectsStore.projectsMap[taskStage.projectId];
-              return project != null && project.spaceId == spaceId;
-            }) &&
-            (searchString.isEmpty ||
-                task.name.toLowerCase().contains(searchString.toLowerCase()));
-      }).toList();
-      setStore(() {
-        searchedTasks = searchResult;
-      });
-    } else {
-      setStore(() {
-        isSearching = false;
-      });
-    }
   }
 
   /// получение информации о колонках в проектах по
@@ -419,6 +417,35 @@ class TasksPageStore extends WStore {
         await loadTasks(statuses: [TaskStatuses.inWork.value]);
     }
   }
+
+  /// поиск задач по строке
+  List<Task> get searchedTasks => computed(
+        getValue: () {
+          {
+            if (searchString.isNotEmpty) {
+              setStore(() {
+                isSearching = true;
+              });
+              final searchResult = tasks.where((task) {
+                return task.stages.any((taskStage) {
+                      final Project? project =
+                          projectsStore.projectsMap[taskStage.projectId];
+                      return project != null && project.spaceId == spaceId;
+                    }) &&
+                    (searchString.isEmpty ||
+                        task.name
+                            .toLowerCase()
+                            .contains(searchString.toLowerCase()));
+              }).toList();
+              return searchResult;
+            } else {
+              return [];
+            }
+          }
+        },
+        watch: () => [tasks],
+        keyName: 'searchTasks',
+      );
 
   /// загрузка задач по пространству и статусам
   Future<void> loadTasks({List<int>? statuses}) async {
@@ -549,14 +576,16 @@ class TasksPage extends WStoreWidget<TasksPageStore> {
                     SizedBox(
                       width: 150,
                       child: AddDialogInputField(
-                        labelText: localization.find,
+                        labelText: '${localization.find}...',
                         onChanged: (value) {
                           context
                               .wstore<TasksPageStore>()
                               .setSearchString(value);
                         },
+                        initialValue:
+                            context.wstore<TasksPageStore>().searchString,
                         onEditingComplete: () {
-                          context.wstore<TasksPageStore>().searchTasks();
+                          context.wstore<TasksPageStore>().setIsSearching(true);
                         },
                       ),
                     ),
@@ -605,17 +634,32 @@ class TasksPage extends WStoreWidget<TasksPageStore> {
                 ),
                 Expanded(
                   child: WStoreBuilder<TasksPageStore>(
+                    watch: (store) => [
+                      store.groupingType,
+                      store.sortType,
+                      store.isSearching,
+                      store.filterType,
+                    ],
                     builder: (context, store) {
                       if (store.groupingType == TaskGrouping.noGroup) {
-                        return TasksList(tasks: store.sortTasks(store.tasks));
+                        return TasksList(
+                          tasks: store.sortTasks(
+                            store.isSearching
+                                ? store.searchedTasks
+                                : store.tasks,
+                          ),
+                        );
                       } else {
                         return GroupedTasksList(
                           tasksList:
-                              context.wstore<TasksPageStore>().groupedTasks,
+                              context.wstore<TasksPageStore>().groupedTasks(
+                                    store.isSearching
+                                        ? store.searchedTasks
+                                        : store.tasks,
+                                  ),
                         );
                       }
                     },
-                    watch: (store) => [store.groupingType, store.sortType],
                   ),
                 ),
               ],

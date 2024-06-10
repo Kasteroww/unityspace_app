@@ -1,4 +1,7 @@
 {
+  
+  "no_responsible": "Нет ответственного",
+
   "administration": "Администрирование",
   "grant_administrator_rights": "Выдать права администратора",
   "owner": "Владелец",

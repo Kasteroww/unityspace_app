@@ -3,6 +3,7 @@ import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/tasks_page.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/widgets/tasks_list.dart';
 import 'package:unityspace/screens/widgets/paddings.dart';
+import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
 
 class GroupedTasksList extends StatelessWidget {
@@ -61,6 +62,7 @@ class TaskGroup extends WStoreWidget<TaskGroupStore> {
 
   @override
   Widget build(BuildContext context, TaskGroupStore store) {
+    final localization = LocalizationHelper.getLocalizations(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -81,7 +83,9 @@ class TaskGroup extends WStoreWidget<TaskGroupStore> {
               const PaddingLeft(20),
               Flexible(
                 child: Text(
-                  groupTitle,
+                  (groupTitle == 'No responsible')
+                      ? localization.no_responsible
+                      : groupTitle,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context)
                       .textTheme
@@ -102,9 +106,7 @@ class TaskGroup extends WStoreWidget<TaskGroupStore> {
                 maintainState: true,
                 visible: store,
                 child: TasksList(
-
                   tasks: context.wstore<TasksPageStore>().sortTasks(tasks),
-
                 ),
               ),
             );
