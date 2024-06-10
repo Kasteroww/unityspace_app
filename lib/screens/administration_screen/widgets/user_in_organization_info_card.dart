@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/resources/app_icons.dart';
 import 'package:unityspace/screens/administration_screen/helpers/organization_role_enum.dart';
 import 'package:unityspace/screens/administration_screen/pages/users_in_organization_page.dart';
@@ -10,7 +9,7 @@ import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
 
 class UserInOrganizationInfoCard extends StatelessWidget {
-  final OrganizationMember organizationMember;
+  final OrganizationMemberInfo organizationMember;
 
   const UserInOrganizationInfoCard({
     required this.organizationMember,
@@ -58,30 +57,28 @@ class UserInOrganizationInfoCard extends StatelessWidget {
                             fontWeight: FontWeight.w400,
                           ),
                         ),
-                        Text(
-                          organizationMember.email,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
+                        if (organizationMember.email != '')
+                          Text(
+                            organizationMember.email,
                             overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
-                        ),
-                        Text(
-                          context
-                              .wstore<UsersInOrganizationPageStore>()
-                              .getMemberSpaces(organizationMember.id),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
+                        if (organizationMember.spaces != '')
+                          Text(
+                            organizationMember.spaces,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                            ),
                           ),
-                        ),
                         Text(
-                          context
-                              .wstore<UsersInOrganizationPageStore>()
-                              .getMemberRole(organizationMember)
+                          organizationMember.role
                               .localize(localization: localization),
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -94,7 +91,7 @@ class UserInOrganizationInfoCard extends StatelessWidget {
                   ),
                   if (context
                       .wstore<UsersInOrganizationPageStore>()
-                      .hasMemberEditingRights(organizationMember))
+                      .hasMemberEditingRights(organizationMember.role))
                     const SizedBox(
                       height: 30,
                       width: 30,
@@ -121,24 +118,23 @@ class UserInOrganizationInfoCard extends StatelessWidget {
                                   .deleteMember(organizationMember);
                             },
                           ),
-                          PopupMenuItem<String>(
-                            child: Text(
-                              context
-                                          .wstore<
-                                              UsersInOrganizationPageStore>()
-                                          .getMemberRole(organizationMember) ==
-                                      OrganizationRoleEnum.admin
-                                  ? localization.remove_administrator_rights
-                                  : localization.grant_administrator_rights,
+                          if (organizationMember.role !=
+                              OrganizationRoleEnum.invite)
+                            PopupMenuItem<String>(
+                              child: Text(
+                                organizationMember.role ==
+                                        OrganizationRoleEnum.admin
+                                    ? localization.remove_administrator_rights
+                                    : localization.grant_administrator_rights,
+                              ),
+                              onTap: () {
+                                context
+                                    .wstore<UsersInOrganizationPageStore>()
+                                    .toggleMemberAdmin(
+                                      organizationMember,
+                                    );
+                              },
                             ),
-                            onTap: () {
-                              context
-                                  .wstore<UsersInOrganizationPageStore>()
-                                  .toggleMemberAdmin(
-                                    organizationMember,
-                                  );
-                            },
-                          ),
                         ];
                       },
                     ),

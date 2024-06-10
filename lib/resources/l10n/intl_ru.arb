@@ -636,5 +636,7 @@
   "write_message": "Напишите сообщение",
   "unsubscribe": "Отписаться",
   "members": "Участники",
-  "completed_status": "Завершено"
+  "completed_status": "Завершено",
+  "invite": "Приглашение",
+  "total_members": "Всего участников"
 }

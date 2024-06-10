@@ -64,3 +64,25 @@ Future<RemoveMemberFromSpaceResponse> removeUserFromSpace(
     rethrow;
   }
 }
+
+Future<RemoveMemberFromSpaceResponse> removeInviteFromSpace({
+  required int spaceId,
+  required int inviteId,
+}) async {
+  try {
+    final response = await HttpPlugin().delete(
+      '/spaces/$spaceId/invite/remove',
+      {
+        'id': inviteId,
+      },
+    );
+    final jsonData = json.decode(response.body);
+    final result = RemoveMemberFromSpaceResponse.fromJson(jsonData);
+    return result;
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
+}

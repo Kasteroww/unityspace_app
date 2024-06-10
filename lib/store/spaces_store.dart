@@ -93,21 +93,21 @@ class SpacesStore extends GStore {
     });
   }
 
-  Future<void> removeUserFromSpace(final int memberId) async {
+  Future<int?> removeUserFromSpace(final int memberId) async {
     final listToRemove = <(int, int)>[];
     for (final space in spaces.list) {
       if (space.members.any((member) => member.id == memberId)) {
         listToRemove.add((space.id, memberId));
       }
     }
-    if (listToRemove.isEmpty) return;
+    if (listToRemove.isEmpty) return null;
     int uniqueSpaceUsersCountResult = 0;
     for (final (spaceId, memberId) in listToRemove) {
       final response = await api.removeUserFromSpace(spaceId, memberId);
       uniqueSpaceUsersCountResult = response.uniqueSpaceUsersCount;
       _removeUserFromSpaceLocally(spaceId: spaceId, memberId: memberId);
     }
-    UserStore().setUniqueSpaceUsersCountLocally(uniqueSpaceUsersCountResult);
+    return uniqueSpaceUsersCountResult;
   }
 
   void _removeUserFromSpaceLocally({
@@ -170,6 +170,26 @@ class SpacesStore extends GStore {
     );
     if (member == null) return null;
     return getUserRole(member.role);
+  }
+
+  Future<int> removeInviteFromSpace(
+    final int spaceId,
+    final int inviteId,
+  ) async {
+    final response =
+        await api.removeInviteFromSpace(spaceId: spaceId, inviteId: inviteId);
+    _removeInviteFromSpaceLocally(spaceId, inviteId);
+    return response.uniqueSpaceUsersCount;
+  }
+
+  void _removeInviteFromSpaceLocally(final int spaceId, final int inviteId) {
+    final space = spaces[spaceId];
+    if (space == null) return;
+    final newInvites =
+        space.invites.where((invite) => invite.id != inviteId).toList();
+    setStore(() {
+      spaces.add(space.copyWith(invites: newInvites));
+    });
   }
 
   @override

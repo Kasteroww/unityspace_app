@@ -204,6 +204,8 @@ extension OrganizationRoleEnumExt on OrganizationRoleEnum {
         return localization.admin;
       case OrganizationRoleEnum.worker:
         return localization.worker;
+      case OrganizationRoleEnum.invite:
+        return localization.invite;
     }
   }
 }

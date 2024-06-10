@@ -1,10 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:unityspace/models/user_models.dart';
+import 'package:unityspace/resources/app_icons.dart';
 import 'package:unityspace/screens/administration_screen/helpers/organization_role_enum.dart';
 import 'package:unityspace/screens/administration_screen/widgets/user_in_organization_list.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/user_store.dart';
+import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
+
+class OrganizationMemberInfo {
+  final int id;
+  final String name;
+  final String spaces;
+  final OrganizationRoleEnum role;
+  final String email;
+
+  OrganizationMemberInfo({
+    required this.id,
+    required this.name,
+    required this.spaces,
+    required this.role,
+    required this.email,
+  });
+}
 
 class UsersInOrganizationPageStore extends WStore {
   WStoreStatus status = WStoreStatus.init;
@@ -27,12 +46,74 @@ class UsersInOrganizationPageStore extends WStore {
         keyName: 'ownerId',
       );
 
-  Future<void> deleteMember(OrganizationMember member) async {
-    await SpacesStore().removeUserFromSpace(member.id);
+  List<OrganizationMemberInfo> get orgMembersForDisplay => computed(
+        getValue: () {
+          return generateMembersInfo();
+        },
+        watch: () => [members, spaces],
+        keyName: 'orgMembers',
+      );
+
+  List<OrganizationMemberInfo> generateMembersInfo() {
+    final List<int> userIds = [];
+    for (final space in spaces.list) {
+      for (final member in space.members) {
+        if (!userIds.contains(member.id)) {
+          userIds.add(member.id);
+        }
+      }
+    }
+    final membersInfo = members.list
+        .where((member) => userIds.contains(member.id) || member.isAdmin)
+        .map(
+          (member) => OrganizationMemberInfo(
+            id: member.id,
+            name: member.name,
+            spaces: getMemberSpaces(member.id),
+            role: getMemberRole(member),
+            email: member.email,
+          ),
+        )
+        .toList();
+    membersInfo.sort((a, b) => a.role.value.compareTo(b.role.value));
+    final invitedMembers = spaces.list.expand(
+      (space) => space.invites.map(
+        (invite) => OrganizationMemberInfo(
+          id: invite.id,
+          name: invite.email,
+          spaces: space.name,
+          role: OrganizationRoleEnum.invite,
+          email: '',
+        ),
+      ),
+    );
+    membersInfo.addAll(invitedMembers);
+    return membersInfo;
   }
 
-  Future<void> toggleMemberAdmin(OrganizationMember member) async {
-    final isAdmin = getMemberRole(member) == OrganizationRoleEnum.admin;
+  Future<void> deleteMember(OrganizationMemberInfo member) async {
+    if (member.role != OrganizationRoleEnum.invite) {
+      final uniqueSpaceUsersCount =
+          await SpacesStore().removeUserFromSpace(member.id);
+      if (uniqueSpaceUsersCount != null) {
+        UserStore().setUniqueSpaceUsersCountLocally(uniqueSpaceUsersCount);
+      }
+    } else {
+      for (final space in spaces.list) {
+        final index =
+            space.invites.indexWhere((invite) => invite.id == member.id);
+        if (index != -1) {
+          final uniqueSpaceUsersCount =
+              await SpacesStore().removeInviteFromSpace(space.id, member.id);
+          UserStore().setUniqueSpaceUsersCountLocally(uniqueSpaceUsersCount);
+          return;
+        }
+      }
+    }
+  }
+
+  Future<void> toggleMemberAdmin(OrganizationMemberInfo member) async {
+    final isAdmin = member.role == OrganizationRoleEnum.admin;
     await UserStore().setIsAdmin(member.id, !isAdmin);
   }
 
@@ -47,20 +128,10 @@ class UsersInOrganizationPageStore extends WStore {
     return spaceNames.join(', ');
   }
 
-  bool userContainsInSpaces(int memberId) {
-    int spacesCount = 0;
-    for (final space in spaces.list) {
-      final containsItem = space.members.any((member) => member.id == memberId);
-      if (containsItem) spacesCount++;
-    }
-    return (spacesCount != 0);
-  }
-
-  bool hasMemberEditingRights(OrganizationMember member) {
-    final memberRole = getMemberRole(member);
+  bool hasMemberEditingRights(OrganizationRoleEnum role) {
     if ((UserStore().isOrganizationOwner &&
-            memberRole == OrganizationRoleEnum.owner) ||
-        (UserStore().isAdmin && memberRole != OrganizationRoleEnum.worker) ||
+            role == OrganizationRoleEnum.owner) ||
+        (UserStore().isAdmin && role != OrganizationRoleEnum.worker) ||
         (!UserStore().isAdmin && !UserStore().isOrganizationOwner)) {
       return true;
     }
@@ -93,12 +164,44 @@ class UsersInOrganizationPage
   @override
   Widget build(BuildContext context, UsersInOrganizationPageStore store) {
     final owner = store.organizationOwnerId;
+    final localization = LocalizationHelper.getLocalizations(context);
     if (owner == null) {
       return const SizedBox.shrink();
     }
-    return UsersInOrganizationList(
-      items: store.members.list.toList(),
-      organizationOwner: owner,
+    return WStoreBuilder(
+      store: store,
+      watch: (store) => [store.orgMembersForDisplay],
+      builder: (context, store) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+              child: Row(
+                children: [
+                  SvgPicture.asset(
+                    AppIcons.twoUsers,
+                    width: 14,
+                    height: 14,
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    '${localization.total_members}: ${store.orgMembersForDisplay.length}',
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: UsersInOrganizationList(
+                items: store.orgMembersForDisplay,
+                organizationOwner: owner,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
