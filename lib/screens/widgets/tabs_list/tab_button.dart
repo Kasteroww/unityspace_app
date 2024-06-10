@@ -46,11 +46,13 @@ class TabButton extends StatelessWidget {
                   ),
                 ),
               if (iconAsset != null) const SizedBox(width: 4),
-              Text(
-                title,
-                style: textTheme.bodyMedium!.copyWith(
-                  color: ColorConstants.grey02,
-                  fontWeight: FontWeight.w500,
+              Flexible(
+                child: Text(
+                  title,
+                  style: textTheme.bodyMedium!.copyWith(
+                    color: ColorConstants.grey02,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ],

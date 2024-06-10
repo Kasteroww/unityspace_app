@@ -187,36 +187,40 @@ class AddTabDialog extends WStoreWidget<AddTabDialogStore> {
                     localization.add_tab_enter_embed
                   ),
                 ];
-                return Row(
-                  children: [
-                    SizedBox(
-                      width: 150,
-                      height: 200,
-                      child: ListView.builder(
-                        itemCount: listTabs.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Padding(
-                            padding: const EdgeInsets.all(4),
-                            child: TabButton(
-                              title: listTabs[index].$2,
-                              selected:
-                                  listTabs[index].$1 == store.selectedCategory,
-                              onPressed: () {
-                                store.selectCategory(listTabs[index].$1);
-                              },
-                            ),
-                          );
-                        },
+
+                return SingleChildScrollView(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: listTabs
+                              .map(
+                                (e) => Padding(
+                                  padding: const EdgeInsets.all(4),
+                                  child: TabButton(
+                                    title: e.$2,
+                                    selected: e.$1 == store.selectedCategory,
+                                    onPressed: () => store.selectCategory(e.$1),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        ),
                       ),
-                    ),
-                    AddTabDialogFieldsColumn(
-                      tabDescription: listTabs
-                          .firstWhereOrNull(
-                            (tab) => tab.$1 == store.selectedCategory,
-                          )
-                          ?.$3,
-                    ),
-                  ],
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: AddTabDialogFieldsColumn(
+                          tabDescription: listTabs
+                              .firstWhereOrNull(
+                                (tab) => tab.$1 == store.selectedCategory,
+                              )
+                              ?.$3,
+                        ),
+                      ),
+                    ],
+                  ),
                 );
               },
             ),
