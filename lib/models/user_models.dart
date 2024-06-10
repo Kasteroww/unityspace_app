@@ -1,5 +1,6 @@
 import 'package:unityspace/models/model_interfaces.dart';
 import 'package:unityspace/service/data_exceptions.dart';
+import 'package:unityspace/utils/date_time_converter.dart';
 import 'package:unityspace/utils/helpers.dart' as helpers;
 
 class UserResponse {
@@ -329,6 +330,7 @@ class OrganizationMember implements Identifiable {
   final DateTime? birthDate;
   final String? jobTitle;
   final bool isAdmin;
+  final DateTime? lastActivityDate;
 
   OrganizationMember({
     required this.id,
@@ -341,6 +343,7 @@ class OrganizationMember implements Identifiable {
     required this.birthDate,
     required this.jobTitle,
     required this.isAdmin,
+    required this.lastActivityDate,
   });
 
   factory OrganizationMember.fromResponse(
@@ -358,6 +361,9 @@ class OrganizationMember implements Identifiable {
       birthDate:
           data.birthDate != null ? DateTime.parse(data.birthDate!) : null,
       isAdmin: data.isAdmin,
+      lastActivityDate:
+          DateTimeConverter.convertStringToDateTime(data.lastActivityDate)
+              .toLocal(),
     );
   }
 
@@ -373,6 +379,7 @@ class OrganizationMember implements Identifiable {
       birthDate: data.birthDate,
       jobTitle: data.jobTitle,
       isAdmin: data.isAdmin,
+      lastActivityDate: null,
     );
   }
 
@@ -392,6 +399,7 @@ class OrganizationMember implements Identifiable {
     DateTime? birthDate,
     String? jobTitle,
     bool? isAdmin,
+    DateTime? lastActivityDate,
   }) {
     return OrganizationMember(
       id: id ?? this.id,
@@ -404,6 +412,7 @@ class OrganizationMember implements Identifiable {
       birthDate: birthDate ?? this.birthDate,
       jobTitle: jobTitle ?? this.jobTitle,
       isAdmin: isAdmin ?? this.isAdmin,
+      lastActivityDate: lastActivityDate ?? this.lastActivityDate,
     );
   }
 }

@@ -16,6 +16,7 @@ class OrganizationMemberInfo {
   final String spaces;
   final OrganizationRoleEnum role;
   final String email;
+  final DateTime? lastActivityDate;
 
   OrganizationMemberInfo({
     required this.id,
@@ -23,6 +24,7 @@ class OrganizationMemberInfo {
     required this.spaces,
     required this.role,
     required this.email,
+    required this.lastActivityDate,
   });
 }
 
@@ -73,6 +75,7 @@ class UsersInOrganizationPageStore extends WStore {
             spaces: getMemberSpaces(member.id),
             role: getMemberRole(member),
             email: member.email,
+            lastActivityDate: member.lastActivityDate,
           ),
         )
         .toList();
@@ -85,6 +88,7 @@ class UsersInOrganizationPageStore extends WStore {
           spaces: space.name,
           role: OrganizationRoleEnum.invite,
           email: '',
+          lastActivityDate: null,
         ),
       ),
     );

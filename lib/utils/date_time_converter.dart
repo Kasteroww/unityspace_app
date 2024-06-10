@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:unityspace/resources/l10n/app_localizations.dart';
-import 'package:unityspace/utils/extensions/string_extension.dart';
+import 'package:unityspace/utils/helpers.dart';
 
 class DateTimeConverter {
   const DateTimeConverter();
@@ -24,6 +24,34 @@ class DateTimeConverter {
   /// DateTime
   static DateTime stringToLocalDateTime(String date) {
     return DateTimeConverter.convertStringToDateTime(date).toLocal();
+  }
+
+  ///Отображение времени в виде формата dMMMMHHmm, например:
+  ///
+  ///Если сегодня: сегодня 11:04
+  ///
+  ///Если вчера: вчера 12:32
+  ///
+  ///Если более 2х дней назад: 6 июня 6:42
+  static String formatDateDMMMMHHmm({
+    required DateTime date,
+    required AppLocalizations localization,
+  }) {
+    final DateFormat formatter =
+        DateFormat('d MMMM HH:mm', localization.localeName);
+    final String formattedDate = formatter.format(date);
+    final DateTime today = dateFromDateTime(DateTime.now());
+    final DateTime yesterday = today.subtract(const Duration(days: 1));
+    final DateTime dateWithoutTime = dateFromDateTime(date);
+    final String formattedDateCapitalized = formattedDate.capitalizeWords();
+
+    if (dateWithoutTime == yesterday) {
+      return '${localization.yesterday} ${formatTimeHHmm(date)}';
+    } else if (dateWithoutTime == today) {
+      return '${localization.today} ${formatTimeHHmm(date)}';
+    } else {
+      return formattedDateCapitalized;
+    }
   }
 
   ///Отображение времени в виде формата EEEEdMMMM, например:

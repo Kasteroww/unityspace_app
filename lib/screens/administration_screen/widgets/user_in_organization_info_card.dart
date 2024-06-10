@@ -5,6 +5,7 @@ import 'package:unityspace/screens/administration_screen/helpers/organization_me
 import 'package:unityspace/screens/administration_screen/helpers/organization_role_enum.dart';
 import 'package:unityspace/screens/administration_screen/pages/users_in_organization_page.dart';
 import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
+import 'package:unityspace/utils/date_time_converter.dart';
 import 'package:unityspace/utils/extensions/localization_extensions.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
@@ -74,6 +75,21 @@ class UserInOrganizationInfoCard extends StatelessWidget {
                         if (organizationMember.spaces != '')
                           Text(
                             organizationMember.spaces,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        if (organizationMember.lastActivityDate != null &&
+                            organizationMember.role !=
+                                OrganizationRoleEnum.invite)
+                          Text(
+                            '${localization.last_activity}: ${DateTimeConverter.formatDateDMMMMHHmm(
+                              date: organizationMember.lastActivityDate!,
+                              localization: localization,
+                            )}',
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                             style: const TextStyle(
