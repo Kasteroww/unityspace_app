@@ -8,7 +8,6 @@ import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/resources/theme/theme.dart';
 import 'package:unityspace/screens/dialogs/add_project_dialog.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/widgets/projects_listview.dart';
-import 'package:unityspace/screens/space_screen/widgets/arcive_button.dart';
 import 'package:unityspace/screens/space_screen/widgets/delete_no_rules_dialog.dart';
 import 'package:unityspace/screens/widgets/columns_list/column_button.dart';
 import 'package:unityspace/screens/widgets/columns_list/columns_list_row.dart';
@@ -228,12 +227,6 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
                             ],
                           ),
                         ),
-                      ArchiveButton(
-                        onTap: () => store.selectArchive(),
-                        text: store.isArchivedPage
-                            ? localization.exit_from_archive
-                            : '${localization.projects_in_archive} ${store.archiveProjectsCount}',
-                      ),
                       const ProjectsListview(),
                     ],
                   ),

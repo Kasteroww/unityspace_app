@@ -643,6 +643,7 @@
   "unsubscribe": "Отписаться",
   "members": "Участники",
   "completed_status": "Завершено",
+  "project_archive": "Архив проектов",
   "invite": "Приглашение",
   "total_members": "Всего участников"
 }
