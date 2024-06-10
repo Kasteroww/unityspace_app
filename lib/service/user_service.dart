@@ -99,7 +99,7 @@ Future<OnlyTokensResponse> setUserPassword(
   final String newPassword,
 ) async {
   try {
-    final response = await HttpPlugin().patch('/user/password', {
+    final response = await HttpPlugin().patch('/auth/password', {
       'oldPassword': oldPassword,
       'password': newPassword,
     });
