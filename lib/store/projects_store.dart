@@ -225,8 +225,8 @@ class ProjectsStore extends GStore {
     if (project != null) {
       final updatedProject = project.copyWith(
         name: loadedProject.name,
-        color: loadedProject.color,
-        responsibleId: loadedProject.responsibleId,
+        color: Nullable(loadedProject.color),
+        responsibleId: Nullable(loadedProject.responsibleId),
         postponingTaskDayCount: loadedProject.postponingTaskDayCount,
       );
       setStore(() {

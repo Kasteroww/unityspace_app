@@ -146,6 +146,16 @@ class ProjectStageResponse {
   }
 }
 
+class Nullable<T> {
+  final T _value;
+
+  Nullable(this._value);
+
+  T get value {
+    return _value;
+  }
+}
+
 class Project implements Identifiable {
   @override
   final int id;
@@ -238,8 +248,8 @@ class Project implements Identifiable {
     int? archiveStageId,
     String? memo,
     bool? favorite,
-    String? color,
-    int? responsibleId,
+    Nullable<String?>? color,
+    Nullable<int?>? responsibleId,
     int? postponingTaskDayCount,
   }) {
     return Project(
@@ -260,8 +270,9 @@ class Project implements Identifiable {
       archiveStageId: archiveStageId ?? this.archiveStageId,
       memo: memo ?? this.memo,
       favorite: favorite ?? this.favorite,
-      color: color ?? this.color,
-      responsibleId: responsibleId ?? this.responsibleId,
+      color: color != null ? color.value : this.color,
+      responsibleId:
+          responsibleId != null ? responsibleId.value : this.responsibleId,
       postponingTaskDayCount:
           postponingTaskDayCount ?? this.postponingTaskDayCount,
     );
