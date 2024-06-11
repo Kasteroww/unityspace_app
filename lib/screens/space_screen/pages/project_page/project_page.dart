@@ -47,7 +47,7 @@ class ProjectsPageStore extends WStore {
 
   List<Project> get projects => computedFromStore(
         store: ProjectsStore(),
-        getValue: (store) => _getProjects(store.projects),
+        getValue: (store) => _getProjects(store.projects.list),
         keyName: 'projects',
       );
 

@@ -208,14 +208,10 @@ Future<Map<String, dynamic>> showProjectReviewTab({
 }
 
 /// Обновление элемента tab панели проекта
-Future<Map<String, dynamic>> updateProjectEmbed({
-  required int projectId,
-  required int embedId,
-  required ProjectEmbed embed,
-}) async {
+Future<Map<String, dynamic>> updateProjectEmbed(ProjectEmbed embed) async {
   try {
     final response = await HttpPlugin()
-        .patch('projects/$projectId/embed/$embedId', embed.toJson());
+        .patch('projects/${embed.projectId}/embed/${embed.id}', embed.toJson());
     final Map<String, dynamic> jsonData = json.decode(response.body);
     return jsonData;
   } catch (e) {

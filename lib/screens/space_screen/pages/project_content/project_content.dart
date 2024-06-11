@@ -14,9 +14,7 @@ class ProjectContentStore extends WStore {
 
   Project? get project => computedFromStore(
         store: ProjectsStore(),
-        getValue: (store) {
-          return store.projectsMap[widget.projectId];
-        },
+        getValue: (store) => store.projectsMap[widget.projectId],
         keyName: 'project',
       );
 

@@ -64,9 +64,7 @@ class ChangeTabDialogStore extends WStore {
 
     subscribe(
       future: ProjectsStore().updateProjectEmbed(
-        projectId: widget.embedding.projectId,
-        embedId: widget.embedding.id,
-        embed: widget.embedding.copyWith(name: name, url: url),
+        widget.embedding.copyWith(name: name, url: url),
       ),
       subscriptionId: 1,
       onData: (_) {

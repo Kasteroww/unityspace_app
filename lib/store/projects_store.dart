@@ -1,7 +1,77 @@
 import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/service/project_service.dart' as api;
-import 'package:unityspace/utils/helpers.dart';
 import 'package:wstore/wstore.dart';
+
+class Projects with GStoreChangeObjectMixin {
+  final Map<int, Project> _projectsMap = {};
+  final Map<int, ProjectEmbed> _embeddingsMap = {};
+  final Map<int, ProjectStage> _stagesMap = {};
+
+  Projects();
+
+  void add(Project project) {
+    _setProject(project);
+    incrementObjectChangeCount();
+  }
+
+  void addAll(Iterable<Project> all) {
+    if (all.isNotEmpty) {
+      for (final project in all) {
+        _setProject(project);
+      }
+      incrementObjectChangeCount();
+    }
+  }
+
+  void remove(int projectId) {
+    _removeProject(projectId);
+    incrementObjectChangeCount();
+  }
+
+  void clear() {
+    if (_projectsMap.isNotEmpty) {
+      _projectsMap.clear();
+      _embeddingsMap.clear();
+      _stagesMap.clear();
+      incrementObjectChangeCount();
+    }
+  }
+
+  void _setProject(Project project) {
+    _removeProject(project.id);
+    _projectsMap[project.id] = project;
+    for (final embed in project.embeddings) {
+      _embeddingsMap[embed.id] = embed;
+    }
+    for (final stage in project.stages) {
+      _stagesMap[stage.id] = stage;
+    }
+  }
+
+  void _removeProject(int id) {
+    final oldProject = _projectsMap.remove(id);
+    if (oldProject != null) {
+      for (final embed in oldProject.embeddings) {
+        _embeddingsMap.remove(embed.id);
+      }
+      for (final stage in oldProject.stages) {
+        _stagesMap.remove(stage.id);
+      }
+    }
+  }
+
+  Project? operator [](int id) => _projectsMap[id];
+
+  ProjectEmbed? getEmbedById(int embedId) => _embeddingsMap[embedId];
+
+  ProjectStage? getStageById(int stageId) => _stagesMap[stageId];
+
+  Iterable<Project> get iterable => _projectsMap.values;
+
+  List<Project> get list => _projectsMap.values.toList();
+
+  int get length => _projectsMap.length;
+}
 
 class ProjectsStore extends GStore {
   static ProjectsStore? _instance;
@@ -10,21 +80,13 @@ class ProjectsStore extends GStore {
 
   ProjectsStore._();
 
-  List<Project> projects = [];
+  Projects projects = Projects();
 
-  Map<int, ProjectEmbed?> get embeddingsMap {
-    return createMapById(
-      projects.expand((project) => project.embeddings).toList(),
-    );
-  }
+  Map<int, ProjectEmbed> get embeddingsMap => projects._embeddingsMap;
 
-  Map<int, Project> get projectsMap {
-    return createMapById(projects);
-  }
+  Map<int, Project> get projectsMap => projects._projectsMap;
 
-  Map<int, ProjectStage?> get stagesMap {
-    return createMapById(projects.expand((project) => project.stages).toList());
-  }
+  Map<int, ProjectStage> get stagesMap => projects._stagesMap;
 
   Project? getProjectById(int projectId) {
     return projectsMap[projectId];
@@ -32,18 +94,19 @@ class ProjectsStore extends GStore {
 
   Future<void> getProjectsBySpaceId(int spaceId) async {
     final projectsData = await api.getProjects(spaceId: spaceId);
-    final projects = projectsData.map(Project.fromResponse).toList();
+    final loadedProjects = projectsData.map(Project.fromResponse);
     setStore(() {
-      this.projects = projects;
+      projects.clear();
+      projects.addAll(loadedProjects);
     });
   }
 
   Future<void> getAllProjects() async {
     final projectsData = await api.getAllProjects();
-    final projects = projectsData.map(Project.fromResponse).toList();
-
+    final loadedProjects = projectsData.map(Project.fromResponse);
     setStore(() {
-      this.projects = projects;
+      projects.clear();
+      projects.addAll(loadedProjects);
     });
   }
 
@@ -53,51 +116,46 @@ class ProjectsStore extends GStore {
       projectIds: projectIds,
       columnId: columnId,
     );
-    setStore(() {
-      projects = _changeProjectColumnLocally(projectsData, projects);
-    });
+    final loadedProjects = projectsData.map(Project.fromResponse).toList();
+    _changeProjectColumnLocally(loadedProjects);
   }
 
-  List<Project> _changeProjectColumnLocally(
-    List<ProjectResponse> projectsResponse,
-    List<Project> projects,
-  ) {
-    final projectsIdsResponse = projectsResponse.map((e) => e.id).toList();
-    return projects.map((project) {
-      if (projectsIdsResponse.contains(project.id)) {
-        return project.copyWith(
+  void _changeProjectColumnLocally(List<Project> loadedProjects) {
+    final loadedProjectIds = loadedProjects.map((e) => e.id).toList();
+    for (final project in projects.list) {
+      if (loadedProjectIds.contains(project.id)) {
+        final updatedProject = project.copyWith(
           columnId:
-              projectsResponse.where((e) => e.id == project.id).first.columnId,
+              loadedProjects.firstWhere((e) => e.id == project.id).columnId,
         );
-      } else {
-        return project;
+        setStore(() {
+          projects.add(updatedProject);
+        });
       }
-    }).toList();
+    }
   }
 
   Future<void> addProject(AddProject project) async {
     final projectsData = await api.addProject(project);
-    setStore(() {
-      projects = [..._addProjectLocally(projectsData, projects)];
-    });
+    final newProject = Project.fromResponse(projectsData);
+    _addProjectLocally(newProject);
   }
 
-  List<Project> _addProjectLocally(
-    ProjectResponse projectResponse,
-    List<Project> projects,
-  ) {
-    return projects..add(Project.fromResponse(projectResponse));
+  void _addProjectLocally(Project newProject) {
+    setStore(() {
+      projects.add(newProject);
+    });
   }
 
   Future<void> deleteProject(int projectId) async {
     await api.deleteProject(projectId);
-    setStore(() {
-      projects = [..._deleteProjectLocally(projectId, projects)];
-    });
+    _deleteProjectLocally(projectId);
   }
 
-  List<Project> _deleteProjectLocally(int projectId, List<Project> projects) {
-    return projects..removeWhere((project) => project.id == projectId);
+  void _deleteProjectLocally(int projectId) {
+    setStore(() {
+      projects.remove(projectId);
+    });
   }
 
   /// Добавление Проекта в избранное и Удаление
@@ -109,22 +167,13 @@ class ProjectsStore extends GStore {
     _setProjectFavoriteLocally(projectId, favorite);
   }
 
-  void _setProjectFavoriteLocally(
-    int projectId,
-    bool favorite,
-  ) {
-    final projectsNew = projects.map((project) {
-      if (projectId == project.id) {
-        return project.copyWith(
-          favorite: favorite,
-        );
-      } else {
-        return project;
-      }
-    }).toList();
-    setStore(() {
-      projects = projectsNew;
-    });
+  void _setProjectFavoriteLocally(int projectId, bool favorite) {
+    final project = projects[projectId];
+    if (project != null) {
+      setStore(() {
+        projects.add(project.copyWith(favorite: favorite));
+      });
+    }
   }
 
   Future<void> createStage({
@@ -138,18 +187,15 @@ class ProjectsStore extends GStore {
       order: order,
     );
     final newStage = ProjectStage.fromResponse(response);
-    createProjectStageLocally(newStage);
+    _createProjectStageLocally(newStage);
   }
 
-  void createProjectStageLocally(ProjectStage stage) {
-    final projectIndex =
-        projects.indexWhere((project) => project.id == stage.projectId);
-    // Если нет элемента в stages
-    if (!projects[projectIndex].stages.contains(stage)) {
-      final project = projects[projectIndex];
+  void _createProjectStageLocally(ProjectStage stage) {
+    final project = projects[stage.projectId];
+    if (project != null) {
+      final newStages = project.stages..add(stage);
       setStore(() {
-        projects[projectIndex] =
-            project.copyWith(stages: [...project.stages, stage]);
+        projects.add(project.copyWith(stages: newStages));
       });
     }
   }
@@ -170,25 +216,23 @@ class ProjectsStore extends GStore {
       color: color,
       responsibleId: responsibleId,
     );
-    _updateProjectLocally(projectData);
+    final loadedProject = Project.fromResponse(projectData);
+    _updateProjectLocally(loadedProject);
   }
 
-  void _updateProjectLocally(ProjectResponse projectResponse) {
-    final projectsNew = projects.map((project) {
-      if (projectResponse.id == project.id) {
-        return project.copyWith(
-          name: projectResponse.name,
-          color: projectResponse.color,
-          responsibleId: projectResponse.responsibleId,
-          postponingTaskDayCount: projectResponse.postponingTaskDayCount,
-        );
-      } else {
-        return project;
-      }
-    }).toList();
-    setStore(() {
-      projects = projectsNew;
-    });
+  void _updateProjectLocally(Project loadedProject) {
+    final project = projects[loadedProject.id];
+    if (project != null) {
+      final updatedProject = project.copyWith(
+        name: loadedProject.name,
+        color: loadedProject.color,
+        responsibleId: loadedProject.responsibleId,
+        postponingTaskDayCount: loadedProject.postponingTaskDayCount,
+      );
+      setStore(() {
+        projects.add(updatedProject);
+      });
+    }
   }
 
   /// Создание элемента tab панели проекта
@@ -204,22 +248,18 @@ class ProjectsStore extends GStore {
       url: url,
       category: category,
     );
-    _createProjectEmbedLocally(projectData);
+    final loadedEmbed = ProjectEmbed.fromResponse(projectData);
+    _createProjectEmbedLocally(loadedEmbed);
   }
 
-  void _createProjectEmbedLocally(ProjectEmbedResponse embedResponse) {
-    final List<Project> projectsNew = projects.map((project) {
-      if (embedResponse.projectId == project.id) {
-        final List<ProjectEmbed> embeddingsNew = project.embeddings
-          ..add(ProjectEmbed.fromResponse(embedResponse));
-        return project.copyWith(embeddings: [...embeddingsNew]);
-      } else {
-        return project;
-      }
-    }).toList();
-    setStore(() {
-      projects = projectsNew;
-    });
+  void _createProjectEmbedLocally(ProjectEmbed embed) {
+    final project = projects[embed.projectId];
+    if (project != null) {
+      final newEmbeddings = project.embeddings..add(embed);
+      setStore(() {
+        projects.add(project.copyWith(embeddings: [...newEmbeddings]));
+      });
+    }
   }
 
   /// Отображение элемента tab панели проекта "Документация"
@@ -238,59 +278,35 @@ class ProjectsStore extends GStore {
     required int projectId,
     required bool show,
   }) {
-    final List<Project> projectsNew = projects.map((project) {
-      if (projectId == project.id) {
-        return project.copyWith(showProjectReviewTab: show);
-      } else {
-        return project;
-      }
-    }).toList();
-    setStore(() {
-      projects = projectsNew;
-    });
+    final project = projects[projectId];
+    if (project != null) {
+      setStore(() {
+        projects.add(project.copyWith(showProjectReviewTab: show));
+      });
+    }
   }
 
   /// Обновление элемента tab панели проекта
-  Future<void> updateProjectEmbed({
-    required int projectId,
-    required int embedId,
-    required ProjectEmbed embed,
-  }) async {
-    await api.updateProjectEmbed(
-      projectId: projectId,
-      embedId: embedId,
-      embed: embed,
-    );
-    _updateProjectEmbedLocally(
-      projectId: projectId,
-      embedId: embedId,
-      embedding: embed,
-    );
+  Future<void> updateProjectEmbed(ProjectEmbed embed) async {
+    await api.updateProjectEmbed(embed);
+    _updateProjectEmbedLocally(embed);
   }
 
-  void _updateProjectEmbedLocally({
-    required int projectId,
-    required int embedId,
-    required ProjectEmbed embedding,
-  }) {
-    final List<Project> projectsNew = projects.map((project) {
-      if (projectId == project.id) {
-        final List<ProjectEmbed> embeddingsNew =
-            project.embeddings.map((embed) {
-          if (embed.id == embedId) {
-            return embed = embedding;
-          } else {
-            return embed;
-          }
-        }).toList();
-        return project.copyWith(embeddings: [...embeddingsNew]);
-      } else {
-        return project;
-      }
-    }).toList();
-    setStore(() {
-      projects = projectsNew;
-    });
+  void _updateProjectEmbedLocally(ProjectEmbed embed) {
+    final projectEmbed = projects.getEmbedById(embed.id);
+    final project = projects[embed.projectId];
+    if (projectEmbed != null && project != null) {
+      final listEmbeddings = project.embeddings.map((embedding) {
+        if (embedding.id == embed.id) {
+          return projectEmbed.copyWith(name: embed.name, url: embed.url);
+        } else {
+          return embedding;
+        }
+      }).toList();
+      setStore(() {
+        projects.add(project.copyWith(embeddings: listEmbeddings));
+      });
+    }
   }
 
   /// Удаление элемента tab панели проекта
@@ -306,25 +322,21 @@ class ProjectsStore extends GStore {
     required int projectId,
     required int embedId,
   }) {
-    final List<Project> projectsNew = projects.map((project) {
-      if (projectId == project.id) {
-        final List<ProjectEmbed> embeddingsNew = project.embeddings
-          ..removeWhere((embed) => embed.id == embedId);
-        return project.copyWith(embeddings: [...embeddingsNew]);
-      } else {
-        return project;
-      }
-    }).toList();
-    setStore(() {
-      projects = projectsNew;
-    });
+    final project = projects[projectId];
+    if (project != null) {
+      final newEmbeddings =
+          project.embeddings.where((embed) => embed.id != embedId).toList();
+      setStore(() {
+        projects.add(project.copyWith(embeddings: newEmbeddings));
+      });
+    }
   }
 
   @override
   void clear() {
     super.clear();
     setStore(() {
-      projects = [];
+      projects.clear();
     });
   }
 }

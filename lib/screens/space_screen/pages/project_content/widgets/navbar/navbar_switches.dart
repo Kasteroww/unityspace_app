@@ -59,13 +59,13 @@ class NavbarSwitches extends StatelessWidget {
                   onLongTap: () => showOnLongPressMenuDocs(context: context),
                 ),
               ...store.embeddings.map(
-                (embedding) => NavbarProjectTab(
-                  id: '${embedding.id}',
-                  title: embedding.name,
-                  onPressed: () => store.launchLinkInBrowser(embedding.url),
+                (embeddings) => NavbarProjectTab(
+                  id: '${embeddings.id}',
+                  title: embeddings.name,
+                  onPressed: () => store.launchLinkInBrowser(embeddings.url),
                   onLongTap: () => showOnLongPressMenuEmbed(
                     context: context,
-                    embedding: embedding,
+                    embedding: embeddings,
                   ),
                 ),
               ),
