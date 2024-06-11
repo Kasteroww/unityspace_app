@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/resources/l10n/app_localizations.dart';
+import 'package:unityspace/screens/notifications_screen/notifications_screen.dart';
 import 'package:unityspace/screens/notifications_screen/pages/notifications_page.dart';
 import 'package:unityspace/screens/notifications_screen/utils/notification_helper.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notification_bottom_sheet.dart';
@@ -44,10 +45,11 @@ class NotificationsList extends StatelessWidget {
           );
         }
         final dayList = dayLists[index];
-        final List<NotificationsGroup> typeList =
-            notificationHelper.groupNotificationsByObject(
-          dayList,
-        );
+        final List<NotificationsGroup> typeList = context
+            .wstore<NotificationsScreenStore>()
+            .groupNotificationsByObject(
+              dayList,
+            );
 
         // Виджет с содержимым одного дня уведомлений
         return Padding(

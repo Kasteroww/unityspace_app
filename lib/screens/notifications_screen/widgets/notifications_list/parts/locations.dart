@@ -1,28 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/models/notification_models.dart';
-import 'package:unityspace/screens/notifications_screen/utils/notification_helper.dart';
-import 'package:unityspace/store/projects_store.dart';
-import 'package:unityspace/store/spaces_store.dart';
+import 'package:unityspace/screens/notifications_screen/notifications_screen.dart';
 import 'package:unityspace/utils/extensions/localization_extensions.dart';
 import 'package:unityspace/utils/localization_helper.dart';
+import 'package:wstore/wstore.dart';
 
 class Locations extends StatelessWidget {
   final NotificationsGroup notificationsGroup;
 
-  Locations({
+  const Locations({
     required this.notificationsGroup,
     super.key,
   });
 
-  final notificationHelper = NotificationHelper();
   @override
   Widget build(BuildContext context) {
     final localization = LocalizationHelper.getLocalizations(context);
-    final locationGroups = notificationHelper.groupLocations(
-      notificationsGroup.locations,
-      SpacesStore(),
-      ProjectsStore(),
-    );
+    final locationGroups =
+        context.wstore<NotificationsScreenStore>().groupLocations(
+              notificationsGroup.locations,
+            );
     final groupName =
         notificationsGroup.type.localize(localization: localization);
     const textStyle = TextStyle(

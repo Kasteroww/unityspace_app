@@ -16,7 +16,7 @@ class ReglamentsStore extends GStore {
 
   List<ReglamentQuestion>? questions;
 
-  Map<int, Reglament?> get reglamentsMap {
+  Map<int, Reglament> get reglamentsMap {
     return createMapById(reglaments);
   }
 

@@ -100,13 +100,13 @@ class UserStore extends GStore {
       );
 
   bool get isAdmin => computed(
-    watch: () => [user],
-    getValue: () {
-      if (user == null) return false;
-      return user!.isAdmin;
-    },
-    keyName: 'isAdmin',
-  );
+        watch: () => [user],
+        getValue: () {
+          if (user == null) return false;
+          return user!.isAdmin;
+        },
+        keyName: 'isAdmin',
+      );
 
   Future<void> getUserData() async {
     final userData = await api.getUserData();
