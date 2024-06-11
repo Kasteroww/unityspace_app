@@ -73,7 +73,7 @@ Future<OnlyTokensResponse> login({
   } catch (e) {
     if (e is HttpPluginException) {
       if (e.message == 'Credentials incorrect') {
-        throw AuthIncorrectCredentialsServiceException();
+        throw AuthIncorrectCredentialsServiceException(e.message);
       }
       throw ServiceException(e.message);
     }
@@ -129,7 +129,7 @@ Future<void> restorePasswordByEmail({
   } catch (e) {
     if (e is HttpPluginException) {
       if (e.message == 'Credentials incorrect') {
-        throw AuthIncorrectCredentialsServiceException();
+        throw AuthIncorrectCredentialsServiceException(e.message);
       }
       throw ServiceException(e.message);
     }

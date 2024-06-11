@@ -9,16 +9,18 @@ import 'package:unityspace/screens/widgets/main_form/main_form_sign_in_button_wi
 import 'package:unityspace/screens/widgets/main_form/main_form_text_button_widget.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_text_title_widget.dart';
 import 'package:unityspace/store/auth_store.dart';
+import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
 
 class LoginScreenStore extends WStore {
   WStoreStatus statusGoogle = WStoreStatus.init;
-  String googleError = '';
+  String errorMessage = '';
+  String message = '';
   GoogleSignIn googleSignIn = GoogleSignIn();
 
-  void google(String googleLoginError) {
+  void google() {
     if (statusGoogle == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -37,7 +39,7 @@ class LoginScreenStore extends WStore {
         logger.d('google sign in error=$error');
         setStore(() {
           statusGoogle = WStoreStatus.error;
-          googleError = googleLoginError;
+          errorMessage = '$error';
         });
       },
     );
@@ -57,6 +59,28 @@ class LoginScreenStore extends WStore {
     }
   }
 
+  void copy({
+    required String text,
+    required String successMessage,
+    required String errorMessage,
+  }) {
+    listenFuture(
+      copyToClipboard(text),
+      id: 1,
+      onData: (_) {
+        setStore(() {
+          message = successMessage;
+        });
+      },
+      onError: (error, stack) {
+        logger.e('copyToClipboard error', error: error, stackTrace: stack);
+        setStore(() {
+          message = errorMessage;
+        });
+      },
+    );
+  }
+
   @override
   LoginScreen get widget => super.widget as LoginScreen;
 }
@@ -74,70 +98,96 @@ class LoginScreen extends WStoreWidget<LoginScreenStore> {
     final localization = LocalizationHelper.getLocalizations(context);
     return Scaffold(
       backgroundColor: const Color(0xFF111012),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 48),
-          child: Column(
-            children: [
-              const SizedBox(height: 60),
-              const MainFormLogoWidget(),
-              const SizedBox(height: 32),
-              MainFormTextTitleWidget(text: localization.login_with),
-              const SizedBox(height: 32),
-              Row(
-                children: [
-                  WStoreStatusBuilder(
-                    store: store,
-                    watch: (store) => store.statusGoogle,
-                    builder: (context, status) {
-                      final loading = status == WStoreStatus.loading;
-                      return MainFormSignInButtonWidget(
-                        loading: loading,
-                        iconAssetName: AppIcons.google,
-                        width: 0,
-                        text: ConstantStrings.google,
-                        onPressed: () {
-                          store.google(localization.google_login_error);
-                        },
-                      );
-                    },
-                    onStatusError: (context) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(store.googleError),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Text(
-                localization.or_with_email,
-                style: TextStyle(
-                  fontSize: 14,
-                  height: 24 / 14,
-                  color: Colors.white.withOpacity(0.9),
+      body: WStoreStringListener(
+        store: store,
+        watch: (store) => store.message,
+        reset: (store) => store.message = '',
+        onNotEmpty: (context, message) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(message),
+            ),
+          );
+        },
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 48),
+            child: Column(
+              children: [
+                const SizedBox(height: 60),
+                const MainFormLogoWidget(),
+                const SizedBox(height: 32),
+                MainFormTextTitleWidget(text: localization.login_with),
+                const SizedBox(height: 32),
+                Row(
+                  children: [
+                    WStoreStatusBuilder(
+                      store: store,
+                      watch: (store) => store.statusGoogle,
+                      builder: (context, status) {
+                        final loading = status == WStoreStatus.loading;
+                        return MainFormSignInButtonWidget(
+                          loading: loading,
+                          iconAssetName: AppIcons.google,
+                          width: 0,
+                          text: ConstantStrings.google,
+                          onPressed: () {
+                            store.google();
+                          },
+                        );
+                      },
+                      onStatusError: (context) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            duration: const Duration(seconds: 5),
+                            content: InkWell(
+                              onTap: () {
+                                store.copy(
+                                  text: store.errorMessage,
+                                  successMessage: localization.copied,
+                                  errorMessage: localization.copy_error,
+                                );
+                                ScaffoldMessenger.of(context)
+                                    .hideCurrentSnackBar();
+                              },
+                              child: Text('${localization.google_login_error}'
+                                  '\n${localization.tap_to_copy_error}'
+                                  '\n${store.errorMessage}'),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 12),
-              MainFormButtonWidget(
-                text: localization.enter_email,
-                onPressed: () {
-                  Navigator.pushNamed(context, '/email');
-                },
-              ),
-              const SizedBox(height: 4),
-              SizedBox(
-                width: double.infinity,
-                child: MainFormTextButtonWidget(
-                  text: localization.dont_have_an_account_register,
+                const SizedBox(height: 12),
+                Text(
+                  localization.or_with_email,
+                  style: TextStyle(
+                    fontSize: 14,
+                    height: 24 / 14,
+                    color: Colors.white.withOpacity(0.9),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                MainFormButtonWidget(
+                  text: localization.enter_email,
                   onPressed: () {
-                    Navigator.pushNamed(context, '/register');
+                    Navigator.pushNamed(context, '/email');
                   },
                 ),
-              ),
-            ],
+                const SizedBox(height: 4),
+                SizedBox(
+                  width: double.infinity,
+                  child: MainFormTextButtonWidget(
+                    text: localization.dont_have_an_account_register,
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/register');
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -9,13 +9,17 @@ import 'package:unityspace/screens/widgets/main_form/main_form_text_title_widget
 import 'package:unityspace/screens/widgets/main_form/main_form_widget.dart';
 import 'package:unityspace/service/service_exceptions.dart';
 import 'package:unityspace/store/auth_store.dart';
+import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/localization_helper.dart';
+import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
 
 class LoginByEmailScreenStore extends WStore {
   WStoreStatus status = WStoreStatus.init;
   bool showPassword = false;
-  LoginByEmailErrors loginError = LoginByEmailErrors.none;
+  LoginByEmailErrors errorType = LoginByEmailErrors.none;
+  String errorMessage = '';
+  String message = '';
   String email = '';
   String password = '';
 
@@ -40,14 +44,41 @@ class LoginByEmailScreenStore extends WStore {
           status = WStoreStatus.loaded;
         });
       },
-      onError: (error, __) {
+      onError: (error, stack) {
         LoginByEmailErrors errorText = LoginByEmailErrors.loginError;
         if (error is AuthIncorrectCredentialsServiceException) {
+          errorMessage = '${error.message} \n$stack';
           errorText = LoginByEmailErrors.invalidEmailOrPassword;
+        } else if (error is ServiceException) {
+          errorMessage = '${error.message} \n$stack';
+        } else {
+          errorMessage = '$error \n$stack';
         }
         setStore(() {
           status = WStoreStatus.error;
-          loginError = errorText;
+          errorType = errorText;
+        });
+      },
+    );
+  }
+
+  void copy({
+    required String text,
+    required String successMessage,
+    required String errorMessage,
+  }) {
+    listenFuture(
+      copyToClipboard(text),
+      id: 1,
+      onData: (_) {
+        setStore(() {
+          message = successMessage;
+        });
+      },
+      onError: (error, stack) {
+        logger.e('copyToClipboard error', error: error, stackTrace: stack);
+        setStore(() {
+          message = errorMessage;
         });
       },
     );
@@ -85,36 +116,60 @@ class LoginByEmailScreen extends WStoreWidget<LoginByEmailScreenStore> {
     return Scaffold(
       backgroundColor: const Color(0xFF111012),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 48),
-          child: Column(
-            children: [
-              const SizedBox(height: 60),
-              const MainFormLogoWidget(),
-              const SizedBox(height: 24),
-              Expanded(
-                child: WStoreStatusBuilder(
-                  store: store,
-                  watch: (store) => store.status,
-                  builder: (context, status) {
-                    final loading = status == WStoreStatus.loading;
-                    return LoginByEmailForm(loading: loading);
-                  },
-                  onStatusError: (context) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          getErrorLocalization(
-                            error: store.loginError,
-                            localization: localization,
+        child: WStoreStringListener(
+          store: store,
+          watch: (store) => store.message,
+          reset: (store) => store.message = '',
+          onNotEmpty: (context, message) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(message),
+              ),
+            );
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 48),
+            child: Column(
+              children: [
+                const SizedBox(height: 60),
+                const MainFormLogoWidget(),
+                const SizedBox(height: 24),
+                Expanded(
+                  child: WStoreStatusBuilder(
+                    store: store,
+                    watch: (store) => store.status,
+                    builder: (context, status) {
+                      final loading = status == WStoreStatus.loading;
+                      return LoginByEmailForm(loading: loading);
+                    },
+                    onStatusError: (context) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          duration: const Duration(seconds: 5),
+                          content: InkWell(
+                            onTap: () {
+                              store.copy(
+                                text: store.errorMessage,
+                                successMessage: localization.copied,
+                                errorMessage: localization.copy_error,
+                              );
+                              ScaffoldMessenger.of(context)
+                                  .hideCurrentSnackBar();
+                            },
+                            child: Text('${getErrorLocalization(
+                              error: store.errorType,
+                              localization: localization,
+                            )}'
+                                '\n${localization.tap_to_copy_error}'
+                                '\n${store.errorMessage}'),
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
