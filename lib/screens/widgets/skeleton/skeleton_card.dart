@@ -31,14 +31,14 @@ class SkeletonCard extends StatelessWidget {
 }
 
 class SkeletonBox extends StatelessWidget {
-  final double height;
-  final double width;
+  final double? height;
+  final double? width;
   final Color color;
   final double borderRadius;
 
   const SkeletonBox({
-    required this.height,
-    required this.width,
+    this.height,
+    this.width,
     super.key,
     this.color = const Color.fromRGBO(230, 230, 230, 1),
     this.borderRadius = 4,

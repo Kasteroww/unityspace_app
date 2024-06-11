@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:unityspace/screens/notifications_screen/widgets/skeleton_listview/notification_skeleton_card.dart';
 
 class SkeletonListView extends StatelessWidget {
   const SkeletonListView({
@@ -30,7 +29,7 @@ class SkeletonListView extends StatelessWidget {
           Expanded(
             child: ListView.builder(
               itemBuilder: (BuildContext context, int index) {
-                return const NotificationSkeletonCard();
+                return skeletonCard;
               },
             ),
           ),

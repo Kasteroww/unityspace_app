@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:lottie/lottie.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/models/spaces_models.dart';
-import 'package:unityspace/resources/app_icons.dart';
 import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/resources/theme/theme.dart';
 import 'package:unityspace/screens/dialogs/add_project_dialog.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/widgets/projects_listview.dart';
+import 'package:unityspace/screens/space_screen/pages/project_page/widgets/skeleton_project_board.dart';
 import 'package:unityspace/screens/space_screen/widgets/delete_no_rules_dialog.dart';
 import 'package:unityspace/screens/widgets/columns_list/column_button.dart';
 import 'package:unityspace/screens/widgets/columns_list/columns_list_row.dart';
@@ -180,13 +179,7 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
         );
       },
       builderLoading: (context) {
-        return Center(
-          child: Lottie.asset(
-            AppIcons.mainLoader,
-            width: 200,
-            height: 200,
-          ),
-        );
+        return const SkeletonProjectBoard();
       },
       builder: (context, _) {
         return const SizedBox.shrink();
