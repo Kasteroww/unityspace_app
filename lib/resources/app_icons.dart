@@ -34,4 +34,7 @@ abstract class AppIcons {
   static const String delete = 'assets/icons/delete.svg';
   static const String hide = 'assets/icons/hide.svg';
   static const String twoUsers = 'assets/icons/two_users.svg';
+  static const String add = 'assets/icons/add_1.svg';
+  static const String addFolder = 'assets/icons/add_folder.svg';
+  static const String addClipBoard = 'assets/icons/add_clipboard.svg';
 }

@@ -461,7 +461,6 @@
   "rejected_status": "Отклонено",
   "mark_as_read": "Отметить прочитанным",
   "mark_as_unread": "Отметить непрочитанным",
-  "projects_in_archive": "Проектов в архиве",
   "exit_from_archive": "Выйти из архива",
   "an_archive": "Архив",
   "to_archive": "Отправить в архив",
@@ -646,5 +645,6 @@
   "project_archive": "Архив проектов",
   "invite": "Приглашение",
   "total_members": "Всего участников",
-  "last_activity": "Последняя активность"
+  "last_activity": "Последняя активность",
+  "new_group":"Новая группа"
 }

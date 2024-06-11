@@ -6,10 +6,12 @@ class ProjectInfoTop extends StatelessWidget {
   final String columnName;
   final bool isInArchive;
   final void Function()? onArchiveButtonTap;
+  final int archiveProjectsCount;
   const ProjectInfoTop({
     required this.columnName,
     required this.isInArchive,
     required this.onArchiveButtonTap,
+    required this.archiveProjectsCount,
     super.key,
   });
 
@@ -40,19 +42,20 @@ class ProjectInfoTop extends StatelessWidget {
                 ),
               ),
             ),
-            InkWell(
-              onTap: onArchiveButtonTap,
-              child: Text(
-                isInArchive
-                    ? localization.exit_from_archive
-                    : localization.project_archive,
-                style: const TextStyle(
-                  color: ColorConstants.grey04,
-                  fontWeight: FontWeight.w400,
-                  fontSize: 14,
+            if (archiveProjectsCount > 0)
+              InkWell(
+                onTap: onArchiveButtonTap,
+                child: Text(
+                  isInArchive
+                      ? localization.exit_from_archive
+                      : localization.project_archive,
+                  style: const TextStyle(
+                    color: ColorConstants.grey04,
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                  ),
                 ),
               ),
-            ),
           ],
         ),
       ),

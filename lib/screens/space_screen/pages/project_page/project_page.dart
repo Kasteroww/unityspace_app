@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/resources/errors.dart';
-import 'package:unityspace/resources/theme/theme.dart';
-import 'package:unityspace/screens/dialogs/add_project_dialog.dart';
+import 'package:unityspace/screens/space_screen/pages/project_page/widgets/project_action_button.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/widgets/projects_listview.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/widgets/skeleton_project_board.dart';
 import 'package:unityspace/screens/space_screen/widgets/delete_no_rules_dialog.dart';
@@ -190,65 +188,42 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
               [store.projects, store.selectedColumn, store.isArchivedPage],
           store: context.wstore(),
           builder: (context, store) {
-            return SafeArea(
-              child: Stack(
-                children: [
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (!store.isArchivedPage)
-                        Container(
-                          height: 46,
-                          padding: const EdgeInsets.only(left: 20),
-                          child: ListView(
-                            scrollDirection: Axis.horizontal,
-                            children: [
-                              ColumnsListRow(
-                                children: [
-                                  ...store.projectColumns.map(
-                                    (column) => ColumnButton(
-                                      title: column.name,
-                                      onTap: () {
-                                        store.selectColumn(column);
-                                      },
-                                      isSelected:
-                                          column == store.selectedColumn,
-                                    ),
+            return Stack(
+              children: [
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (!store.isArchivedPage &&
+                        store.projectColumns.length > 1)
+                      Container(
+                        height: 46,
+                        padding: const EdgeInsets.only(left: 20),
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: [
+                            ColumnsListRow(
+                              children: [
+                                ...store.projectColumns.map(
+                                  (column) => ColumnButton(
+                                    title: column.name,
+                                    onTap: () {
+                                      store.selectColumn(column);
+                                    },
+                                    isSelected: column == store.selectedColumn,
                                   ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      const ProjectsListview(),
-                    ],
-                  ),
-                  Align(
-                    alignment: const Alignment(0.9, 1),
-                    child: InkWell(
-                      onTap: () {
-                        showAddProjectDialog(
-                          context,
-                          store.selectedColumn.id,
-                        );
-                      },
-                      child: Container(
-                        width: 56,
-                        height: 56,
-                        decoration: BoxDecoration(
-                          color: ColorConstants.main,
-                          borderRadius: BorderRadius.circular(28),
-                        ),
-                        child: Center(
-                          child: SvgPicture.asset(
-                            'assets/icons/add_1.svg',
-                          ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                  ),
-                ],
-              ),
+                    const ProjectsListview(),
+                  ],
+                ),
+                ProjectActionButton(
+                  columnId: store.selectedColumn.id,
+                ),
+              ],
             );
           },
         );

@@ -28,6 +28,7 @@ class ProjectsListview extends StatelessWidget {
             child: Column(
               children: [
                 ProjectInfoTop(
+                  archiveProjectsCount: store.archiveProjectsCount,
                   columnName: store.selectedColumn.name,
                   isInArchive: store.isArchivedPage,
                   onArchiveButtonTap: () => store.selectArchive(),
@@ -49,6 +50,10 @@ class ProjectsListview extends StatelessWidget {
                         top: 20,
                       ),
                       child: ListView.separated(
+                        separatorBuilder: (BuildContext context, int index) =>
+                            const SizedBox(
+                          height: 16,
+                        ),
                         shrinkWrap: true,
                         itemCount: store.projectsByColumn.length,
                         itemBuilder: (BuildContext context, int index) {
@@ -143,21 +148,8 @@ class ProjectsListview extends StatelessWidget {
                                         ],
                                       ),
                                     ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        if (store
-                                            .projectsByColumn[index].favorite)
-                                          const Icon(
-                                            Icons.star,
-                                            color: Colors.orange,
-                                          ),
-                                        PopUpProjectsButton(
-                                          project:
-                                              store.projectsByColumn[index],
-                                        ),
-                                      ],
+                                    PopUpProjectsButton(
+                                      project: store.projectsByColumn[index],
                                     ),
                                   ],
                                 ),
@@ -165,10 +157,6 @@ class ProjectsListview extends StatelessWidget {
                             ),
                           );
                         },
-                        separatorBuilder: (BuildContext context, int index) =>
-                            const SizedBox(
-                          height: 16,
-                        ),
                       ),
                     ),
                   ),
