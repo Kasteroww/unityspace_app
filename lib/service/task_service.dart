@@ -116,3 +116,33 @@ Future<DeleteTaskResponse> deleteTaskFromStage({
     rethrow;
   }
 }
+
+Future<TaskResponse> moveTask({
+  required int taskId,
+  required int currentStageId,
+  required int newStageId,
+  required double newOrder,
+}) async {
+  try {
+    final payload = {
+      'stageId': newStageId,
+      'order': convertToOrderRequest(newOrder),
+    };
+
+    final response = await HttpPlugin().patch(
+      '/tasks/$taskId/stages/$currentStageId',
+      payload,
+    );
+    final result = json.decode(response.body) as Map<String, dynamic>;
+    final task = result['task'];
+    if (task == null) {
+      throw Exception('Cant move task in stage');
+    }
+    return TaskResponse.fromJson(task);
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
+}

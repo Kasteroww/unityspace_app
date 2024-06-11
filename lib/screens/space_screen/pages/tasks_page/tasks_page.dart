@@ -327,7 +327,7 @@ class TasksPageStore extends WStore {
       (
         stagesNames: <String>[],
         stagesOrders: <double>[],
-        taskOrders: <int>[],
+        taskOrders: <double>[],
       ),
       (acc, taskStage) {
         final stage = projectsStore.stagesMap[taskStage.stageId];
@@ -390,7 +390,9 @@ class TasksPageStore extends WStore {
         return compareByStagesOrder > 0 ? 1 : -1;
       }
       final compareByTaskOrder = a.taskOrder - b.taskOrder;
-      if (compareByTaskOrder != 0) return compareByTaskOrder;
+      if (compareByTaskOrder != 0) {
+        return compareByTaskOrder > 0 ? 1 : -1;
+      }
       return 0;
     });
     return sortedTasks;

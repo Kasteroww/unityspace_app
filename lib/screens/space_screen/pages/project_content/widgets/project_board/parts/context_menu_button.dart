@@ -34,6 +34,11 @@ class ContextMenuButton extends StatelessWidget {
         if (currentTaskIndex == 0 && lastTaskIndex > 0) {
           items.add(
             PopupMenuItem(
+              onTap: () => store.moveTaskDownOfStage(
+                currentStageId: stage.id,
+                taskId: task.id,
+                lastTask: tasks.lastOrNull,
+              ),
               child: ContextMenuItem(
                 text: localization.move_it_to_bottom_column,
               ),
@@ -42,6 +47,11 @@ class ContextMenuButton extends StatelessWidget {
         } else if (currentTaskIndex > 0 && lastTaskIndex == currentTaskIndex) {
           items.add(
             PopupMenuItem(
+              onTap: () => store.moveTaskUpOfStage(
+                currentStageId: stage.id,
+                taskId: task.id,
+                firstTask: tasks.firstOrNull,
+              ),
               child: ContextMenuItem(
                 text: localization.move_it_to_top_column,
               ),
@@ -50,11 +60,21 @@ class ContextMenuButton extends StatelessWidget {
         } else if (currentTaskIndex != lastTaskIndex) {
           items.addAll([
             PopupMenuItem(
+              onTap: () => store.moveTaskUpOfStage(
+                currentStageId: stage.id,
+                taskId: task.id,
+                firstTask: tasks.firstOrNull,
+              ),
               child: ContextMenuItem(
                 text: localization.move_it_to_top_column,
               ),
             ),
             PopupMenuItem(
+              onTap: () => store.moveTaskDownOfStage(
+                currentStageId: stage.id,
+                taskId: task.id,
+                lastTask: tasks.lastOrNull,
+              ),
               child: ContextMenuItem(
                 text: localization.move_it_to_bottom_column,
               ),

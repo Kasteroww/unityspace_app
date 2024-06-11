@@ -95,6 +95,74 @@ class TasksStore extends GStore {
     });
   }
 
+  Future<void> moveTaskDownOfStage({
+    required int taskId,
+    required int currentStageId,
+    required Task? lastTask,
+  }) async {
+    final lastOrder = lastTask?.stages.last.order;
+    if (lastOrder == null) {
+      return;
+    }
+    final newOrder = lastOrder + 1;
+    final response = await api.moveTask(
+      taskId: taskId,
+      currentStageId: currentStageId,
+      newStageId: currentStageId,
+      newOrder: newOrder,
+    );
+
+    final movedTask = Task.fromResponse(response);
+    final newListTasks = List<Task>.from(
+      updateLocally(
+        [
+          // Удаляем старую запись по id
+          ...deleteLocally(movedTask, tasksMap),
+          movedTask,
+        ],
+        tasksMap,
+      ),
+    );
+
+    setStore(() {
+      tasks = newListTasks;
+    });
+  }
+
+  Future<void> moveTaskUpOfStage({
+    required int taskId,
+    required int currentStageId,
+    required Task? firstTask,
+  }) async {
+    final firstOrder = firstTask?.stages.first.order;
+    if (firstOrder == null) {
+      return;
+    }
+    final newOrder = firstOrder - 1;
+
+    final response = await api.moveTask(
+      taskId: taskId,
+      currentStageId: currentStageId,
+      newStageId: currentStageId,
+      newOrder: newOrder,
+    );
+
+    final movedTask = Task.fromResponse(response);
+    final newListTasks = List<Task>.from(
+      updateLocally(
+        [
+          movedTask,
+          ...deleteLocally(movedTask, tasksMap),
+        ],
+        tasksMap,
+      ),
+    );
+
+    setStore(() {
+      tasks = newListTasks;
+    });
+  }
+
   Future<int> getTasksHistory(int page) async {
     final response = await api.getMyTasksHistory(page);
     final maxPageCount = response.maxPageCount;

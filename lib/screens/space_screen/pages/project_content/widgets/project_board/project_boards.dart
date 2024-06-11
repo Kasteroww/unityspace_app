@@ -225,6 +225,48 @@ class ProjectBoardsStore extends WStore {
     }
   }
 
+  Future<void> moveTaskDownOfStage({
+    required int taskId,
+    required int currentStageId,
+    required Task? lastTask,
+  }) async {
+    try {
+      await TasksStore().moveTaskDownOfStage(
+        taskId: taskId,
+        currentStageId: currentStageId,
+        lastTask: lastTask,
+      );
+    } catch (e, stack) {
+      logger.d('''
+          on ProjectBoardsStore 
+          ProjectBoardsStore 
+          moveTaskDownInStage error=$e\nstack=$stack
+          ''');
+      throw Exception(e);
+    }
+  }
+
+  Future<void> moveTaskUpOfStage({
+    required int taskId,
+    required int currentStageId,
+    required Task? firstTask,
+  }) async {
+    try {
+      await TasksStore().moveTaskUpOfStage(
+        taskId: taskId,
+        currentStageId: currentStageId,
+        firstTask: firstTask,
+      );
+    } catch (e, stack) {
+      logger.d('''
+          on ProjectBoardsStore 
+          ProjectBoardsStore 
+          moveTaskToTopOfStage error=$e\nstack=$stack
+          ''');
+      throw Exception(e);
+    }
+  }
+
   @override
   ProjectBoards get widget => super.widget as ProjectBoards;
 }

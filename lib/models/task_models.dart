@@ -111,7 +111,7 @@ class Task implements Identifiable {
     return Task(
       id: response.id,
       name: response.name,
-      stages: response.stages,
+      stages: response.stages.map((e) => TaskStages.fromResponse(e)).toList(),
       color: response.color,
       createdAt: DateTimeConverter.stringToLocalDateTime(response.createdAt),
       creatorId: response.creatorId,
@@ -206,9 +206,33 @@ class TaskCover {
   }
 }
 
+class TaskStagesResponse {
+  final int stageId;
+  final String order;
+  final int projectId;
+
+  TaskStagesResponse({
+    required this.stageId,
+    required this.order,
+    required this.projectId,
+  });
+
+  factory TaskStagesResponse.fromJson(Map<String, dynamic> json) {
+    try {
+      return TaskStagesResponse(
+        stageId: json['stageId'] as int,
+        order: json['order'] as String,
+        projectId: json['projectId'] as int,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
+  }
+}
+
 class TaskStages {
   final int stageId;
-  final int order;
+  final double order;
   final int projectId;
 
   TaskStages({
@@ -217,16 +241,12 @@ class TaskStages {
     required this.projectId,
   });
 
-  factory TaskStages.fromJson(Map<String, dynamic> json) {
-    try {
-      return TaskStages(
-        stageId: json['stageId'] as int,
-        order: int.parse(json['order'] as String),
-        projectId: json['projectId'] as int,
-      );
-    } catch (e, stack) {
-      throw JsonParsingException('Error parsing Model', e, stack);
-    }
+  factory TaskStages.fromResponse(TaskStagesResponse response) {
+    return TaskStages(
+      stageId: response.stageId,
+      order: convertFromOrderResponse(int.parse(response.order)),
+      projectId: response.projectId,
+    );
   }
 }
 
@@ -297,7 +317,7 @@ class TasksDateGroup implements ITasksGroup {
 class TaskStageWithOrder {
   final String stageName;
   final double stagesOrder;
-  final int taskOrder;
+  final double taskOrder;
 
   TaskStageWithOrder({
     required this.stageName,
@@ -313,7 +333,7 @@ class SortedTask {
   final String stageName;
   final double stageOrder;
   final Task task;
-  final int taskOrder;
+  final double taskOrder;
 
   SortedTask({
     required this.id,
@@ -328,7 +348,7 @@ class TaskResponse {
   final int id;
   final String name;
   final String? color;
-  final List<TaskStages> stages;
+  final List<TaskStagesResponse> stages;
   final TaskImportance importance;
   final String createdAt;
   final int creatorId;
@@ -374,7 +394,7 @@ class TaskResponse {
         name: json['name'] as String,
         color: json['color'] as String?,
         stages: (json['stages'] as List<dynamic>)
-            .map((e) => TaskStages.fromJson(e as Map<String, dynamic>))
+            .map((e) => TaskStagesResponse.fromJson(e as Map<String, dynamic>))
             .toList(),
         importance: TaskImportance.values.firstWhere(
           (type) => type.value == json['importance'] as int,
