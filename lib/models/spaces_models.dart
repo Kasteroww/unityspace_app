@@ -21,7 +21,7 @@ class SpaceResponse {
   final int? backgroundId;
   final String? customBackground;
   final int icon;
-  final String iconColor;
+  final String? iconColor;
   final bool isArchived;
   final int? groupId;
   final String? dateArchived;
@@ -83,7 +83,7 @@ class SpaceResponse {
         backgroundId: map['backgroundId'] as int?,
         customBackground: map['customBackground'] as String?,
         icon: map['icon'] as int,
-        iconColor: map['iconColor'] as String,
+        iconColor: map['iconColor'] as String?,
         isArchived: map['isArchived'] as bool,
         groupId: map['groupId'] as int?,
         dateArchived: map['dateArchived'] as String?,
@@ -213,7 +213,7 @@ class Space implements Identifiable, Nameable {
   final int backgroundId;
   final String? customBackground;
   final int icon;
-  final Color iconColor;
+  final Color? iconColor;
   final bool isArchived;
   final int? groupId;
   final DateTime? dateArchived;
@@ -260,7 +260,8 @@ class Space implements Identifiable, Nameable {
       backgroundId: data.backgroundId ?? 0,
       customBackground: data.customBackground,
       icon: data.icon,
-      iconColor: HexColor.fromHex(data.iconColor)!,
+      iconColor:
+          data.iconColor != null ? HexColor.fromHex(data.iconColor!) : null,
       isArchived: data.isArchived,
       groupId: data.groupId,
       dateArchived: data.dateArchived != null
