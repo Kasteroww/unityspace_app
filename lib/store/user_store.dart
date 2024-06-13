@@ -108,6 +108,10 @@ class UserStore extends GStore {
         keyName: 'isAdmin',
       );
 
+  bool get isOwnerOrAdmin {
+    return isOrganizationOwner || isAdmin;
+  }
+
   Future<void> getUserData() async {
     final userData = await api.getUserData();
     final user = User.fromResponse(userData);

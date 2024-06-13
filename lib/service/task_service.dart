@@ -62,7 +62,7 @@ Future<MyTaskHistoryResponse> getMyTasksHistory(int page) async {
 }
 
 /// Получение задач во всем пространстве по spaceId и статусам
-Future getSpaceTasks({
+Future<List<TaskResponse>> getSpaceTasks({
   required int spaceId,
   required List<int> statuses,
 }) async {

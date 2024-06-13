@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:unityspace/models/groups_models.dart';
 import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/resources/app_icons.dart';
 import 'package:unityspace/screens/dialogs/add_space_dialog.dart';
 import 'package:unityspace/screens/dialogs/add_space_limit_dialog.dart';
 import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
+import 'package:unityspace/store/groups_store.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
@@ -121,6 +123,105 @@ class AppNavigationDrawerStore extends WStore {
         keyName: 'currentUserId',
       );
 
+  bool get isOwnerOrAdmin => computedFromStore(
+        store: UserStore(),
+        getValue: (store) => store.isOwnerOrAdmin,
+        keyName: 'isOwnerOrAdmin',
+      );
+
+  Groups get groups => computedFromStore(
+        store: GroupsStore(),
+        getValue: (store) => store.groups,
+        keyName: 'groups',
+      );
+
+  /// создает группу, в которой находятся все неархивированные пространства
+  GroupWithSpaces get allSpacesGroup => computed(
+        getValue: () {
+          {
+            final noGroupSpaces = _allSpacesSortedByOrder.where((space) {
+              if (space.isArchived) return false;
+              return space.groupId == null || groups[space.groupId!] != null;
+            }).toList();
+
+            return GroupWithSpaces(
+              groupId: null,
+              groupOrder: -1,
+              name: 'Все пространства',
+              spaces: noGroupSpaces,
+              isOpen: true,
+            );
+          }
+        },
+        watch: () => [_allSpacesSortedByOrder],
+        keyName: 'allSpacesGroup',
+      );
+
+  List<GroupWithSpaces> get _spacesGroups => computed(
+        getValue: () {
+          {
+            final groupTree = groups.list
+                .map<GroupWithSpaces>((group) => _formGroup(group))
+                .toList();
+
+            groupTree.sort((a, b) => a.groupOrder.compareTo(b.groupOrder));
+
+            return groupTree;
+          }
+        },
+        watch: () => [_allSpacesSortedByOrder],
+        keyName: 'spacesGroups',
+      );
+
+  List<GroupWithSpaces> get spacesGroupsByUserPrivileges => computed(
+        getValue: () {
+          if (isOwnerOrAdmin) {
+            return _spacesGroups;
+          } else {
+            return _spacesGroups
+                .where((value) => value.spaces.isNotEmpty)
+                .toList();
+          }
+        },
+        watch: () => [_spacesGroups, isOwnerOrAdmin],
+        keyName: 'spacesGroupsByUserPrivilidges',
+      );
+
+  /// возвращает список всех пространств, отсортированный по полю
+  List<Space> get _allSpacesSortedByOrder => computed(
+        getValue: () {
+          final spaces = this.spaces.list.toList();
+          spaces.sort((a, b) {
+            final compareByStagesOrder = a.order - b.order;
+            if (compareByStagesOrder != 0) {
+              return compareByStagesOrder > 0 ? 1 : -1;
+            }
+            return 0;
+          });
+          return spaces;
+        },
+        watch: () => [spaces],
+        keyName: 'allSpacesSortedByOrder',
+      );
+
+  GroupWithSpaces _formGroup(Group group) {
+    return GroupWithSpaces(
+      groupId: group.id,
+      spaces: _allSpacesSortedByOrder
+          .where(
+            (space) => !space.isArchived && space.groupId == group.id,
+          )
+          .toList(),
+      groupOrder: group.order,
+      name: group.name,
+      isOpen: group.isOpen,
+    );
+  }
+
+  Future<void> loadData() async {
+    await GroupsStore().getGroups();
+  }
+
   @override
   AppNavigationDrawer get widget => super.widget as AppNavigationDrawer;
 }
@@ -131,7 +232,8 @@ class AppNavigationDrawer extends WStoreWidget<AppNavigationDrawerStore> {
   });
 
   @override
-  AppNavigationDrawerStore createWStore() => AppNavigationDrawerStore();
+  AppNavigationDrawerStore createWStore() =>
+      AppNavigationDrawerStore()..loadData();
 
   @override
   Widget build(BuildContext context, AppNavigationDrawerStore store) {
@@ -187,43 +289,39 @@ class AppNavigationDrawer extends WStoreWidget<AppNavigationDrawerStore> {
                 ),
               const SizedBox(height: 16),
               Expanded(
-                child: WStoreBuilder(
+                child: WStoreBuilder<AppNavigationDrawerStore>(
                   store: store,
                   watch: (store) => [
-                    store.allSortedSpaces,
+                    store.spacesGroupsByUserPrivileges,
                     store.isOrganizationOwner,
                   ],
                   builder: (context, store) {
                     return SingleChildScrollView(
                       child: Column(
                         children: [
-                          NavigatorMenuListTitle(
-                            title: localization.all_spaces,
-                          ),
-                          if (store.allSortedSpaces.isEmpty)
-                            NavigatorMenuEmptySpacesHint(
-                              isOrganizationOwner: store.isOrganizationOwner,
-                            ),
-                          ...store.allSortedSpaces.map(
-                            (space) => NavigatorMenuItem(
-                              iconAssetName: AppIcons.navigatorSpace,
-                              title: space.name,
-                              selected: currentRoute == '/space' &&
-                                  currentArguments == space.id,
-                              favorite: space.favorite,
-                              onTap: () {
-                                Navigator.of(context).pop();
-                                if (currentRoute != '/space' ||
-                                    currentArguments != space.id) {
-                                  Navigator.of(context).pushReplacementNamed(
-                                    '/space',
-                                    arguments: {
-                                      'space': space,
-                                    },
-                                  );
-                                }
-                              },
-                            ),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const ClampingScrollPhysics(),
+                            itemCount:
+                                store.spacesGroupsByUserPrivileges.length,
+                            itemBuilder: (context, index) {
+                              final groups = store.spacesGroupsByUserPrivileges;
+                              return Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (store.allSortedSpaces.isEmpty)
+                                    NavigatorMenuEmptySpacesHint(
+                                      isOrganizationOwner:
+                                          store.isOrganizationOwner,
+                                    ),
+                                  SpaceGroup(
+                                    group: groups[index],
+                                    currentRoute: currentRoute,
+                                    currentArguments: currentArguments,
+                                  ),
+                                ],
+                              );
+                            },
                           ),
                           if (store.isOrganizationOwner)
                             const SizedBox(height: 16),
@@ -318,6 +416,50 @@ class AppNavigationDrawer extends WStoreWidget<AppNavigationDrawerStore> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class SpaceGroup extends StatelessWidget {
+  const SpaceGroup({
+    required this.group,
+    required this.currentRoute,
+    required this.currentArguments,
+    super.key,
+  });
+
+  final GroupWithSpaces group;
+  final String? currentRoute;
+  final Object? currentArguments;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        NavigatorMenuListTitle(
+          title: group.name,
+        ),
+        ...group.spaces.map(
+          (space) => NavigatorMenuItem(
+            iconAssetName: AppIcons.navigatorSpace,
+            title: space.name,
+            selected: currentRoute == '/space' && currentArguments == space.id,
+            favorite: space.favorite,
+            onTap: () {
+              Navigator.of(context).pop();
+              if (currentRoute != '/space' || currentArguments != space.id) {
+                Navigator.of(context).pushReplacementNamed(
+                  '/space',
+                  arguments: {
+                    'space': space,
+                  },
+                );
+              }
+            },
+          ),
+        ),
+      ],
     );
   }
 }

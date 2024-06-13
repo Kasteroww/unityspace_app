@@ -71,7 +71,7 @@ class ProjectsPageStore extends WStore {
     required BuildContext context,
     required int projectId,
   }) {
-    if (_checkRulesByDelete()) {
+    if (isOwnerOrAdmin) {
       _deleteProject(projectId);
     } else {
       showDeleteNoRulesDialog(context);
@@ -82,11 +82,11 @@ class ProjectsPageStore extends WStore {
     ProjectsStore().deleteProject(projectId);
   }
 
-  bool _checkRulesByDelete() {
-    final isOwner = UserStore().isOrganizationOwner;
-    final isAdmin = UserStore().isAdmin;
-    return isOwner || isAdmin;
-  }
+  bool get isOwnerOrAdmin => computedFromStore(
+        store: UserStore(),
+        getValue: (store) => store.isOwnerOrAdmin,
+        keyName: 'isOwnerOrAdmin',
+      );
 
   void initData(Space space) {
     selectedColumn = space.columns.first;

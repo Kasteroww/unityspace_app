@@ -81,7 +81,7 @@ class ReglamentsPageStore extends WStore {
     required int reglamentId,
     required BuildContext context,
   }) {
-    if (checkIfHasDeleteRights()) {
+    if (isOwnerOrAdmin) {
       deleteReglament(reglamentId: reglamentId);
     } else {
       showDeleteNoRulesDialog(context);
@@ -122,11 +122,11 @@ class ReglamentsPageStore extends WStore {
     });
   }
 
-  bool checkIfHasDeleteRights() {
-    final isOwner = UserStore().isOrganizationOwner;
-    final isAdmin = UserStore().isAdmin;
-    return isOwner || isAdmin;
-  }
+  bool get isOwnerOrAdmin => computedFromStore(
+        store: UserStore(),
+        getValue: (store) => store.isOwnerOrAdmin,
+        keyName: 'isOwnerOrAdmin',
+      );
 
   ///Копирование ссылки на регламент
   String getReglamentLink({required int reglamentId}) {

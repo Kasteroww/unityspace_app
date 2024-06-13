@@ -1,38 +1,55 @@
+import 'package:flutter/material.dart';
 import 'package:unityspace/models/model_interfaces.dart';
 import 'package:unityspace/service/data_exceptions.dart';
+import 'package:unityspace/utils/date_time_converter.dart';
+import 'package:unityspace/utils/extensions/color_extension.dart';
 import 'package:unityspace/utils/helpers.dart' as helpers;
 
 class SpaceResponse {
   final int id;
-  final String createdAt;
   final String name;
-  final String order;
   final int creatorId;
   final List<SpaceMemberResponse> members;
   final List<SpaceColumnResponse> columns;
   final List<SpaceColumnResponse> reglamentColumns;
   final List<SpaceInviteResponse> invites;
-  final int? backgroundId;
+  final SpaceShareLinkResponse shareLink;
+  final String order;
   final int favorite;
   final int archiveColumnId;
   final int archiveReglamentColumnId;
-  final SpaceShareLinkResponse shareLink;
+  final int? backgroundId;
+  final String? customBackground;
+  final int icon;
+  final String iconColor;
+  final bool isArchived;
+  final int? groupId;
+  final String? dateArchived;
+  final String? repositoryLink;
+  final String createdAt;
 
   const SpaceResponse({
     required this.id,
-    required this.createdAt,
     required this.name,
-    required this.order,
     required this.creatorId,
     required this.members,
     required this.columns,
     required this.reglamentColumns,
     required this.invites,
-    required this.backgroundId,
+    required this.shareLink,
+    required this.order,
     required this.favorite,
     required this.archiveColumnId,
     required this.archiveReglamentColumnId,
-    required this.shareLink,
+    required this.backgroundId,
+    required this.customBackground,
+    required this.icon,
+    required this.iconColor,
+    required this.isArchived,
+    required this.groupId,
+    required this.dateArchived,
+    required this.repositoryLink,
+    required this.createdAt,
   });
 
   factory SpaceResponse.fromJson(Map<String, dynamic> map) {
@@ -44,9 +61,7 @@ class SpaceResponse {
       final shareLinkData = map['shareLink'] as Map<String, dynamic>;
       return SpaceResponse(
         id: map['id'] as int,
-        createdAt: map['createdAt'] as String,
         name: map['name'] as String,
-        order: map['order'] as String,
         creatorId: map['creatorId'] as int,
         members: membersList
             .map((member) => SpaceMemberResponse.fromJson(member))
@@ -60,11 +75,20 @@ class SpaceResponse {
         invites: invitesList
             .map((invite) => SpaceInviteResponse.fromJson(invite))
             .toList(),
-        backgroundId: map['backgroundId'] as int?,
+        shareLink: SpaceShareLinkResponse.fromJson(shareLinkData),
+        order: map['order'] as String,
         favorite: map['favorite'] as int,
         archiveColumnId: map['archiveColumnId'] as int,
         archiveReglamentColumnId: map['archiveReglamentColumnId'] as int,
-        shareLink: SpaceShareLinkResponse.fromJson(shareLinkData),
+        backgroundId: map['backgroundId'] as int?,
+        customBackground: map['customBackground'] as String?,
+        icon: map['icon'] as int,
+        iconColor: map['iconColor'] as String,
+        isArchived: map['isArchived'] as bool,
+        groupId: map['groupId'] as int?,
+        dateArchived: map['dateArchived'] as String?,
+        repositoryLink: map['repositoryLink'] as String?,
+        createdAt: map['createdAt'] as String,
       );
     } catch (e, stack) {
       throw JsonParsingException('Error parsing Model', e, stack);
@@ -176,89 +200,158 @@ class Space implements Identifiable, Nameable {
   final int id;
   @override
   final String name;
-  final double order;
+  final int creatorId;
   final List<SpaceMember> members;
   final List<SpaceColumn> columns;
   final List<SpaceColumn> reglamentColumns;
   final List<SpaceInvite> invites;
-  final int backgroundId;
+  final SpaceShareLink shareLink;
+  final double order;
   final bool favorite;
   final int archiveColumnId;
   final int archiveReglamentColumnId;
-  final String shareLinkToken;
-  final bool shareLinkActive;
+  final int backgroundId;
+  final String? customBackground;
+  final int icon;
+  final Color iconColor;
+  final bool isArchived;
+  final int? groupId;
+  final DateTime? dateArchived;
+  final String? repositoryLink;
 
-  const Space({
+  Space({
     required this.id,
     required this.name,
-    required this.order,
+    required this.creatorId,
     required this.members,
     required this.columns,
     required this.reglamentColumns,
     required this.invites,
-    required this.backgroundId,
+    required this.shareLink,
+    required this.order,
     required this.favorite,
     required this.archiveColumnId,
     required this.archiveReglamentColumnId,
-    required this.shareLinkToken,
-    required this.shareLinkActive,
+    required this.backgroundId,
+    required this.customBackground,
+    required this.icon,
+    required this.iconColor,
+    required this.isArchived,
+    required this.groupId,
+    required this.dateArchived,
+    required this.repositoryLink,
   });
 
   factory Space.fromResponse(final SpaceResponse data) {
     return Space(
       id: data.id,
       name: data.name,
-      order: helpers.convertFromOrderResponse(int.parse(data.order)),
+      creatorId: data.creatorId,
       members: data.members.map(SpaceMember.fromResponse).toList(),
       columns: data.columns.map(SpaceColumn.fromResponse).toList(),
       reglamentColumns:
           data.reglamentColumns.map(SpaceColumn.fromResponse).toList(),
       invites: data.invites.map(SpaceInvite.fromResponse).toList(),
-      backgroundId: data.backgroundId ?? 0,
+      shareLink: SpaceShareLink.fromResponse(data.shareLink),
+      order: helpers.convertFromOrderResponse(int.parse(data.order)),
       favorite: data.favorite != 0,
       archiveColumnId: data.archiveColumnId,
       archiveReglamentColumnId: data.archiveReglamentColumnId,
-      shareLinkToken: data.shareLink.token,
-      shareLinkActive: data.shareLink.active,
+      backgroundId: data.backgroundId ?? 0,
+      customBackground: data.customBackground,
+      icon: data.icon,
+      iconColor: HexColor.fromHex(data.iconColor)!,
+      isArchived: data.isArchived,
+      groupId: data.groupId,
+      dateArchived: data.dateArchived != null
+          ? DateTimeConverter.stringToLocalDateTime(data.dateArchived!)
+          : null,
+      repositoryLink: data.repositoryLink,
     );
   }
 
   @override
   String toString() {
-    return 'Space{id: $id, name: $name, order: $order, members: $members, columns: $columns, reglamentColumns: $reglamentColumns, invites: $invites, backgroundId: $backgroundId, favorite: $favorite, archiveColumnId: $archiveColumnId, archiveReglamentColumnId: $archiveReglamentColumnId, shareLinkToken: $shareLinkToken, shareLinkActive: $shareLinkActive}';
+    return 'Space('
+        'id: $id, '
+        'name: $name, '
+        'creatorId: $creatorId, '
+        'members: $members, '
+        'columns: $columns, '
+        'reglamentColumns: $reglamentColumns, '
+        'invites: $invites, '
+        'shareLink: $shareLink, '
+        'order: $order, '
+        'favorite: $favorite, '
+        'archiveColumnId: $archiveColumnId, '
+        'archiveReglamentColumnId: $archiveReglamentColumnId, '
+        'backgroundId: $backgroundId, '
+        'customBackground: $customBackground, '
+        'icon: $icon, '
+        'iconColor: $iconColor, '
+        'isArchived: $isArchived, '
+        'groupId: $groupId, '
+        'dateArchived: $dateArchived, '
+        'repositoryLink: $repositoryLink'
+        ')';
   }
 
   Space copyWith({
     int? id,
     String? name,
-    double? order,
+    int? creatorId,
     List<SpaceMember>? members,
     List<SpaceColumn>? columns,
     List<SpaceColumn>? reglamentColumns,
     List<SpaceInvite>? invites,
-    int? backgroundId,
+    SpaceShareLink? shareLink,
+    double? order,
     bool? favorite,
     int? archiveColumnId,
     int? archiveReglamentColumnId,
-    String? shareLinkToken,
-    bool? shareLinkActive,
+    int? backgroundId,
+    String? customBackground,
+    int? icon,
+    Color? iconColor,
+    bool? isArchived,
+    int? groupId,
+    DateTime? dateArchived,
+    String? repositoryLink,
   }) {
     return Space(
       id: id ?? this.id,
       name: name ?? this.name,
-      order: order ?? this.order,
+      creatorId: creatorId ?? this.creatorId,
       members: members ?? this.members,
       columns: columns ?? this.columns,
       reglamentColumns: reglamentColumns ?? this.reglamentColumns,
       invites: invites ?? this.invites,
-      backgroundId: backgroundId ?? this.backgroundId,
+      shareLink: shareLink ?? this.shareLink,
+      order: order ?? this.order,
       favorite: favorite ?? this.favorite,
       archiveColumnId: archiveColumnId ?? this.archiveColumnId,
       archiveReglamentColumnId:
           archiveReglamentColumnId ?? this.archiveReglamentColumnId,
-      shareLinkToken: shareLinkToken ?? this.shareLinkToken,
-      shareLinkActive: shareLinkActive ?? this.shareLinkActive,
+      backgroundId: backgroundId ?? this.backgroundId,
+      customBackground: customBackground ?? this.customBackground,
+      icon: icon ?? this.icon,
+      iconColor: iconColor ?? this.iconColor,
+      isArchived: isArchived ?? this.isArchived,
+      groupId: groupId ?? this.groupId,
+      dateArchived: dateArchived ?? this.dateArchived,
+      repositoryLink: repositoryLink ?? this.repositoryLink,
     );
+  }
+}
+
+class SpaceShareLink {
+  final bool active;
+  final String token;
+
+  SpaceShareLink({required this.active, required this.token});
+
+  factory SpaceShareLink.fromResponse(final SpaceShareLinkResponse data) {
+    return SpaceShareLink(active: data.active, token: data.token);
   }
 }
 
