@@ -3,9 +3,8 @@ import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/widgets/project_action_button.dart';
-import 'package:unityspace/screens/space_screen/pages/project_page/widgets/projects_listview.dart';
+import 'package:unityspace/screens/space_screen/pages/project_page/widgets/project_listview/projects_listview.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/widgets/skeleton_project_board.dart';
-import 'package:unityspace/screens/space_screen/widgets/delete_no_rules_dialog.dart';
 import 'package:unityspace/screens/widgets/columns_list/column_button.dart';
 import 'package:unityspace/screens/widgets/columns_list/columns_list_row.dart';
 import 'package:unityspace/store/projects_store.dart';
@@ -73,25 +72,6 @@ class ProjectsPageStore extends WStore {
     });
   }
 
-  void changeProjectColumn(List<int> projectIds, int archiveColumnId) {
-    ProjectsStore().changeProjectColumn(projectIds, archiveColumnId);
-  }
-
-  void tryToDeleteProject({
-    required BuildContext context,
-    required int projectId,
-  }) {
-    if (isOwnerOrAdmin) {
-      _deleteProject(projectId);
-    } else {
-      showDeleteNoRulesDialog(context);
-    }
-  }
-
-  void _deleteProject(int projectId) {
-    ProjectsStore().deleteProject(projectId);
-  }
-
   bool get isOwnerOrAdmin => computedFromStore(
         store: UserStore(),
         getValue: (store) => store.isOwnerOrAdmin,
@@ -126,10 +106,6 @@ class ProjectsPageStore extends WStore {
 
   List<Project> _getProjectsByColumnId(int id) {
     return projects.where((el) => el.columnId == id).toList();
-  }
-
-  void setProjectFavorite(int projectId, bool favorite) {
-    ProjectsStore().setProjectFavorite(projectId, favorite);
   }
 
   ///Сортировка проектов по order

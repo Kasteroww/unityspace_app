@@ -319,7 +319,7 @@ class AppNavigationDrawer extends WStoreWidget<AppNavigationDrawerStore> {
                 child: WStoreStatusBuilder<AppNavigationDrawerStore>(
                   watch: (store) => store.status,
                   builderLoading: (context) {
-                    return const SkeletonCard();
+                    return const DrawerSpaceSkeletonCard();
                   },
                   builderError: (context) {
                     return Padding(
@@ -745,27 +745,25 @@ class NavigatorMenuCurrentUser extends StatelessWidget {
   }
 }
 
-class SkeletonCard extends StatelessWidget {
-  const SkeletonCard({super.key});
+class DrawerSpaceSkeletonCard extends StatelessWidget {
+  const DrawerSpaceSkeletonCard({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.topCenter,
-      child: Expanded(
-        child: Container(
-          height: 50,
-          decoration: const BoxDecoration(
-            color: ColorConstants.grey01,
-            borderRadius: BorderRadius.all(Radius.circular(8)),
-          ),
-          child: const Padding(
-            padding: EdgeInsets.all(8),
-            child: Center(
-              child: SkeletonBox(
-                height: 10,
-                color: ColorConstants.grey03,
-              ),
+      child: Container(
+        height: 50,
+        decoration: const BoxDecoration(
+          color: ColorConstants.grey01,
+          borderRadius: BorderRadius.all(Radius.circular(8)),
+        ),
+        child: const Padding(
+          padding: EdgeInsets.all(8),
+          child: Center(
+            child: SkeletonBox(
+              height: 10,
+              color: ColorConstants.grey03,
             ),
           ),
         ),
