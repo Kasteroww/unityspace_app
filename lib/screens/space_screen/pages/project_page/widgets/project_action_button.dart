@@ -4,12 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:unityspace/resources/app_icons.dart';
 import 'package:unityspace/resources/theme/theme.dart';
-import 'package:unityspace/screens/dialogs/add_project_dialog.dart';
+import 'package:unityspace/screens/space_screen/pages/project_page/widgets/dialogs/add_project_dialog.dart';
+import 'package:unityspace/screens/space_screen/pages/project_page/widgets/dialogs/add_space_column_dialog.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 
 class ProjectActionButton extends StatefulWidget {
   final int columnId;
-  const ProjectActionButton({required this.columnId, super.key});
+  final int? spaceId;
+  const ProjectActionButton({
+    required this.columnId,
+    required this.spaceId,
+    super.key,
+  });
 
   @override
   State<ProjectActionButton> createState() => _ProjectActionButtonState();
@@ -98,6 +104,7 @@ class _ProjectActionButtonState extends State<ProjectActionButton>
                     text: localization.new_group,
                     onPressed: () {
                       _toggleMenu();
+                      showAddSpaceColumnDialog(context, widget.spaceId);
                     },
                     assetName: AppIcons.addFolder,
                     controller: _controller,

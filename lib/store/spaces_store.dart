@@ -192,6 +192,33 @@ class SpacesStore extends GStore {
     });
   }
 
+  Future<SpaceColumn> createSpaceColumn({
+    required int spaceId,
+    required String name,
+    required double order,
+  }) async {
+    final space = spaces[spaceId];
+    final response =
+        await api.createSpaceColumn(spaceId: spaceId, name: name, order: order);
+    final newColumn = SpaceColumn.fromResponse(response);
+    _updateSpaceColumnsLocally(space: space, newColumn: newColumn);
+    return newColumn;
+  }
+
+  void _updateSpaceColumnsLocally({
+    required Space? space,
+    required SpaceColumn newColumn,
+  }) {
+    final spaceColumns = space?.columns ?? [];
+    if (!spaceColumns.contains(newColumn)) {
+      if (space != null) {
+        setStore(() {
+          spaces.add(space.copyWith(columns: [...spaceColumns, newColumn]));
+        });
+      }
+    }
+  }
+
   @override
   void clear() {
     super.clear();

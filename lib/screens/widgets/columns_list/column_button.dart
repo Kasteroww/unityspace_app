@@ -18,10 +18,10 @@ class ColumnButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: isSelected ? null : onTap,
-      child: Padding(
-        padding: const EdgeInsets.only(right: 20),
+    return Padding(
+      padding: const EdgeInsets.only(right: 20),
+      child: InkWell(
+        onTap: isSelected ? null : onTap,
         child: Container(
           height: 46,
           decoration: BoxDecoration(

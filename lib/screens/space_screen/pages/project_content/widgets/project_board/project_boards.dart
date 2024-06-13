@@ -157,16 +157,20 @@ class ProjectBoardsStore extends WStore {
     await createStage(projectId: projectId, name: name);
   }
 
+  double _getNextOrder() {
+    return projectStages
+            .map((column) => column.order)
+            .reduce((max, order) => max > order ? max : order) +
+        1;
+  }
+
   ///Создает новый стейдж
   Future<void> createStage({
     required int projectId,
     required String name,
   }) async {
     try {
-      final double newOrder = projectStages
-              .map((column) => column.order)
-              .reduce((max, order) => max > order ? max : order) +
-          1;
+      final double newOrder = _getNextOrder();
       await ProjectsStore()
           .createStage(projectId: projectId, name: name, order: newOrder);
     } catch (e, stack) {

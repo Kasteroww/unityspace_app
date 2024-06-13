@@ -9,6 +9,7 @@ import 'package:unityspace/screens/space_screen/widgets/delete_no_rules_dialog.d
 import 'package:unityspace/screens/widgets/columns_list/column_button.dart';
 import 'package:unityspace/screens/widgets/columns_list/columns_list_row.dart';
 import 'package:unityspace/store/projects_store.dart';
+import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
@@ -21,7 +22,14 @@ class ProjectsPageStore extends WStore {
   late int archiveColumnId;
   late SpaceColumn selectedColumn;
 
-  Space get currentSpace => widget.space;
+  Space get initialCurrentSpace => widget.space;
+
+  ///Получение конкретного пространства по id
+  Space? get currentSpace => computedFromStore(
+        store: SpacesStore(),
+        getValue: (store) => store.spaces[initialCurrentSpace.id],
+        keyName: 'currentSpace',
+      );
 
   /// Получение колонок с Проектами
   List<SpaceColumn> get projectColumns => computed(
@@ -30,7 +38,7 @@ class ProjectsPageStore extends WStore {
         keyName: 'projectColumns',
       );
 
-  ///Получение проектов из колонки
+  /// Получение проектов из колонки
   List<Project> get projectsByColumn => computed(
         getValue: () => _getProjectsByColumnId(
           isArchivedPage ? archiveColumnId : selectedColumn.id,
@@ -39,12 +47,14 @@ class ProjectsPageStore extends WStore {
         keyName: 'projectsByColumn',
       );
 
+  /// Получение количества проектов в архивной колонке
   int get archiveProjectsCount => computed(
         getValue: () => _getProjectsByColumnId(archiveColumnId).length,
         watch: () => [projects],
         keyName: 'archiveProjectsCount',
       );
 
+  ///Получение проектов
   List<Project> get projects => computedFromStore(
         store: ProjectsStore(),
         getValue: (store) => _getProjects(store.projects.list),
@@ -184,8 +194,12 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
       },
       builderLoaded: (BuildContext context) {
         return WStoreBuilder<ProjectsPageStore>(
-          watch: (store) =>
-              [store.projects, store.selectedColumn, store.isArchivedPage],
+          watch: (store) => [
+            store.projects,
+            store.selectedColumn,
+            store.isArchivedPage,
+            store.projectColumns,
+          ],
           store: context.wstore(),
           builder: (context, store) {
             return Stack(
@@ -221,6 +235,7 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
                   ],
                 ),
                 ProjectActionButton(
+                  spaceId: store.currentSpace?.id,
                   columnId: store.selectedColumn.id,
                 ),
               ],

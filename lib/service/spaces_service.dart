@@ -47,6 +47,30 @@ Future<SpaceResponse> createSpaces(
   }
 }
 
+Future<SpaceColumnResponse> createSpaceColumn({
+  required int spaceId,
+  required String name,
+  required double order,
+}) async {
+  try {
+    final response = await HttpPlugin().post(
+      '/spaces/$spaceId/columns/',
+      {
+        'name': name,
+        'order': convertToOrderRequest(order),
+      },
+    );
+    final jsonData = json.decode(response.body);
+
+    return SpaceColumnResponse.fromJson(jsonData);
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
+}
+
 Future<RemoveMemberFromSpaceResponse> removeUserFromSpace(
   final int spaceId,
   final int memberId,
