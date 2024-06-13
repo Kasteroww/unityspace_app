@@ -7,6 +7,7 @@ import 'package:unityspace/screens/notifications_screen/utils/notification_helpe
 import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/date_time_converter.dart';
+import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
@@ -63,7 +64,7 @@ class NotificationInfo extends StatelessWidget {
                 return '@$name';
             }
           });
-          return '"$message"';
+          return '"$message"'.removeLineBreaksAndTabs();
         case NotificationType.taskChangedResponsible:
           if (notification.text.startsWith('add responsible ')) {
             final int userId = int.parse(

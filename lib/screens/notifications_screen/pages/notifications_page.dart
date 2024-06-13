@@ -100,7 +100,7 @@ class NotificationPageStore extends WStore {
         status = WStoreStatus.loaded;
       });
     } catch (e, stack) {
-      logger.d('on NotificationsPage'
+      logger.e('on NotificationsPage'
           'NotificationsStore loadData error=$e\nstack=$stack');
       setStore(() {
         status = WStoreStatus.error;

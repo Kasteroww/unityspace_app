@@ -7,6 +7,7 @@ import 'package:unityspace/screens/notifications_screen/utils/notification_helpe
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_info.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/parts/locations.dart';
 import 'package:unityspace/utils/extensions/localization_extensions.dart';
+import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 
 class NotificationBottomSheet extends StatelessWidget {
@@ -69,7 +70,7 @@ class NotificationBottomSheet extends StatelessWidget {
                       child: Text(
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        notificationsGroup.title,
+                        notificationsGroup.title.removeLineBreaksAndTabs(),
                         style: const TextStyle(
                           fontWeight: FontWeight.w500,
                           fontSize: 20,

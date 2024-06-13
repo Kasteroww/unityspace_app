@@ -6,6 +6,7 @@ import 'package:unityspace/screens/notifications_screen/utils/notification_helpe
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_info.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/parts/locations.dart';
 import 'package:unityspace/utils/date_time_converter.dart';
+import 'package:unityspace/utils/helpers.dart';
 
 class NotificationsInfoCard extends StatelessWidget {
   NotificationsInfoCard({
@@ -86,8 +87,9 @@ class NotificationsInfoCard extends StatelessWidget {
                   ),
                   Expanded(
                     child: Text(
-                      notificationsGroup.title,
+                      notificationsGroup.title.removeLineBreaksAndTabs(),
                       overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,

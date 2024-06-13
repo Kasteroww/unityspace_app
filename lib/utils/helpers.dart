@@ -55,6 +55,10 @@ extension StringExtension on String {
         .map((word) => '${word[0].toUpperCase()}${word.substring(1)}')
         .join(' ');
   }
+
+  String removeLineBreaksAndTabs() {
+    return replaceAll(RegExp(r'\n|\r|\t'), ' ');
+  }
 }
 
 /// Дженерик для конвертации Identifiable в мапу
