@@ -83,3 +83,5 @@ enum AddReglamentErrors { none, emptyName, problemUploadingData }
 enum DuplicateReglamentErrors { none, emptyName, problemUploadingData }
 
 enum ConfirmEmailErrors { none, confirmEmailError, incorrectCode }
+
+enum DrawerErrors { none, groupsLoadingError, drawerError }

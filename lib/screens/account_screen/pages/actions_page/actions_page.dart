@@ -68,7 +68,7 @@ class ActionsPageStore extends WStore {
         status = WStoreStatus.loaded;
       });
     } catch (e, stack) {
-      logger.d('on ActionsPage'
+      logger.e('on ActionsPage'
           'ActionsPage loadData error=$e\nstack=$stack');
       setStore(() {
         status = WStoreStatus.error;

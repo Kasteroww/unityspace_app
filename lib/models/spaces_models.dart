@@ -243,6 +243,11 @@ class Space implements Identifiable, Nameable {
   });
 
   factory Space.fromResponse(final SpaceResponse data) {
+    // Пока поставим дефолтный как белый
+    String hexString = data.iconColor ?? 'FFFFFF';
+    if (hexString.isEmpty) {
+      hexString = 'FFFFFF';
+    }
     return Space(
       id: data.id,
       name: data.name,
@@ -260,8 +265,7 @@ class Space implements Identifiable, Nameable {
       backgroundId: data.backgroundId ?? 0,
       customBackground: data.customBackground,
       icon: data.icon,
-      iconColor:
-          data.iconColor != null ? HexColor.fromHex(data.iconColor!) : null,
+      iconColor: HexColor.fromHex(hexString),
       isArchived: data.isArchived,
       groupId: data.groupId,
       dateArchived: data.dateArchived != null

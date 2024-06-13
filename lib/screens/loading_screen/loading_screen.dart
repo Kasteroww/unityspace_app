@@ -35,11 +35,12 @@ class LoadingScreenStore extends WStore {
         });
       },
       onError: (e, stack) {
-        logger.d('LoadingScreenStore loadData error=$e\nstack=$stack');
+        logger.e('LoadingScreenStore loadData error=$e\nstack=$stack');
         setStore(() {
           status = WStoreStatus.error;
           error = loadError;
         });
+        throw Exception(e);
       },
     );
     // Дополнительные данные, которые можно загрузить после
