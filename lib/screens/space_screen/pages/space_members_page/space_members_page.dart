@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:unityspace/models/spaces_models.dart';
+import 'package:unityspace/resources/constants.dart';
 import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/resources/theme/theme.dart';
 import 'package:unityspace/screens/space_screen/pages/space_members_page/widgets/space_member_card.dart';
@@ -6,13 +8,17 @@ import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
 
-class SpaceMembersPageStore extends WStore {
-  // GENERAL
-  SpaceMembersErrors error = SpaceMembersErrors.none;
-  SpacesStore spacesStore = SpacesStore();
-  int spaceId = 0;
 
-  bool isLinkEnabled = false;
+class SpaceMembersPageStore extends WStore {
+  SpaceMembersErrors error = SpaceMembersErrors.none;
+
+  SpacesStore spacesStore = SpacesStore();
+
+  Space? get space => computedFromStore(
+        store: spacesStore,
+        getValue: (store) => store.spaces[widget.spaceId],
+        keyName: 'space',
+      );
 
   @override
   SpaceMembersPage get widget => super.widget as SpaceMembersPage;
@@ -42,44 +48,43 @@ class SpaceMembersPage extends WStoreWidget<SpaceMembersPageStore> {
             children: [
               Text(localization.invitationsViaLink),
               Switch(
-                value: store.isLinkEnabled,
-                onChanged: (bool value) {
-                  store.isLinkEnabled = value;
-                },
+                value: store.space?.shareLink.active ?? false,
+                onChanged: (bool value) {},
               ),
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: TextEditingController(
-                    text:
-                        'https://www.app.unityspace.ru/join/3ae45004-6b94-479a-8032-3fc9f1ec7532',
+        if (store.space?.shareLink.active ?? false)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: TextEditingController(
+                      text:
+                          '${ConstantStrings.spaceInviteUrl}${store.space?.shareLink.token}',
+                    ),
+                    readOnly: true,
                   ),
-                  readOnly: true,
                 ),
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              FilledButton(
-                style: FilledButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                const SizedBox(
+                  width: 10,
+                ),
+                FilledButton(
+                  style: FilledButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    foregroundColor: ColorConstants.grey01,
+                    backgroundColor: ColorConstants.grey08,
                   ),
-                  foregroundColor: ColorConstants.grey01,
-                  backgroundColor: ColorConstants.grey08,
+                  onPressed: () => {},
+                  child: Text(localization.copy),
                 ),
-                onPressed: () => {},
-                child: Text(localization.copy),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
         Row(
           children: [
             Expanded(
@@ -105,13 +110,15 @@ class SpaceMembersPage extends WStoreWidget<SpaceMembersPageStore> {
         ),
         Expanded(
           child: ListView.builder(
-            itemCount: 5,
+            itemCount: store.space?.members.length,
             itemBuilder: (BuildContext context, int index) {
+              final member = store.space?.members[index];
+              if (member == null) return null;
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12, left: 20, right: 20),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: const SpaceMemberCard(),
+                  child: SpaceMemberInfoCard(spaceMember: member),
                 ),
               );
             },

@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/resources/app_icons.dart';
 import 'package:unityspace/screens/space_screen/pages/space_members_page/widgets/popup_menu_members_actions_item.dart';
 import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 
-class SpaceMemberCard extends StatelessWidget {
-  const SpaceMemberCard({
+class SpaceMemberInfoCard extends StatelessWidget {
+  final SpaceMember spaceMember;
+
+  const SpaceMemberInfoCard({
+    required this.spaceMember,
     super.key,
   });
 
@@ -27,10 +31,10 @@ class SpaceMemberCard extends StatelessWidget {
               ),
               Row(
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.all(8),
+                  Padding(
+                    padding: const EdgeInsets.all(8),
                     child: UserAvatarWidget(
-                      id: 8802,
+                      id: spaceMember.id,
                       width: 30,
                       height: 30,
                       fontSize: 10,
@@ -39,22 +43,22 @@ class SpaceMemberCard extends StatelessWidget {
                   const SizedBox(
                     width: 5,
                   ),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'spaceMember.name',
+                          spaceMember.name,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w400,
                           ),
                         ),
                         Text(
-                          'organizationMember.email',
+                          spaceMember.email,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
                             overflow: TextOverflow.ellipsis,
@@ -66,7 +70,13 @@ class SpaceMemberCard extends StatelessWidget {
                   PopupMenuButton<PopupMenuMembersActionItem>(
                     elevation: 1,
                     color: Colors.white,
-                    child: Text(localization.reader),
+                    child: Text(
+                      switch (spaceMember.role) {
+                        1 => localization.initiator,
+                        2 => localization.participant,
+                        int() => localization.reader,
+                      },
+                    ),
                     itemBuilder: (BuildContext context) {
                       return <PopupMenuEntry<PopupMenuMembersActionItem>>[
                         PopupMenuItem<PopupMenuMembersActionItem>(
