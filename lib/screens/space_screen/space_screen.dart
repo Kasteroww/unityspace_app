@@ -3,6 +3,7 @@ import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/screens/app_navigation_drawer.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/project_page.dart';
 import 'package:unityspace/screens/space_screen/pages/reglaments_page/reglaments_page.dart';
+import 'package:unityspace/screens/space_screen/pages/space_members_page/space_members_page.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/tasks_page.dart';
 import 'package:unityspace/screens/space_screen/widgets/pop_up_button.dart';
 import 'package:unityspace/screens/widgets/appbar.dart';
@@ -67,6 +68,7 @@ class SpaceScreen extends WStoreWidget<SpaceScreenStore> {
                   SpacesScreenTab.projects => ProjectsPage(space: space),
                   SpacesScreenTab.tasks => TasksPage(spaceId: space.id),
                   SpacesScreenTab.reglaments => ReglamentsPage(space: space),
+                  SpacesScreenTab.members => SpaceMembersPage(spaceId: space.id)
                 };
               },
             ),
@@ -77,4 +79,4 @@ class SpaceScreen extends WStoreWidget<SpaceScreenStore> {
   }
 }
 
-enum SpacesScreenTab { projects, tasks, reglaments }
+enum SpacesScreenTab { projects, tasks, reglaments, members }

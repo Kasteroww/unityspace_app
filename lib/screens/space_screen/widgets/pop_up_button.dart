@@ -44,6 +44,12 @@ class PopUpSpacesScreenButton extends StatelessWidget {
               text: localization.reglaments,
             ),
           ),
+          PopupMenuItem<SpacesScreenTab>(
+            value: SpacesScreenTab.members,
+            child: PopupMenuItemChild(
+              text: localization.members,
+            ),
+          ),
         ];
       },
       child: SizedBox(

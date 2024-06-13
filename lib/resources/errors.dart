@@ -32,6 +32,8 @@ enum ProjectErrors { none, loadingDataError }
 
 enum TasksErrors { none, loadingDataError }
 
+enum SpaceMembersErrors { none, loadingDataError }
+
 enum SearchTaskErrors { none }
 
 enum AddProjectTabErrors { none, addProjectTabError, valueIsEmpty }

@@ -650,5 +650,11 @@
   "invite": "Приглашение",
   "total_members": "Всего участников",
   "last_activity": "Последняя активность",
-  "new_group":"Новая группа"
+  "new_group":"Новая группа",
+  "participant": "Участник",
+  "initiator": "Инициатор",
+  "reader": "Читатель",
+  "invitationsViaLink": "Приглашения по ссылке",
+  "copy": "Копировать",
+  "inviteNewMember": "Пригласить нового участника"
 }
