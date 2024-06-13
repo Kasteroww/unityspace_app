@@ -43,6 +43,7 @@ class _AddDialogDropdownMenuState<T> extends State<AddDialogDropdownMenu<T>> {
         Text(widget.labelText),
         DropdownButtonFormField<T>(
           dropdownColor: Colors.white,
+          isExpanded: true,
           key: widget.fieldKey,
           focusNode: myFocusNode,
           autofocus: widget.autofocus,
@@ -54,7 +55,9 @@ class _AddDialogDropdownMenuState<T> extends State<AddDialogDropdownMenu<T>> {
           ),
           decoration: InputDecoration(
             floatingLabelStyle: TextStyle(
-              color: myFocusNode.hasFocus ? const Color(0xFF159E5C) : const Color(0xA6111012),
+              color: myFocusNode.hasFocus
+                  ? const Color(0xFF159E5C)
+                  : const Color(0xA6111012),
             ),
             prefixIconConstraints: const BoxConstraints(
               minWidth: 40,
@@ -83,7 +86,10 @@ class _AddDialogDropdownMenuState<T> extends State<AddDialogDropdownMenu<T>> {
               .map<DropdownMenuItem<T>>(
                 (elem) => DropdownMenuItem<T>(
                   value: elem.$1,
-                  child: Text(elem.$2),
+                  child: Text(
+                    elem.$2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               )
               .toList(),
