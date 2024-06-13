@@ -493,6 +493,8 @@
   "move": "Переместить",
   "move_it_to_bottom_column" : "Переместить вниз колонки",
   "move_it_to_top_column" : "Переместить вверх колонки",
+  "move_task": "Переместить задачу",
+  "project": "Проект",
   "go_to": "Перейти в",
   "change_the_title": "Изменить название",
   "change_project": "Изменить проект",

@@ -394,6 +394,7 @@ class ProjectBoards extends WStoreWidget<ProjectBoardsStore> {
                                                 children: [
                                                   Text(task.name),
                                                   ContextMenuButton(
+                                                    projectId: projectId,
                                                     tasks: tasks,
                                                     stage: stage,
                                                     task: task,

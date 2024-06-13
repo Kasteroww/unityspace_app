@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/resources/app_icons.dart';
+import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_board/dialogs/move_task_dialog.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_board/parts/context_menu_item.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_board/project_boards.dart';
 import 'package:unityspace/utils/localization_helper.dart';
@@ -10,12 +11,14 @@ import 'package:wstore/wstore.dart';
 
 class ContextMenuButton extends StatelessWidget {
   const ContextMenuButton({
+    required this.projectId,
     required this.stage,
     required this.task,
     required this.tasks,
     super.key,
   });
 
+  final int projectId;
   final ProjectStage stage;
   final Task task;
   final List<Task> tasks;
@@ -83,6 +86,11 @@ class ContextMenuButton extends StatelessWidget {
         }
         items.addAll([
           PopupMenuItem(
+            onTap: () => showMoveTaskDialog(
+              context,
+              projectId,
+              stage.id,
+            ),
             child: ContextMenuItem(
               text: localization.move,
             ),
