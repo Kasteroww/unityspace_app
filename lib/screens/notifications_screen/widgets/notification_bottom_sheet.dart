@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/resources/theme/theme.dart';
+import 'package:unityspace/screens/notifications_screen/notifications_screen.dart';
 import 'package:unityspace/screens/notifications_screen/utils/notification_helper.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_info.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/parts/locations.dart';
@@ -11,10 +12,12 @@ import 'package:unityspace/utils/localization_helper.dart';
 class NotificationBottomSheet extends StatelessWidget {
   NotificationBottomSheet({
     required this.notificationsGroup,
+    required this.store,
     super.key,
   });
 
   final NotificationsGroup notificationsGroup;
+  final NotificationsScreenStore store;
   final notificationHelper = NotificationHelper();
   @override
   Widget build(BuildContext context) {
@@ -40,7 +43,10 @@ class NotificationBottomSheet extends StatelessWidget {
                   alignment: const Alignment(-1, 0),
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: 8, top: 20),
-                    child: Locations(notificationsGroup: notificationsGroup),
+                    child: Locations(
+                      notificationsGroup: notificationsGroup,
+                      store: store,
+                    ),
                   ),
                 )
               else
@@ -83,6 +89,7 @@ class NotificationBottomSheet extends StatelessWidget {
                   child: NotificationInfo(
                     notificationGroup: notificationsGroup,
                     isShowCreatedAt: true,
+                    store: store,
                   ),
                 ),
               ),

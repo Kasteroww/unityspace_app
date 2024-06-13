@@ -85,6 +85,7 @@ class NotificationsList extends StatelessWidget {
                         showNotificationInfo(
                           context: context,
                           notificationsGroup: notificationsGroup,
+                          store: context.wstore<NotificationsScreenStore>(),
                         );
                       },
                       child: ClipRRect(
@@ -170,6 +171,7 @@ class NotificationsList extends StatelessWidget {
   void showNotificationInfo({
     required BuildContext context,
     required NotificationsGroup notificationsGroup,
+    required NotificationsScreenStore store,
   }) {
     // Отмечаем уведомления как прочитанные
     if (notificationsGroup.notifications
@@ -184,7 +186,10 @@ class NotificationsList extends StatelessWidget {
       backgroundColor: Colors.white,
       context: context,
       builder: (BuildContext context) {
-        return NotificationBottomSheet(notificationsGroup: notificationsGroup);
+        return NotificationBottomSheet(
+          notificationsGroup: notificationsGroup,
+          store: store,
+        );
       },
     );
   }

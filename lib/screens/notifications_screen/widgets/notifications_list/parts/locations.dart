@@ -10,16 +10,19 @@ class Locations extends StatelessWidget {
 
   const Locations({
     required this.notificationsGroup,
+    this.store,
     super.key,
   });
 
+  final NotificationsScreenStore? store;
+
   @override
   Widget build(BuildContext context) {
+    final store = this.store ?? context.wstore<NotificationsScreenStore>();
     final localization = LocalizationHelper.getLocalizations(context);
-    final locationGroups =
-        context.wstore<NotificationsScreenStore>().groupLocations(
-              notificationsGroup.locations,
-            );
+    final locationGroups = store.groupLocations(
+      notificationsGroup.locations,
+    );
     final groupName =
         notificationsGroup.type.localize(localization: localization);
     const textStyle = TextStyle(

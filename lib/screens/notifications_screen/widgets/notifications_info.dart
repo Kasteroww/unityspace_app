@@ -15,11 +15,13 @@ class NotificationInfo extends StatelessWidget {
   NotificationInfo({
     required this.notificationGroup,
     this.isShowCreatedAt = false,
+    this.store,
     super.key,
   });
 
   final bool isShowCreatedAt;
   final NotificationsGroup notificationGroup;
+  final NotificationsScreenStore? store;
 
   final notificationHelper = NotificationHelper();
 
@@ -28,7 +30,7 @@ class NotificationInfo extends StatelessWidget {
     required NotificationModel notification,
   }) {
     final localization = LocalizationHelper.getLocalizations(context);
-    final store = context.wstore<NotificationsScreenStore>();
+    final store = this.store ?? context.wstore<NotificationsScreenStore>();
     try {
       switch (notification.notificationType) {
         case NotificationType.reglamentCreated:
@@ -146,9 +148,10 @@ class NotificationInfo extends StatelessWidget {
       itemCount: notificationGroup.notifications.length,
       itemBuilder: (BuildContext context, int index) {
         final notification = notifications[index];
-        final member = context
-            .wstore<NotificationsScreenStore>()
-            .getMemberById(notification.initiatorId);
+        final member = store?.getMemberById(notification.initiatorId) ??
+            context
+                .wstore<NotificationsScreenStore>()
+                .getMemberById(notification.initiatorId);
         return DecoratedBox(
           decoration: BoxDecoration(
             color: const Color.fromRGBO(249, 249, 249, 1),
