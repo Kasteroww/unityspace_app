@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/resources/errors.dart';
+import 'package:unityspace/resources/theme/theme.dart';
+import 'package:unityspace/screens/space_screen/pages/project_page/widgets/background_image.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/widgets/project_action_button.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/widgets/project_listview/projects_listview.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/widgets/skeleton_project_board.dart';
@@ -28,6 +30,15 @@ class ProjectsPageStore extends WStore {
         store: SpacesStore(),
         getValue: (store) => store.spaces[initialCurrentSpace.id],
         keyName: 'currentSpace',
+      );
+
+  /// Ссылка на кастомный бэкграунд
+  String? get customBackGroundLink => computed(
+        getValue: () {
+          return currentSpace?.customBackground;
+        },
+        watch: () => [currentSpace],
+        keyName: 'customBackGroundLink',
       );
 
   /// Получение колонок с Проектами
@@ -180,12 +191,14 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
           builder: (context, store) {
             return Stack(
               children: [
+                BackgroundImage(url: store.customBackGroundLink),
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (!store.isArchivedPage &&
-                        store.projectColumns.length > 1)
+                        store.projectColumns.length > 1) ...[
                       Container(
+                        color: ColorConstants.background,
                         height: 46,
                         padding: const EdgeInsets.only(left: 20),
                         child: ListView(
@@ -207,6 +220,11 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
                           ],
                         ),
                       ),
+                      const Divider(
+                        height: 1,
+                        color: ColorConstants.grey09,
+                      ),
+                    ],
                     const ProjectsListview(),
                   ],
                 ),

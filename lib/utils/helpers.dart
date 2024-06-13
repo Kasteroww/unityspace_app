@@ -12,6 +12,10 @@ String? makeAvatarUrl(final String? avatar) {
       : null;
 }
 
+String mapFileUidToFileLink(String uid) {
+  return '${HttpPlugin.baseURL}/v2/files/project-files/$uid';
+}
+
 String? getNullStringIfEmpty(final String? str) {
   return str == null || str.isEmpty ? null : str;
 }

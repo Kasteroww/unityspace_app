@@ -4,6 +4,7 @@ import 'package:unityspace/service/data_exceptions.dart';
 import 'package:unityspace/utils/date_time_converter.dart';
 import 'package:unityspace/utils/extensions/color_extension.dart';
 import 'package:unityspace/utils/helpers.dart' as helpers;
+import 'package:unityspace/utils/helpers.dart';
 
 class SpaceResponse {
   final int id;
@@ -263,7 +264,9 @@ class Space implements Identifiable, Nameable {
       archiveColumnId: data.archiveColumnId,
       archiveReglamentColumnId: data.archiveReglamentColumnId,
       backgroundId: data.backgroundId ?? 0,
-      customBackground: data.customBackground,
+      customBackground: data.customBackground != null
+          ? mapFileUidToFileLink('${data.customBackground}')
+          : null,
       icon: data.icon,
       iconColor: HexColor.fromHex(hexString),
       isArchived: data.isArchived,
