@@ -5,6 +5,7 @@ import 'package:unityspace/models/auth_models.dart';
 import 'package:unityspace/resources/constants.dart';
 import 'package:unityspace/service/auth_service.dart' as api;
 import 'package:unityspace/service/service_exceptions.dart';
+import 'package:unityspace/service/websync_service.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/http_plugin.dart';
 import 'package:wstore/wstore.dart';
@@ -22,6 +23,8 @@ class AuthStore extends GStore {
 
   bool get isAuthenticated => _currentTokens.accessToken.isNotEmpty;
 
+  String get userAccessToken => _currentTokens.accessToken;
+
   Future<void> removeUserTokens() async {
     // удалить из локал стореджа
     final sp = await SharedPreferences.getInstance();
@@ -33,6 +36,9 @@ class AuthStore extends GStore {
     });
     // установить заголовки
     _updateHttpAuthorizationHeader('');
+
+    // разрываем подключение c сервером через socket
+    disconnect();
   }
 
   Future<void> setUserTokens(
@@ -53,6 +59,9 @@ class AuthStore extends GStore {
 
     // установить заголовки
     _updateHttpAuthorizationHeader(userToken);
+
+    // подключаемся к серверу через socket
+    connect();
   }
 
   Future<void> loadUserTokens() async {

@@ -17,6 +17,7 @@ import 'package:unityspace/screens/restore_password_screen/restore_password_scre
 import 'package:unityspace/screens/space_screen/pages/project_content/project_content.dart';
 import 'package:unityspace/screens/space_screen/space_screen.dart';
 import 'package:unityspace/store/auth_store.dart';
+import 'package:unityspace/utils/socket_plugin.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:wstore/wstore.dart';
 
@@ -42,6 +43,10 @@ void main() async {
       isAuthenticated: AuthStore().isAuthenticated,
     ),
   );
+
+  if (AuthStore().isAuthenticated) {
+    SocketPlugin().socket.connect();
+  }
 }
 
 class MyAppStore extends WStore {

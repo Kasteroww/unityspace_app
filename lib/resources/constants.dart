@@ -20,5 +20,6 @@ class ConstantStrings {
   static const String paidTariffError = 'paid tariff';
   static const String incorrectCodeError = 'Error while entering code';
   static const String unitySpaceAppUrl = 'https://app.unityspace.ru';
+  static const String unitySpaceAppServerApi = 'https://server.unityspace.ru';
 }
 
