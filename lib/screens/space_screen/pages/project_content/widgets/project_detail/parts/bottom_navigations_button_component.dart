@@ -17,6 +17,7 @@ class BottomNavigationButtonComponent extends StatelessWidget {
           TextField(
             focusNode: focusNode,
             decoration: InputDecoration(
+              prefixIcon: const Icon(Icons.attach_file),
               hintText: '${localization.write_message}...',
             ),
           ),

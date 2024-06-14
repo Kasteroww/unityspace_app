@@ -12,6 +12,7 @@ import 'package:unityspace/screens/space_screen/pages/project_content/widgets/pr
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_detail/parts/responsible/responsible_part.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_detail/parts/shortcuts_component.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_detail/parts/status_component.dart';
+import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_detail/parts/task_location/task_location_component.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/task_detail_store.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
@@ -127,6 +128,7 @@ class ProjectDetail extends WStoreWidget<ProjectDetailStore> {
                           ),
                         ),
                       ),
+                      const TaskLocationComponent(),
                       const SizedBox(height: 20),
                       ResponsiblePart(
                         spaceId: spaceId ?? 0,
