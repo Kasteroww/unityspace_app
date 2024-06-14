@@ -7,17 +7,17 @@ import 'package:unityspace/screens/space_screen/pages/reglaments_page/widgets/re
 import 'package:unityspace/screens/space_screen/widgets/delete_no_rules_dialog.dart';
 import 'package:unityspace/store/reglaments_store.dart';
 import 'package:unityspace/store/user_store.dart';
-import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/localization_helper.dart';
-import 'package:unityspace/utils/logger_plugin.dart';
+import 'package:unityspace/utils/mixins/copy_to_clipboard_mixin.dart';
 import 'package:wstore/wstore.dart';
 
-class ReglamentsPageStore extends WStore {
+class ReglamentsPageStore extends WStore with CopyToClipboardMixin {
+  @override
+  String message = '';
   late Space currentSpace;
   late SpaceColumn chosenColumn;
 
   bool isInArchive = false;
-  String message = '';
 
   ///Получение ВСЕХ регламентов из стора
   List<Reglament> get allReglaments => computedFromStore(
@@ -86,28 +86,6 @@ class ReglamentsPageStore extends WStore {
     } else {
       showDeleteNoRulesDialog(context);
     }
-  }
-
-  void copyText({
-    required String text,
-    required String successMessage,
-    required String copyError,
-  }) {
-    listenFuture(
-      copyToClipboard(text),
-      id: 1,
-      onData: (_) {
-        setStore(() {
-          message = successMessage;
-        });
-      },
-      onError: (error, stack) {
-        logger.e('copyToClipboard error', error: error, stackTrace: stack);
-        setStore(() {
-          message = copyError;
-        });
-      },
-    );
   }
 
   Future<void> deleteReglament({

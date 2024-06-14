@@ -9,17 +9,18 @@ import 'package:unityspace/screens/widgets/main_form/main_form_text_title_widget
 import 'package:unityspace/screens/widgets/main_form/main_form_widget.dart';
 import 'package:unityspace/service/service_exceptions.dart';
 import 'package:unityspace/store/auth_store.dart';
-import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/localization_helper.dart';
-import 'package:unityspace/utils/logger_plugin.dart';
+import 'package:unityspace/utils/mixins/copy_to_clipboard_mixin.dart';
 import 'package:wstore/wstore.dart';
 
-class LoginByEmailScreenStore extends WStore {
+class LoginByEmailScreenStore extends WStore with CopyToClipboardMixin {
+  @override
+  String message = '';
   WStoreStatus status = WStoreStatus.init;
   bool showPassword = false;
   LoginByEmailErrors errorType = LoginByEmailErrors.none;
   String errorMessage = '';
-  String message = '';
+
   String email = '';
   String password = '';
 
@@ -57,28 +58,6 @@ class LoginByEmailScreenStore extends WStore {
         setStore(() {
           status = WStoreStatus.error;
           errorType = errorText;
-        });
-      },
-    );
-  }
-
-  void copy({
-    required String text,
-    required String successMessage,
-    required String errorMessage,
-  }) {
-    listenFuture(
-      copyToClipboard(text),
-      id: 1,
-      onData: (_) {
-        setStore(() {
-          message = successMessage;
-        });
-      },
-      onError: (error, stack) {
-        logger.e('copyToClipboard error', error: error, stackTrace: stack);
-        setStore(() {
-          message = errorMessage;
         });
       },
     );

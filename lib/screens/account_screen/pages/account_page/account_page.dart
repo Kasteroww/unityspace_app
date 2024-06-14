@@ -19,14 +19,15 @@ import 'package:unityspace/screens/dialogs/user_change_phone_dialog.dart';
 import 'package:unityspace/screens/dialogs/user_change_tg_link_dialog.dart';
 import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
 import 'package:unityspace/store/user_store.dart';
-import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
+import 'package:unityspace/utils/mixins/copy_to_clipboard_mixin.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wstore/wstore.dart';
 
-class AccountPageStore extends WStore {
+class AccountPageStore extends WStore with CopyToClipboardMixin {
   String imageFilePath = '';
+  @override
   String message = '';
   WStoreStatus statusAvatar = WStoreStatus.init;
 
@@ -152,28 +153,6 @@ class AccountPageStore extends WStore {
     );
   }
 
-  void copy(
-    final String text,
-    final String successMessage,
-    final String copyError,
-  ) {
-    listenFuture(
-      copyToClipboard(text),
-      id: 1,
-      onData: (_) {
-        setStore(() {
-          message = successMessage;
-        });
-      },
-      onError: (error, stack) {
-        logger.e('copyToClipboard error', error: error, stackTrace: stack);
-        setStore(() {
-          message = copyError;
-        });
-      },
-    );
-  }
-
   void open(final String link, final String openLinkError) {
     listenFuture(
       _gotoLink(link),
@@ -191,7 +170,8 @@ class AccountPageStore extends WStore {
   Future<void> _gotoLink(final String link) async {
     if (link.isEmpty) throw LinkErrors.linkIsEmpty;
     final Uri url = Uri.parse(link);
-    final bool result = await launchUrl(url, mode: LaunchMode.externalApplication);
+    final bool result =
+        await launchUrl(url, mode: LaunchMode.externalApplication);
     if (!result) throw '${LinkErrors.couldNotLaunch} $link';
   }
 
@@ -297,7 +277,8 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                 watch: (store) => store.imageFilePath,
                 reset: (store) => store.imageFilePath = '',
                 onNotEmpty: (context, imageFilePath) async {
-                  final Uint8List? avatarImage = await Navigator.of(context).push(
+                  final Uint8List? avatarImage =
+                      await Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => CropImageScreen(
                         imageFilePath: imageFilePath,
@@ -341,9 +322,10 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                     },
                     onTapValue: name.isNotEmpty
                         ? () => store.copy(
-                              name,
-                              localization.name_copied_to_clipboard,
-                              localization.copy_error,
+                              text: name,
+                              successMessage:
+                                  localization.name_copied_to_clipboard,
+                              errorMessage: localization.copy_error,
                             )
                         : null,
                   ),
@@ -353,7 +335,9 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                   watch: (store) => store.currentUserBirthday,
                   builder: (context, birthday) => AccountItemWidget(
                     text: localization.date_of_birth,
-                    value: birthday.isNotEmpty ? birthday : localization.not_specified,
+                    value: birthday.isNotEmpty
+                        ? birthday
+                        : localization.not_specified,
                     iconAssetName: AppIcons.accountBirthday,
                     onTapChange: () {
                       showUserChangeBirthdayDialog(
@@ -363,9 +347,10 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                     },
                     onTapValue: birthday.isNotEmpty
                         ? () => store.copy(
-                              birthday,
-                              localization.date_of_birth_copied_to_clipboard,
-                              localization.copy_error,
+                              text: birthday,
+                              successMessage: localization
+                                  .date_of_birth_copied_to_clipboard,
+                              errorMessage: localization.copy_error,
                             )
                         : null,
                   ),
@@ -375,16 +360,18 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                   watch: (store) => store.currentUserEmail,
                   builder: (context, email) => AccountItemWidget(
                     text: localization.email,
-                    value: email.isNotEmpty ? email : localization.not_specified,
+                    value:
+                        email.isNotEmpty ? email : localization.not_specified,
                     iconAssetName: 'assets/icons/account_email.svg',
                     onTapChange: () {
                       showChangeEmailDialog(context);
                     },
                     onTapValue: email.isNotEmpty
                         ? () => store.copy(
-                              email,
-                              localization.email_copied_to_clipboard,
-                              localization.copy_error,
+                              text: email,
+                              successMessage:
+                                  localization.email_copied_to_clipboard,
+                              errorMessage: localization.copy_error,
                             )
                         : null,
                   ),
@@ -394,16 +381,18 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                   watch: (store) => store.currentUserPhone,
                   builder: (context, phone) => AccountItemWidget(
                     text: localization.phone,
-                    value: phone.isNotEmpty ? phone : localization.not_specified,
+                    value:
+                        phone.isNotEmpty ? phone : localization.not_specified,
                     iconAssetName: AppIcons.accountPhone,
                     onTapChange: () {
                       showUserChangePhoneDialog(context, phone);
                     },
                     onTapValue: phone.isNotEmpty
                         ? () => store.copy(
-                              phone,
-                              localization.phone_copied_to_clipboard,
-                              localization.copy_error,
+                              text: phone,
+                              successMessage:
+                                  localization.phone_copied_to_clipboard,
+                              errorMessage: localization.copy_error,
                             )
                         : null,
                   ),
@@ -413,16 +402,19 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                   watch: (store) => store.currentUserJobTitle,
                   builder: (context, jobTitle) => AccountItemWidget(
                     text: localization.work_position,
-                    value: jobTitle.isNotEmpty ? jobTitle : localization.not_specified,
+                    value: jobTitle.isNotEmpty
+                        ? jobTitle
+                        : localization.not_specified,
                     iconAssetName: AppIcons.accountJob,
                     onTapChange: () {
                       showUserChangeJobDialog(context, jobTitle);
                     },
                     onTapValue: jobTitle.isNotEmpty
                         ? () => store.copy(
-                              jobTitle,
-                              localization.work_position_copied_to_clipboard,
-                              localization.copy_error,
+                              text: jobTitle,
+                              successMessage: localization
+                                  .work_position_copied_to_clipboard,
+                              errorMessage: localization.copy_error,
                             )
                         : null,
                   ),
@@ -432,17 +424,23 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                   watch: (store) => store.currentUserTelegram,
                   builder: (context, telegram) => AccountItemWidget(
                     text: localization.profile_in_telegram,
-                    value: telegram.isNotEmpty ? telegram : localization.not_specified,
+                    value: telegram.isNotEmpty
+                        ? telegram
+                        : localization.not_specified,
                     iconAssetName: AppIcons.accountTelegram,
                     onTapChange: () {
                       showUserChangeTgLinkDialog(context, telegram);
                     },
-                    onTapValue: telegram.isNotEmpty ? () => store.open(telegram, localization.open_link_error) : null,
+                    onTapValue: telegram.isNotEmpty
+                        ? () =>
+                            store.open(telegram, localization.open_link_error)
+                        : null,
                     onLongTapValue: telegram.isNotEmpty
                         ? () => store.copy(
-                              telegram,
-                              localization.link_copied_to_clipboard,
-                              localization.copy_error,
+                              text: telegram,
+                              successMessage:
+                                  localization.link_copied_to_clipboard,
+                              errorMessage: localization.copy_error,
                             )
                         : null,
                   ),
@@ -452,17 +450,21 @@ class AccountPage extends WStoreWidget<AccountPageStore> {
                   watch: (store) => store.currentUserGithub,
                   builder: (context, github) => AccountItemWidget(
                     text: localization.profile_in_github,
-                    value: github.isNotEmpty ? github : localization.not_specified,
+                    value:
+                        github.isNotEmpty ? github : localization.not_specified,
                     iconAssetName: AppIcons.accountGithub,
                     onTapChange: () {
                       showUserChangeGitHubLinkDialog(context, github);
                     },
-                    onTapValue: github.isNotEmpty ? () => store.open(github, localization.open_link_error) : null,
+                    onTapValue: github.isNotEmpty
+                        ? () => store.open(github, localization.open_link_error)
+                        : null,
                     onLongTapValue: github.isNotEmpty
                         ? () => store.copy(
-                              github,
-                              localization.link_copied_to_clipboard,
-                              localization.copy_error,
+                              text: github,
+                              successMessage:
+                                  localization.link_copied_to_clipboard,
+                              errorMessage: localization.copy_error,
                             )
                         : null,
                   ),

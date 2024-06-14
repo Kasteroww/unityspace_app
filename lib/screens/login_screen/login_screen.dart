@@ -9,15 +9,17 @@ import 'package:unityspace/screens/widgets/main_form/main_form_sign_in_button_wi
 import 'package:unityspace/screens/widgets/main_form/main_form_text_button_widget.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_text_title_widget.dart';
 import 'package:unityspace/store/auth_store.dart';
-import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
+import 'package:unityspace/utils/mixins/copy_to_clipboard_mixin.dart';
 import 'package:wstore/wstore.dart';
 
-class LoginScreenStore extends WStore {
-  WStoreStatus statusGoogle = WStoreStatus.init;
-  String errorMessage = '';
+class LoginScreenStore extends WStore with CopyToClipboardMixin {
+  @override
   String message = '';
+  WStoreStatus statusGoogle = WStoreStatus.init;
+  String loginErrorMessage = '';
+
   GoogleSignIn googleSignIn = GoogleSignIn();
 
   void google() {
@@ -39,7 +41,7 @@ class LoginScreenStore extends WStore {
         logger.d('google sign in error=$error');
         setStore(() {
           statusGoogle = WStoreStatus.error;
-          errorMessage = '$error';
+          loginErrorMessage = '$error';
         });
       },
     );
@@ -57,28 +59,6 @@ class LoginScreenStore extends WStore {
         throw UserAuthErrors.noAccessToken;
       }
     }
-  }
-
-  void copy({
-    required String text,
-    required String successMessage,
-    required String errorMessage,
-  }) {
-    listenFuture(
-      copyToClipboard(text),
-      id: 1,
-      onData: (_) {
-        setStore(() {
-          message = successMessage;
-        });
-      },
-      onError: (error, stack) {
-        logger.e('copyToClipboard error', error: error, stackTrace: stack);
-        setStore(() {
-          message = errorMessage;
-        });
-      },
-    );
   }
 
   @override
@@ -143,7 +123,7 @@ class LoginScreen extends WStoreWidget<LoginScreenStore> {
                             content: InkWell(
                               onTap: () {
                                 store.copy(
-                                  text: store.errorMessage,
+                                  text: store.loginErrorMessage,
                                   successMessage: localization.copied,
                                   errorMessage: localization.copy_error,
                                 );
@@ -152,7 +132,7 @@ class LoginScreen extends WStoreWidget<LoginScreenStore> {
                               },
                               child: Text('${localization.google_login_error}'
                                   '\n${localization.tap_to_copy_error}'
-                                  '\n${store.errorMessage}'),
+                                  '\n${store.loginErrorMessage}'),
                             ),
                           ),
                         );
