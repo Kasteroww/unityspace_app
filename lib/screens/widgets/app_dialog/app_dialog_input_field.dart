@@ -12,6 +12,7 @@ class AddDialogInputField extends StatefulWidget {
   final void Function(String value)? onSaved;
   final void Function(String value)? onChanged;
   final String Function(String value)? validator;
+  final void Function(PointerDownEvent event)? onTapOutside;
   final VoidCallback? onEditingComplete;
   final TextInputAction? textInputAction;
   final bool autocorrect;
@@ -29,6 +30,7 @@ class AddDialogInputField extends StatefulWidget {
     this.onIconTap,
     this.onSaved,
     this.onChanged,
+    this.onTapOutside,
     this.onEditingComplete,
     this.validator,
     this.textInputAction,
@@ -80,6 +82,7 @@ class _AddDialogInputFieldState extends State<AddDialogInputField> {
       },
       onSaved: (value) => widget.onSaved?.call(value ?? ''),
       onChanged: (value) => widget.onChanged?.call(value),
+      onTapOutside: (event) => widget.onTapOutside?.call(event),
       style: const TextStyle(
         color: Color(0xFF4C4C4D),
       ),

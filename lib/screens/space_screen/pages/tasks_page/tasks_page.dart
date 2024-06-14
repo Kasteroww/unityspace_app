@@ -72,7 +72,11 @@ class TasksPageStore extends WStore {
               return _tasksByProject(isSearching ? searchedTasks : tasks);
           }
         },
-        watch: () => [groupingType, isSearching, filterType],
+        watch: () => [
+          groupingType,
+          filterType,
+          isSearching,
+        ],
         keyName: 'groupedTasks',
       );
 
@@ -86,18 +90,14 @@ class TasksPageStore extends WStore {
   void setSearchString(String value) {
     setStore(() {
       searchString = value;
-      if (value.isEmpty) {
-        isSearching = false;
-      }
     });
-    searchedTasks = [];
   }
 
   set searchedTasks(List<Task> tasks) => {searchedTasks = tasks};
 
   void setIsSearching(bool value) {
     setStore(() {
-      isSearching = true;
+      isSearching = value;
     });
   }
 
@@ -423,11 +423,8 @@ class TasksPageStore extends WStore {
   /// поиск задач по строке
   List<Task> get searchedTasks => computed(
         getValue: () {
-          {
+          if (isSearching == true) {
             if (searchString.isNotEmpty) {
-              setStore(() {
-                isSearching = true;
-              });
               final searchResult = tasks.where((task) {
                 return task.stages.any((taskStage) {
                       final Project? project =
@@ -443,9 +440,11 @@ class TasksPageStore extends WStore {
             } else {
               return [];
             }
+          } else {
+            return [];
           }
         },
-        watch: () => [tasks],
+        watch: () => [isSearching, filterType],
         keyName: 'searchTasks',
       );
 
@@ -501,8 +500,8 @@ class TasksPage extends WStoreWidget<TasksPageStore> {
   @override
   Widget build(BuildContext context, TasksPageStore store) {
     final localization = LocalizationHelper.getLocalizations(context);
+
     return WStoreStatusBuilder<TasksPageStore>(
-      store: store,
       watch: (store) => store.status,
       builder: (context, store) {
         return const SizedBox.shrink();
@@ -580,14 +579,23 @@ class TasksPage extends WStoreWidget<TasksPageStore> {
                       child: AddDialogInputField(
                         labelText: '${localization.find}...',
                         onChanged: (value) {
-                          context
-                              .wstore<TasksPageStore>()
-                              .setSearchString(value);
+                          store.setSearchString(value);
+                          if (value.isEmpty) {
+                            store.setIsSearching(false);
+                          }
                         },
-                        initialValue:
-                            context.wstore<TasksPageStore>().searchString,
+                        initialValue: store.searchString,
                         onEditingComplete: () {
-                          context.wstore<TasksPageStore>().setIsSearching(true);
+                          final currentSearchString = store.searchString;
+                          if (currentSearchString.isNotEmpty) {
+                            store.setIsSearching(true);
+                          }
+                          FocusScope.of(context).unfocus();
+                        },
+                        onTapOutside: (_) {
+                          if (FocusScope.of(context).hasFocus) {
+                            FocusScope.of(context).unfocus();
+                          }
                         },
                       ),
                     ),
