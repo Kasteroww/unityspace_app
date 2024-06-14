@@ -116,7 +116,6 @@ class _ProjectActionButtonState extends State<ProjectActionButton>
                         context,
                         widget.columnId,
                       );
-
                       _toggleMenu();
                     },
                     assetName: AppIcons.addClipBoard,

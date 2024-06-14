@@ -14,11 +14,12 @@ import 'package:unityspace/store/projects_store.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/tasks_store.dart';
 import 'package:unityspace/store/user_store.dart';
+import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
 
 class ProjectBoardsStore extends WStore {
-  NotificationErrors error = NotificationErrors.none;
+  ProjectBoardsErrors error = ProjectBoardsErrors.none;
   WStoreStatus status = WStoreStatus.init;
   List<ProjectStage> get projectStages => project?.stages ?? [];
   int? focusedIndex;
@@ -111,7 +112,7 @@ class ProjectBoardsStore extends WStore {
 
     setStore(() {
       status = WStoreStatus.loading;
-      error = NotificationErrors.none;
+      error = ProjectBoardsErrors.none;
     });
     try {
       await TasksStore().getProjectTasks(projectId: projectId);
@@ -126,7 +127,7 @@ class ProjectBoardsStore extends WStore {
           ''');
       setStore(() {
         status = WStoreStatus.error;
-        error = NotificationErrors.loadingDataError;
+        error = ProjectBoardsErrors.loadingDataError;
       });
       throw Exception(e);
     }
@@ -153,8 +154,15 @@ class ProjectBoardsStore extends WStore {
     required int? projectId,
     required String name,
   }) async {
-    if (projectId == null) return;
-    await createStage(projectId: projectId, name: name);
+    if (projectId == null) {
+      setStore(() {
+        status = WStoreStatus.error;
+        error = ProjectBoardsErrors.createStageError;
+        return;
+      });
+    } else {
+      await createStage(projectId: projectId, name: name);
+    }
   }
 
   double _getNextOrder() {
@@ -289,10 +297,28 @@ class ProjectBoards extends WStoreWidget<ProjectBoardsStore> {
 
   @override
   Widget build(BuildContext context, ProjectBoardsStore store) {
+    final localization = LocalizationHelper.getLocalizations(context);
     return Expanded(
       child: WStoreStatusBuilder(
         store: store,
         watch: (store) => store.status,
+        builderError: (context) {
+          return Text(
+            switch (store.error) {
+              ProjectBoardsErrors.none => '',
+              ProjectBoardsErrors.loadingDataError =>
+                localization.problem_uploading_data_try_again,
+              ProjectBoardsErrors.createStageError =>
+                localization.create_stage_error,
+            },
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: const Color(0xFF111012).withOpacity(0.8),
+              fontSize: 20,
+              height: 1.2,
+            ),
+          );
+        },
         builder: (context, status) => const SizedBox.shrink(),
         builderLoaded: (context) {
           return WStoreBuilder(
