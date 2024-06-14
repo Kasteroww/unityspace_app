@@ -49,6 +49,15 @@ class ProjectsPageStore extends WStore {
         keyName: 'customBackGroundLink',
       );
 
+  /// Id бекграунда
+  int? get backgroundId => computed(
+        getValue: () {
+          return currentSpace?.backgroundId;
+        },
+        watch: () => [currentSpace],
+        keyName: 'backgroundId',
+      );
+
   /// Получение колонок с Проектами
   List<SpaceColumn> get projectColumns => computed(
         getValue: () => _getColumns(currentSpace: currentSpace),
@@ -206,7 +215,10 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
           builder: (context, store) {
             return Stack(
               children: [
-                BackgroundImage(url: store.customBackGroundLink),
+                BackgroundImage(
+                  url: store.customBackGroundLink,
+                  id: store.backgroundId,
+                ),
                 const Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
