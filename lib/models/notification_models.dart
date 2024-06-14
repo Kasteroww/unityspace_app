@@ -271,6 +271,9 @@ enum NotificationGroupType { task, space, reglament, achievement, other }
 enum NotificationType implements EnumWithValue {
   reglamentCreated('REGLAMENT_CREATED'),
   reglamentRequiredSet('REGLAMENT_REQUIRED_SET'),
+  reglamentDeleted('REGLAMENT_DELETED'),
+  reglamentArchived('REGLAMENT_ARCHIVED'),
+  reglamentMoved('REGLAMENT_MOVED'),
   reglamentRequiredUnset('REGLAMENT_REQUIRED_UNSET'),
   reglamentUpdate('REGLAMENT_UPDATE'),
   message('MESSAGE'),
@@ -280,6 +283,8 @@ enum NotificationType implements EnumWithValue {
   taskRejected('TASK_REJECTED'),
   taskInWork('TASK_IN_WORK'),
   taskProjectChanged('TASK_PROJECT_CHANGED'),
+  taskBlockReason('TASK_BLOCK_REASON'),
+  taskImportance('TASK_IMPORTANCE'),
   taskDelegated('TASK_DELEGATED'),
   memberDeleted('MEMBER_DELETED'),
   memberDeletedForOwner('MEMBER_DELETED_FOR_OWNER'),
@@ -289,7 +294,8 @@ enum NotificationType implements EnumWithValue {
   memberAddedForOwner('MEMBER_ADDED_FOR_OWNER'),
   taskDeleted('TASK_DELETED'),
   taskSentToArchive('TASK_SEND_TO_ARCHIVE'),
-  taskMemberRemoved('TASK_MEMBER_REMOVED');
+  taskMemberRemoved('TASK_MEMBER_REMOVED'),
+  ;
 
   @override
   final String value;

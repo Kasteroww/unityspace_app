@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:unityspace/models/notification_models.dart';
+import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/resources/theme/theme.dart';
 import 'package:unityspace/screens/notifications_screen/notifications_screen.dart';
 import 'package:unityspace/screens/notifications_screen/utils/notification_helper.dart';
 import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/date_time_converter.dart';
+import 'package:unityspace/utils/extensions/localization_extensions.dart';
 import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
@@ -38,6 +40,14 @@ class NotificationInfo extends StatelessWidget {
           return localization.reglament_created;
         case NotificationType.reglamentRequiredSet:
           return localization.reglament_required_set;
+        case NotificationType.reglamentDeleted:
+          return localization.reglament_deleted;
+        case NotificationType.reglamentArchived:
+          return localization.reglament_archived;
+        case NotificationType.reglamentMoved:
+          return localization.reglament_moved(
+            notification.text.isNotEmpty ? notification.text : '???',
+          );
         case NotificationType.reglamentRequiredUnset:
           return localization.reglament_required_unset;
         case NotificationType.reglamentUpdate:
@@ -64,7 +74,7 @@ class NotificationInfo extends StatelessWidget {
                 return '@$name';
             }
           });
-          return '"$message"'.removeLineBreaksAndTabs();
+          return '"$message"'.trim();
         case NotificationType.taskChangedResponsible:
           if (notification.text.startsWith('add responsible ')) {
             final int userId = int.parse(
@@ -99,6 +109,30 @@ class NotificationInfo extends StatelessWidget {
           return localization.task_in_work;
         case NotificationType.taskProjectChanged:
           return localization.task_project_chagned(notification.text);
+        case NotificationType.taskBlockReason:
+          if (notification.text.isEmpty) {
+            return localization.task_block_reason_unset;
+          }
+          return localization.task_block_reason_set(notification.text);
+        case NotificationType.taskImportance:
+          if (notification.text.isNotEmpty) {
+            try {
+              final TaskImportance importance = getEnumValue(
+                int.parse(notification.text),
+                enumValues: TaskImportance.values,
+              );
+              return localization.task_importance(
+                importance.localize(localization: localization),
+              );
+            } catch (e, stack) {
+              logger.e('''
+                  Error getting NotificationType localization: 
+                  notificaiton.text, that is meant to represent a TaskImportance value 
+                  is not convertable to int. \n Error: $e, \n Stack: $stack''');
+            }
+          }
+          return localization.task_importance(notification.text);
+
         case NotificationType.taskDelegated:
           localization.task_delegated;
         case NotificationType.memberDeleted:
@@ -176,7 +210,6 @@ class NotificationInfo extends StatelessWidget {
                     notification: notification,
                     context: context,
                   ),
-                  maxLines: 2, // Ограничиваем текст двумя строками
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: Color.fromRGBO(

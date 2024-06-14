@@ -281,6 +281,7 @@ class AppNavigationDrawer extends WStoreWidget<AppNavigationDrawerStore> {
                 selected: currentRoute == '/home',
                 favorite: false,
                 onTap: () {
+                  
                   Navigator.of(context).pop();
                   if (currentRoute != '/home') {
                     Navigator.of(context).pushReplacementNamed('/home');

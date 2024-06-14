@@ -11,6 +11,17 @@
 
   "reglament_created": "Создал(а) регламент",
   "reglament_required_set": "Отметил(а) регламент как обязательный",
+  "reglament_deleted": "Удалил(а) регламент",
+  "reglament_archived": "Архивировал(а) регламент",
+  "reglament_moved": "Перенес(ла) регламент в пространство: {spaceName}",
+  "@reglament_moved": {
+    "placeholders": {
+      "spaceName": {
+        "type": "String",
+        "example": "Тестовое пространство"
+      }
+    }
+  },
   "reglament_required_unset": "Отметил(а) регламент как необязательный",
   "reglament_update": "Обновил(а) регламент и сбросил(а) участников, прошедших регламент",
   "ping_to_all": "@Всем",
@@ -56,6 +67,25 @@
       }
     }
   },
+  "task_block_reason_unset": "Снял(а) с задачи статус \"Требует внимания\"",
+  "task_block_reason_set": "Установил(а) задаче статус \"Требует внимания\": {reason}",
+  "@task_block_reason_set": {
+    "placeholders": {
+      "reason": {
+        "type": "String", 
+        "example": "Important"
+      }
+    }
+  },
+  "task_importance": "Установил(а) задаче важность {importance}",
+  "@task_importance": {
+    "placeholders": {
+      "importance": {
+        "type": "String", 
+        "example": "Высокая"
+      }
+    }
+  },
   "task_delegated": "Поручил(а) Вам задачу",
   "member_deleted": "Убрал(а) Вам доступ к пространству",
   "member_deleted_themselves_for_owner": "Вышел(а) из пространства",
@@ -83,6 +113,7 @@
   "task_deleted": "Удалил(а) задачу",
   "task_sent_to_archive": "Отправил(а) задачу в архив",
   "task_member_removed": "Удалил(а) Вас из участников задачи",
+
   "filter_active_tasks": "Активные",
   "filter_completed_tasks": "Завершенные",
   "all_tasks": "Все задачи",
