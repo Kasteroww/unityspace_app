@@ -5,8 +5,8 @@ import 'package:unityspace/screens/space_screen/pages/project_page/widgets/proje
 import 'package:unityspace/screens/space_screen/pages/project_page/widgets/project_listview/parts/project_card_info.dart';
 import 'package:wstore/wstore.dart';
 
-class ProjectsListview extends StatelessWidget {
-  const ProjectsListview({super.key});
+class ProjectsByColumnListView extends StatelessWidget {
+  const ProjectsByColumnListView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,7 @@ class ProjectsListview extends StatelessWidget {
       store: context.wstore<ProjectsPageStore>(),
       watch: (store) => [
         store.selectedColumn,
-        store.projectsByColumn,
+        store.projectsWithUsersByColumn,
       ],
       builder: (context, store) {
         return Expanded(
@@ -22,12 +22,14 @@ class ProjectsListview extends StatelessWidget {
             padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
             child: Column(
               children: [
+                // Вершина с именем проекта и кнопкой архива
                 ProjectInfoTop(
                   archiveProjectsCount: store.archiveProjectsCount,
                   columnName: store.selectedColumn.name,
                   isInArchive: store.isArchivedPage,
                   onArchiveButtonTap: () => store.selectArchive(),
                 ),
+                // Расширяющаяся карточка со списком проектов
                 Flexible(
                   child: DecoratedBox(
                     decoration: const BoxDecoration(
@@ -39,41 +41,40 @@ class ProjectsListview extends StatelessWidget {
                     ),
                     child: Padding(
                       padding: const EdgeInsets.only(
+                        top: 4,
                         left: 12,
                         right: 12,
                         bottom: 22,
-                        top: 20,
                       ),
-                      child: ListView.separated(
-                        separatorBuilder: (BuildContext context, int index) =>
-                            const SizedBox(
-                          height: 16,
-                        ),
+                      // Список проектов
+                      child: ListView.builder(
                         shrinkWrap: true,
-                        itemCount: store.projectsByColumn.length,
+                        itemCount: store.projectsWithUsersByColumn.length,
                         itemBuilder: (BuildContext context, int index) {
-                          final project = store.projectsByColumn[index];
+                          final projectWithUsersOnline =
+                              store.projectsWithUsersByColumn[index];
                           return InkWell(
+                            key: ValueKey(projectWithUsersOnline.project.id),
                             onTap: () {
                               Navigator.pushNamed(
                                 context,
                                 '/project',
                                 arguments: {
-                                  'projectId': store.projectsByColumn[index].id,
+                                  'projectId':
+                                      projectWithUsersOnline.project.id,
                                 },
                               );
                             },
                             onLongPress: () {
                               showProjectFunctionsDialog(
                                 context: context,
-                                project: project,
+                                project: projectWithUsersOnline.project,
                                 isArchivedPage: store.isArchivedPage,
                                 selectedColumn: store.selectedColumn,
                               );
                             },
                             child: ProjectCardInfo(
-                              key: ValueKey(project.id),
-                              project: project,
+                              projectWithUsersOnline: projectWithUsersOnline,
                             ),
                           );
                         },

@@ -2,19 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/resources/errors.dart';
-import 'package:unityspace/resources/theme/theme.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/widgets/background_image.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/widgets/project_action_button.dart';
+import 'package:unityspace/screens/space_screen/pages/project_page/widgets/project_columns.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/widgets/project_listview/projects_listview.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/widgets/skeleton_project_board.dart';
-import 'package:unityspace/screens/widgets/columns_list/column_button.dart';
-import 'package:unityspace/screens/widgets/columns_list/columns_list_row.dart';
 import 'package:unityspace/store/projects_store.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
+
+class ProjectWithUsersOnline {
+  Project project;
+  List<int> userIds;
+
+  ProjectWithUsersOnline({
+    required this.project,
+    required this.userIds,
+  });
+}
 
 class ProjectsPageStore extends WStore {
   ProjectErrors error = ProjectErrors.none;
@@ -49,7 +57,7 @@ class ProjectsPageStore extends WStore {
       );
 
   /// Получение проектов из колонки
-  List<Project> get projectsByColumn => computed(
+  List<ProjectWithUsersOnline> get projectsWithUsersByColumn => computed(
         getValue: () => _getProjectsByColumnId(
           isArchivedPage ? archiveColumnId : selectedColumn.id,
         ),
@@ -76,6 +84,13 @@ class ProjectsPageStore extends WStore {
       selectedColumn = column;
     });
   }
+
+  /// Нужно ли отобразить колонки в пространтсве
+  bool get isNeedToShowColumns => computed(
+        getValue: () => !isArchivedPage && projectColumns.length > 1,
+        watch: () => [isArchivedPage, projectColumns.length],
+        keyName: 'isNeedToShowArchive',
+      );
 
   void selectArchive() {
     setStore(() {
@@ -115,8 +130,11 @@ class ProjectsPageStore extends WStore {
     }
   }
 
-  List<Project> _getProjectsByColumnId(int id) {
-    return projects.where((el) => el.columnId == id).toList();
+  List<ProjectWithUsersOnline> _getProjectsByColumnId(int id) {
+    return projects
+        .where((project) => project.columnId == id)
+        .map((project) => ProjectWithUsersOnline(project: project, userIds: []))
+        .toList();
   }
 
   ///Сортировка проектов по order
@@ -182,50 +200,18 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
       builderLoaded: (BuildContext context) {
         return WStoreBuilder<ProjectsPageStore>(
           watch: (store) => [
-            store.projects,
             store.selectedColumn,
-            store.isArchivedPage,
-            store.projectColumns,
           ],
           store: context.wstore(),
           builder: (context, store) {
             return Stack(
               children: [
                 BackgroundImage(url: store.customBackGroundLink),
-                Column(
+                const Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (!store.isArchivedPage &&
-                        store.projectColumns.length > 1) ...[
-                      Container(
-                        color: ColorConstants.background,
-                        height: 46,
-                        padding: const EdgeInsets.only(left: 20),
-                        child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: [
-                            ColumnsListRow(
-                              children: [
-                                ...store.projectColumns.map(
-                                  (column) => ColumnButton(
-                                    title: column.name,
-                                    onTap: () {
-                                      store.selectColumn(column);
-                                    },
-                                    isSelected: column == store.selectedColumn,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Divider(
-                        height: 1,
-                        color: ColorConstants.grey09,
-                      ),
-                    ],
-                    const ProjectsListview(),
+                    ProjectColumnsListView(),
+                    ProjectsByColumnListView(),
                   ],
                 ),
                 ProjectActionButton(
