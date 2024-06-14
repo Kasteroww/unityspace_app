@@ -392,7 +392,14 @@ class ProjectBoards extends WStoreWidget<ProjectBoardsStore> {
                                                     MainAxisAlignment
                                                         .spaceBetween,
                                                 children: [
-                                                  Text(task.name),
+                                                  Expanded(
+                                                    child: Text(
+                                                      task.name,
+                                                      maxLines: 2,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
                                                   ContextMenuButton(
                                                     projectId: projectId,
                                                     tasks: tasks,

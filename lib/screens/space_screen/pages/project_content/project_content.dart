@@ -29,14 +29,16 @@ class ProjectContentStore extends WStore {
         watch: () => [project],
       );
 
+  bool get isTasksTab => computed(
+        getValue: () => selectedTab == tabTasks,
+        keyName: 'isTasksTab',
+        watch: () => [selectedTab],
+      );
+
   void selectTab(String tab) {
     setStore(() {
       selectedTab = tab;
     });
-  }
-
-  bool isTasksTab() {
-    return selectedTab == tabTasks;
   }
 
   void selectTasksTabWhenHideDocs() {
@@ -84,7 +86,10 @@ class ProjectContent extends WStoreWidget<ProjectContentStore> {
               children: [
                 NavbarSwitches(projectId: projectId),
                 const SizedBox(height: 16),
-                if (store.isTasksTab()) ProjectBoards(projectId: projectId),
+                if (store.isTasksTab)
+                  ProjectBoards(
+                    projectId: projectId,
+                  ),
               ],
             ),
           );
