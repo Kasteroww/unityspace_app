@@ -1,15 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:unityspace/models/project_models.dart';
-import 'package:unityspace/resources/app_icons.dart';
-import 'package:unityspace/resources/l10n/app_localizations.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/project_content.dart';
-import 'package:unityspace/screens/space_screen/pages/project_content/utils/helpers/screen_center_position.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/add_tab_dialog.dart';
-import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/app_dialog_confirm_delete.dart';
-import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/change_tab_dialog.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/navbar_popup_button.dart';
-import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/navbar_popup_item.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/navbar_tab.dart';
+import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/show_navbar_menu_dialog.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
 
@@ -56,16 +50,20 @@ class NavbarSwitches extends StatelessWidget {
                   onPressed: () {
                     store.selectTab(ProjectContentStore.tabDocuments);
                   },
-                  onLongTap: () => showOnLongPressMenuDocs(context: context),
+                  onLongTap: () => showNavbarMenuDialog(
+                    context: context,
+                    store: store,
+                  ),
                 ),
               ...store.embeddings.map(
-                (embeddings) => NavbarProjectTab(
-                  id: '${embeddings.id}',
-                  title: embeddings.name,
-                  onPressed: () => store.launchLinkInBrowser(embeddings.url),
-                  onLongTap: () => showOnLongPressMenuEmbed(
+                (embed) => NavbarProjectTab(
+                  id: '${embed.id}',
+                  title: embed.name,
+                  onPressed: () => store.launchLinkInBrowser(embed.url),
+                  onLongTap: () => showNavbarMenuDialog(
                     context: context,
-                    embedding: embeddings,
+                    store: store,
+                    embed: embed,
                   ),
                 ),
               ),
@@ -107,88 +105,4 @@ class NavbarSwitches extends StatelessWidget {
       ],
     );
   }
-}
-
-Future<void> showOnLongPressMenuDocs({
-  required BuildContext context,
-}) async {
-  final localization = LocalizationHelper.getLocalizations(context);
-  final size = MediaQuery.of(context).size;
-  final items = getListPopMenuDocs(localization: localization);
-  final action = await showMenu(
-    context: context,
-    position: getCenterScreenPosition(size),
-    items: items,
-  );
-  if (action == null) return;
-  if (context.mounted) {
-    return context.wstore<ProjectContentStore>().hideProjectTabDocs();
-  }
-}
-
-Future<void> showOnLongPressMenuEmbed({
-  required BuildContext context,
-  required ProjectEmbed embedding,
-}) async {
-  final localization = LocalizationHelper.getLocalizations(context);
-  final size = MediaQuery.of(context).size;
-  final items = getListPopMenuEmbed(localization: localization);
-  final store = context.wstore<ProjectContentStore>();
-  final action = await showMenu(
-    context: context,
-    position: getCenterScreenPosition(size),
-    items: items,
-  );
-  if (action == null) return;
-  if (context.mounted) {
-    return switch (action) {
-      PopupItemEmbedActionTypes.copyLink => store.copyTabLink(embedding.url),
-      PopupItemEmbedActionTypes.edit =>
-        showChangeTabDialog(context: context, embedding: embedding),
-      PopupItemEmbedActionTypes.delete =>
-        showConfirmDeleteDialog(context: context, embedding: embedding),
-    };
-  }
-}
-
-List<PopupMenuItem<PopupItemDocsActionTypes>> getListPopMenuDocs({
-  required AppLocalizations localization,
-}) {
-  return [
-    PopupMenuItem(
-      value: PopupItemDocsActionTypes.hide,
-      child: NavbarPopupItem(
-        text: localization.hide,
-        icon: AppIcons.hide,
-      ),
-    ),
-  ];
-}
-
-List<PopupMenuItem<PopupItemEmbedActionTypes>> getListPopMenuEmbed({
-  required AppLocalizations localization,
-}) {
-  return [
-    PopupMenuItem(
-      value: PopupItemEmbedActionTypes.edit,
-      child: NavbarPopupItem(
-        text: localization.change,
-        icon: AppIcons.edit,
-      ),
-    ),
-    PopupMenuItem(
-      value: PopupItemEmbedActionTypes.copyLink,
-      child: NavbarPopupItem(
-        text: localization.copy_link,
-        icon: AppIcons.link,
-      ),
-    ),
-    PopupMenuItem(
-      value: PopupItemEmbedActionTypes.delete,
-      child: NavbarPopupItem(
-        text: localization.delete,
-        icon: AppIcons.delete,
-      ),
-    ),
-  ];
 }
