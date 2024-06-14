@@ -79,10 +79,23 @@ class SpaceMembersPageStore extends WStore {
         keyName: 'orgMembers',
       );
 
+  String get shareLink => computed(
+        getValue: () =>
+            '${ConstantStrings.spaceInviteUrl}${space?.shareLink.token}',
+        watch: () => [space],
+        keyName: 'shareLink',
+      );
+
+  bool get isShareLinkEnabled => computed(
+        getValue: () => space?.shareLink.active ?? false,
+        watch: () => [space],
+        keyName: 'isShareLinkEnabled',
+      );
+
   Future<void> copyInviteLink() async {
     await Clipboard.setData(
       ClipboardData(
-        text: getShareLink(),
+        text: shareLink,
       ),
     );
   }
@@ -137,14 +150,6 @@ class SpaceMembersPageStore extends WStore {
     await spacesStore.setSpaceMemberRole(memberId, space!.id, role);
   }
 
-  bool isShareLinkActive() {
-    return space?.shareLink.active ?? false;
-  }
-
-  String getShareLink() {
-    return '${ConstantStrings.spaceInviteUrl}${space?.shareLink.token}';
-  }
-
   @override
   SpaceMembersPage get widget => super.widget as SpaceMembersPage;
 }
@@ -178,7 +183,7 @@ class SpaceMembersPage extends WStoreWidget<SpaceMembersPageStore> {
                   children: [
                     Text(localization.invitationsViaLink),
                     Switch(
-                      value: store.isShareLinkActive(),
+                      value: store.isShareLinkEnabled,
                       onChanged: (bool value) {
                         store.setSpaceIviteLinkActive(value);
                       },
@@ -186,7 +191,7 @@ class SpaceMembersPage extends WStoreWidget<SpaceMembersPageStore> {
                   ],
                 ),
               ),
-            if (store.isShareLinkActive() &&
+            if (store.isShareLinkEnabled &&
                 store.getUserEditRights() ==
                     OrganizationMembersEditingRightsEnum.full)
               Padding(
@@ -196,7 +201,7 @@ class SpaceMembersPage extends WStoreWidget<SpaceMembersPageStore> {
                     Expanded(
                       child: TextField(
                         controller: TextEditingController(
-                          text: store.getShareLink(),
+                          text: store.shareLink,
                         ),
                         readOnly: true,
                       ),
