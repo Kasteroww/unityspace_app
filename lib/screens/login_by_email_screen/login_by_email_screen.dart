@@ -48,12 +48,12 @@ class LoginByEmailScreenStore extends WStore with CopyToClipboardMixin {
       onError: (error, stack) {
         LoginByEmailErrors errorText = LoginByEmailErrors.loginError;
         if (error is AuthIncorrectCredentialsServiceException) {
-          errorMessage = '${error.message} \n$stack';
+          errorMessage = '${error.message}';
           errorText = LoginByEmailErrors.invalidEmailOrPassword;
         } else if (error is ServiceException) {
-          errorMessage = '${error.message} \n$stack';
+          errorMessage = '${error.message}';
         } else {
-          errorMessage = '$error \n$stack';
+          errorMessage = '$error';
         }
         setStore(() {
           status = WStoreStatus.error;
