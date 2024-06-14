@@ -99,7 +99,7 @@ class UsersInOrganizationPageStore extends WStore {
   Future<void> deleteMember(OrganizationMemberInfo member) async {
     if (member.role != OrganizationRoleEnum.invite) {
       final uniqueSpaceUsersCount =
-          await SpacesStore().removeUserFromSpace(member.id);
+          await SpacesStore().removeUserFromSpaces(member.id);
       if (uniqueSpaceUsersCount != null) {
         UserStore().setUniqueSpaceUsersCountLocally(uniqueSpaceUsersCount);
       }

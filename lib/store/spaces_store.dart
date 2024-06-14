@@ -93,7 +93,7 @@ class SpacesStore extends GStore {
     });
   }
 
-  Future<int?> removeUserFromSpace(final int memberId) async {
+  Future<int?> removeUserFromSpaces(final int memberId) async {
     final listToRemove = <(int, int)>[];
     for (final space in spaces.list) {
       if (space.members.any((member) => member.id == memberId)) {
@@ -108,6 +108,43 @@ class SpacesStore extends GStore {
       _removeUserFromSpaceLocally(spaceId: spaceId, memberId: memberId);
     }
     return uniqueSpaceUsersCountResult;
+  }
+
+  Future<int?> removeUserFromSpace(
+    final int memberId,
+    final int spaceId,
+  ) async {
+    final response = await api.removeUserFromSpace(spaceId, memberId);
+    _removeUserFromSpaceLocally(spaceId: spaceId, memberId: memberId);
+    return response.uniqueSpaceUsersCount;
+  }
+
+  Future<void> setSpaceMemberRole(
+    final int memberId,
+    final int spaceId,
+    final int role,
+  ) async {
+    final response = await api.setSpaceMemberRole(
+      spaceId: spaceId,
+      memberId: memberId,
+      role: role,
+    );
+    _setSpaceMemberRoleLocally(
+      response.spaceId,
+      response.memberId,
+      response.role,
+    );
+  }
+
+  void _setSpaceMemberRoleLocally(int spaceId, int memberId, int role) {
+    final space = spaces[spaceId];
+    if (space == null) return;
+    final members = space.members;
+    final memberIndex = members.indexWhere((member) => member.id == memberId);
+    members[memberIndex] = members[memberIndex].copyWith(role: role);
+    setStore(() {
+      spaces.add(space.copyWith(members: members));
+    });
   }
 
   void _removeUserFromSpaceLocally({
@@ -217,6 +254,35 @@ class SpacesStore extends GStore {
         });
       }
     }
+  }
+
+  Future<void> setSpaceIviteLinkActive({
+    required int spaceId,
+    required bool isActive,
+  }) async {
+    final responce =
+        await api.setSpaceIviteLinkActive(spaceId: spaceId, isActive: isActive);
+    _updateSpaceIviteLinkActiveLocally(
+      spaceId: spaceId,
+      isActive: responce.active,
+      token: responce.token,
+    );
+  }
+
+  void _updateSpaceIviteLinkActiveLocally({
+    required int spaceId,
+    required bool isActive,
+    required String token,
+  }) {
+    final space = spaces[spaceId];
+    if (space == null) return;
+    setStore(() {
+      spaces.add(
+        space.copyWith(
+          shareLink: SpaceShareLink(active: isActive, token: token),
+        ),
+      );
+    });
   }
 
   @override

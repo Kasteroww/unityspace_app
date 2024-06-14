@@ -110,3 +110,47 @@ Future<RemoveMemberFromSpaceResponse> removeInviteFromSpace({
     rethrow;
   }
 }
+
+Future<SetSpaceInviteLinkActiveResponse> setSpaceIviteLinkActive({
+  required int spaceId,
+  required bool isActive,
+}) async {
+  try {
+    final response = await HttpPlugin().post(
+      '/spaces/$spaceId/share-link/${isActive ? "on" : "off"}',
+    );
+    final jsonData = json.decode(response.body);
+    final result = SetSpaceInviteLinkActiveResponse.fromJson(jsonData);
+    return result;
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
+}
+
+Future<SetSpaceMemberRoleResponse> setSpaceMemberRole({
+  required int spaceId,
+  required int memberId,
+  required int role,
+}) async {
+  try {
+    final response = await HttpPlugin().patch(
+      '/user-preference/user-role',
+      {
+        'spaceId': spaceId,
+        'userId': memberId,
+        'role': role,
+      },
+    );
+    final jsonData = json.decode(response.body);
+    final result = SetSpaceMemberRoleResponse.fromJson(jsonData);
+    return result;
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
+}

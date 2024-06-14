@@ -2,6 +2,7 @@ import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/resources/l10n/app_localizations.dart';
 import 'package:unityspace/screens/administration_screen/helpers/organization_role_enum.dart';
+import 'package:unityspace/screens/space_screen/pages/space_members_page/space_members_page.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/utils/enums.dart';
 
 extension GroupLocalization on TaskGrouping {
@@ -100,6 +101,19 @@ extension ImportanceLocalization on TaskImportance {
         return localization.normal;
       case TaskImportance.low:
         return localization.low;
+    }
+  }
+}
+
+extension SpaceMemberRoleLocalization on SpaceMemberRoleEnum {
+  String localize({required AppLocalizations localization}) {
+    switch (this) {
+      case SpaceMemberRoleEnum.reader:
+        return localization.reader;
+      case SpaceMemberRoleEnum.initiator:
+        return localization.initiator;
+      case SpaceMemberRoleEnum.participant:
+        return localization.participant;
     }
   }
 }

@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/resources/app_icons.dart';
+import 'package:unityspace/screens/administration_screen/helpers/organization_members_editing_rights_enum.dart';
+import 'package:unityspace/screens/space_screen/pages/space_members_page/space_members_page.dart';
 import 'package:unityspace/screens/space_screen/pages/space_members_page/widgets/popup_menu_members_actions_item.dart';
 import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
+import 'package:unityspace/utils/extensions/localization_extensions.dart';
 import 'package:unityspace/utils/localization_helper.dart';
+import 'package:wstore/wstore.dart';
 
 class SpaceMemberInfoCard extends StatelessWidget {
-  final SpaceMember spaceMember;
+  final SpaceMemberInfo spaceMember;
 
   const SpaceMemberInfoCard({
     required this.spaceMember,
@@ -17,6 +20,9 @@ class SpaceMemberInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localization = LocalizationHelper.getLocalizations(context);
+    final OrganizationMembersEditingRightsEnum editingRights = context
+        .wstore<SpaceMembersPageStore>()
+        .getUserEditRights(member: spaceMember);
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: ColoredBox(
@@ -67,55 +73,82 @@ class SpaceMemberInfoCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  PopupMenuButton<PopupMenuMembersActionItem>(
-                    elevation: 1,
-                    color: Colors.white,
-                    child: Text(
-                      switch (spaceMember.role) {
-                        1 => localization.initiator,
-                        2 => localization.participant,
-                        int() => localization.reader,
+                  if (editingRights !=
+                      OrganizationMembersEditingRightsEnum.none)
+                    PopupMenuButton<PopupMenuMembersActionItem>(
+                      elevation: 1,
+                      color: Colors.white,
+                      child: Text(
+                        spaceMember.role.localize(localization: localization),
+                      ),
+                      itemBuilder: (BuildContext context) {
+                        return <PopupMenuEntry<PopupMenuMembersActionItem>>[
+                          if (editingRights ==
+                              OrganizationMembersEditingRightsEnum.full)
+                            PopupMenuItem<PopupMenuMembersActionItem>(
+                              child: PopupMenuMembersActionItem(
+                                child: Text(
+                                  localization.reader,
+                                ),
+                              ),
+                              onTap: () {
+                                context
+                                    .wstore<SpaceMembersPageStore>()
+                                    .setSpaceMemberRole(spaceMember.id, 0);
+                              },
+                            ),
+                          if (editingRights ==
+                              OrganizationMembersEditingRightsEnum.full)
+                            PopupMenuItem<PopupMenuMembersActionItem>(
+                              child: PopupMenuMembersActionItem(
+                                child: Text(localization.initiator),
+                              ),
+                              onTap: () {
+                                context
+                                    .wstore<SpaceMembersPageStore>()
+                                    .setSpaceMemberRole(spaceMember.id, 1);
+                              },
+                            ),
+                          if (editingRights ==
+                              OrganizationMembersEditingRightsEnum.full)
+                            PopupMenuItem<PopupMenuMembersActionItem>(
+                              child: PopupMenuMembersActionItem(
+                                child: Text(localization.participant),
+                              ),
+                              onTap: () {
+                                context
+                                    .wstore<SpaceMembersPageStore>()
+                                    .setSpaceMemberRole(spaceMember.id, 2);
+                              },
+                            ),
+                          PopupMenuItem<PopupMenuMembersActionItem>(
+                            child: PopupMenuMembersActionItem(
+                              child: Row(
+                                children: [
+                                  Text(localization.delete),
+                                  const SizedBox(
+                                    width: 8,
+                                  ),
+                                  SvgPicture.asset(AppIcons.delete),
+                                ],
+                              ),
+                            ),
+                            onTap: () {
+                              context
+                                  .wstore<SpaceMembersPageStore>()
+                                  .removeMemberFromSpace(spaceMember.id);
+                            },
+                          ),
+                        ];
                       },
                     ),
-                    itemBuilder: (BuildContext context) {
-                      return <PopupMenuEntry<PopupMenuMembersActionItem>>[
-                        PopupMenuItem<PopupMenuMembersActionItem>(
-                          child: PopupMenuMembersActionItem(
-                            child: Text(
-                              localization.reader,
-                            ),
-                          ),
-                          onTap: () {},
-                        ),
-                        PopupMenuItem<PopupMenuMembersActionItem>(
-                          child: PopupMenuMembersActionItem(
-                            child: Text(localization.initiator),
-                          ),
-                          onTap: () {},
-                        ),
-                        PopupMenuItem<PopupMenuMembersActionItem>(
-                          child: PopupMenuMembersActionItem(
-                            child: Text(localization.participant),
-                          ),
-                          onTap: () {},
-                        ),
-                        PopupMenuItem<PopupMenuMembersActionItem>(
-                          child: PopupMenuMembersActionItem(
-                            child: Row(
-                              children: [
-                                Text(localization.delete),
-                                const SizedBox(
-                                  width: 8,
-                                ),
-                                SvgPicture.asset(AppIcons.delete),
-                              ],
-                            ),
-                          ),
-                          onTap: () {},
-                        ),
-                      ];
-                    },
-                  ),
+                  if (context
+                          .wstore<SpaceMembersPageStore>()
+                          .getUserEditRights() ==
+                      OrganizationMembersEditingRightsEnum.none)
+                    Text(
+                      spaceMember.role.localize(localization: localization),
+                    ),
                 ],
               ),
               const SizedBox(

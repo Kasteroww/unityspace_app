@@ -485,3 +485,54 @@ class RemoveMemberFromSpaceResponse {
     }
   }
 }
+
+class SetSpaceInviteLinkActiveResponse {
+  int id;
+  String token;
+  bool active;
+
+  SetSpaceInviteLinkActiveResponse({
+    required this.id,
+    required this.token,
+    required this.active,
+  });
+
+  factory SetSpaceInviteLinkActiveResponse.fromJson(Map<String, dynamic> map) {
+    try {
+      return SetSpaceInviteLinkActiveResponse(
+        id: map['id'] as int,
+        token: map['token'] as String,
+        active: map['active'] as bool,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException(
+        'Error parsing SetSpaceIviteLinkActiveResponse Model',
+        e,
+        stack,
+      );
+    }
+  }
+}
+
+class SetSpaceMemberRoleResponse {
+  int memberId;
+  int spaceId;
+  int role;
+  int favorite;
+
+  SetSpaceMemberRoleResponse({
+    required this.memberId,
+    required this.spaceId,
+    required this.role,
+    required this.favorite,
+  });
+
+  factory SetSpaceMemberRoleResponse.fromJson(Map<String, dynamic> map) {
+    return SetSpaceMemberRoleResponse(
+      memberId: map['userId'] as int,
+      spaceId: map['spaceId'] as int,
+      role: map['role'] as int,
+      favorite: map['favorite'] as int,
+    );
+  }
+}
