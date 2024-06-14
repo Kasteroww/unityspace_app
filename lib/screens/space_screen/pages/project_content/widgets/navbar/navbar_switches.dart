@@ -22,7 +22,9 @@ class NavbarProjectTab {
 }
 
 class NavbarSwitches extends StatelessWidget {
-  const NavbarSwitches({super.key});
+  const NavbarSwitches({required this.projectId, super.key});
+
+  final int projectId;
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +39,7 @@ class NavbarSwitches extends StatelessWidget {
             store.isShowProjectReviewTab,
           ],
           builder: (context, store) {
+            store.selectTasksTabWhenHideDocs();
             final listTabs = [
               NavbarProjectTab(
                 id: ProjectContentStore.tabTasks,
@@ -52,7 +55,7 @@ class NavbarSwitches extends StatelessWidget {
                   },
                   onLongTap: () => showNavbarMenuDialog(
                     context: context,
-                    store: store,
+                    projectId: projectId,
                   ),
                 ),
               ...store.embeddings.map(
@@ -62,7 +65,7 @@ class NavbarSwitches extends StatelessWidget {
                   onPressed: () => store.launchLinkInBrowser(embed.url),
                   onLongTap: () => showNavbarMenuDialog(
                     context: context,
-                    store: store,
+                    projectId: projectId,
                     embed: embed,
                   ),
                 ),

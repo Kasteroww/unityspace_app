@@ -687,5 +687,6 @@
   "reader": "Читатель",
   "invitationsViaLink": "Приглашения по ссылке",
   "copy": "Копировать",
+  "link_copied_successfully": "Ссылка успешно скопирована",
   "inviteNewMember": "Пригласить нового участника"
 }

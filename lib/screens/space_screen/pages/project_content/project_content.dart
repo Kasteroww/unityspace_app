@@ -3,7 +3,6 @@ import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/navbar_switches.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_board/project_boards.dart';
 import 'package:unityspace/store/projects_store.dart';
-import 'package:unityspace/utils/helpers.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wstore/wstore.dart';
 
@@ -36,25 +35,14 @@ class ProjectContentStore extends WStore {
     });
   }
 
-  bool isTasksTab(String tab) {
-    return tab == ProjectContentStore.tabTasks;
+  bool isTasksTab() {
+    return selectedTab == tabTasks;
   }
 
-  void tryToHideTabDocs() {
-    if (project == null) return;
-    hideProjectTabDocs();
-  }
-
-  void hideProjectTabDocs() {
-    ProjectsStore().showProjectReviewTab(
-      projectId: project!.id,
-      show: false,
-    );
-    selectTab(ProjectContentStore.tabTasks);
-  }
-
-  void copyTabLink(String url) {
-    copyToClipboard(url);
+  void selectTasksTabWhenHideDocs() {
+    if (!isShowProjectReviewTab && selectedTab == tabDocuments) {
+      selectTab(tabTasks);
+    }
   }
 
   Future<void> launchLinkInBrowser(String embedUrl) async {
@@ -94,10 +82,9 @@ class ProjectContent extends WStoreWidget<ProjectContentStore> {
           return SafeArea(
             child: Column(
               children: [
-                const NavbarSwitches(),
+                NavbarSwitches(projectId: projectId),
                 const SizedBox(height: 16),
-                if (store.selectedTab == ProjectContentStore.tabTasks)
-                  ProjectBoards(projectId: projectId),
+                if (store.isTasksTab()) ProjectBoards(projectId: projectId),
               ],
             ),
           );
