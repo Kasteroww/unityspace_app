@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/models/task_models.dart';
+import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_detail/parts/add_field_button_component.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_detail/parts/bottom_navigations_button_component.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_detail/parts/color_component.dart';
@@ -7,75 +9,150 @@ import 'package:unityspace/screens/space_screen/pages/project_content/widgets/pr
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_detail/parts/header_component.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_detail/parts/importance_component.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_detail/parts/messages_component.dart';
-import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_detail/parts/responsible_component.dart';
+import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_detail/parts/responsible/responsible_part.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_detail/parts/shortcuts_component.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_detail/parts/status_component.dart';
+import 'package:unityspace/store/spaces_store.dart';
+import 'package:unityspace/store/task_detail_store.dart';
+import 'package:unityspace/utils/logger_plugin.dart';
+import 'package:wstore/wstore.dart';
 
-class ProjectDetail extends StatefulWidget {
-  const ProjectDetail({required this.task, super.key});
+class ProjectDetailStore extends WStore {
+  ProjectErrors error = ProjectErrors.none;
+  WStoreStatus status = WStoreStatus.init;
 
-  final Task task;
+  /// Получение информации таска
+  Task? get task => computedFromStore(
+        store: TaskDetailStore(),
+        getValue: (store) => store.task,
+        keyName: 'task',
+      );
 
-  @override
-  State<ProjectDetail> createState() => _ProjectDetailState();
-}
+  /// Получение списка исполнителей по задаче
+  List<int> get responsibleUsers => computed(
+        watch: () => [task],
+        getValue: () => task?.responsibleUsersId ?? [],
+        keyName: 'responsibleUsers',
+      );
 
-class _ProjectDetailState extends State<ProjectDetail> {
-  final _focusNode = FocusNode();
+  Spaces get spaces => computedFromStore(
+        store: SpacesStore(),
+        getValue: (store) => store.spaces,
+        keyName: 'spaces',
+      );
 
-  @override
-  void dispose() {
-    _focusNode.dispose();
-    super.dispose();
+  Space? get space => computed(
+        watch: () => [spaces],
+        getValue: () => spaces[widget.spaceId ?? 0],
+        keyName: 'space',
+      );
+
+  /// Получение списка членов пространства
+  List<SpaceMember> get spaceMembers => computed(
+        watch: () => [space, responsibleUsers],
+        getValue: () => space?.members ?? [],
+        keyName: 'spaceMembers',
+      );
+
+  Future<void> loadData(int taskId) async {
+    if (status == WStoreStatus.loading) return;
+    setStore(() {
+      status = WStoreStatus.loading;
+      error = ProjectErrors.none;
+    });
+    try {
+      await TaskDetailStore().loadTaskById(taskId);
+      setStore(() {
+        status = WStoreStatus.loaded;
+      });
+    } catch (e, stack) {
+      logger.e('on ProjectDetail'
+          'ProjectDetailStore loadData error=$e\nstack=$stack');
+      setStore(() {
+        status = WStoreStatus.error;
+        error = ProjectErrors.loadingDataError;
+      });
+    }
   }
 
-  Task get task => widget.task;
+  @override
+  ProjectDetail get widget => super.widget as ProjectDetail;
+}
+
+class ProjectDetail extends WStoreWidget<ProjectDetailStore> {
+  final Task task;
+  final int? spaceId;
+
+  const ProjectDetail({
+    required this.task,
+    required this.spaceId,
+    super.key,
+  });
 
   @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: GestureDetector(
-        onTap: () {
-          _focusNode.unfocus();
-        },
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.only(left: 16, top: 16, right: 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                HeaderComponent(task: task),
-                const StatusComponent(),
-                Padding(
-                  padding: const EdgeInsets.only(top: 12),
-                  child: Text(
-                    task.name,
-                    style: const TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w500,
-                    ),
+  ProjectDetailStore createWStore() => ProjectDetailStore()..loadData(task.id);
+
+  @override
+  Widget build(BuildContext context, ProjectDetailStore store) {
+    return WStoreStatusBuilder(
+      store: store,
+      watch: (store) => store.status,
+      builder: (context, _) {
+        return const SizedBox.shrink();
+      },
+      builderLoading: (context) {
+        return const SizedBox.expand();
+      },
+      builderLoaded: (context) {
+        return WStoreBuilder<ProjectDetailStore>(
+          watch: (store) => [store.task],
+          builder: (context, store) {
+            return SingleChildScrollView(
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 16, top: 16, right: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      HeaderComponent(task: task),
+                      const StatusComponent(),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: Text(
+                          store.task?.name ?? '',
+                          style: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      ResponsiblePart(
+                        spaceId: spaceId ?? 0,
+                        taskId: store.task?.id ?? task.id,
+                      ),
+                      const SizedBox(height: 10),
+                      ImportanceComponent(task: task),
+                      const SizedBox(height: 10),
+                      const ColorComponent(),
+                      const SizedBox(height: 10),
+                      const DateComponent(),
+                      const SizedBox(height: 10),
+                      const ShortcutsComponent(),
+                      const AddFieldButtonComponent(),
+                      const MessagesComponent(),
+                      BottomNavigationButtonComponent(
+                        focusNode: FocusNode(),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 20),
-                const ResponsibleComponent(),
-                const SizedBox(height: 10),
-                ImportanceComponent(task: task),
-                const SizedBox(height: 10),
-                const ColorComponent(),
-                const SizedBox(height: 10),
-                const DateComponent(),
-                const SizedBox(height: 10),
-                const ShortcutsComponent(),
-                const AddFieldButtonComponent(),
-                const MessagesComponent(),
-                BottomNavigationButtonComponent(
-                  focusNode: _focusNode,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

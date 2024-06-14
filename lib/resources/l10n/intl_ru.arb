@@ -72,7 +72,7 @@
   "@task_block_reason_set": {
     "placeholders": {
       "reason": {
-        "type": "String", 
+        "type": "String",
         "example": "Important"
       }
     }
@@ -81,7 +81,7 @@
   "@task_importance": {
     "placeholders": {
       "importance": {
-        "type": "String", 
+        "type": "String",
         "example": "Высокая"
       }
     }
@@ -687,6 +687,9 @@
   "reader": "Читатель",
   "invitationsViaLink": "Приглашения по ссылке",
   "copy": "Копировать",
+  "inviteNewMember": "Пригласить нового участника",
+  "add_member": "Добавить участника",
+  "reset_member": "Сбросить участника",
   "link_copied_successfully": "Ссылка успешно скопирована",
   "inviteNewMember": "Пригласить нового участника"
 }

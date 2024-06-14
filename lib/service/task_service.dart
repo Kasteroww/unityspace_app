@@ -146,3 +146,99 @@ Future<TaskResponse> moveTask({
     rethrow;
   }
 }
+
+Future<TaskResponse> getTaskById({
+  required int taskId,
+}) async {
+  try {
+    final response = await HttpPlugin().get(
+      '/tasks/$taskId',
+    );
+    final result = json.decode(response.body) as Map<String, dynamic>;
+    final task = result;
+    return TaskResponse.fromJson(task);
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
+}
+
+Future<TaskResponse> addTaskResponsible({
+  required int taskId,
+  required int responsibleId,
+}) async {
+  try {
+    final payload = {
+      'newResponsibleId': responsibleId,
+    };
+
+    final response = await HttpPlugin().post(
+      '/tasks/$taskId/addTaskResponsible',
+      payload,
+    );
+    final result = json.decode(response.body) as Map<String, dynamic>;
+    final task = result['task'];
+    if (task == null) {
+      throw Exception('Cant add responsible');
+    }
+    return TaskResponse.fromJson(task);
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
+}
+
+Future<TaskResponse> deleteTaskResponsible({
+  required int taskId,
+  required int responsibleId,
+}) async {
+  try {
+    final response = await HttpPlugin().delete(
+      '/tasks/$taskId/deleteTaskResponsible/$responsibleId',
+    );
+    final result = json.decode(response.body) as Map<String, dynamic>;
+    final task = result['task'];
+    if (task == null) {
+      throw Exception('Cant delete responsible');
+    }
+    return TaskResponse.fromJson(task);
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
+}
+
+Future<TaskResponse> updateTaskResponsible({
+  required int taskId,
+  required int currentResponsibleId,
+  required int responsibleId,
+}) async {
+  try {
+    final payload = {
+      'currentResponsibleId': currentResponsibleId,
+      'newResponsibleId': responsibleId,
+    };
+
+    final response = await HttpPlugin().patch(
+      '/tasks/$taskId/updateTaskResponsible',
+      payload,
+    );
+    final result = json.decode(response.body) as Map<String, dynamic>;
+    final task = result['task'];
+    if (task == null) {
+      throw Exception('Cant update responsible');
+    }
+    return TaskResponse.fromJson(task);
+  } catch (e) {
+    if (e is HttpPluginException) {
+      throw ServiceException(e.message);
+    }
+    rethrow;
+  }
+}

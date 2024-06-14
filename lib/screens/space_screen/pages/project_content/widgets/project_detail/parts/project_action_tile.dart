@@ -6,26 +6,31 @@ class ProjectActionTile extends StatelessWidget {
   const ProjectActionTile({
     required this.label,
     required this.trailing,
+    this.onTap,
     super.key,
   });
 
   final String label;
   final Widget trailing;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w400,
+    return InkWell(
+      onTap: onTap,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+            ),
           ),
-        ),
-        trailing,
-      ],
+          trailing,
+        ],
+      ),
     );
   }
 }

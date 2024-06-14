@@ -369,6 +369,7 @@ class ProjectBoards extends WStoreWidget<ProjectBoardsStore> {
                                           builder: (BuildContext context) =>
                                               ProjectDetail(
                                             task: task,
+                                            spaceId: store.project?.spaceId,
                                           ),
                                         ),
                                         child: Padding(

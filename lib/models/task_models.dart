@@ -553,6 +553,7 @@ class MyTaskHistoryResponse {
   final int maxPageCount;
   final List<TaskHistoryResponse> history;
   final List<TaskResponse> tasks;
+
   MyTaskHistoryResponse({
     required this.maxPageCount,
     required this.history,
