@@ -16,3 +16,11 @@ Future<void> notificationCreated(Map<String, dynamic> data) async {
   final notificationData = NotificationModel.fromResponse(jsonData);
   NotificationsStore().updateNotificationsLocally(notificationData);
 }
+
+Future<void> notificationArchived(Map<String, dynamic> data) async {
+  final jsonData = NotificationResponse.fromJson(data);
+  final notificationData = NotificationModel.fromResponse(jsonData);
+  NotificationsStore().removeFromListLocally(
+    notificationId: notificationData.id,
+  );
+}

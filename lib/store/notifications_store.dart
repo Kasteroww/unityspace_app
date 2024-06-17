@@ -21,17 +21,14 @@ class NotificationsStore extends GStore {
   /// Возвращает отформатированный список,
   /// из которого уже убраны отформатированные/вернувшиеся из форматирования
   /// уведомления
-  List<NotificationModel> _removeFromListLocally({
-    required List<NotificationResponse> notificationsToRemove,
-    required List<NotificationModel> notifications,
+  void removeFromListLocally({
+    required int notificationId,
   }) {
-    final List<int> notificationIdsToRemove =
-        notificationsToRemove.map((e) => e.id).toList();
-    return notifications
-        .where(
-          (notification) => !notificationIdsToRemove.contains(notification.id),
-        )
-        .toList();
+    final notificationList = notifications
+      ..removeWhere((notify) => notify.id == notificationId);
+    setStore(() {
+      notifications = [...notificationList];
+    });
   }
 
   /// Возвращает отформатированный список,
@@ -107,12 +104,9 @@ class NotificationsStore extends GStore {
       notificationIds: notificationIds,
       isArchived: !isArchived,
     );
-    setStore(() {
-      notifications = _removeFromListLocally(
-        notificationsToRemove: archivedList,
-        notifications: notifications,
-      );
-    });
+    for (final notification in archivedList) {
+      removeFromListLocally(notificationId: notification.id);
+    }
   }
 
   /// Меняет статус по Прочтению уведомлений по id тех уведомлений,
@@ -147,12 +141,9 @@ class NotificationsStore extends GStore {
   /// Архивирует все уведомления
   Future<void> archiveAllNotifications() async {
     final archivedList = await api.archiveAllNotifications();
-    setStore(() {
-      notifications = _removeFromListLocally(
-        notificationsToRemove: archivedList,
-        notifications: notifications,
-      );
-    });
+    for (final notification in archivedList) {
+      removeFromListLocally(notificationId: notification.id);
+    }
   }
 
   /// Читает все уведомления
@@ -184,7 +175,7 @@ class NotificationsStore extends GStore {
     }
 
     setStore(() {
-      notifications = copyNotifications;
+      notifications = [...copyNotifications];
     });
   }
 
