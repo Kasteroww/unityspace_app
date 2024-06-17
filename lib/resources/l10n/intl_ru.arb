@@ -93,7 +93,7 @@
     }
   },
   "task_delegated": "Поручил(а) Вам задачу",
-  "member_deleted": "Убрал(а) Вам доступ к пространству",
+  "member_deleted": "Исключил(а) Вас из пространства",
   "member_deleted_themselves_for_owner": "Вышел(а) из пространства",
   "member_deleted_for_owner": "Исключил(а) пользователя {name} из пространства",
   "@member_deleted_for_owner": {
