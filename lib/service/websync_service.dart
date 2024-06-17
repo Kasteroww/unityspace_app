@@ -1,7 +1,7 @@
 import 'package:unityspace/service/events/notification_events.dart';
+import 'package:unityspace/service/exceptions/socket_io_exceptions.dart';
 import 'package:unityspace/service/websync/websync_notification_models.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
-import 'package:unityspace/service/exceptions/socket_io_exceptions.dart';
 import 'package:unityspace/utils/socket_plugin.dart';
 
 void connect() {

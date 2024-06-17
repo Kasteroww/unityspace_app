@@ -103,7 +103,8 @@ class NotificationBottomSheet extends StatelessWidget {
                 ),
                 child: Center(
                   child: Text(
-                    '${localization.go_to} ${notificationsGroup.type.localize(localization: localization)}',
+                    notificationsGroup.type
+                        .goToType(localization: localization),
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,

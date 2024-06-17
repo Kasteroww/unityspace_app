@@ -72,6 +72,21 @@ extension NotificationGroupLocalization on NotificationGroupType {
         return localization.other;
     }
   }
+
+  String goToType({required AppLocalizations localization}) {
+    switch (this) {
+      case NotificationGroupType.task:
+        return localization.go_to_task;
+      case NotificationGroupType.reglament:
+        return localization.go_to_reglament;
+      case NotificationGroupType.space:
+        return localization.go_to_space;
+      case NotificationGroupType.achievement:
+        return '${localization.go_to_achievements}!';
+      case NotificationGroupType.other:
+        return localization.go_to;
+    }
+  }
 }
 
 extension OrganizationRoleEnumExt on OrganizationRoleEnum {
