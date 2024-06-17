@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/resources/errors.dart';
+import 'package:unityspace/resources/l10n/app_localizations.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_dropdown_menu.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
 import 'package:unityspace/store/projects_store.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/user_store.dart';
+import 'package:unityspace/utils/extensions/color_extension.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
@@ -96,7 +98,7 @@ class EditProjectPropertiesDialogStore extends WStore {
 
   void initData(Project project) {
     name = project.name;
-    color = project.color;
+    color = project.color?.toHex();
     responsibleId = project.responsibleId;
     postponingTaskDayCount = project.postponingTaskDayCount;
   }
@@ -148,6 +150,27 @@ class EditProjectPropertiesDialog
     required this.project,
     super.key,
   });
+
+  List<(int, String)> localizeDays({
+    required int postponingTaskDayCount,
+    required AppLocalizations localization,
+  }) {
+    return [
+      (0, localization.disabled),
+      (1, localization.days(1)),
+      (2, localization.days(2)),
+      (3, localization.days(3)),
+      (4, localization.days(4)),
+      (5, localization.days(5)),
+      (6, localization.days(6)),
+      (7, localization.days(7)),
+      if (postponingTaskDayCount < 0 || postponingTaskDayCount > 7)
+        (
+          postponingTaskDayCount,
+          localization.days(postponingTaskDayCount),
+        ),
+    ];
+  }
 
   @override
   EditProjectPropertiesDialogStore createWStore() =>
@@ -264,21 +287,10 @@ class EditProjectPropertiesDialog
               watch: (store) => store.postponingTaskDayCount,
               store: store,
               builder: (context, postponingTaskDayCount) {
-                final List<(int, String)> listValues = [
-                  (0, localization.disabled),
-                  (1, localization.days(1)),
-                  (2, localization.days(2)),
-                  (3, localization.days(3)),
-                  (4, localization.days(4)),
-                  (5, localization.days(5)),
-                  (6, localization.days(6)),
-                  (7, localization.days(7)),
-                  if (postponingTaskDayCount < 0 || postponingTaskDayCount > 7)
-                    (
-                      postponingTaskDayCount,
-                      localization.days(postponingTaskDayCount),
-                    ),
-                ];
+                final List<(int, String)> listValues = localizeDays(
+                  postponingTaskDayCount: postponingTaskDayCount,
+                  localization: localization,
+                );
                 return AddDialogDropdownMenu<int>(
                   onChanged: (dynamic count) {
                     FocusScope.of(context).unfocus();

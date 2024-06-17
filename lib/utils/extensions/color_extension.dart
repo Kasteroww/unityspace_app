@@ -22,7 +22,6 @@ extension HexColor on Color {
 
   /// Prefixes a hash sign if [hasLeadingHash] is set to `true` (default is `true`).
   String toHex({bool hasLeadingHash = true}) => '${hasLeadingHash ? '#' : ''}'
-      '${alpha.toRadixString(16).padLeft(2, '0')}'
       '${red.toRadixString(16).padLeft(2, '0')}'
       '${green.toRadixString(16).padLeft(2, '0')}'
       '${blue.toRadixString(16).padLeft(2, '0')}';

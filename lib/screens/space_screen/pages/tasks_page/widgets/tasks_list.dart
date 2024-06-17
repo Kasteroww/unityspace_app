@@ -5,7 +5,6 @@ import 'package:unityspace/screens/space_screen/pages/tasks_page/utils/date_time
 import 'package:unityspace/screens/space_screen/pages/tasks_page/widgets/divider.dart';
 import 'package:unityspace/screens/widgets/paddings.dart';
 import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
-import 'package:unityspace/utils/extensions/color_extension.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 
 class TasksList extends StatelessWidget {
@@ -36,10 +35,7 @@ class TasksList extends StatelessWidget {
       itemCount: tasks.length,
       itemBuilder: (context, taskIndex) {
         final SortedTask sortedTask = tasks[taskIndex];
-        final Color? taskColor =
-            (sortedTask.task.color != null && sortedTask.task.color!.isNotEmpty)
-                ? HexColor.fromHex(sortedTask.task.color!)
-                : null;
+        final Color? taskColor = sortedTask.task.color;
         final taskImportance = sortedTask.task.importance;
         final taskEndDate = sortedTask.task.dateEnd;
 

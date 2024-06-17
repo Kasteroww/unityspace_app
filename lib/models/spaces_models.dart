@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:unityspace/models/model_interfaces.dart';
 import 'package:unityspace/service/exceptions/data_exceptions.dart';
 import 'package:unityspace/utils/date_time_converter.dart';
-import 'package:unityspace/utils/extensions/color_extension.dart';
 import 'package:unityspace/utils/helpers.dart' as helpers;
-import 'package:unityspace/utils/helpers.dart';
 
 class SpaceResponse {
   final int id;
@@ -214,7 +212,7 @@ class Space implements Identifiable, Nameable {
   final int backgroundId;
   final String? customBackground;
   final int icon;
-  final Color? iconColor;
+  final Color iconColor;
   final bool isArchived;
   final int? groupId;
   final DateTime? dateArchived;
@@ -244,11 +242,6 @@ class Space implements Identifiable, Nameable {
   });
 
   factory Space.fromResponse(final SpaceResponse data) {
-    // Пока поставим дефолтный как белый
-    String hexString = data.iconColor ?? 'FFFFFF';
-    if (hexString.isEmpty) {
-      hexString = 'FFFFFF';
-    }
     return Space(
       id: data.id,
       name: data.name,
@@ -265,10 +258,10 @@ class Space implements Identifiable, Nameable {
       archiveReglamentColumnId: data.archiveReglamentColumnId,
       backgroundId: data.backgroundId ?? 0,
       customBackground: data.customBackground != null
-          ? mapFileUidToFileLink('${data.customBackground}')
+          ? helpers.mapFileUidToFileLink('${data.customBackground}')
           : null,
       icon: data.icon,
-      iconColor: HexColor.fromHex(hexString),
+      iconColor: helpers.getColorFromString(data.iconColor) ?? Colors.white,
       isArchived: data.isArchived,
       groupId: data.groupId,
       dateArchived: data.dateArchived != null

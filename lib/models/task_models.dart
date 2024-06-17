@@ -1,9 +1,10 @@
 import 'dart:core';
 
+import 'package:flutter/material.dart';
 import 'package:unityspace/models/model_interfaces.dart';
 import 'package:unityspace/service/exceptions/data_exceptions.dart';
 import 'package:unityspace/utils/date_time_converter.dart';
-import 'package:unityspace/utils/helpers.dart';
+import 'package:unityspace/utils/helpers.dart' as helpers;
 
 enum TaskChangesTypes implements EnumWithValue {
   // Вы создали задачу #291039
@@ -68,7 +69,7 @@ class Task implements Identifiable {
   final int id;
   final String name;
   final List<TaskStages> stages;
-  final String? color;
+  final Color? color;
   final DateTime createdAt;
   final int creatorId;
   final List<int> tags;
@@ -107,44 +108,44 @@ class Task implements Identifiable {
     required this.cover,
   });
 
-  factory Task.fromResponse(TaskResponse response) {
+  factory Task.fromResponse(TaskResponse data) {
     return Task(
-      id: response.id,
-      name: response.name,
-      stages: response.stages.map((e) => TaskStages.fromResponse(e)).toList(),
-      color: response.color,
-      createdAt: DateTimeConverter.stringToLocalDateTime(response.createdAt),
-      creatorId: response.creatorId,
-      tags: response.tags,
-      responsibleUsersId: response.responsibleUserId,
-      hasMessages: response.hasMessages,
-      hasDescription: response.hasDescription,
-      status: Task.getTaskStatus(response.status),
-      dateBegin: response.dateBegin != null
-          ? DateTimeConverter.stringToLocalDateTime(response.dateBegin!)
+      id: data.id,
+      name: data.name,
+      stages: data.stages.map((e) => TaskStages.fromResponse(e)).toList(),
+      color: helpers.getColorFromString(data.color),
+      createdAt: DateTimeConverter.stringToLocalDateTime(data.createdAt),
+      creatorId: data.creatorId,
+      tags: data.tags,
+      responsibleUsersId: data.responsibleUserId,
+      hasMessages: data.hasMessages,
+      hasDescription: data.hasDescription,
+      status: Task.getTaskStatus(data.status),
+      dateBegin: data.dateBegin != null
+          ? DateTimeConverter.stringToLocalDateTime(data.dateBegin!)
           : null,
-      dateEnd: response.dateEnd != null
-          ? DateTimeConverter.stringToLocalDateTime(response.dateEnd!)
+      dateEnd: data.dateEnd != null
+          ? DateTimeConverter.stringToLocalDateTime(data.dateEnd!)
           : null,
-      dateMove: DateTimeConverter.stringToLocalDateTime(response.dateMove!),
-      importance: response.importance,
-      dateStatusChanged: response.dateStatusChanged,
-      blockReason: response.blockReason,
-      members: response.members,
-      cover: response.cover,
+      dateMove: DateTimeConverter.stringToLocalDateTime(data.dateMove!),
+      importance: data.importance,
+      dateStatusChanged: data.dateStatusChanged,
+      blockReason: data.blockReason,
+      members: data.members,
+      cover: data.cover,
     );
   }
 
   static TaskStatuses getTaskStatus(int status) {
-    return getEnumValue(status, enumValues: TaskStatuses.values);
+    return helpers.getEnumValue(status, enumValues: TaskStatuses.values);
   }
 
   static TaskImportance getTaskImportance(int importance) {
-    return getEnumValue(importance, enumValues: TaskImportance.values);
+    return helpers.getEnumValue(importance, enumValues: TaskImportance.values);
   }
 
   static TaskChangesTypes getTaskChangesType(int type) {
-    return getEnumValue(type, enumValues: TaskChangesTypes.values);
+    return helpers.getEnumValue(type, enumValues: TaskChangesTypes.values);
   }
 }
 
@@ -244,7 +245,7 @@ class TaskStages {
   factory TaskStages.fromResponse(TaskStagesResponse response) {
     return TaskStages(
       stageId: response.stageId,
-      order: convertFromOrderResponse(int.parse(response.order)),
+      order: helpers.convertFromOrderResponse(int.parse(response.order)),
       projectId: response.projectId,
     );
   }

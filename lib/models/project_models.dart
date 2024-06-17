@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:unityspace/models/model_interfaces.dart';
 import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/add_tab_dialog.dart';
@@ -175,7 +176,7 @@ class Project implements Identifiable {
   final int archiveStageId;
   final String? memo;
   final bool favorite;
-  final String? color;
+  final Color? color;
   final int? responsibleId;
   final int postponingTaskDayCount;
 
@@ -223,7 +224,7 @@ class Project implements Identifiable {
       archiveStageId: data.archiveStageId,
       memo: data.memo,
       favorite: data.favorite,
-      color: data.color,
+      color: getColorFromString(data.color),
       responsibleId: data.responsibleId,
       postponingTaskDayCount: data.postponingTaskDayCount,
     );
@@ -248,7 +249,7 @@ class Project implements Identifiable {
     int? archiveStageId,
     String? memo,
     bool? favorite,
-    Nullable<String?>? color,
+    Nullable<Color?>? color,
     Nullable<int?>? responsibleId,
     int? postponingTaskDayCount,
   }) {

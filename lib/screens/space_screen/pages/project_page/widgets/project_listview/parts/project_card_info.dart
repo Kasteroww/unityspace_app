@@ -5,7 +5,6 @@ import 'package:unityspace/resources/theme/theme.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/project_page.dart';
 import 'package:unityspace/screens/widgets/circular_progress_indicator_with_percentage/circular_progress_indicator_with_percentage.dart';
 import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
-import 'package:unityspace/utils/extensions/color_extension.dart';
 
 class ProjectCardInfo extends StatelessWidget {
   const ProjectCardInfo({required this.projectWithUsersOnline, super.key});
@@ -150,19 +149,9 @@ class ProjectCardInfo extends StatelessWidget {
     return (completedTasksCount / allTaskCount) * 100;
   }
 
-  Color _getForegroundColor(String? hexColor) {
+  Color _getForegroundColor(Color? color) {
     const defaultColor = Color(0xFF606062);
-    if (hexColor != null) {
-      if (hexColor.isEmpty) {
-        return defaultColor;
-      }
-      return HexColor.fromHex(
-            hexColor,
-          ) ??
-          defaultColor;
-    } else {
-      return defaultColor;
-    }
+    return color ?? defaultColor;
   }
 
   ///Расчитывается следующим образом:

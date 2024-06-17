@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:string_validator/string_validator.dart';
 import 'package:unityspace/models/model_interfaces.dart';
 import 'package:unityspace/resources/errors.dart';
+import 'package:unityspace/utils/extensions/color_extension.dart';
 import 'package:unityspace/utils/http_plugin.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 
@@ -102,4 +103,13 @@ Future<void> copyToClipboard(final String text) async {
   if (text.isEmpty) throw TextErrors.textIsEmpty;
   final data = ClipboardData(text: text);
   await Clipboard.setData(data);
+}
+
+Color? getColorFromString(String? string) {
+  if (string != null) {
+    if (string.isNotEmpty) {
+      return HexColor.fromHex(string);
+    }
+  }
+  return null;
 }
