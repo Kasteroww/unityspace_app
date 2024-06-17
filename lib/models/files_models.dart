@@ -1,4 +1,4 @@
-import 'package:unityspace/service/data_exceptions.dart';
+import 'package:unityspace/service/exceptions/data_exceptions.dart';
 
 class InitialUploadResponse {
   final String uploadId;

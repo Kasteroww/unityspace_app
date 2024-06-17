@@ -8,7 +8,7 @@ import 'package:unityspace/screens/widgets/main_form/main_form_logo_widget.dart'
 import 'package:unityspace/screens/widgets/main_form/main_form_text_button_widget.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_text_title_widget.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_widget.dart';
-import 'package:unityspace/service/service_exceptions.dart';
+import 'package:unityspace/service/exceptions/http_exceptions.dart';
 import 'package:unityspace/store/auth_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -44,13 +44,13 @@ class RegisterScreenStore extends WStore {
       },
       onError: (error, __) {
         RegistrationErrors currentError = RegistrationErrors.createAccountError;
-        if (error is AuthUserAlreadyExistsServiceException) {
+        if (error is AuthUserAlreadyExistsHttpException) {
           currentError = RegistrationErrors.emailAlreadyExists;
         }
-        if (error is AuthIncorrectEmailServiceException) {
+        if (error is AuthIncorrectEmailHttpException) {
           currentError = RegistrationErrors.incorrectEmail;
         }
-        if (error is AuthTooManyMessagesServiceException) {
+        if (error is TooManyRequests500HttpException) {
           currentError = RegistrationErrors.overloadedService;
         }
         setStore(() {

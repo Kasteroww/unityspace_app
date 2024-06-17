@@ -175,178 +175,98 @@ class NotificationResponse {
 
 ### services 
 
-Каждая функция заворачивается в `try-catch`. Внутри `catch` проверяется, является ли ошибка `HttpPluginException`. Если нет - ошибка пробрасывается дальше. Если да, то выбрасывается `ServiceException` с `error.message`. 
+#### обработка ошибок
 
-Некоторые конкретные `HttpPluginException` обрабатываются особо. Для каждой из таких создается отдельный класс, наследующийся от `ServiceException`. Название классу дается в формате `<ServiceName> + <Description> + ServiceException`
+Тело каждой функции, обращающейся к серверу, заворачивается в `try-catch`. 
+
+Если функция использует `HttpPlugin`, то внутри `catch` проверяется, является ли ошибка `HttpPluginException`. Если нет - ошибка пробрасывается дальше. Если ошибка - это `HttpPluginException`, то сначала обрабатываются ошибки, специфичные для этой функции. Для каждой из таких создается отдельный класс, наследующийся от `HttpException`. Название классу дается в формате `<ServiceName> + <Description> + HttpException`. После них вызывается `handleDefaultHttpExceptions(e)`, обарабатывающая исключения, общие для всех сервисов. 
+
+Если функция использует `SocketPlugin`, то выбрасываются ошибки `SocketIoException`. 
+
+Для обработки случаев, когда `HttpPlugin` не выбросил ошибку, но результат запроса не соответствует ожидаемому (например, если у респонса пустое тело когда ожидались данные), используются `ServiceException`. 
 
 `HttpPluginException` не должны обрабатываться нигде, кроме сервисов.
 
-#### параметр order
 
-Если при отправке запроса одним из передаваемых парамтров является `order`, его нужно конвертировать из `double` в `int` при помощи метода `convertToOrderRequest`. 
 
-#### Примеры
+##### Примеры
 <details>
 <summary> </summary>
 
 1. Обработка `HttpPluginException` 
 ```dart
-Future<UserResponse> removeUserAvatar() async {
-    // блок логики завернут в try-catch
+Future<void> signOut({
+  required final String refreshToken,
+  required final int globalUserId,
+}) async {
   try {
-    final response = await HttpPlugin().patch('/user/removeAvatar');
-    final jsonData = json.decode(response.body);
-    final result = UserResponse.fromJson(jsonData);
-    return result;
-  } catch (e) {
-    // проверка, является ли исключение исключением `HttpPlugin`
-    if (e is HttpPluginException) {
-        // выбрасывается `ServiceException` с сообщением ошибки
-      throw ServiceException(e.message);
-    }
-    // если ошибка не имеет отношения к `HttpPlugin` - она пробрасывается дальше
-    rethrow;
-  }
-}
-```
-
-2. Обработка отдельных ошибок 
-```dart
-Future<OrganizationResponse> getOrganizationData() async {
-  try {
-    final response = await HttpPlugin().get('/user/organization');
-    final jsonData = json.decode(response.body);
-    final result = OrganizationResponse.fromJson(jsonData);
-    return result;
+    // body
   } catch (e) {
     if (e is HttpPluginException) {
-        // в случае ошибки с кодом 401 `Unauthorized` выбрасывается исключение `UserUnauthorizedServiceException`
-      if (e.statusCode == 401) {
-        throw UserUnauthorizedServiceException();
-      }
-      // во всех остальных случаях как и раньше выбрасывается `ServiceException` в сообщением ошибки
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
 }
 ```
 
+2. Обработка специфичных для запроса ошибок 
 ```dart
-Future<OnlyTokensResponse> setUserPassword(
-  final String oldPassword,
-  final String newPassword,
-) async {
-  try {
-    final response = await HttpPlugin().patch('/user/password', {
-      'oldPassword': oldPassword,
-      'password': newPassword,
-    });
-    final jsonData = json.decode(response.body);
-    final result = OnlyTokensResponse.fromJson(jsonData);
-    return result;
-  } catch (e) {
-    if (e is HttpPluginException) {
-        // если сообщение об ошибке содержит message "Credentials incorrect" выбрасывается `UserIncorrectOldPasswordServiceException`
-      if (e.message == 'Credentials incorrect') {
-        throw UserIncorrectOldPasswordServiceException();
-      }
-      throw ServiceException(e.message);
-    }
-    rethrow;
-  }
-}
-
-```
-
-3. Структура названия 
-```dart
-// из services/auth_service.dart
-Future<RegisterResponse> register({
+Future<OnlyTokensResponse> login({
   required final String email,
   required final String password,
 }) async {
   try {
-    final response = await HttpPlugin().post('/auth/register', {
-      'email': email,
-      'password': password,
-    });
-    final jsonData = json.decode(response.body);
-    final result = RegisterResponse.fromJson(jsonData);
-    return result;
+    // body
   } catch (e) {
     if (e is HttpPluginException) {
-      if (e.message == 'User is already exists') {
-        // название сервиса + описание + ServiceException 
-        // Auth + UserAlreadyExists + ServiceException
-        throw AuthUserAlreadyExistsServiceException();
+      if (e.message == 'Credentials incorrect') {
+        throw AuthIncorrectCredentialsHttpException(e.message);
       }
-      if (e.message == 'incorrect or non-exist Email') {
-        // Auth + IncorrectEmail + ServiceException
-        throw AuthIncorrectEmailServiceException();
-      }
-      if (e.statusCode == 500 && e.message.contains('554')) {
-        // Auth + TooManyMessages + ServiceException
-        throw AuthTooManyMessagesServiceException();
-      }
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
 }
 ```
 
-4. Обработка ошибок запроса в сторах 
+3. Обработка ошибок в функциях, использующих `SocketPlugin`
 ```dart
-// из services/auth_service.dart
-Future<OnlyTokensResponse> refreshAccessToken({
-  required final String refreshToken,
+void disconnect() {
+  try {
+    SocketPlugin().socket.disconnect();
+  } on Exception catch (e) {
+    throw WebsyncDisconnectSocketIoException(exception: e);
+  }
+}
+```
+
+4. Использование `ServiceException`
+```dart
+Future<TaskResponse> moveTask({
+  // params
 }) async {
   try {
-    final response = await HttpPlugin().get('/auth/refresh', {
-      'refreshToken': refreshToken,
-    });
-    final jsonData = json.decode(response.body);
-    final result = OnlyTokensResponse.fromJson(jsonData);
-    return result;
-  } catch (e) {
-    //обработка 401 'Unauthorized' происходит в сервисе
-    if (e is HttpPluginException) {
-      if (e.statusCode == 401) {
-        throw AuthUnauthorizedServiceException();
-      }
-      throw ServiceException(e.message);
+    // body
+    final task = result['task'];
+    if (task == null) {
+      throw EmptyResponseServiceException(
+        message: '''
+                  Failed to move task between stages. 
+                  Expected JSON response with task details, 
+                  but received an empty response.
+                  ''',
+        response: response,
+      );
     }
-    rethrow;
+    return TaskResponse.fromJson(task);
+  } catch (e) {
+    // HttpPlugin handling
   }
 }
-
-
-// из store/auth_store.dart
-  Future<bool> refreshUserToken() async {
-    if (_refreshUserTokenCompleteEvent.isCompleted == false) {
-      return await _refreshUserTokenCompleteEvent.future;
-    }
-    _refreshUserTokenCompleteEvent = Completer<bool>();
-    final refreshToken = _currentTokens.refreshToken;
-    if (refreshToken.isEmpty) {
-      _refreshUserTokenCompleteEvent.complete(false);
-      return false;
-    }
-    try {
-      final tokens = await api.refreshAccessToken(refreshToken: refreshToken);
-      await setUserTokens(tokens.accessToken, tokens.refreshToken);
-      _refreshUserTokenCompleteEvent.complete(true);
-      return true;
-    } catch (e, __) {
-        // проверка на авторизацию ожидает AuthUnauthorizedServiceException
-      if (e is AuthUnauthorizedServiceException) {
-        // токен протух - удялем - разлогин
-        await removeUserTokens();
-      }
-      _refreshUserTokenCompleteEvent.complete(false);
-      return false;
-    }
-  }
 ```
 </details>
+
+#### параметр order
+
+Если при отправке запроса одним из передаваемых парамтров является `order`, его нужно конвертировать из `double` в `int` при помощи метода `convertToOrderRequest`. 

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:unityspace/models/notification_models.dart';
-import 'package:unityspace/service/service_exceptions.dart';
+import 'package:unityspace/service/exceptions/handlers.dart';
 import 'package:unityspace/utils/http_plugin.dart';
 
 Future<PaginatedNotifications> getNotificationsOnPage({
@@ -14,7 +14,7 @@ Future<PaginatedNotifications> getNotificationsOnPage({
     return result;
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -30,7 +30,7 @@ Future<PaginatedNotifications> getArchivedNotificationsOnPage({
     return result;
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -51,7 +51,7 @@ Future<List<NotificationResponse>> readNotification({
         .toList();
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -72,7 +72,7 @@ Future<List<NotificationResponse>> archiveNotification({
         .toList();
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -92,7 +92,7 @@ Future<List<NotificationResponse>> unarchiveNotification({
         .toList();
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -109,7 +109,7 @@ Future<List<NotificationResponse>> readAllNotifications() async {
         .toList();
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -126,7 +126,7 @@ Future<List<NotificationResponse>> archiveAllNotifications() async {
         .toList();
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -141,7 +141,7 @@ Future<DeleteNotificationsResponse> deleteAllNotifications() async {
     return DeleteNotificationsResponse.fromJson(jsonData);
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -158,7 +158,7 @@ Future<DeleteNotificationsResponse> deleteNotification({
     return DeleteNotificationsResponse.fromJson(jsonData);
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }

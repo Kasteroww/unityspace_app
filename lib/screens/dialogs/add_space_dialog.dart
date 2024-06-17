@@ -3,7 +3,7 @@ import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/resources/l10n/app_localizations.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_primary_button.dart';
-import 'package:unityspace/service/service_exceptions.dart';
+import 'package:unityspace/service/exceptions/http_exceptions.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
@@ -52,7 +52,7 @@ class AddSpaceDialogStore extends WStore {
       },
       onError: (error, __) {
         AddSpaceErrors currentError = AddSpaceErrors.createError;
-        if (error is SpacesCannotAddPaidTariffServiceException) {
+        if (error is SpacesCannotAddPaidTariffHttpException) {
           currentError = AddSpaceErrors.paidTariffError;
         }
         setStore(() {

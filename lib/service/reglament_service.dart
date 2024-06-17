@@ -1,7 +1,8 @@
 import 'dart:convert';
 
 import 'package:unityspace/models/reglament_models.dart';
-import 'package:unityspace/service/service_exceptions.dart';
+import 'package:unityspace/service/exceptions/handlers.dart';
+import 'package:unityspace/service/exceptions/http_exceptions.dart';
 import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/http_plugin.dart';
 
@@ -24,7 +25,7 @@ Future<ReglamentResponse> createReglament(
     );
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -36,13 +37,20 @@ Future<void> createReglamentSaveHistory({
   required String comment,
   required bool clearUsersPassed,
 }) async {
-  await HttpPlugin().post(
-    '/reglaments/$reglamentId/history',
-    {
-      'comment': comment,
-      'clearUsersPassed': clearUsersPassed,
-    },
-  );
+  try {
+    await HttpPlugin().post(
+      '/reglaments/$reglamentId/history',
+      {
+        'comment': comment,
+        'clearUsersPassed': clearUsersPassed,
+      },
+    );
+  } catch (e) {
+    if (e is HttpPluginException) {
+      handleDefaultHttpExceptions(e);
+    }
+    rethrow;
+  }
 }
 
 /// Функция для получения всех регламентов
@@ -53,7 +61,7 @@ Future<List<ReglamentResponse>> getReglaments() async {
     return jsonData.map((data) => ReglamentResponse.fromJson(data)).toList();
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -79,7 +87,7 @@ Future<ChangeReglamentColumnAndOrderResponse> changeReglamentColumnAndOrder({
     return validated;
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -89,11 +97,18 @@ Future<RenameReglamentResponse> renameReglament({
   required int reglamentId,
   required String name,
 }) async {
-  final response = await HttpPlugin().patch('/reglaments/$reglamentId/name', {
-    'name': name,
-  });
-  final jsonData = await jsonDecode(response.body);
-  return RenameReglamentResponse.fromJson(jsonData);
+  try {
+    final response = await HttpPlugin().patch('/reglaments/$reglamentId/name', {
+      'name': name,
+    });
+    final jsonData = await jsonDecode(response.body);
+    return RenameReglamentResponse.fromJson(jsonData);
+  } catch (e) {
+    if (e is HttpPluginException) {
+      handleDefaultHttpExceptions(e);
+    }
+    rethrow;
+  }
 }
 
 // Функция для удаления регламента
@@ -108,11 +123,12 @@ Future<DeleteReglamentResponse> deleteReglament({
     return DeleteReglamentResponse.fromJson(jsonData);
   } catch (e) {
     if (e is HttpPluginException) {
-      final responseBody = jsonDecode(e.message);
-      if (responseBody == 'Not organization owner') {
-        return throw ServiceException('Not organization owner');
+      if (e.message == 'Not organization owner') {
+        throw ReglamentsNotOrganizationOwnerHttpException(
+          'Not organization owner',
+        );
       }
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -125,7 +141,7 @@ Future<FullReglamentResponse> getFullReglament(int reglamentId) async {
     return FullReglamentResponse.fromJson(data);
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -147,7 +163,7 @@ Future<List<ReglamentQuestionResponse>> getReglamentsQuesions({
     return questions;
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -167,7 +183,7 @@ Future<ReglamentQuestionResponse> createReglamentQuestion({
     return ReglamentQuestionResponse.fromJson(data);
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -178,13 +194,20 @@ Future<ReglamentAnswerResponse> createReglamentAnswer({
   required int questionId,
   required String name,
 }) async {
-  final response = await HttpPlugin().post(
-    '/reglaments/$reglamentId/questions/$questionId/answers',
-    {name: name},
-  );
+  try {
+    final response = await HttpPlugin().post(
+      '/reglaments/$reglamentId/questions/$questionId/answers',
+      {name: name},
+    );
 
-  final data = json.decode(response.body);
-  return ReglamentAnswerResponse.fromJson(data);
+    final data = json.decode(response.body);
+    return ReglamentAnswerResponse.fromJson(data);
+  } catch (e) {
+    if (e is HttpPluginException) {
+      handleDefaultHttpExceptions(e);
+    }
+    rethrow;
+  }
 }
 
 Future<ReglamentAnswerResponse> changeIsRightReglamentAnswerProperty({
@@ -193,22 +216,36 @@ Future<ReglamentAnswerResponse> changeIsRightReglamentAnswerProperty({
   required int answerId,
   required bool isRight,
 }) async {
-  final response = await HttpPlugin().patch(
-    '/reglaments/$reglamentId/questions/$questionId/answers/$answerId/isRight',
-    {'isRight': isRight},
-  );
-  final data = json.decode(response.body);
-  return ReglamentAnswerResponse.fromJson(data);
+  try {
+    final response = await HttpPlugin().patch(
+      '/reglaments/$reglamentId/questions/$questionId/answers/$answerId/isRight',
+      {'isRight': isRight},
+    );
+    final data = json.decode(response.body);
+    return ReglamentAnswerResponse.fromJson(data);
+  } catch (e) {
+    if (e is HttpPluginException) {
+      handleDefaultHttpExceptions(e);
+    }
+    rethrow;
+  }
 }
 
 Future<ReglamentRequiredResponse> changeReglamentRequiredProperty({
   required int reglamentId,
   required bool required,
 }) async {
-  final response =
-      await HttpPlugin().patch('/reglaments/$reglamentId/required', {
-    'required': required,
-  });
-  final data = json.decode(response.body);
-  return ReglamentRequiredResponse.fromJson(data);
+  try {
+    final response =
+        await HttpPlugin().patch('/reglaments/$reglamentId/required', {
+      'required': required,
+    });
+    final data = json.decode(response.body);
+    return ReglamentRequiredResponse.fromJson(data);
+  } catch (e) {
+    if (e is HttpPluginException) {
+      handleDefaultHttpExceptions(e);
+    }
+    rethrow;
+  }
 }

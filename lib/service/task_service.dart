@@ -1,7 +1,8 @@
 import 'dart:convert';
 
 import 'package:unityspace/models/task_models.dart';
-import 'package:unityspace/service/service_exceptions.dart';
+import 'package:unityspace/service/exceptions/handlers.dart';
+import 'package:unityspace/service/exceptions/service_exceptions.dart';
 import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/http_plugin.dart';
 
@@ -40,7 +41,7 @@ Future<CreateTaskResponse> createTask({
     return CreateTaskResponse.fromJson(result);
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -55,7 +56,7 @@ Future<MyTaskHistoryResponse> getMyTasksHistory(int page) async {
     return result;
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -74,7 +75,7 @@ Future<List<TaskResponse>> getSpaceTasks({
     return jsonDataList.map((data) => TaskResponse.fromJson(data)).toList();
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -93,7 +94,7 @@ Future getProjectTasks({
     return jsonDataList.map((data) => TaskResponse.fromJson(data)).toList();
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -111,7 +112,7 @@ Future<DeleteTaskResponse> deleteTaskFromStage({
     return DeleteTaskResponse.fromJson(result);
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -136,12 +137,19 @@ Future<TaskResponse> moveTask({
     final result = json.decode(response.body) as Map<String, dynamic>;
     final task = result['task'];
     if (task == null) {
-      throw Exception('Cant move task in stage');
+      throw EmptyResponseServiceException(
+        message: '''
+                  Failed to move task between stages. 
+                  Expected JSON response with task details, 
+                  but received an empty response.
+                  ''',
+        response: response,
+      );
     }
     return TaskResponse.fromJson(task);
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -159,7 +167,7 @@ Future<TaskResponse> getTaskById({
     return TaskResponse.fromJson(task);
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -181,12 +189,19 @@ Future<TaskResponse> addTaskResponsible({
     final result = json.decode(response.body) as Map<String, dynamic>;
     final task = result['task'];
     if (task == null) {
-      throw Exception('Cant add responsible');
+      throw EmptyResponseServiceException(
+        message: '''
+                  Failed to add task responsible. 
+                  Expected JSON response with task details, 
+                  but received an empty response.
+                  ''',
+        response: response,
+      );
     }
     return TaskResponse.fromJson(task);
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -203,12 +218,19 @@ Future<TaskResponse> deleteTaskResponsible({
     final result = json.decode(response.body) as Map<String, dynamic>;
     final task = result['task'];
     if (task == null) {
-      throw Exception('Cant delete responsible');
+      throw EmptyResponseServiceException(
+        message: '''
+                  Failed to delete task responsible. 
+                  Expected JSON response with task details, 
+                  but received an empty response.
+                  ''',
+        response: response,
+      );
     }
     return TaskResponse.fromJson(task);
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -232,12 +254,19 @@ Future<TaskResponse> updateTaskResponsible({
     final result = json.decode(response.body) as Map<String, dynamic>;
     final task = result['task'];
     if (task == null) {
-      throw Exception('Cant update responsible');
+      throw EmptyResponseServiceException(
+        message: '''
+                  Failed to update task responsible. 
+                  Expected JSON response with task details, 
+                  but received an empty response.
+                  ''',
+        response: response,
+      );
     }
     return TaskResponse.fromJson(task);
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }

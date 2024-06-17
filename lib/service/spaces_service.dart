@@ -1,7 +1,8 @@
 import 'dart:convert';
 
 import 'package:unityspace/models/spaces_models.dart';
-import 'package:unityspace/service/service_exceptions.dart';
+import 'package:unityspace/service/exceptions/handlers.dart';
+import 'package:unityspace/service/exceptions/http_exceptions.dart';
 import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/http_plugin.dart';
 
@@ -14,7 +15,7 @@ Future<List<SpaceResponse>> getSpacesData() async {
     return result;
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -39,9 +40,9 @@ Future<SpaceResponse> createSpaces(
     if (e is HttpPluginException) {
       if (e.message ==
           'Cannot add more spaces, check paid tariff or remove spaces') {
-        throw SpacesCannotAddPaidTariffServiceException();
+        throw SpacesCannotAddPaidTariffHttpException();
       }
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -65,7 +66,7 @@ Future<SpaceColumnResponse> createSpaceColumn({
     return SpaceColumnResponse.fromJson(jsonData);
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -83,7 +84,7 @@ Future<RemoveMemberFromSpaceResponse> removeUserFromSpace(
     return result;
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -105,7 +106,7 @@ Future<RemoveMemberFromSpaceResponse> removeInviteFromSpace({
     return result;
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -124,7 +125,7 @@ Future<SetSpaceInviteLinkActiveResponse> setSpaceIviteLinkActive({
     return result;
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -149,7 +150,7 @@ Future<SetSpaceMemberRoleResponse> setSpaceMemberRole({
     return result;
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }

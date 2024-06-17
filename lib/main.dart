@@ -16,10 +16,14 @@ import 'package:unityspace/screens/register_screen/register_screen.dart';
 import 'package:unityspace/screens/restore_password_screen/restore_password_screen.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/project_content.dart';
 import 'package:unityspace/screens/space_screen/space_screen.dart';
+import 'package:unityspace/screens/widgets/app_dialog/error_dialogs.dart';
+import 'package:unityspace/service/exceptions/http_exceptions.dart';
 import 'package:unityspace/store/auth_store.dart';
 import 'package:unityspace/utils/socket_plugin.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:wstore/wstore.dart';
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,20 +42,24 @@ void main() async {
     });
   }
 
+  FlutterError.onError = (details) {
+    FlutterError.presentError(details);
+    if (details.exception is UserBlocked403HttpException) {
+      show403ErrorDialog(context: navigatorKey.currentContext!);
+    }
+  };
+
   runApp(
     MyApp(
       isAuthenticated: AuthStore().isAuthenticated,
     ),
   );
-
   if (AuthStore().isAuthenticated) {
     SocketPlugin().socket.connect();
   }
 }
 
 class MyAppStore extends WStore {
-  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
   bool get isAuthenticated => computedFromStore(
         store: AuthStore(),
         getValue: (store) => store.isAuthenticated,
@@ -79,19 +87,19 @@ class MyApp extends WStoreWidget<MyAppStore> {
       store: store,
       watch: (store) => store.isAuthenticated,
       onTrue: (context) {
-        store.navigatorKey.currentState?.pushNamedAndRemoveUntil(
+        navigatorKey.currentState?.pushNamedAndRemoveUntil(
           '/loading',
           (route) => false,
         );
       },
       onFalse: (context) {
-        store.navigatorKey.currentState?.pushNamedAndRemoveUntil(
+        navigatorKey.currentState?.pushNamedAndRemoveUntil(
           '/login',
           (route) => false,
         );
       },
       child: MaterialApp(
-        navigatorKey: store.navigatorKey,
+        navigatorKey: navigatorKey,
         title: 'UnitySpace',
         locale: const Locale('ru'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,

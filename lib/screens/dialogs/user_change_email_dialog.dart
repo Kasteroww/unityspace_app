@@ -4,7 +4,7 @@ import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
 import 'package:unityspace/screens/widgets/paddings.dart';
-import 'package:unityspace/service/service_exceptions.dart';
+import 'package:unityspace/service/exceptions/http_exceptions.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
@@ -72,13 +72,13 @@ class ChangeEmailDialogStore extends WStore {
         newEmail = email;
       });
     } catch (e) {
-      if (e is UserEmailAlreadyExistsServiceException) {
+      if (e is UserEmailAlreadyExistsHttpException) {
         _setErrorChangeUserEmail(EmailErrors.emailAlreadyExists);
-      } else if (e is UserCannotProcessEmailServiceException) {
+      } else if (e is UserCannotProcessEmailHttpException) {
         _setErrorChangeUserEmail(EmailErrors.cannotSendEmail);
-      } else if (e is UserIncorrectEmailFormatServiceException) {
+      } else if (e is UserIncorrectEmailFormatHttpException) {
         _setErrorChangeUserEmail(EmailErrors.incorrectEmailAddress);
-      } else if (e is ServiceException) {
+      } else if (e is HttpException) {
         _setErrorChangeUserEmail(EmailErrors.unknown);
       }
     }
@@ -246,7 +246,7 @@ class ConfirmEmailDialogStore extends WStore {
         isShowConfirm = true;
       });
     } catch (e) {
-      if (e is UserIncorrectConfirmationCodeServiceException) {
+      if (e is UserIncorrectConfirmationCodeHttpException) {
         setStore(() {
           codeStatus = WStoreStatus.error;
           codeError = CodeConfimationErrors.incorrectCode;

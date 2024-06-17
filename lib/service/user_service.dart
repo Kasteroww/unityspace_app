@@ -4,8 +4,9 @@ import 'dart:typed_data';
 import 'package:unityspace/models/achievement_models.dart';
 import 'package:unityspace/models/auth_models.dart';
 import 'package:unityspace/models/user_models.dart';
+import 'package:unityspace/service/exceptions/handlers.dart';
+import 'package:unityspace/service/exceptions/http_exceptions.dart';
 import 'package:unityspace/service/files_service.dart' as api_files;
-import 'package:unityspace/service/service_exceptions.dart';
 import 'package:unityspace/utils/http_plugin.dart';
 
 Future<UserResponse> getUserData() async {
@@ -16,10 +17,7 @@ Future<UserResponse> getUserData() async {
     return result;
   } catch (e) {
     if (e is HttpPluginException) {
-      if (e.statusCode == 401) {
-        throw UserUnauthorizedServiceException();
-      }
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -33,10 +31,7 @@ Future<OrganizationResponse> getOrganizationData() async {
     return result;
   } catch (e) {
     if (e is HttpPluginException) {
-      if (e.statusCode == 401) {
-        throw UserUnauthorizedServiceException();
-      }
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -50,7 +45,7 @@ Future<UserResponse> removeUserAvatar() async {
     return result;
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -67,7 +62,7 @@ Future<UserResponse> setUserAvatar(final Uint8List avatarImage) async {
     return result;
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -83,12 +78,10 @@ Future<UserResponse> setUserName(final String userName) async {
     return result;
   } catch (e) {
     if (e is HttpPluginException) {
-      if (e.statusCode == 401) {
-        throw UserUnauthorizedServiceException();
-      } else if (e.statusCode == 400 && e.message == 'name must be a string') {
-        throw UserNameIsNotAStringServiceException();
+      if (e.statusCode == 400 && e.message == 'name must be a string') {
+        throw UserNameIsNotAStringHttpException();
       }
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -109,9 +102,9 @@ Future<OnlyTokensResponse> setUserPassword(
   } catch (e) {
     if (e is HttpPluginException) {
       if (e.message == 'Credentials incorrect') {
-        throw UserIncorrectOldPasswordServiceException();
+        throw UserIncorrectOldPasswordHttpException();
       }
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -127,7 +120,7 @@ Future<UserResponse> setJobTitle(final String jobTitle) async {
     return result;
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -143,7 +136,7 @@ Future<UserResponse> setPhone(final String phone) async {
     return result;
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -159,7 +152,7 @@ Future<UserResponse> setUserGitHubLink(final String githubLink) async {
     return result;
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -175,7 +168,7 @@ Future<UserResponse> setUserTelegramLink(final String link) async {
     return result;
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -191,7 +184,7 @@ Future<UserResponse> setUserBirthday(final String? date) async {
     return result;
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -211,13 +204,13 @@ Future<String?> requestEmailVerification({
   } catch (e) {
     if (e is HttpPluginException) {
       if (e.message == 'User is already exists') {
-        throw UserEmailAlreadyExistsServiceException();
+        throw UserEmailAlreadyExistsHttpException();
       } else if (e.message == 'Cannot process its email') {
-        throw UserCannotProcessEmailServiceException();
+        throw UserCannotProcessEmailHttpException();
       } else if (e.message == 'email must be an email') {
-        throw UserIncorrectEmailFormatServiceException();
+        throw UserIncorrectEmailFormatHttpException();
       } else {
-        throw ServiceException(e.message);
+        handleDefaultHttpExceptions(e);
       }
     }
     rethrow;
@@ -237,9 +230,9 @@ Future confirmUserEmail({
   } catch (e) {
     if (e is HttpPluginException) {
       if (e.statusCode == 400 && e.message == 'Error while verifying email') {
-        throw UserIncorrectConfirmationCodeServiceException();
+        throw UserIncorrectConfirmationCodeHttpException();
       }
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -254,7 +247,7 @@ Future<List<AchievementResponse>> getAchievements() async {
         .toList();
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -272,7 +265,7 @@ Future<UserResponse> setIsAdmin(
     return result;
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }

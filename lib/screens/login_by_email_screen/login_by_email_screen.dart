@@ -7,7 +7,7 @@ import 'package:unityspace/screens/widgets/main_form/main_form_logo_widget.dart'
 import 'package:unityspace/screens/widgets/main_form/main_form_text_button_widget.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_text_title_widget.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_widget.dart';
-import 'package:unityspace/service/service_exceptions.dart';
+import 'package:unityspace/service/exceptions/http_exceptions.dart';
 import 'package:unityspace/store/auth_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/mixins/copy_to_clipboard_mixin.dart';
@@ -47,10 +47,10 @@ class LoginByEmailScreenStore extends WStore with CopyToClipboardMixin {
       },
       onError: (error, stack) {
         LoginByEmailErrors errorText = LoginByEmailErrors.loginError;
-        if (error is AuthIncorrectCredentialsServiceException) {
+        if (error is AuthIncorrectCredentialsHttpException) {
           errorMessage = '${error.message}';
           errorText = LoginByEmailErrors.invalidEmailOrPassword;
-        } else if (error is ServiceException) {
+        } else if (error is HttpException) {
           errorMessage = '${error.message}';
         } else {
           errorMessage = '$error';

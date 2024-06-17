@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:unityspace/models/project_models.dart';
-import 'package:unityspace/service/service_exceptions.dart';
+import 'package:unityspace/service/exceptions/handlers.dart';
 import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/http_plugin.dart';
 
@@ -14,7 +14,7 @@ Future<List<ProjectResponse>> getProjects({required int spaceId}) async {
     return result;
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -29,7 +29,7 @@ Future<List<ProjectResponse>> getAllProjects() async {
     return result;
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -49,7 +49,7 @@ Future<List<ProjectResponse>> changeProjectColumn({
         .toList();
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -62,7 +62,7 @@ Future<ProjectResponse> addProject(AddProject project) async {
     return ProjectResponse.fromJson(jsonData);
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -76,7 +76,7 @@ Future<Map<String, dynamic>> deleteProject(int projectId) async {
     return jsonData;
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -100,7 +100,7 @@ Future<Map<String, dynamic>> setProjectFavorite({
     return jsonData;
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -129,7 +129,7 @@ Future<ProjectResponse> updateProject({
     return ProjectResponse.fromJson(jsonData);
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -153,7 +153,7 @@ Future<ProjectStageResponse> createProjectStage({
     return ProjectStageResponse.fromJson(result);
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -179,7 +179,7 @@ Future<ProjectEmbedResponse> createProjectEmbed({
     return ProjectEmbedResponse.fromJson(jsonData);
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -201,7 +201,7 @@ Future<Map<String, dynamic>> showProjectReviewTab({
     return jsonData;
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -216,7 +216,7 @@ Future<Map<String, dynamic>> updateProjectEmbed(ProjectEmbed embed) async {
     return jsonData;
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -234,7 +234,7 @@ Future<int> deleteProjectEmbed({
     return response.statusCode;
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }

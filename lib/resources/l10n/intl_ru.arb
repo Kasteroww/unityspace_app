@@ -1,5 +1,9 @@
 {
-  
+
+  "access_denied": "Доступ заблокирован",
+  "access_denied_please_contact_support": "Доступ ограничен, пожалуйста, обратитесь в тех поддержку",
+  "ok_dialog_button": "Хорошо",
+
   "no_responsible": "Нет ответственного",
 
   "administration": "Администрирование",
@@ -692,4 +696,6 @@
   "reset_member": "Сбросить участника",
   "link_copied_successfully": "Ссылка успешно скопирована",
   "create_stage_error": "Произошла ошибка при создании новой колонки с задачами"
+
+
 }

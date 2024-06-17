@@ -1,7 +1,8 @@
 import 'dart:convert';
 
 import 'package:unityspace/models/auth_models.dart';
-import 'package:unityspace/service/service_exceptions.dart';
+import 'package:unityspace/service/exceptions/handlers.dart';
+import 'package:unityspace/service/exceptions/http_exceptions.dart';
 import 'package:unityspace/utils/http_plugin.dart';
 
 Future<RegisterResponse> register({
@@ -19,15 +20,11 @@ Future<RegisterResponse> register({
   } catch (e) {
     if (e is HttpPluginException) {
       if (e.message == 'User is already exists') {
-        throw AuthUserAlreadyExistsServiceException();
+        throw AuthUserAlreadyExistsHttpException();
+      } else if (e.message == 'incorrect or non-exist Email') {
+        throw AuthIncorrectEmailHttpException();
       }
-      if (e.message == 'incorrect or non-exist Email') {
-        throw AuthIncorrectEmailServiceException();
-      }
-      if (e.statusCode == 500 && e.message.contains('554')) {
-        throw AuthTooManyMessagesServiceException();
-      }
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -50,9 +47,9 @@ Future<OnlyTokensResponse> confirmEmail({
   } catch (e) {
     if (e is HttpPluginException) {
       if (e.message == 'Error while verifying email') {
-        throw AuthIncorrectConfirmationCodeServiceException();
+        throw AuthIncorrectConfirmationCodeHttpException();
       }
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -73,9 +70,9 @@ Future<OnlyTokensResponse> login({
   } catch (e) {
     if (e is HttpPluginException) {
       if (e.message == 'Credentials incorrect') {
-        throw AuthIncorrectCredentialsServiceException(e.message);
+        throw AuthIncorrectCredentialsHttpException(e.message);
       }
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -92,7 +89,7 @@ Future<void> signOut({
     });
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -110,10 +107,7 @@ Future<OnlyTokensResponse> refreshAccessToken({
     return result;
   } catch (e) {
     if (e is HttpPluginException) {
-      if (e.statusCode == 401) {
-        throw AuthUnauthorizedServiceException();
-      }
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -129,9 +123,9 @@ Future<void> restorePasswordByEmail({
   } catch (e) {
     if (e is HttpPluginException) {
       if (e.message == 'Credentials incorrect') {
-        throw AuthIncorrectCredentialsServiceException(e.message);
+        throw AuthIncorrectCredentialsHttpException(e.message);
       }
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }
@@ -151,7 +145,7 @@ Future<GoogleAuthResponse> googleAuth({
     return result;
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }

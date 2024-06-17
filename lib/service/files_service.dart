@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
 import 'package:unityspace/models/files_models.dart';
-import 'package:unityspace/service/service_exceptions.dart';
+import 'package:unityspace/service/exceptions/handlers.dart';
 import 'package:unityspace/utils/http_plugin.dart';
 
 Future<String> uploadAvatarByChunks({
@@ -51,7 +51,7 @@ Future<String> uploadAvatarByChunks({
     return initUpload.key;
   } catch (e) {
     if (e is HttpPluginException) {
-      throw ServiceException(e.message);
+      handleDefaultHttpExceptions(e);
     }
     rethrow;
   }

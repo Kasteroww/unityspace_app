@@ -7,7 +7,7 @@ import 'package:unityspace/screens/widgets/main_form/main_form_logo_widget.dart'
 import 'package:unityspace/screens/widgets/main_form/main_form_text_subtitle_widget.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_text_title_widget.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_widget.dart';
-import 'package:unityspace/service/service_exceptions.dart';
+import 'package:unityspace/service/exceptions/http_exceptions.dart';
 import 'package:unityspace/store/auth_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
@@ -42,7 +42,7 @@ class RestorePasswordScreenStore extends WStore {
       },
       onError: (error, __) {
         RestorePasswordErrors currentError = RestorePasswordErrors.restoreError;
-        if (error is AuthIncorrectCredentialsServiceException) {
+        if (error is AuthIncorrectCredentialsHttpException) {
           currentError = RestorePasswordErrors.accountDoesNotExist;
         }
         setStore(() {

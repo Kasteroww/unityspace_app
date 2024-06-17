@@ -1,9 +1,18 @@
+import 'package:unityspace/service/exceptions/socket_io_exceptions.dart';
 import 'package:unityspace/utils/socket_plugin.dart';
 
 void connect() {
-  SocketPlugin().socket.connect();
+  try {
+    SocketPlugin().socket.connect();
+  } on Exception catch (e) {
+    throw WebsyncConnectSocketIoException(exception: e);
+  }
 }
 
 void disconnect() {
-  SocketPlugin().socket.disconnect();
+  try {
+    SocketPlugin().socket.disconnect();
+  } on Exception catch (e) {
+    throw WebsyncDisconnectSocketIoException(exception: e);
+  }
 }

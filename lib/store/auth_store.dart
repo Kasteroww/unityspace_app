@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unityspace/models/auth_models.dart';
 import 'package:unityspace/resources/constants.dart';
 import 'package:unityspace/service/auth_service.dart' as api;
-import 'package:unityspace/service/service_exceptions.dart';
+import 'package:unityspace/service/exceptions/http_exceptions.dart';
 import 'package:unityspace/service/websync_service.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/http_plugin.dart';
@@ -91,7 +91,7 @@ class AuthStore extends GStore {
       _refreshUserTokenCompleteEvent.complete(true);
       return true;
     } catch (e, __) {
-      if (e is AuthUnauthorizedServiceException) {
+      if (e is AuthUnauthorizedHttpException) {
         // токен протух - удялем - разлогин
         await removeUserTokens();
       }

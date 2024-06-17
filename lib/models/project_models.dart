@@ -1,7 +1,7 @@
 import 'package:unityspace/models/model_interfaces.dart';
 import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/add_tab_dialog.dart';
-import 'package:unityspace/service/data_exceptions.dart';
+import 'package:unityspace/service/exceptions/data_exceptions.dart';
 import 'package:unityspace/utils/date_time_converter.dart';
 import 'package:unityspace/utils/helpers.dart';
 

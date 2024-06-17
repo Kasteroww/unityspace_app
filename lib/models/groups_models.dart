@@ -1,5 +1,5 @@
 import 'package:unityspace/models/spaces_models.dart';
-import 'package:unityspace/service/data_exceptions.dart';
+import 'package:unityspace/service/exceptions/data_exceptions.dart';
 import 'package:unityspace/utils/helpers.dart';
 
 class GroupResponse {
