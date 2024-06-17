@@ -27,6 +27,9 @@ class AppDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(
+              height: 4,
+            ),
             ...children,
             if (buttons.isNotEmpty) const SizedBox(height: 24),
             ...buttons,
