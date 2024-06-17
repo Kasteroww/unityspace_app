@@ -62,7 +62,12 @@ enum ChangePasswordErrors {
 
 enum ChangeTgLinkErrors { none, invalidLink, changeLinkError }
 
-enum LoginByEmailErrors { none, loginError, invalidEmailOrPassword }
+enum LoginErrors {
+  none,
+  loginError,
+  invalidEmailOrPassword,
+  loginWithGoogleError,
+}
 
 enum RenameReglamentErrors { none, emptyName, problemUploadingData }
 

@@ -8,6 +8,7 @@ import 'package:unityspace/screens/widgets/main_form/main_form_logo_widget.dart'
 import 'package:unityspace/screens/widgets/main_form/main_form_sign_in_button_widget.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_text_button_widget.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_text_title_widget.dart';
+import 'package:unityspace/screens/widgets/snackbar_error_content.dart';
 import 'package:unityspace/store/auth_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
@@ -17,16 +18,17 @@ import 'package:wstore/wstore.dart';
 class LoginScreenStore extends WStore with CopyToClipboardMixin {
   @override
   String message = '';
-  WStoreStatus statusGoogle = WStoreStatus.init;
-  String loginErrorMessage = '';
+  WStoreStatus status = WStoreStatus.init;
+  String errorMessage = '';
+  LoginErrors errorType = LoginErrors.none;
 
   GoogleSignIn googleSignIn = GoogleSignIn();
 
   void google() {
-    if (statusGoogle == WStoreStatus.loading) return;
+    if (status == WStoreStatus.loading) return;
     //
     setStore(() {
-      statusGoogle = WStoreStatus.loading;
+      status = WStoreStatus.loading;
     });
     //
     subscribe(
@@ -34,14 +36,15 @@ class LoginScreenStore extends WStore with CopyToClipboardMixin {
       subscriptionId: 1,
       onData: (_) {
         setStore(() {
-          statusGoogle = WStoreStatus.loaded;
+          status = WStoreStatus.loaded;
         });
       },
       onError: (error, __) {
         logger.d('google sign in error=$error');
         setStore(() {
-          statusGoogle = WStoreStatus.error;
-          loginErrorMessage = '$error';
+          status = WStoreStatus.error;
+          errorMessage = '$error';
+          errorType = LoginErrors.loginWithGoogleError;
         });
       },
     );
@@ -103,7 +106,7 @@ class LoginScreen extends WStoreWidget<LoginScreenStore> {
                   children: [
                     WStoreStatusBuilder(
                       store: store,
-                      watch: (store) => store.statusGoogle,
+                      watch: (store) => store.status,
                       builder: (context, status) {
                         final loading = status == WStoreStatus.loading;
                         return MainFormSignInButtonWidget(
@@ -120,19 +123,18 @@ class LoginScreen extends WStoreWidget<LoginScreenStore> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             duration: const Duration(seconds: 5),
-                            content: InkWell(
+                            content: SnackBarErrorContent(
+                              errorType: store.errorType,
+                              errorMessage: store.errorMessage,
                               onTap: () {
                                 store.copy(
-                                  text: store.loginErrorMessage,
+                                  text: store.errorMessage,
                                   successMessage: localization.copied,
                                   errorMessage: localization.copy_error,
                                 );
                                 ScaffoldMessenger.of(context)
                                     .hideCurrentSnackBar();
                               },
-                              child: Text('${localization.google_login_error}'
-                                  '\n${localization.tap_to_copy_error}'
-                                  '\n${store.loginErrorMessage}'),
                             ),
                           ),
                         );

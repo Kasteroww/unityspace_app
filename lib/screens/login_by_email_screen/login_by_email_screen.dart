@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/resources/errors.dart';
-import 'package:unityspace/resources/l10n/app_localizations.dart';
 import 'package:unityspace/screens/login_by_email_screen/widgets/login_by_email_form.dart';
 import 'package:unityspace/screens/widgets/main_form/main_form_logo_widget.dart';
+import 'package:unityspace/screens/widgets/snackbar_error_content.dart';
 import 'package:unityspace/service/exceptions/http_exceptions.dart';
 import 'package:unityspace/store/auth_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
@@ -12,9 +12,9 @@ import 'package:wstore/wstore.dart';
 class LoginByEmailScreenStore extends WStore with CopyToClipboardMixin {
   @override
   String message = '';
-  WStoreStatus status = WStoreStatus.init;
   bool showPassword = false;
-  LoginByEmailErrors errorType = LoginByEmailErrors.none;
+  WStoreStatus status = WStoreStatus.init;
+  LoginErrors errorType = LoginErrors.none;
   String errorMessage = '';
 
   String email = '';
@@ -42,10 +42,10 @@ class LoginByEmailScreenStore extends WStore with CopyToClipboardMixin {
         });
       },
       onError: (error, stack) {
-        LoginByEmailErrors errorText = LoginByEmailErrors.loginError;
+        LoginErrors errorText = LoginErrors.loginError;
         if (error is AuthIncorrectCredentialsHttpException) {
           errorMessage = '${error.message}';
-          errorText = LoginByEmailErrors.invalidEmailOrPassword;
+          errorText = LoginErrors.invalidEmailOrPassword;
         } else if (error is HttpException) {
           errorMessage = '${error.message}';
         } else {
@@ -70,26 +70,6 @@ class LoginByEmailScreen extends WStoreWidget<LoginByEmailScreenStore> {
 
   @override
   LoginByEmailScreenStore createWStore() => LoginByEmailScreenStore();
-
-  String _getLocalizedErrorMessage({
-    required LoginByEmailErrors error,
-    required AppLocalizations localization,
-    required String errorMessage,
-  }) {
-    switch (error) {
-      // Если какая то ошибка связанная с входом,
-      // то выводится и ссобщение и локализованное обозначение проблемы
-      case LoginByEmailErrors.loginError:
-        return '${localization.login_error} \n$errorMessage';
-      // Если неправильный логин и пароль,
-      // то выводится только локализованное сообщение
-      case LoginByEmailErrors.invalidEmailOrPassword:
-        return localization.invalid_email_or_password;
-      default:
-        // Если выводится неизвестная ошибка, то выводится только errorMessage
-        return errorMessage;
-    }
-  }
 
   @override
   Widget build(BuildContext context, LoginByEmailScreenStore store) {
@@ -124,27 +104,21 @@ class LoginByEmailScreen extends WStoreWidget<LoginByEmailScreenStore> {
                       return LoginByEmailForm(loading: loading);
                     },
                     onStatusError: (context) {
-                      final copyErrorMessage = _getLocalizedErrorMessage(
-                        error: store.errorType,
-                        localization: localization,
-                        errorMessage: store.errorMessage,
-                      );
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           duration: const Duration(seconds: 5),
-                          content: InkWell(
+                          content: SnackBarErrorContent(
+                            errorType: store.errorType,
+                            errorMessage: store.errorMessage,
                             onTap: () {
                               store.copy(
-                                text: copyErrorMessage,
+                                text: store.errorMessage,
                                 successMessage: localization.copied,
                                 errorMessage: localization.copy_error,
                               );
                               ScaffoldMessenger.of(context)
                                   .hideCurrentSnackBar();
                             },
-                            child: Text(
-                              '$copyErrorMessage\n${localization.tap_to_copy_error}',
-                            ),
                           ),
                         ),
                       );
