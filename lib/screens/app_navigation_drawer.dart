@@ -5,6 +5,7 @@ import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/resources/app_icons.dart';
 import 'package:unityspace/resources/errors.dart';
+import 'package:unityspace/resources/l10n/app_localizations.dart';
 import 'package:unityspace/resources/theme/theme.dart';
 import 'package:unityspace/screens/dialogs/add_space_dialog.dart';
 import 'package:unityspace/screens/dialogs/add_space_limit_dialog.dart';
@@ -153,7 +154,7 @@ class AppNavigationDrawerStore extends WStore {
             return GroupWithSpaces(
               groupId: null,
               groupOrder: -1,
-              name: 'Все пространства',
+              name: 'All Spaces',
               spaces: noGroupSpaces,
               isOpen: true,
             );
@@ -161,6 +162,23 @@ class AppNavigationDrawerStore extends WStore {
         },
         watch: () => [_allSpacesSortedByOrder],
         keyName: 'allSpacesGroup',
+      );
+
+  GroupWithSpaces get favoriteSpacesGroup => computed(
+        getValue: () {
+          final favoriteSpaces = _allSpacesSortedByOrder
+              .where((space) => !space.isArchived && space.favorite)
+              .toList();
+          return GroupWithSpaces(
+            groupId: null,
+            groupOrder: -2,
+            name: 'Favorite',
+            spaces: favoriteSpaces,
+            isOpen: true,
+          );
+        },
+        watch: () => _allSpacesSortedByOrder,
+        keyName: 'favoriteSpacesGroup',
       );
 
   List<GroupWithSpaces> get _spacesGroups => computed(
@@ -281,7 +299,6 @@ class AppNavigationDrawer extends WStoreWidget<AppNavigationDrawerStore> {
                 selected: currentRoute == '/home',
                 favorite: false,
                 onTap: () {
-                  
                   Navigator.of(context).pop();
                   if (currentRoute != '/home') {
                     Navigator.of(context).pushReplacementNamed('/home');
@@ -355,31 +372,44 @@ class AppNavigationDrawer extends WStoreWidget<AppNavigationDrawerStore> {
                         return SingleChildScrollView(
                           child: Column(
                             children: [
-                              ListView.builder(
-                                shrinkWrap: true,
-                                physics: const ClampingScrollPhysics(),
-                                itemCount:
-                                    store.spacesGroupsByUserPrivileges.length,
-                                itemBuilder: (context, index) {
-                                  final groups =
-                                      store.spacesGroupsByUserPrivileges;
-                                  return Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      if (store.allSortedSpaces.isEmpty)
-                                        NavigatorMenuEmptySpacesHint(
-                                          isOrganizationOwner:
-                                              store.isOrganizationOwner,
+                              if (store.favoriteSpacesGroup.spaces.isNotEmpty)
+                                SpaceGroup(
+                                  group: store.favoriteSpacesGroup,
+                                  currentRoute: currentRoute,
+                                  currentArguments: currentArguments,
+                                ),
+                              if (store.allSpacesGroup.spaces.isNotEmpty)
+                                SpaceGroup(
+                                  group: store.allSpacesGroup,
+                                  currentRoute: currentRoute,
+                                  currentArguments: currentArguments,
+                                ),
+                              if (store.spacesGroupsByUserPrivileges.isNotEmpty)
+                                ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const ClampingScrollPhysics(),
+                                  itemCount:
+                                      store.spacesGroupsByUserPrivileges.length,
+                                  itemBuilder: (context, index) {
+                                    final groups =
+                                        store.spacesGroupsByUserPrivileges;
+                                    return Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        if (store.allSortedSpaces.isEmpty)
+                                          NavigatorMenuEmptySpacesHint(
+                                            isOrganizationOwner:
+                                                store.isOrganizationOwner,
+                                          ),
+                                        SpaceGroup(
+                                          group: groups[index],
+                                          currentRoute: currentRoute,
+                                          currentArguments: currentArguments,
                                         ),
-                                      SpaceGroup(
-                                        group: groups[index],
-                                        currentRoute: currentRoute,
-                                        currentArguments: currentArguments,
-                                      ),
-                                    ],
-                                  );
-                                },
-                              ),
+                                      ],
+                                    );
+                                  },
+                                ),
                               if (store.isOrganizationOwner)
                                 const SizedBox(height: 16),
                               if (store.isOrganizationOwner)
@@ -496,13 +526,29 @@ class SpaceGroup extends StatelessWidget {
   final String? currentRoute;
   final Object? currentArguments;
 
+  String getGroupTitle(
+      {required AppLocalizations localization, required String groupName}) {
+    switch (groupName) {
+      case 'All Spaces':
+        return localization.all_spaces;
+      case 'Favorite':
+        return localization.favorite_spaces;
+      default:
+        return groupName;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final localization = LocalizationHelper.getLocalizations(context);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         NavigatorMenuListTitle(
-          title: group.name,
+          title: getGroupTitle(
+            localization: localization,
+            groupName: group.name,
+          ),
         ),
         ...group.spaces.map(
           (space) => NavigatorMenuItem(

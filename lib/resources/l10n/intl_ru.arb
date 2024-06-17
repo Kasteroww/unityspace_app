@@ -1,5 +1,7 @@
 {
 
+  "favorite_spaces": "Избранные",
+
   "access_denied": "Доступ заблокирован",
   "access_denied_please_contact_support": "Доступ ограничен, пожалуйста, обратитесь в тех поддержку",
   "ok_dialog_button": "Хорошо",
