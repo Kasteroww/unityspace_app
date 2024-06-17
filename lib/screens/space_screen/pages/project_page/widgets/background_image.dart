@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class BackgroundImage extends StatelessWidget {
@@ -10,8 +11,8 @@ class BackgroundImage extends StatelessWidget {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     if (url != null) {
-      return Image.network(
-        url!,
+      return CachedNetworkImage(
+        imageUrl: url!,
         fit: BoxFit.cover,
         width: width,
         height: height,

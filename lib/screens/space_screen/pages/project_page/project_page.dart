@@ -179,60 +179,61 @@ class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
   @override
   Widget build(BuildContext context, ProjectsPageStore store) {
     final localization = LocalizationHelper.getLocalizations(context);
-    return WStoreStatusBuilder(
-      store: store,
-      watch: (store) => store.status,
-      builderError: (context) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 48),
-          child: Text(
-            switch (store.error) {
-              ProjectErrors.none => '',
-              ProjectErrors.loadingDataError =>
-                localization.problem_uploading_data_try_again
-            },
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: const Color(0xFF111012).withOpacity(0.8),
-              fontSize: 20,
-              height: 1.2,
+    return WStoreBuilder<ProjectsPageStore>(
+      watch: (store) => [
+        store.customBackGroundLink,
+        store.backgroundId,
+      ],
+      builder: (context, store) {
+        return Stack(
+          children: [
+            BackgroundImage(
+              url: store.customBackGroundLink,
+              id: store.backgroundId,
             ),
-          ),
-        );
-      },
-      builderLoading: (context) {
-        return const SkeletonProjectBoard();
-      },
-      builder: (context, _) {
-        return const SizedBox.shrink();
-      },
-      builderLoaded: (BuildContext context) {
-        return WStoreBuilder<ProjectsPageStore>(
-          watch: (store) => [
-            store.selectedColumn,
-          ],
-          store: context.wstore(),
-          builder: (context, store) {
-            return Stack(
+            Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                BackgroundImage(
-                  url: store.customBackGroundLink,
-                  id: store.backgroundId,
-                ),
-                const Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ProjectColumnsListView(),
-                    ProjectsByColumnListView(),
-                  ],
-                ),
-                ProjectActionButton(
-                  spaceId: store.currentSpace?.id,
-                  columnId: store.selectedColumn.id,
+                const ProjectColumnsListView(),
+                // Подгружаются непосредственно колонки с проектами
+                WStoreStatusBuilder(
+                  store: store,
+                  watch: (store) => store.status,
+                  builderError: (context) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 48),
+                      child: Text(
+                        switch (store.error) {
+                          ProjectErrors.none => '',
+                          ProjectErrors.loadingDataError =>
+                            localization.problem_uploading_data_try_again
+                        },
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: const Color(0xFF111012).withOpacity(0.8),
+                          fontSize: 20,
+                          height: 1.2,
+                        ),
+                      ),
+                    );
+                  },
+                  builderLoading: (context) {
+                    return const SkeletonProjectBoard();
+                  },
+                  builder: (context, _) {
+                    return const SizedBox.shrink();
+                  },
+                  builderLoaded: (BuildContext context) {
+                    return const ProjectsByColumnListView();
+                  },
                 ),
               ],
-            );
-          },
+            ),
+            ProjectActionButton(
+              spaceId: store.currentSpace?.id,
+              columnId: store.selectedColumn.id,
+            ),
+          ],
         );
       },
     );
