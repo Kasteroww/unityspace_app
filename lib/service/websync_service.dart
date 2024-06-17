@@ -24,6 +24,7 @@ Future<void> onEvent(Map<String, dynamic> data) async {
   final jsonData = NotificationEventResponse.fromJson(data);
   final responseData = NotificationEvent.fromResponse(jsonData);
   return switch (responseData.event) {
+    'notification_created' => await notificationCreated(responseData.data),
     'notification_readed' => await notificationReaded(responseData.data),
     _ => logger.e('Websync ${responseData.event} is unknown'),
   };

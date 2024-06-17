@@ -116,7 +116,7 @@ class NotificationsScreenStore extends WStore {
     }).toList();
   }
 
-  ///Сортировка пользователей по ParentData
+  ///Сортировка уведомлений по ParentData
   List<NotificationsGroup> groupNotificationsByObject(
     List<NotificationModel> notifications,
   ) {

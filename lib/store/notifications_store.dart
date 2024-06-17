@@ -81,7 +81,11 @@ class NotificationsStore extends GStore {
         .notifications
         .map((notification) => NotificationModel.fromResponse(notification))
         .toList();
-    notifications.addAll(newNotifications);
+    if (page == 1) {
+      notifications = newNotifications;
+    } else {
+      notifications.addAll(newNotifications);
+    }
     final copyNotifications = [...notifications];
 
     // Обновление списка уведомлений в сторе
@@ -164,6 +168,23 @@ class NotificationsStore extends GStore {
     await api.deleteAllNotifications();
     setStore(() {
       notifications = [];
+    });
+  }
+
+  /// Обновляет или создает уведомление из socket
+  void updateNotificationsLocally(NotificationModel notification) {
+    final index = notifications.indexWhere(
+      (notify) => notify.id == notification.id,
+    );
+    final copyNotifications = [...notifications];
+    if (index != -1) {
+      copyNotifications[index] = notification;
+    } else {
+      copyNotifications.insert(0, notification);
+    }
+
+    setStore(() {
+      notifications = copyNotifications;
     });
   }
 
