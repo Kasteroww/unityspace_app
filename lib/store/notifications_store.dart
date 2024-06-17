@@ -37,24 +37,20 @@ class NotificationsStore extends GStore {
   /// Возвращает отформатированный список,
   /// в котором обновлен статус прочитано/непрочитано у
   /// уведомления
-  List<NotificationModel> _readLocally({
-    required List<NotificationResponse> notificationsToUpdate,
-    required List<NotificationModel> notifications,
+  void readLocally({
+    required int id,
+    required bool status,
   }) {
-    final List<int> notificationIdsToUpdate =
-        notificationsToUpdate.map((e) => e.id).toList();
-
-    return notifications.map((notification) {
-      if (notificationIdsToUpdate.contains(notification.id)) {
-        // Если идентификатор уведомления присутствует в списке для обновления,
-        // создаем новую копию уведомления с измененным параметром unread
-        return notification.copyWith(unread: !notification.unread);
+    final notificationList = notifications.map((notification) {
+      if (notification.id == id) {
+        return notification.copyWith(unread: status);
       } else {
-        // Если идентификатор уведомления не требуется обновлять,
-        // возвращаем его без изменений
         return notification;
       }
     }).toList();
+    setStore(() {
+      notifications = notificationList;
+    });
   }
 
   /// Возвращает отформатированный список,
@@ -125,12 +121,9 @@ class NotificationsStore extends GStore {
       notificationIds: notificationIds,
       status: !isUnread,
     );
-    setStore(() {
-      notifications = _readLocally(
-        notificationsToUpdate: readList,
-        notifications: notifications,
-      );
-    });
+    for (final notification in readList) {
+      readLocally(id: notification.id, status: !isUnread);
+    }
   }
 
   /// Удаляет уведомления по id тех уведомлений,
@@ -161,12 +154,9 @@ class NotificationsStore extends GStore {
   /// Читает все уведомления
   Future<void> readAllNotifications() async {
     final readList = await api.readAllNotifications();
-    setStore(() {
-      notifications = _readLocally(
-        notificationsToUpdate: readList,
-        notifications: notifications,
-      );
-    });
+    for (final notification in readList) {
+      readLocally(id: notification.id, status: false);
+    }
   }
 
   /// Удаляет все уведомления

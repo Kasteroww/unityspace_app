@@ -1,5 +1,6 @@
 import 'package:socket_io_client/socket_io_client.dart';
 import 'package:unityspace/resources/constants.dart';
+import 'package:unityspace/service/websync_service.dart';
 import 'package:unityspace/store/auth_store.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 
@@ -24,6 +25,7 @@ class SocketPlugin {
 
     socketConnect();
     socketDisconnect();
+    socketNotification();
   }
 
   void socketConnect() {
@@ -32,5 +34,13 @@ class SocketPlugin {
 
   void socketDisconnect() {
     socket.on('disconnect', (_) => logger.d('disconnect'));
+  }
+
+  void socketNotification() {
+    socket.on('notification', (data) async => onEvent(data));
+  }
+
+  void socketBroadcast() {
+    socket.on('broadcast', (data) async => logger.w(data));
   }
 }
