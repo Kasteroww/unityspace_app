@@ -89,7 +89,7 @@ class NotificationsInfoCard extends StatelessWidget {
                     child: Text(
                       notificationsGroup.title.removeLineBreaksAndTabs(),
                       overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
+                      maxLines: 1,
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,

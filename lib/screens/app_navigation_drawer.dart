@@ -526,8 +526,10 @@ class SpaceGroup extends StatelessWidget {
   final String? currentRoute;
   final Object? currentArguments;
 
-  String getGroupTitle(
-      {required AppLocalizations localization, required String groupName}) {
+  String getGroupTitle({
+    required AppLocalizations localization,
+    required String groupName,
+  }) {
     switch (groupName) {
       case 'All Spaces':
         return localization.all_spaces;

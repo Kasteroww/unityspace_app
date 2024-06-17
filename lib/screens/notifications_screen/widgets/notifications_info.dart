@@ -211,6 +211,7 @@ class NotificationInfo extends StatelessWidget {
                     context: context,
                   ),
                   overflow: TextOverflow.ellipsis,
+                  maxLines: 4,
                   style: const TextStyle(
                     color: Color.fromRGBO(
                       26,
