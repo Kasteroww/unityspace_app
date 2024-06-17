@@ -65,10 +65,25 @@ class SpaceScreen extends WStoreWidget<SpaceScreenStore> {
               watch: (store) => store.selectedTab,
               builder: (context, selectedTab) {
                 return switch (selectedTab) {
-                  SpacesScreenTab.projects => ProjectsPage(space: space),
-                  SpacesScreenTab.tasks => TasksPage(spaceId: space.id),
-                  SpacesScreenTab.reglaments => ReglamentsPage(space: space),
-                  SpacesScreenTab.members => SpaceMembersPage(spaceId: space.id)
+                  SpacesScreenTab.projects => ProjectsPage(
+                      key: const ValueKey('projects'),
+                      space: space,
+                      isArchivedPage: false,
+                    ),
+                  SpacesScreenTab.projectsArchive => ProjectsPage(
+                      key: const ValueKey('projectsArchive'),
+                      space: space,
+                      isArchivedPage: true,
+                    ),
+                  SpacesScreenTab.tasks => TasksPage(
+                      spaceId: space.id,
+                    ),
+                  SpacesScreenTab.reglaments => ReglamentsPage(
+                      space: space,
+                    ),
+                  SpacesScreenTab.members => SpaceMembersPage(
+                      spaceId: space.id,
+                    ),
                 };
               },
             ),
@@ -79,4 +94,10 @@ class SpaceScreen extends WStoreWidget<SpaceScreenStore> {
   }
 }
 
-enum SpacesScreenTab { projects, tasks, reglaments, members }
+enum SpacesScreenTab {
+  projects,
+  tasks,
+  reglaments,
+  members,
+  projectsArchive,
+}

@@ -44,10 +44,19 @@ class PopUpSpacesScreenButton extends StatelessWidget {
               text: localization.reglaments,
             ),
           ),
+
+          // Участники пространства
           PopupMenuItem<SpacesScreenTab>(
             value: SpacesScreenTab.members,
             child: PopupMenuItemChild(
               text: localization.members,
+            ),
+          ),
+          // Архив проектов
+          PopupMenuItem<SpacesScreenTab>(
+            value: SpacesScreenTab.projectsArchive,
+            child: PopupMenuItemChild(
+              text: localization.project_archive,
             ),
           ),
         ];

@@ -27,7 +27,7 @@ class ProjectWithUsersOnline {
 class ProjectsPageStore extends WStore {
   ProjectErrors error = ProjectErrors.none;
   WStoreStatus status = WStoreStatus.init;
-  bool isArchivedPage = false;
+  bool get isArchivedPage => widget.isArchivedPage;
   late int archiveColumnId;
   late SpaceColumn selectedColumn;
 
@@ -101,12 +101,6 @@ class ProjectsPageStore extends WStore {
         keyName: 'isNeedToShowArchive',
       );
 
-  void selectArchive() {
-    setStore(() {
-      isArchivedPage = !isArchivedPage;
-    });
-  }
-
   bool get isOwnerOrAdmin => computedFromStore(
         store: UserStore(),
         getValue: (store) => store.isOwnerOrAdmin,
@@ -165,9 +159,11 @@ class ProjectsPageStore extends WStore {
 
 class ProjectsPage extends WStoreWidget<ProjectsPageStore> {
   final Space space;
+  final bool isArchivedPage;
 
   const ProjectsPage({
     required this.space,
+    required this.isArchivedPage,
     super.key,
   });
 
