@@ -276,9 +276,7 @@ class UserStore extends GStore {
     });
   }
 
-  @override
-  void clear() {
-    super.clear();
+  void dispose() {
     setStore(() {
       user = null;
       organizationId = null;
