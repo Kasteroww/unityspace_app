@@ -263,9 +263,7 @@ class TasksStore extends GStore {
     });
   }
 
-  @override
-  void clear() {
-    super.clear();
+  void empty() {
     setStore(() {
       history = null;
       tasks = null;

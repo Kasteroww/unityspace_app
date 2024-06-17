@@ -285,9 +285,7 @@ class SpacesStore extends GStore {
     });
   }
 
-  @override
-  void clear() {
-    super.clear();
+  void empty() {
     setStore(() {
       spaces.clear();
     });

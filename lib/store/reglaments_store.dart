@@ -311,9 +311,7 @@ class ReglamentsStore extends GStore {
     return [...newReglaments];
   }
 
-  @override
-  void clear() {
-    super.clear();
+  void empty() {
     setStore(() {
       reglaments = null;
     });

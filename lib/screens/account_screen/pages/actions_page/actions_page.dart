@@ -79,7 +79,7 @@ class ActionsPageStore extends WStore {
 
   @override
   void dispose() {
-    TasksStore().clear();
+    TasksStore().empty();
     super.dispose();
   }
 }

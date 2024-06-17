@@ -276,7 +276,8 @@ class UserStore extends GStore {
     });
   }
 
-  void dispose() {
+  void empty() {
+
     setStore(() {
       user = null;
       organizationId = null;

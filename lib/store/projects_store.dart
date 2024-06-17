@@ -332,9 +332,7 @@ class ProjectsStore extends GStore {
     }
   }
 
-  @override
-  void clear() {
-    super.clear();
+  void empty() {
     setStore(() {
       projects.clear();
     });
