@@ -120,7 +120,7 @@ class NotificationsInfoCard extends StatelessWidget {
     List<NotificationModel> notifications,
   ) {
     final List<NotificationModel> sortedNotifications = notifications;
-    // сортировка уведомлений от новейшего к более старому
+    // сортировка уведомлений в списке от старого к более новому
     sortedNotifications.sort((a, b) => a.createdAt.compareTo(b.createdAt));
 
     return sortedNotifications;

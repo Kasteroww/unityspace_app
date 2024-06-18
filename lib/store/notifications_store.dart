@@ -50,6 +50,13 @@ class Notifications with GStoreChangeObjectMixin {
 
   List<NotificationModel> get list => _notificationsMap.values.toList();
 
+  // Сортировка уведомлений от старого к новому
+  List<NotificationModel> get sortedlist => _notificationsMap.values.toList()
+    ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
+
+  // Сортировка уведомлений от нового к старому
+  List<NotificationModel> get reverseSortedlist => sortedlist.reversed.toList();
+
   int get length => _notificationsMap.length;
 }
 
