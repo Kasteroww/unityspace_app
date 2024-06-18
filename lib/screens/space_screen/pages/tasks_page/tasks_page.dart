@@ -16,6 +16,7 @@ import 'package:unityspace/screens/space_screen/pages/tasks_page/widgets/popup_s
 import 'package:unityspace/screens/space_screen/pages/tasks_page/widgets/tasks_list.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/paddings.dart';
+import 'package:unityspace/screens/widgets/stubs/work_in_progress_stub.dart';
 import 'package:unityspace/store/projects_store.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/tasks_store.dart';
@@ -30,6 +31,7 @@ import 'package:wstore/wstore.dart';
 /// возвращает его локализованное значение
 
 class TasksPageStore extends WStore {
+  bool isWorkInProgress = true;
   // GENERAL
   TasksErrors error = TasksErrors.none;
   WStoreStatus status = WStoreStatus.init;
@@ -501,182 +503,188 @@ class TasksPage extends WStoreWidget<TasksPageStore> {
   Widget build(BuildContext context, TasksPageStore store) {
     final localization = LocalizationHelper.getLocalizations(context);
 
-    return WStoreStatusBuilder<TasksPageStore>(
-      watch: (store) => store.status,
-      builder: (context, store) {
-        return const SizedBox.shrink();
-      },
-      builderLoading: (context) {
-        return Center(
-          child: Lottie.asset(
-            AppIcons.mainLoader,
-            width: 200,
-            height: 200,
-          ),
-        );
-      },
-      builderLoaded: (context) {
-        return PaddingAll(
-          20,
-          child: SizedBox(
-            width: double.infinity,
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Row(
+    return store.isWorkInProgress
+        ? const WorkInProgressStub()
+        : WStoreStatusBuilder<TasksPageStore>(
+            watch: (store) => store.status,
+            builder: (context, store) {
+              return const SizedBox.shrink();
+            },
+            builderLoading: (context) {
+              return Center(
+                child: Lottie.asset(
+                  AppIcons.mainLoader,
+                  width: 200,
+                  height: 200,
+                ),
+              );
+            },
+            builderLoaded: (context) {
+              return PaddingAll(
+                20,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Column(
+                    children: [
+                      Row(
                         children: [
-                          Flexible(
-                            flex: 2,
-                            child:
-                                WStoreValueBuilder<TasksPageStore, TaskFilter>(
-                              watch: (store) => store.filterType,
-                              builder: (BuildContext context, value) {
-                                return PopupTaskFilterButton(
-                                  value: value,
-                                );
-                              },
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Flexible(
+                                  flex: 2,
+                                  child: WStoreValueBuilder<TasksPageStore,
+                                      TaskFilter>(
+                                    watch: (store) => store.filterType,
+                                    builder: (BuildContext context, value) {
+                                      return PopupTaskFilterButton(
+                                        value: value,
+                                      );
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 12,
+                                ),
+                                Flexible(
+                                  flex: 2,
+                                  child: WStoreValueBuilder<TasksPageStore,
+                                      TaskSort>(
+                                    watch: (store) => store.sortType,
+                                    builder: (BuildContext context, value) {
+                                      return PopUpTaskSortButton(
+                                        value: value,
+                                      );
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 12,
+                                ),
+                                Flexible(
+                                  flex: 3,
+                                  child: WStoreValueBuilder<TasksPageStore,
+                                      TaskGrouping>(
+                                    watch: (store) => store.groupingType,
+                                    builder: (BuildContext context, value) {
+                                      return PopUpTaskGroupingButton(
+                                        value: value,
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                           const SizedBox(
-                            width: 12,
+                            width: 20,
                           ),
-                          Flexible(
-                            flex: 2,
-                            child: WStoreValueBuilder<TasksPageStore, TaskSort>(
-                              watch: (store) => store.sortType,
-                              builder: (BuildContext context, value) {
-                                return PopUpTaskSortButton(
-                                  value: value,
-                                );
+                          SizedBox(
+                            width: 150,
+                            child: AddDialogInputField(
+                              labelText: '${localization.find}...',
+                              onChanged: (value) {
+                                store.setSearchString(value);
+                                if (value.isEmpty) {
+                                  store.setIsSearching(false);
+                                }
                               },
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 12,
-                          ),
-                          Flexible(
-                            flex: 3,
-                            child: WStoreValueBuilder<TasksPageStore,
-                                TaskGrouping>(
-                              watch: (store) => store.groupingType,
-                              builder: (BuildContext context, value) {
-                                return PopUpTaskGroupingButton(
-                                  value: value,
-                                );
+                              initialValue: store.searchString,
+                              onEditingComplete: () {
+                                final currentSearchString = store.searchString;
+                                if (currentSearchString.isNotEmpty) {
+                                  store.setIsSearching(true);
+                                }
+                                FocusScope.of(context).unfocus();
+                              },
+                              onTapOutside: (_) {
+                                if (FocusScope.of(context).hasFocus) {
+                                  FocusScope.of(context).unfocus();
+                                }
                               },
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    const SizedBox(
-                      width: 20,
-                    ),
-                    SizedBox(
-                      width: 150,
-                      child: AddDialogInputField(
-                        labelText: '${localization.find}...',
-                        onChanged: (value) {
-                          store.setSearchString(value);
-                          if (value.isEmpty) {
-                            store.setIsSearching(false);
-                          }
-                        },
-                        initialValue: store.searchString,
-                        onEditingComplete: () {
-                          final currentSearchString = store.searchString;
-                          if (currentSearchString.isNotEmpty) {
-                            store.setIsSearching(true);
-                          }
-                          FocusScope.of(context).unfocus();
-                        },
-                        onTapOutside: (_) {
-                          if (FocusScope.of(context).hasFocus) {
-                            FocusScope.of(context).unfocus();
-                          }
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                const PaddingTop(20),
-                SizedBox(
-                  height: 50,
-                  width: double.infinity,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 8,
-                        child: Text(
-                          localization.task_name,
-                          style:
-                              Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                      const PaddingTop(20),
+                      SizedBox(
+                        height: 50,
+                        width: double.infinity,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 8,
+                              child: Text(
+                                localization.task_name,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                              ),
+                            ),
+                            const DividerWithoutPadding(
+                              isHorisontal: false,
+                              color: ColorConstants.grey04,
+                            ),
+                            Flexible(
+                              flex: 2,
+                              child: PaddingLeft(
+                                8,
+                                child: Text(
+                                  localization.column,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium!
+                                      .copyWith(
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       const DividerWithoutPadding(
-                        isHorisontal: false,
                         color: ColorConstants.grey04,
                       ),
-                      Flexible(
-                        flex: 2,
-                        child: PaddingLeft(
-                          8,
-                          child: Text(
-                            localization.column,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium!
-                                .copyWith(
-                                  fontWeight: FontWeight.w500,
+                      Expanded(
+                        child: WStoreBuilder<TasksPageStore>(
+                          watch: (store) => [
+                            store.groupingType,
+                            store.sortType,
+                            store.isSearching,
+                            store.filterType,
+                          ],
+                          builder: (context, store) {
+                            if (store.groupingType == TaskGrouping.noGroup) {
+                              return TasksList(
+                                tasks: store.sortTasks(
+                                  store.isSearching
+                                      ? store.searchedTasks
+                                      : store.tasks,
                                 ),
-                          ),
+                              );
+                            } else {
+                              return GroupedTasksList(
+                                tasksList: context
+                                    .wstore<TasksPageStore>()
+                                    .groupedTasks(
+                                      store.isSearching
+                                          ? store.searchedTasks
+                                          : store.tasks,
+                                    ),
+                              );
+                            }
+                          },
                         ),
                       ),
                     ],
                   ),
                 ),
-                const DividerWithoutPadding(
-                  color: ColorConstants.grey04,
-                ),
-                Expanded(
-                  child: WStoreBuilder<TasksPageStore>(
-                    watch: (store) => [
-                      store.groupingType,
-                      store.sortType,
-                      store.isSearching,
-                      store.filterType,
-                    ],
-                    builder: (context, store) {
-                      if (store.groupingType == TaskGrouping.noGroup) {
-                        return TasksList(
-                          tasks: store.sortTasks(
-                            store.isSearching
-                                ? store.searchedTasks
-                                : store.tasks,
-                          ),
-                        );
-                      } else {
-                        return GroupedTasksList(
-                          tasksList:
-                              context.wstore<TasksPageStore>().groupedTasks(
-                                    store.isSearching
-                                        ? store.searchedTasks
-                                        : store.tasks,
-                                  ),
-                        );
-                      }
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+              );
+            },
+          );
   }
 }

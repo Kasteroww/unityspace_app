@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/navbar_switches.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_board/project_boards.dart';
+import 'package:unityspace/screens/widgets/stubs/work_in_progress_stub.dart';
 import 'package:unityspace/store/projects_store.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wstore/wstore.dart';
@@ -89,7 +90,9 @@ class ProjectContent extends WStoreWidget<ProjectContentStore> {
                 if (store.isTasksTab)
                   ProjectBoards(
                     projectId: projectId,
-                  ),
+                  )
+                else
+                  const WorkInProgressStub(),
               ],
             ),
           );

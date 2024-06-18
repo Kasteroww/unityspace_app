@@ -704,5 +704,6 @@
   "your_archive_is_empty":"Ваш архив пуст",
   "this_section_store_archive_notifications" : "В этом разделе будут храниться уведомления, которые вы архивировали",
   "you_aware_all_the_work" : "Вы в курсе всей работы в Пространствах",
-  "important_notifications_will_shown_in_this_section":"В этом разделе будут показаны важные уведомления, когда что-нибудь произойдёт"
+  "important_notifications_will_shown_in_this_section":"В этом разделе будут показаны важные уведомления, когда что-нибудь произойдёт",
+  "oops_page_is_unavailable":"Упс! Данная страница сейчас не доступна. Мы работаем над её появлением, зайдите позднее"
 }
