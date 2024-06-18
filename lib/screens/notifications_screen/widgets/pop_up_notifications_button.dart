@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:unityspace/screens/notifications_screen/notifications_screen.dart';
+import 'package:unityspace/screens/widgets/pop_up_button.dart/default_pop_up_button.dart';
+import 'package:unityspace/screens/widgets/pop_up_button.dart/pop_up_menu_child.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
 
@@ -12,12 +14,7 @@ class PopUpNotificationsButton extends StatelessWidget {
     final localization = LocalizationHelper.getLocalizations(context);
     final store = context.wstore<NotificationsScreenStore>();
 
-    return PopupMenuButton<String>(
-      elevation: 1,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      color: Colors.white,
+    return DefaultPopUpButton(
       child: SizedBox(
         height: 55,
         width: 55,
@@ -54,39 +51,6 @@ class PopUpNotificationsButton extends StatelessWidget {
           ],
         ];
       },
-    );
-  }
-}
-
-class PopupMenuItemChild extends StatelessWidget {
-  final String iconPath;
-  final String text;
-  const PopupMenuItemChild({
-    required this.iconPath,
-    required this.text,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        SizedBox(
-          height: 16,
-          width: 16,
-          child: SvgPicture.asset(iconPath),
-        ),
-        const SizedBox(width: 12),
-        Text(
-          text,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-            height: 16.41 / 14,
-            color: Color.fromRGBO(77, 77, 77, 1),
-          ),
-        ),
-      ],
     );
   }
 }

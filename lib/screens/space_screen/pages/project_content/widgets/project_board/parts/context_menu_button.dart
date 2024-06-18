@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/resources/app_icons.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_board/dialogs/move_task_dialog.dart';
-import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_board/parts/context_menu_item.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_board/project_boards.dart';
+import 'package:unityspace/screens/widgets/pop_up_button.dart/default_pop_up_button.dart';
+import 'package:unityspace/screens/widgets/pop_up_button.dart/pop_up_menu_child.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
 
@@ -27,8 +28,7 @@ class ContextMenuButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final localization = LocalizationHelper.getLocalizations(context);
     final store = context.wstore<ProjectBoardsStore>();
-    return PopupMenuButton<String>(
-      elevation: 1,
+    return DefaultPopUpButton(
       child: SvgPicture.asset(AppIcons.settings),
       itemBuilder: (BuildContext context) {
         final currentTaskIndex = tasks.indexOf(task);
@@ -42,7 +42,7 @@ class ContextMenuButton extends StatelessWidget {
                 taskId: task.id,
                 lastTask: tasks.lastOrNull,
               ),
-              child: ContextMenuItem(
+              child: PopupMenuItemChild(
                 text: localization.move_it_to_bottom_column,
               ),
             ),
@@ -55,7 +55,7 @@ class ContextMenuButton extends StatelessWidget {
                 taskId: task.id,
                 firstTask: tasks.firstOrNull,
               ),
-              child: ContextMenuItem(
+              child: PopupMenuItemChild(
                 text: localization.move_it_to_top_column,
               ),
             ),
@@ -68,7 +68,7 @@ class ContextMenuButton extends StatelessWidget {
                 taskId: task.id,
                 firstTask: tasks.firstOrNull,
               ),
-              child: ContextMenuItem(
+              child: PopupMenuItemChild(
                 text: localization.move_it_to_top_column,
               ),
             ),
@@ -78,7 +78,7 @@ class ContextMenuButton extends StatelessWidget {
                 taskId: task.id,
                 lastTask: tasks.lastOrNull,
               ),
-              child: ContextMenuItem(
+              child: PopupMenuItemChild(
                 text: localization.move_it_to_bottom_column,
               ),
             ),
@@ -91,27 +91,27 @@ class ContextMenuButton extends StatelessWidget {
               projectId,
               stage.id,
             ),
-            child: ContextMenuItem(
+            child: PopupMenuItemChild(
               text: localization.move,
             ),
           ),
           PopupMenuItem(
-            child: ContextMenuItem(
+            child: PopupMenuItemChild(
               text: localization.copy_task_link,
             ),
           ),
           PopupMenuItem(
-            child: ContextMenuItem(
+            child: PopupMenuItemChild(
               text: localization.copy_task_number,
             ),
           ),
           PopupMenuItem(
-            child: ContextMenuItem(
+            child: PopupMenuItemChild(
               text: localization.duplicate_task,
             ),
           ),
           PopupMenuItem(
-            child: ContextMenuItem(
+            child: PopupMenuItemChild(
               text: localization.to_archive,
             ),
           ),
@@ -120,7 +120,7 @@ class ContextMenuButton extends StatelessWidget {
               taskId: task.id,
               stageId: stage.id,
             ),
-            child: ContextMenuItem(
+            child: PopupMenuItemChild(
               text: localization.delete,
               color: Colors.red,
             ),

@@ -3,7 +3,7 @@ import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/resources/app_icons.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/app_dialog_confirm_delete.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/change_tab_dialog.dart';
-import 'package:unityspace/screens/space_screen/pages/project_content/widgets/navbar/navbar_popup_item.dart';
+import 'package:unityspace/screens/widgets/pop_up_button.dart/pop_up_menu_child.dart';
 import 'package:unityspace/store/projects_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
@@ -157,9 +157,9 @@ class NavbarMenuDialogItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      child: NavbarPopupItem(
+      child: PopupMenuItemChild(
         text: text,
-        icon: icon,
+        iconPath: icon,
       ),
     );
   }

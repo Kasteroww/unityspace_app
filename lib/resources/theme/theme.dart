@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 ThemeData themeData = ThemeData(
   fontFamily: 'Roboto',
-  colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0C5B35)),
   scaffoldBackgroundColor: ColorConstants.background,
   appBarTheme: const AppBarTheme(
     backgroundColor: ColorConstants.background,
@@ -29,7 +28,6 @@ ThemeData themeData = ThemeData(
       ),
     ),
   ),
-  useMaterial3: true,
 );
 
 class ColorConstants {

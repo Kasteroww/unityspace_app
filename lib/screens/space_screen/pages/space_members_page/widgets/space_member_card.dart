@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:unityspace/resources/app_icons.dart';
 import 'package:unityspace/screens/administration_screen/helpers/organization_members_editing_rights_enum.dart';
 import 'package:unityspace/screens/space_screen/pages/space_members_page/space_members_page.dart';
-import 'package:unityspace/screens/space_screen/pages/space_members_page/widgets/popup_menu_members_actions_item.dart';
+import 'package:unityspace/screens/widgets/pop_up_button.dart/default_pop_up_button.dart';
+import 'package:unityspace/screens/widgets/pop_up_button.dart/pop_up_menu_child.dart';
 import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
 import 'package:unityspace/utils/extensions/localization_extensions.dart';
 import 'package:unityspace/utils/localization_helper.dart';
@@ -75,21 +74,17 @@ class SpaceMemberInfoCard extends StatelessWidget {
                   ),
                   if (editingRights !=
                       OrganizationMembersEditingRightsEnum.none)
-                    PopupMenuButton<PopupMenuMembersActionItem>(
-                      elevation: 1,
-                      color: Colors.white,
+                    DefaultPopUpButton(
                       child: Text(
                         spaceMember.role.localize(localization: localization),
                       ),
                       itemBuilder: (BuildContext context) {
-                        return <PopupMenuEntry<PopupMenuMembersActionItem>>[
+                        return <PopupMenuEntry<String>>[
                           if (editingRights ==
                               OrganizationMembersEditingRightsEnum.full)
-                            PopupMenuItem<PopupMenuMembersActionItem>(
-                              child: PopupMenuMembersActionItem(
-                                child: Text(
-                                  localization.reader,
-                                ),
+                            PopupMenuItem(
+                              child: PopupMenuItemChild(
+                                text: localization.reader,
                               ),
                               onTap: () {
                                 context
@@ -99,9 +94,9 @@ class SpaceMemberInfoCard extends StatelessWidget {
                             ),
                           if (editingRights ==
                               OrganizationMembersEditingRightsEnum.full)
-                            PopupMenuItem<PopupMenuMembersActionItem>(
-                              child: PopupMenuMembersActionItem(
-                                child: Text(localization.initiator),
+                            PopupMenuItem(
+                              child: PopupMenuItemChild(
+                                text: localization.initiator,
                               ),
                               onTap: () {
                                 context
@@ -111,9 +106,9 @@ class SpaceMemberInfoCard extends StatelessWidget {
                             ),
                           if (editingRights ==
                               OrganizationMembersEditingRightsEnum.full)
-                            PopupMenuItem<PopupMenuMembersActionItem>(
-                              child: PopupMenuMembersActionItem(
-                                child: Text(localization.participant),
+                            PopupMenuItem(
+                              child: PopupMenuItemChild(
+                                text: localization.participant,
                               ),
                               onTap: () {
                                 context
@@ -121,17 +116,9 @@ class SpaceMemberInfoCard extends StatelessWidget {
                                     .setSpaceMemberRole(spaceMember.id, 2);
                               },
                             ),
-                          PopupMenuItem<PopupMenuMembersActionItem>(
-                            child: PopupMenuMembersActionItem(
-                              child: Row(
-                                children: [
-                                  Text(localization.delete),
-                                  const SizedBox(
-                                    width: 8,
-                                  ),
-                                  SvgPicture.asset(AppIcons.delete),
-                                ],
-                              ),
+                          PopupMenuItem(
+                            child: PopupMenuItemChild(
+                              text: localization.delete,
                             ),
                             onTap: () {
                               context

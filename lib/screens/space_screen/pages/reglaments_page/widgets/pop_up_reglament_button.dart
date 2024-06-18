@@ -5,6 +5,7 @@ import 'package:unityspace/screens/space_screen/pages/reglaments_page/reglaments
 import 'package:unityspace/screens/space_screen/pages/reglaments_page/widgets/dialogs/duplicate_reglament_dialog.dart';
 import 'package:unityspace/screens/space_screen/pages/reglaments_page/widgets/dialogs/move_reglament_dialog.dart';
 import 'package:unityspace/screens/space_screen/pages/reglaments_page/widgets/dialogs/rename_reglament_dialog.dart';
+import 'package:unityspace/screens/widgets/pop_up_button.dart/pop_up_menu_child.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
 
@@ -138,23 +139,5 @@ class PopUpReglamentButton extends StatelessWidget {
     required int archivedColumnId,
   }) {
     return currentColumnId == archivedColumnId;
-  }
-}
-
-class PopupMenuItemChild extends StatelessWidget {
-  final String text;
-  const PopupMenuItemChild({required this.text, super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
-        height: 16.41 / 14,
-        color: Color.fromRGBO(77, 77, 77, 1),
-      ),
-    );
   }
 }
