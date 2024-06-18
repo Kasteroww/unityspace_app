@@ -255,6 +255,7 @@ class NotificationsScreen extends WStoreWidget<NotificationsScreenStore> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 16),
           WStoreBuilder(
             store: store,
             watch: (store) => [store.selectedTab, store.currentUserTabs],
@@ -277,7 +278,7 @@ class NotificationsScreen extends WStoreWidget<NotificationsScreenStore> {
               ],
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 24),
           Expanded(
             child: WStoreValueBuilder(
               store: store,

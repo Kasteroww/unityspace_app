@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/resources/errors.dart';
+import 'package:unityspace/screens/notifications_screen/widgets/empty_notifications_stub.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/notifications_list.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/skeleton_listview/notification_skeleton_card.dart';
 import 'package:unityspace/screens/widgets/paddings.dart';
@@ -155,11 +156,19 @@ class ArchivedNotificationsPage
         );
       },
       builder: (context, _) {
+        return const SizedBox.shrink();
+      },
+      builderLoaded: (context) {
         return WStoreBuilder(
           store: store,
           watch: (store) => [store.notifications],
           builder: (context, store) {
             final List<NotificationModel> notifications = store.notifications;
+            if (notifications.isEmpty) {
+              return EmptyNotificationsStub(
+                isArchivePage: store.isArchived,
+              );
+            }
             return NotificationsList(
               needToLoadNextPage: store.needToLoadNextPage,
               items: notifications,
