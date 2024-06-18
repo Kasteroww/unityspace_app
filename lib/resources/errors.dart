@@ -44,6 +44,8 @@ enum DeleteProjectTabErrors { none, deleteProjectTabError }
 
 enum CreateProjectErrors { none, emptyName, createError }
 
+enum CreateSpaceColumnErrors { none, emptyName, createError }
+
 enum AddSpaceErrors { none, emptyName, paidTariffError, createError }
 
 enum ChangeGitHubLinkErrors { none, invalidLink, changeLinkError }

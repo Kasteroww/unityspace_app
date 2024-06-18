@@ -28,13 +28,13 @@ Future<void> showAddSpaceColumnDialog(
 }
 
 class AddProjectDialogStore extends WStore {
-  String projectName = '';
-  CreateProjectErrors createProjectError = CreateProjectErrors.none;
-  WStoreStatus statusCreateProject = WStoreStatus.init;
+  String columnName = '';
+  CreateSpaceColumnErrors createColumnError = CreateSpaceColumnErrors.none;
+  WStoreStatus statusCreateColumn = WStoreStatus.init;
 
-  void setProjectName(String value) {
+  void setColumnName(String value) {
     setStore(() {
-      projectName = value;
+      columnName = value;
     });
   }
 
@@ -67,15 +67,15 @@ class AddProjectDialogStore extends WStore {
   }
 
   void createSpaceColumn() {
-    if (statusCreateProject == WStoreStatus.loading) return;
+    if (statusCreateColumn == WStoreStatus.loading) return;
     setStore(() {
-      statusCreateProject = WStoreStatus.loading;
-      createProjectError = CreateProjectErrors.none;
+      statusCreateColumn = WStoreStatus.loading;
+      createColumnError = CreateSpaceColumnErrors.none;
     });
-    if (projectName.isEmpty) {
+    if (columnName.isEmpty) {
       setStore(() {
-        createProjectError = CreateProjectErrors.emptyName;
-        statusCreateProject = WStoreStatus.error;
+        createColumnError = CreateSpaceColumnErrors.emptyName;
+        statusCreateColumn = WStoreStatus.error;
       });
       return;
     }
@@ -83,22 +83,22 @@ class AddProjectDialogStore extends WStore {
     subscribe(
       future: SpacesStore().createSpaceColumn(
         spaceId: widget.spaceId,
-        name: projectName,
+        name: columnName,
         order: _getNextOrder(),
       ),
       subscriptionId: 1,
       onData: (_) {
         setStore(() {
-          statusCreateProject = WStoreStatus.loaded;
+          statusCreateColumn = WStoreStatus.loaded;
         });
       },
       onError: (error, stack) {
         logger.d(
-          'CreateProjectDialogStore.createProject error: $error stack: $stack',
+          'CreateSpaceColumnDialogStore.createSpaceColumn error: $error stack: $stack',
         );
         setStore(() {
-          statusCreateProject = WStoreStatus.error;
-          createProjectError = CreateProjectErrors.createError;
+          statusCreateColumn = WStoreStatus.error;
+          createColumnError = CreateSpaceColumnErrors.createError;
         });
       },
     );
@@ -124,7 +124,7 @@ class AddProjectDialog extends WStoreWidget<AddProjectDialogStore> {
     final localization = LocalizationHelper.getLocalizations(context);
     return WStoreStatusBuilder(
       store: store,
-      watch: (store) => store.statusCreateProject,
+      watch: (store) => store.statusCreateColumn,
       onStatusLoaded: (context) {
         Navigator.of(context).pop();
       },
@@ -146,22 +146,22 @@ class AddProjectDialog extends WStoreWidget<AddProjectDialogStore> {
               textInputAction: TextInputAction.done,
               textCapitalization: TextCapitalization.words,
               onChanged: (value) {
-                store.setProjectName(value);
+                store.setColumnName(value);
               },
               onEditingComplete: () {
                 FocusScope.of(context).unfocus();
                 store.createSpaceColumn();
               },
-              labelText: '${localization.title}:',
+              labelText: '${localization.group_name}:',
             ),
             if (error)
               Text(
-                switch (store.createProjectError) {
-                  CreateProjectErrors.emptyName =>
-                    localization.empty_project_name_error,
-                  CreateProjectErrors.createError =>
-                    localization.create_project_error,
-                  CreateProjectErrors.none => '',
+                switch (store.createColumnError) {
+                  CreateSpaceColumnErrors.emptyName =>
+                    localization.empty_group_name_error,
+                  CreateSpaceColumnErrors.createError =>
+                    localization.create_group_error,
+                  CreateSpaceColumnErrors.none => '',
                 },
                 style: const TextStyle(
                   color: Color(0xFFD83400),
