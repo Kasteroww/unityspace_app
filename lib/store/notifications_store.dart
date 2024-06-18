@@ -2,8 +2,56 @@ import 'dart:async';
 
 import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/service/notification_service.dart' as api;
-import 'package:unityspace/utils/helpers.dart';
 import 'package:wstore/wstore.dart';
+
+class Notifications with GStoreChangeObjectMixin {
+  final Map<int, NotificationModel> _notificationsMap = {};
+
+  Notifications();
+
+  void add(NotificationModel notification) {
+    _setNotification(notification);
+    incrementObjectChangeCount();
+  }
+
+  void addAll(Iterable<NotificationModel> all) {
+    if (all.isNotEmpty) {
+      for (final notification in all) {
+        _setNotification(notification);
+      }
+      incrementObjectChangeCount();
+    }
+  }
+
+  void remove(int notificationId) {
+    _removeNotification(notificationId);
+    incrementObjectChangeCount();
+  }
+
+  void clear() {
+    if (_notificationsMap.isNotEmpty) {
+      _notificationsMap.clear();
+      incrementObjectChangeCount();
+    }
+  }
+
+  void _setNotification(NotificationModel notification) {
+    _removeNotification(notification.id);
+    _notificationsMap[notification.id] = notification;
+  }
+
+  void _removeNotification(int id) {
+    _notificationsMap.remove(id);
+  }
+
+  NotificationModel? operator [](int id) => _notificationsMap[id];
+
+  Iterable<NotificationModel> get iterable => _notificationsMap.values;
+
+  List<NotificationModel> get list => _notificationsMap.values.toList();
+
+  int get length => _notificationsMap.length;
+}
 
 class NotificationsStore extends GStore {
   static NotificationsStore? _instance;
@@ -12,22 +60,17 @@ class NotificationsStore extends GStore {
 
   NotificationsStore._();
 
-  List<NotificationModel> notifications = [];
+  Notifications notifications = Notifications();
 
-  Map<int, NotificationModel?> get notificationModelMap {
-    return createMapById(notifications);
-  }
+  Map<int, NotificationModel?> get notificationMap =>
+      notifications._notificationsMap;
 
   /// Возвращает отформатированный список,
   /// из которого уже убраны отформатированные/вернувшиеся из форматирования
   /// уведомления
-  void removeFromListLocally({
-    required int notificationId,
-  }) {
-    final notificationList = notifications
-      ..removeWhere((notify) => notify.id == notificationId);
+  void removeFromListLocally({required int notificationId}) {
     setStore(() {
-      notifications = [...notificationList];
+      notifications.remove(notificationId);
     });
   }
 
@@ -38,30 +81,22 @@ class NotificationsStore extends GStore {
     required int id,
     required bool status,
   }) {
-    final notificationList = notifications.map((notification) {
-      if (notification.id == id) {
-        return notification.copyWith(unread: status);
-      } else {
-        return notification;
-      }
-    }).toList();
-    setStore(() {
-      notifications = notificationList;
-    });
+    final notification = notifications[id];
+    if (notification != null) {
+      final updatedNotification = notification.copyWith(unread: status);
+      setStore(() {
+        notifications.add(updatedNotification);
+      });
+    }
   }
 
   /// Возвращает отформатированный список,
   /// из которого уже убраны отформатированные/вернувшиеся из форматирования
   /// уведомления
-  List<NotificationModel> _deleteLocally({
-    required List<NotificationModel> notifications,
-    required List<int> notificationIdsToRemove,
-  }) {
-    return notifications
-        .where(
-          (notification) => !notificationIdsToRemove.contains(notification.id),
-        )
-        .toList();
+  void _deleteLocally({required int notificationId}) {
+    setStore(() {
+      notifications.remove(notificationId);
+    });
   }
 
   Future<int> getNotificationsData({
@@ -74,20 +109,13 @@ class NotificationsStore extends GStore {
         : await api.getNotificationsOnPage(page: page);
 
     // Преобразование ответа в список моделей NotificationModel
-    final List<NotificationModel> newNotifications = notificationsData
-        .notifications
-        .map((notification) => NotificationModel.fromResponse(notification))
-        .toList();
+    final loadedNotifications = notificationsData.notifications
+        .map((notification) => NotificationModel.fromResponse(notification));
     if (page == 1) {
-      notifications = newNotifications;
-    } else {
-      notifications.addAll(newNotifications);
+      notifications.clear();
     }
-    final copyNotifications = [...notifications];
-
-    // Обновление списка уведомлений в сторе
     setStore(() {
-      notifications = copyNotifications;
+      notifications.addAll(loadedNotifications);
     });
 
     // Возврат максимального количества страниц
@@ -127,15 +155,10 @@ class NotificationsStore extends GStore {
   /// Удаляет уведомления по id тех уведомлений,
   /// которые мы укажем
   Future<void> deleteNotifications(List<int> notificationIds) async {
-    await api.deleteNotification(
-      notificationIds: notificationIds,
-    );
-    setStore(() {
-      notifications = _deleteLocally(
-        notifications: notifications,
-        notificationIdsToRemove: notificationIds,
-      );
-    });
+    await api.deleteNotification(notificationIds: notificationIds);
+    for (final id in notificationIds) {
+      _deleteLocally(notificationId: id);
+    }
   }
 
   /// Архивирует все уведомления
@@ -158,30 +181,20 @@ class NotificationsStore extends GStore {
   Future<void> deleteAllNotifications() async {
     await api.deleteAllNotifications();
     setStore(() {
-      notifications = [];
+      notifications.clear();
     });
   }
 
   /// Обновляет или создает уведомление из socket
   void updateNotificationsLocally(NotificationModel notification) {
-    final index = notifications.indexWhere(
-      (notify) => notify.id == notification.id,
-    );
-    final copyNotifications = [...notifications];
-    if (index != -1) {
-      copyNotifications[index] = notification;
-    } else {
-      copyNotifications.insert(0, notification);
-    }
-
     setStore(() {
-      notifications = [...copyNotifications];
+      notifications.add(notification);
     });
   }
 
   void empty() {
     setStore(() {
-      notifications = [];
+      notifications.clear();
     });
   }
 }

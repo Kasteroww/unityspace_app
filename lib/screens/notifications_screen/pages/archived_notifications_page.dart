@@ -31,8 +31,8 @@ class ArchivedNotificationPageStore extends WStore {
 
   List<NotificationModel> get notifications => computedFromStore(
         store: _notificationsStore,
-        getValue: (store) => store.notifications,
-        keyName: 'notifcations',
+        getValue: (store) => store.notifications.list,
+        keyName: 'notifications',
       );
 
   OrganizationMembers get organizationMembers => computedFromStore(
