@@ -40,6 +40,14 @@ class NotificationPageStore extends WStore {
         keyName: 'notifications',
       );
 
+  // Получение актуальных уведомлений
+  List<NotificationModel> get unarchivedNotifications => computed(
+        getValue: () =>
+            notifications.where((notify) => !notify.archived).toList(),
+        watch: () => [notifications],
+        keyName: 'unarchivedNotifications',
+      );
+
   OrganizationMembers get organizationMembers => computedFromStore(
         store: _userStore,
         getValue: (store) => store.organizationMembers,
@@ -167,10 +175,11 @@ class NotificationsPage extends WStoreWidget<NotificationPageStore> {
       },
       builderLoaded: (context) {
         return WStoreBuilder<NotificationPageStore>(
-          watch: (store) => [store.notifications],
+          watch: (store) => [store.unarchivedNotifications],
           store: context.wstore<NotificationPageStore>(),
           builder: (context, store) {
-            final List<NotificationModel> notifications = store.notifications;
+            final List<NotificationModel> notifications =
+                store.unarchivedNotifications;
             if (notifications.isEmpty) {
               return const EmptyNotificationsStub(
                 isArchivePage: false,

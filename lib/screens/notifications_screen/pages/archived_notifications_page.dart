@@ -36,6 +36,14 @@ class ArchivedNotificationPageStore extends WStore {
         keyName: 'notifications',
       );
 
+  // Получение архивированных уведомлений
+  List<NotificationModel> get archivedNotifications => computed(
+        getValue: () =>
+            notifications.where((notify) => notify.archived).toList(),
+        watch: () => [notifications],
+        keyName: 'archivedNotifications',
+      );
+
   OrganizationMembers get organizationMembers => computedFromStore(
         store: _userStore,
         getValue: (store) => store.organizationMembers,
@@ -161,9 +169,10 @@ class ArchivedNotificationsPage
       builderLoaded: (context) {
         return WStoreBuilder(
           store: store,
-          watch: (store) => [store.notifications],
+          watch: (store) => [store.archivedNotifications],
           builder: (context, store) {
-            final List<NotificationModel> notifications = store.notifications;
+            final List<NotificationModel> notifications =
+                store.archivedNotifications;
             if (notifications.isEmpty) {
               return EmptyNotificationsStub(
                 isArchivePage: store.isArchived,

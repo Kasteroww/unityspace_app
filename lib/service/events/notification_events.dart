@@ -20,7 +20,5 @@ Future<void> notificationCreated(Map<String, dynamic> data) async {
 Future<void> notificationArchived(Map<String, dynamic> data) async {
   final jsonData = NotificationResponse.fromJson(data);
   final notificationData = NotificationModel.fromResponse(jsonData);
-  NotificationsStore().removeFromListLocally(
-    notificationId: notificationData.id,
-  );
+  NotificationsStore().updateNotificationsLocally(notificationData);
 }
