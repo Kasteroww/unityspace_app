@@ -81,7 +81,7 @@ class SpaceMembersPageStore extends WStore {
 
   String get shareLink => computed(
         getValue: () =>
-            '${ConstantStrings.spaceInviteUrl}${space?.shareLink.token}',
+            '${ConstantLinks.spaceInviteUrl}/${space?.shareLink.token}',
         watch: () => [space],
         keyName: 'shareLink',
       );

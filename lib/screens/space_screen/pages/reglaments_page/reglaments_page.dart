@@ -109,7 +109,7 @@ class ReglamentsPageStore extends WStore with CopyToClipboardMixin {
   ///Копирование ссылки на регламент
   String getReglamentLink({required int reglamentId}) {
     //Пример: 'https://app.unityspace.ru/spaces/2/reglaments/32627';
-    return '${ConstantStrings.unitySpaceAppUrl}/spaces/${currentSpace.id}/reglaments/$reglamentId';
+    return '${ConstantLinks.unitySpaceAppUrl}/spaces/${currentSpace.id}/reglaments/$reglamentId';
   }
 
   Map<int, List<Reglament>> _columnReglaments(List<Reglament> spaceReglaments) {

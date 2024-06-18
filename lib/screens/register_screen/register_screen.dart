@@ -230,7 +230,7 @@ class RegisterByEmailForm extends StatelessWidget {
           child: MainFormTextButtonWidget(
             text: localization.by_registering_accept_privacy_policy,
             onPressed: () async {
-              final url = Uri.parse(ConstantStrings.privacyPolicyUrl);
+              final url = Uri.parse(ConstantLinks.privacyPolicyUrl);
               await launchUrl(url, mode: LaunchMode.externalApplication);
             },
           ),

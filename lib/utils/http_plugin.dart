@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:unityspace/resources/constants.dart';
 import 'package:unityspace/store/auth_store.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 
@@ -18,7 +19,7 @@ class HttpPluginException implements Exception {
 }
 
 class HttpPlugin {
-  static const baseURL = 'https://server.unityspace.ru';
+  static const baseURL = ConstantLinks.unitySpaceAppServerApi;
 
   static HttpPlugin? _instance;
 
