@@ -196,7 +196,7 @@ class AppNavigationDrawerStore extends WStore {
 
               return groupTree;
             } else {
-              return [allSpacesGroup];
+              return [];
             }
           }
         },
@@ -399,115 +399,117 @@ class AppNavigationDrawer extends WStoreWidget<AppNavigationDrawerStore> {
                         store.isOrganizationOwner,
                       ],
                       builder: (context, store) {
-                        return SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              if (store.favoriteSpacesGroup.spaces.isNotEmpty)
-                                SpaceGroup(
-                                  group: store.favoriteSpacesGroup,
-                                  currentRoute: currentRoute,
-                                  currentArguments: currentArguments,
-                                ),
-                              if (store.allSpacesGroup.spaces.isNotEmpty)
+                        {
+                          return SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                if (store.favoriteSpacesGroup.spaces.isNotEmpty)
+                                  SpaceGroup(
+                                    group: store.favoriteSpacesGroup,
+                                    currentRoute: currentRoute,
+                                    currentArguments: currentArguments,
+                                  ),
                                 SpaceGroup(
                                   group: store.allSpacesGroup,
                                   currentRoute: currentRoute,
                                   currentArguments: currentArguments,
                                 ),
-                              if (store.spacesGroupsByUserPrivileges.isNotEmpty)
-                                ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: const ClampingScrollPhysics(),
-                                  itemCount:
-                                      store.spacesGroupsByUserPrivileges.length,
-                                  itemBuilder: (context, index) {
-                                    final groups =
-                                        store.spacesGroupsByUserPrivileges;
-                                    return Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        if (store.allSortedSpaces.isEmpty)
-                                          NavigatorMenuEmptySpacesHint(
-                                            isOrganizationOwner:
-                                                store.isOrganizationOwner,
+                                if (store.allSortedSpaces.isEmpty)
+                                  NavigatorMenuEmptySpacesHint(
+                                    isOrganizationOwner:
+                                        store.isOrganizationOwner,
+                                  ),
+                                if (store
+                                    .spacesGroupsByUserPrivileges.isNotEmpty)
+                                  ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: const ClampingScrollPhysics(),
+                                    itemCount: store
+                                        .spacesGroupsByUserPrivileges.length,
+                                    itemBuilder: (context, index) {
+                                      final groups =
+                                          store.spacesGroupsByUserPrivileges;
+                                      return Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          SpaceGroup(
+                                            group: groups[index],
+                                            currentRoute: currentRoute,
+                                            currentArguments: currentArguments,
                                           ),
-                                        SpaceGroup(
-                                          group: groups[index],
-                                          currentRoute: currentRoute,
-                                          currentArguments: currentArguments,
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                ),
-                              if (store.isOrganizationOwner)
-                                const SizedBox(height: 16),
-                              if (store.isOrganizationOwner)
-                                WStoreListener(
-                                  store: store,
-                                  watch: (store) => [
-                                    store.newSpaceId,
-                                    store.redirectTo,
-                                  ],
-                                  onChange: (context, store) {
-                                    if (store.newSpaceId != null) {
-                                      final spaceId = store.newSpaceId;
-                                      store.setSpaceId(null);
-                                      Navigator.of(context).pop();
-                                      Navigator.of(context)
-                                          .pushReplacementNamed(
-                                        '/space',
-                                        arguments: spaceId,
+                                        ],
                                       );
-                                    }
-                                    if (store.redirectTo == 'goto_pay') {
-                                      store.setRedirectTo(null);
-                                      Navigator.of(context).pop();
-                                      Navigator.of(context)
-                                          .pushReplacementNamed(
-                                        '/account',
-                                        arguments: {'page': 'tariff'},
-                                      );
-                                    }
-                                    if (store.redirectTo == 'start_trial') {
-                                      store.setRedirectTo(null);
-                                      Navigator.of(context).pop();
-                                      Navigator.of(context)
-                                          .pushReplacementNamed(
-                                        '/account',
-                                        arguments: {
-                                          'page': 'tariff',
-                                          'action': 'trial',
-                                        },
-                                      );
-                                    }
-                                  },
-                                  child: AddSpaceButtonWidget(
-                                    onTap: () async {
-                                      if (store.spaceCreating) return;
-                                      store.spaceCreating = true;
-                                      if (store.isAddingSpaceExceededLimit) {
-                                        final redirect =
-                                            await showAddSpaceLimitDialog(
-                                          context,
-                                          showTrialButton:
-                                              store.trialNeverStarted,
-                                        );
-                                        store.setRedirectTo(redirect);
-                                      } else {
-                                        final spaceId =
-                                            await showAddSpaceDialog(
-                                          context,
-                                        );
-                                        store.setSpaceId(spaceId);
-                                      }
-                                      store.spaceCreating = false;
                                     },
                                   ),
-                                ),
-                            ],
-                          ),
-                        );
+                                if (store.isOrganizationOwner)
+                                  const SizedBox(height: 16),
+                                if (store.isOrganizationOwner)
+                                  WStoreListener(
+                                    store: store,
+                                    watch: (store) => [
+                                      store.newSpaceId,
+                                      store.redirectTo,
+                                    ],
+                                    onChange: (context, store) {
+                                      if (store.newSpaceId != null) {
+                                        final spaceId = store.newSpaceId;
+                                        store.setSpaceId(null);
+                                        Navigator.of(context).pop();
+                                        Navigator.of(context)
+                                            .pushReplacementNamed(
+                                          '/space',
+                                          arguments: spaceId,
+                                        );
+                                      }
+                                      if (store.redirectTo == 'goto_pay') {
+                                        store.setRedirectTo(null);
+                                        Navigator.of(context).pop();
+                                        Navigator.of(context)
+                                            .pushReplacementNamed(
+                                          '/account',
+                                          arguments: {'page': 'tariff'},
+                                        );
+                                      }
+                                      if (store.redirectTo == 'start_trial') {
+                                        store.setRedirectTo(null);
+                                        Navigator.of(context).pop();
+                                        Navigator.of(context)
+                                            .pushReplacementNamed(
+                                          '/account',
+                                          arguments: {
+                                            'page': 'tariff',
+                                            'action': 'trial',
+                                          },
+                                        );
+                                      }
+                                    },
+                                    child: AddSpaceButtonWidget(
+                                      onTap: () async {
+                                        if (store.spaceCreating) return;
+                                        store.spaceCreating = true;
+                                        if (store.isAddingSpaceExceededLimit) {
+                                          final redirect =
+                                              await showAddSpaceLimitDialog(
+                                            context,
+                                            showTrialButton:
+                                                store.trialNeverStarted,
+                                          );
+                                          store.setRedirectTo(redirect);
+                                        } else {
+                                          final spaceId =
+                                              await showAddSpaceDialog(
+                                            context,
+                                          );
+                                          store.setSpaceId(spaceId);
+                                        }
+                                        store.spaceCreating = false;
+                                      },
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          );
+                        }
                       },
                     );
                   },
