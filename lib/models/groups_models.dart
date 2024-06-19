@@ -50,6 +50,20 @@ class Group {
       isOpen: data.isOpen,
     );
   }
+
+  Group copyWith({
+    int? id,
+    String? name,
+    double? order,
+    bool? isOpen,
+  }) {
+    return Group(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      order: order ?? this.order,
+      isOpen: isOpen ?? this.isOpen,
+    );
+  }
 }
 
 class GroupOrder {
@@ -76,4 +90,42 @@ class GroupWithSpaces {
     required this.spaces,
     required this.isOpen,
   });
+}
+
+class UpdateGroupNameResponse {
+  final int id;
+  final String name;
+
+  UpdateGroupNameResponse({
+    required this.id,
+    required this.name,
+  });
+
+  factory UpdateGroupNameResponse.fromJson(Map<String, dynamic> json) {
+    try {
+      return UpdateGroupNameResponse(
+        id: json['id'] as int,
+        name: json['name'] as String,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
+  }
+}
+
+class UpdateGroupName {
+  final int id;
+  final String name;
+
+  UpdateGroupName({
+    required this.id,
+    required this.name,
+  });
+
+  factory UpdateGroupName.fromResponse(UpdateGroupNameResponse data) {
+    return UpdateGroupName(
+      id: data.id,
+      name: data.name,
+    );
+  }
 }

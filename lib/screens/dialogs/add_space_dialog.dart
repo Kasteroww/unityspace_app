@@ -23,7 +23,7 @@ class AddSpaceDialogStore extends WStore {
   AddSpaceErrors addSpaceError = AddSpaceErrors.none;
   int newSpaceId = 0;
 
-  void addSpace(AppLocalizations localization) {
+  void addSpace() {
     if (status == WStoreStatus.loading) return;
     //
     setStore(() {
@@ -110,7 +110,7 @@ class AddSpaceDialog extends WStoreWidget<AddSpaceDialogStore> {
             final loading = status == WStoreStatus.loading;
             return AppDialogPrimaryButton(
               onPressed: () {
-                store.addSpace(localization);
+                store.addSpace();
               },
               text: localization.add_space,
               loading: loading,
@@ -136,7 +136,7 @@ class AddSpaceDialog extends WStoreWidget<AddSpaceDialogStore> {
           textCapitalization: TextCapitalization.sentences,
           controller: store.textEditingController,
           onEditingComplete: () {
-            store.addSpace(localization);
+            store.addSpace();
           },
         ),
         WStoreValueBuilder(

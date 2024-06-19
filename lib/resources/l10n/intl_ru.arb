@@ -1,5 +1,14 @@
 {
 
+  "rename_spaces_group_empty_name": "Название группы не может быть пустым",
+  "rename_spaces_group_new_name_matches_old": "Название группы не может совпадать со старым",
+  "rename_spaces_group_error": "Ошибка переименования группы",
+  "rename_spaces_group_dialog_title": "Переименовать группу",
+  "spaces_group_name": "Название группы",
+  
+  "rename_group": "Переименовать",
+  "delele_group": "Расформировать",
+
   "favorite_spaces": "Избранные",
 
   "access_denied": "Доступ заблокирован",

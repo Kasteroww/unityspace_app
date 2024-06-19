@@ -1,5 +1,6 @@
 import 'package:unityspace/models/groups_models.dart';
 import 'package:unityspace/service/groups_service.dart' as api;
+import 'package:unityspace/store/store_exceptions.dart';
 import 'package:wstore/wstore.dart';
 
 class Groups with GStoreChangeObjectMixin {
@@ -73,5 +74,32 @@ class GroupsStore extends GStore {
       this.groups.clear();
       this.groups.addAll(groups);
     });
+  }
+
+  Future<void> updateGroupName({
+    required int id,
+    required String newName,
+  }) async {
+    final UpdateGroupName result = UpdateGroupName.fromResponse(
+      await api.updateGroupName(
+        id: id,
+        newName: newName,
+      ),
+    );
+
+    if (result.id == id && groups[id] != null) {
+      final updatedGroup = groups[result.id]!.copyWith(name: result.name);
+      setStore(() {
+        groups.add(updatedGroup);
+      });
+    } else {
+      throw UpdatingNonexistentEntityStoreException(
+        message: 'The group with ID $result.id does not exist in the store.',
+        data: {
+          'request id': id,
+          'response id': result.id,
+        },
+      );
+    }
   }
 }

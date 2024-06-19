@@ -96,3 +96,10 @@ enum ConfirmEmailErrors { none, confirmEmailError, incorrectCode }
 enum DrawerErrors { none, groupsLoadingError, drawerError }
 
 enum ProjectBoardsErrors { none, loadingDataError, createStageError }
+
+enum RenameSpacesGroupErrors {
+  none,
+  emptyName,
+  newNameMatchesOld,
+  renameSpacesGroupError,
+}

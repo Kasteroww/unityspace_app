@@ -10,6 +10,7 @@ import 'package:unityspace/resources/l10n/app_localizations.dart';
 import 'package:unityspace/resources/theme/theme.dart';
 import 'package:unityspace/screens/dialogs/add_space_dialog.dart';
 import 'package:unityspace/screens/dialogs/add_space_limit_dialog.dart';
+import 'package:unityspace/screens/dialogs/rename_spaces_group_dialog.dart';
 import 'package:unityspace/screens/widgets/skeleton/skeleton_card.dart';
 import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
 import 'package:unityspace/store/groups_store.dart';
@@ -576,6 +577,7 @@ class SpaceGroup extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         NavigatorMenuListTitle(
+          groupId: group.groupId,
           title: getGroupTitle(
             localization: localization,
             groupName: group.name,
@@ -686,29 +688,107 @@ class AddSpaceButtonWidget extends StatelessWidget {
 }
 
 class NavigatorMenuListTitle extends StatelessWidget {
+  final int? groupId;
   final String title;
 
   const NavigatorMenuListTitle({
+    required this.groupId,
     required this.title,
     super.key,
   });
 
+  bool isShowGroupOptions({required String groupName}) {
+    return (groupName == 'All Spaces' || groupName == 'Favorite')
+        ? false
+        : true;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 40,
-      child: Text(
-        title,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(
-          color: Colors.white.withOpacity(0.5),
-          fontWeight: FontWeight.w500,
-          fontSize: 16,
+    final localization = LocalizationHelper.getLocalizations(context);
+    final isOwnerOrAdmin =
+        context.wstore<AppNavigationDrawerStore>().isOwnerOrAdmin;
+    return GestureDetector(
+      onLongPressStart: (details) {
+        if (isOwnerOrAdmin &&
+            isShowGroupOptions(groupName: title) &&
+            groupId != null) {
+          showCustomSpaceGroupMenu(
+            context: context,
+            position: details.globalPosition,
+            localization: localization,
+            groupName: title,
+            onTapRename: () {
+              showRenameSpacesGroupDialog(
+                context: context,
+                groupId: groupId!,
+                currentName: title,
+              );
+            },
+          );
+        }
+      },
+      child: SizedBox(
+        height: 40,
+        width: double.infinity,
+        child: Text(
+          title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: Colors.white.withOpacity(0.5),
+            fontWeight: FontWeight.w500,
+            fontSize: 16,
+          ),
         ),
       ),
     );
+  }
+
+  Future<void> showCustomSpaceGroupMenu({
+    required BuildContext context,
+    required Offset position,
+    required AppLocalizations localization,
+    required String groupName,
+    Function()? onTapRename,
+    Function()? onTapDelete,
+  }) async {
+    final RenderBox? overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox?;
+
+    if (overlay != null) {
+      await showMenu(
+        context: context,
+        position: RelativeRect.fromRect(
+          position & const Size(40, 40),
+          Offset.zero & overlay.size,
+        ),
+        items: [
+          PopupMenuItem(
+            onTap: () => onTapRename != null ? onTapRename() : {},
+            child: Text(
+              localization.rename_group,
+              style: const TextStyle(
+                color: Color.fromRGBO(51, 51, 51, 1),
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
+              ),
+            ),
+          ),
+          PopupMenuItem(
+            onTap: () => onTapDelete,
+            child: Text(
+              localization.delele_group,
+              style: const TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
+              ),
+            ),
+          ),
+        ],
+      );
+    }
   }
 }
 
