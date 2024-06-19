@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:unityspace/resources/app_icons.dart';
 import 'package:unityspace/screens/widgets/color_button_widget.dart';
+import 'package:unityspace/store/notifications_store.dart';
 import 'package:unityspace/store/projects_store.dart';
 import 'package:unityspace/store/reglaments_store.dart';
 import 'package:unityspace/store/spaces_store.dart';
@@ -28,6 +29,7 @@ class LoadingScreenStore extends WStore {
         UserStore().getUserData(),
         UserStore().getOrganizationData(),
         SpacesStore().getSpacesData(),
+        NotificationsStore().getFirstUnreadNotification(),
       ]),
       onData: (_) {
         setStore(() {

@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:unityspace/models/groups_models.dart';
@@ -12,6 +13,7 @@ import 'package:unityspace/screens/dialogs/add_space_limit_dialog.dart';
 import 'package:unityspace/screens/widgets/skeleton/skeleton_card.dart';
 import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
 import 'package:unityspace/store/groups_store.dart';
+import 'package:unityspace/store/notifications_store.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
@@ -232,6 +234,22 @@ class AppNavigationDrawerStore extends WStore {
         keyName: 'allSpacesSortedByOrder',
       );
 
+  Notifications get notifications => computedFromStore(
+        store: NotificationsStore(),
+        getValue: (store) => store.notifications,
+        keyName: 'notifications',
+      );
+
+  bool get haveUnreadNotifications => computed(
+        getValue: () =>
+            notifications.iterable
+                .firstWhereOrNull((notify) => notify.unread)
+                ?.unread ??
+            false,
+        keyName: 'haveUnreadNotifications',
+        watch: () => [notifications],
+      );
+
   GroupWithSpaces _formGroup(Group group) {
     return GroupWithSpaces(
       groupId: group.id,
@@ -305,17 +323,39 @@ class AppNavigationDrawer extends WStoreWidget<AppNavigationDrawerStore> {
                   }
                 },
               ),
-              NavigatorMenuItem(
-                iconAssetName: AppIcons.navigatorNotifications,
-                title: localization.notifications,
-                selected: currentRoute == '/notifications',
-                favorite: false,
-                onTap: () {
-                  Navigator.of(context).pop();
-                  if (currentRoute != '/notifications') {
-                    Navigator.of(context)
-                        .pushReplacementNamed('/notifications');
-                  }
+              WStoreValueBuilder<AppNavigationDrawerStore, bool>(
+                watch: (store) => store.haveUnreadNotifications,
+                builder: (BuildContext context, value) {
+                  return Stack(
+                    children: [
+                      NavigatorMenuItem(
+                        iconAssetName: AppIcons.navigatorNotifications,
+                        title: localization.notifications,
+                        selected: currentRoute == '/notifications',
+                        favorite: false,
+                        onTap: () {
+                          Navigator.of(context).pop();
+                          if (currentRoute != '/notifications') {
+                            Navigator.of(context)
+                                .pushReplacementNamed('/notifications');
+                          }
+                        },
+                      ),
+                      if (store.haveUnreadNotifications)
+                        Positioned(
+                          left: 30,
+                          top: 6,
+                          child: Container(
+                            width: 10,
+                            height: 10,
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.red,
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
                 },
               ),
               if (store.isOrganizationOwner || store.isAdmin)

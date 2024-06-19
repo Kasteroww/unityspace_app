@@ -118,9 +118,6 @@ class NotificationsStore extends GStore {
     // Преобразование ответа в список моделей NotificationModel
     final loadedNotifications = notificationsData.notifications
         .map((notification) => NotificationModel.fromResponse(notification));
-    if (page == 1) {
-      notifications.clear();
-    }
     setStore(() {
       notifications.addAll(loadedNotifications);
     });
@@ -197,6 +194,17 @@ class NotificationsStore extends GStore {
     setStore(() {
       notifications.add(notification);
     });
+  }
+
+  /// Получает массив с 1 непрочитанный уведомлением
+  /// чтобы отображать индикатор непрочитанных уведомлений
+  Future<void> getFirstUnreadNotification() async {
+    final loadedUnreadList = await api.getFirstUnreadNotification();
+    if (loadedUnreadList.isNotEmpty) {
+      final unreadList = loadedUnreadList
+          .map((notification) => NotificationModel.fromResponse(notification));
+      updateNotificationsLocally(unreadList.first);
+    }
   }
 
   void empty() {
