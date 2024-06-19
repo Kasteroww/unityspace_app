@@ -13,8 +13,8 @@ class ResponsiblePart extends StatelessWidget {
     super.key,
   });
 
-  final int spaceId;
-  final int taskId;
+  final int? spaceId;
+  final int? taskId;
 
   @override
   Widget build(BuildContext context) {

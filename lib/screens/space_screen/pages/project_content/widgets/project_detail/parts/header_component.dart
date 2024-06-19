@@ -4,7 +4,7 @@ import 'package:unityspace/models/task_models.dart';
 class HeaderComponent extends StatelessWidget {
   const HeaderComponent({required this.task, super.key});
 
-  final Task task;
+  final Task? task;
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +36,7 @@ class HeaderComponent extends StatelessWidget {
               child: Row(
                 children: [
                   Text(
-                    '#${task.id}',
+                    '#${task?.id}',
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,

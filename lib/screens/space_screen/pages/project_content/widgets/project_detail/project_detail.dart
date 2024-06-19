@@ -14,7 +14,7 @@ import 'package:unityspace/screens/space_screen/pages/project_content/widgets/pr
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_detail/parts/status_component.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_detail/parts/task_location/task_location_component.dart';
 import 'package:unityspace/store/spaces_store.dart';
-import 'package:unityspace/store/task_detail_store.dart';
+import 'package:unityspace/store/tasks_store.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
 
@@ -22,11 +22,30 @@ class ProjectDetailStore extends WStore {
   ProjectErrors error = ProjectErrors.none;
   WStoreStatus status = WStoreStatus.init;
 
-  /// Получение информации таска
-  Task? get task => computedFromStore(
-        store: TaskDetailStore(),
-        getValue: (store) => store.task,
+  int get taskId => widget.taskId;
+
+  Tasks get tasks => computedFromStore(
+        store: TasksStore(),
+        getValue: (store) => store.tasks,
+        keyName: 'tasks',
+      );
+  Task? get task => computed(
+        getValue: () => tasks[taskId],
+        watch: () => [tasks],
         keyName: 'task',
+      );
+
+  Histories get histories => computedFromStore(
+        store: TasksStore(),
+        getValue: (store) => store.histories,
+        keyName: 'histories',
+      );
+
+  /// Получение информации таска
+  List<TaskHistory>? get history => computed(
+        watch: () => [histories],
+        getValue: () => histories.iterable.toList(),
+        keyName: 'history',
       );
 
   /// Получение списка исполнителей по задаче
@@ -62,7 +81,7 @@ class ProjectDetailStore extends WStore {
       error = ProjectErrors.none;
     });
     try {
-      await TaskDetailStore().loadTaskById(taskId);
+      await TasksStore().getTaskHistory(taskId);
       setStore(() {
         status = WStoreStatus.loaded;
       });
@@ -81,17 +100,17 @@ class ProjectDetailStore extends WStore {
 }
 
 class ProjectDetail extends WStoreWidget<ProjectDetailStore> {
-  final Task task;
+  final int taskId;
   final int? spaceId;
 
   const ProjectDetail({
-    required this.task,
+    required this.taskId,
     required this.spaceId,
     super.key,
   });
 
   @override
-  ProjectDetailStore createWStore() => ProjectDetailStore()..loadData(task.id);
+  ProjectDetailStore createWStore() => ProjectDetailStore()..loadData(taskId);
 
   @override
   Widget build(BuildContext context, ProjectDetailStore store) {
@@ -116,7 +135,7 @@ class ProjectDetail extends WStoreWidget<ProjectDetailStore> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      HeaderComponent(task: task),
+                      HeaderComponent(task: store.task),
                       const StatusComponent(),
                       Padding(
                         padding: const EdgeInsets.only(top: 12),
@@ -131,11 +150,11 @@ class ProjectDetail extends WStoreWidget<ProjectDetailStore> {
                       const TaskLocationComponent(),
                       const SizedBox(height: 20),
                       ResponsiblePart(
-                        spaceId: spaceId ?? 0,
-                        taskId: store.task?.id ?? task.id,
+                        spaceId: spaceId,
+                        taskId: store.task?.id,
                       ),
                       const SizedBox(height: 10),
-                      ImportanceComponent(task: task),
+                      ImportanceComponent(task: store.task),
                       const SizedBox(height: 10),
                       const ColorComponent(),
                       const SizedBox(height: 10),
@@ -143,6 +162,7 @@ class ProjectDetail extends WStoreWidget<ProjectDetailStore> {
                       const SizedBox(height: 10),
                       const ShortcutsComponent(),
                       const AddFieldButtonComponent(),
+                      Text('history Length: ${store.history?.length}'),
                       const MessagesComponent(),
                       BottomNavigationButtonComponent(
                         focusNode: FocusNode(),

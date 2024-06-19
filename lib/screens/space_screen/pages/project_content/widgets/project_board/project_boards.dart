@@ -34,10 +34,16 @@ class ProjectBoardsStore extends WStore {
         keyName: 'project',
       );
 
-  List<Task> get tasks => computedFromStore(
+  Tasks get tasks => computedFromStore(
         store: TasksStore(),
-        getValue: (store) => store.tasks ?? [],
+        getValue: (store) => store.tasks,
         keyName: 'tasks',
+      );
+
+  List<Task> get tasksList => computed(
+        watch: () => [tasks],
+        getValue: () => tasks.iterable.toList(),
+        keyName: 'tasksList',
       );
 
   User? get user => computedFromStore(
@@ -50,7 +56,7 @@ class ProjectBoardsStore extends WStore {
         getValue: () {
           if (projectStages.isEmpty) return [];
 
-          final projectTasks = tasks.where((task) {
+          final projectTasks = tasksList.where((task) {
             final isTaskInProject = task.stages
                 .any((taskStage) => taskStage.projectId == project?.id);
 
@@ -92,7 +98,7 @@ class ProjectBoardsStore extends WStore {
 
           return stages;
         },
-        watch: () => [project, projectStages, tasks, user],
+        watch: () => [project, projectStages, tasksList, user],
         keyName: ' tasksTree',
       );
 
@@ -394,7 +400,7 @@ class ProjectBoards extends WStoreWidget<ProjectBoardsStore> {
                                           context,
                                           builder: (BuildContext context) =>
                                               ProjectDetail(
-                                            task: task,
+                                            taskId: task.id,
                                             spaceId: store.project?.spaceId,
                                           ),
                                         ),

@@ -54,11 +54,16 @@ class TasksPageStore extends WStore {
   /// результат поиска или список всех задач
   bool isSearching = false;
 
-  /// геттер задач из TasksStore
-  List<Task> get tasks => computedFromStore(
-        store: tasksStore,
-        getValue: (store) => store.tasks ?? [],
+  Tasks get tasks => computedFromStore(
+        store: TasksStore(),
+        getValue: (store) => store.tasks,
         keyName: 'tasks',
+      );
+
+  List<Task> get tasksList => computed(
+        watch: () => [tasks],
+        getValue: () => tasks.iterable.toList(),
+        keyName: 'tasksList',
       );
 
   List<ITasksGroup> groupedTasks(List<Task> tasks) => computed(
@@ -82,9 +87,9 @@ class TasksPageStore extends WStore {
         keyName: 'groupedTasks',
       );
 
-  List<TasksProjectGroup> get tasksByProject => _tasksByProject(tasks);
+  List<TasksProjectGroup> get tasksByProject => _tasksByProject(tasksList);
 
-  List<TasksDateGroup> get tasksByDate => _tasksByDate(tasks);
+  List<TasksDateGroup> get tasksByDate => _tasksByDate(tasksList);
 
   List<TasksProjectGroup> get searchTasksByProject =>
       _tasksByProject(searchedTasks);
@@ -427,7 +432,7 @@ class TasksPageStore extends WStore {
         getValue: () {
           if (isSearching == true) {
             if (searchString.isNotEmpty) {
-              final searchResult = tasks.where((task) {
+              final searchResult = tasksList.where((task) {
                 return task.stages.any((taskStage) {
                       final Project? project =
                           projectsStore.projectsMap[taskStage.projectId];
@@ -663,7 +668,7 @@ class TasksPage extends WStoreWidget<TasksPageStore> {
                                 tasks: store.sortTasks(
                                   store.isSearching
                                       ? store.searchedTasks
-                                      : store.tasks,
+                                      : store.tasksList,
                                 ),
                               );
                             } else {
@@ -673,7 +678,7 @@ class TasksPage extends WStoreWidget<TasksPageStore> {
                                     .groupedTasks(
                                       store.isSearching
                                           ? store.searchedTasks
-                                          : store.tasks,
+                                          : store.tasksList,
                                     ),
                               );
                             }
