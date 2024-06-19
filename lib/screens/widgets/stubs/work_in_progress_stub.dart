@@ -3,8 +3,10 @@ import 'package:unityspace/resources/theme/theme.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 
 class WorkInProgressStub extends StatelessWidget {
+  final String? text;
   const WorkInProgressStub({
     super.key,
+    this.text,
   });
 
   @override
@@ -23,10 +25,42 @@ class WorkInProgressStub extends StatelessWidget {
             children: [
               ConstrainedBox(
                 constraints: const BoxConstraints(
+                  minHeight: 80,
                   maxWidth: 600,
                 ),
-                child: Image.asset(
-                  'assets/images/work_in_progress_sign.png',
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
+                      child: Image.asset(
+                        'assets/images/work_in_progress_sign.png',
+                      ),
+                    ),
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        return Container(
+                          width: constraints.maxWidth -
+                              (constraints.maxWidth * 0.2 * 2),
+                          height: 100,
+                          alignment: Alignment.center,
+                          child: Center(
+                            child: Text(
+                              text ?? localization.in_development,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 24,
+                                height: 28.13 / 24,
+                                color: Colors.white,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 3,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ),
               Padding(
