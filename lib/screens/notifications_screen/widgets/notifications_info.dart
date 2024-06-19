@@ -56,9 +56,7 @@ class NotificationInfo extends StatelessWidget {
               ? '$message\r\n"${notification.text}"'
               : message;
         case NotificationType.newAchievement:
-          return localization.new_achievement(
-            notification.text.isNotEmpty ? notification.text : '???',
-          );
+          return notification.text.isNotEmpty ? notification.text : '???';
         case NotificationType.message:
           // убираем кавычки в начале и в конце
           // заменяем упоминания на осмысленный текст
