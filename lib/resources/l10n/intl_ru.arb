@@ -30,6 +30,15 @@
   },
   "reglament_required_unset": "Отметил(а) регламент как необязательный",
   "reglament_update": "Обновил(а) регламент и сбросил(а) участников, прошедших регламент",
+  "new_achievement": "Получил(а) новое достижение: {name}",
+  "@new_achievement": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Автор регламентов"
+      }
+    }
+  },
   "ping_to_all": "@Всем",
   "ping_to_performer": "@Исполнитель",
   "task_added_responsible": "Установил(а) исполнителя: {name}",
@@ -70,6 +79,15 @@
       "project": {
         "type": "String",
         "example": "MyProject"
+      }
+    }
+  },
+  "task_stage_chagned": "Переместил(а) задачу в колонку: {stage}",
+  "@task_stage_chagned": {
+    "placeholders": {
+      "stage": {
+        "type": "String",
+        "example": "В работе"
       }
     }
   },
