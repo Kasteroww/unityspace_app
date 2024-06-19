@@ -15,6 +15,7 @@ import 'package:unityspace/screens/space_screen/pages/project_content/widgets/pr
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_detail/parts/task_location/task_location_component.dart';
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/tasks_store.dart';
+import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:wstore/wstore.dart';
 
@@ -41,11 +42,10 @@ class ProjectDetailStore extends WStore {
         keyName: 'histories',
       );
 
-  /// Получение информации таска
-  List<TaskHistory>? get history => computed(
+  List<TaskHistory>? get currentHistory => computed(
         watch: () => [histories],
-        getValue: () => histories.iterable.toList(),
-        keyName: 'history',
+        getValue: () => _getCurrentHistory(histories),
+        keyName: 'currentHistory ',
       );
 
   /// Получение списка исполнителей по задаче
@@ -93,6 +93,18 @@ class ProjectDetailStore extends WStore {
         error = ProjectErrors.loadingDataError;
       });
     }
+  }
+
+  OrganizationMembers get members => computedFromStore(
+        store: UserStore(),
+        getValue: (store) => store.organizationMembers,
+        keyName: 'members',
+      );
+  String getUserNameById(int id) => members[id]?.name ?? '';
+
+  List<TaskHistory> _getCurrentHistory(Histories histories) {
+    final allHistory = histories.iterable;
+    return allHistory.where((history) => history.taskId == taskId).toList();
   }
 
   @override
@@ -162,7 +174,7 @@ class ProjectDetail extends WStoreWidget<ProjectDetailStore> {
                       const SizedBox(height: 10),
                       const ShortcutsComponent(),
                       const AddFieldButtonComponent(),
-                      Text('history Length: ${store.history?.length}'),
+                      Text('history Length: ${store.currentHistory?.length}'),
                       const MessagesComponent(),
                       BottomNavigationButtonComponent(
                         focusNode: FocusNode(),
