@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/models/notification_models.dart';
-import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/models/reglament_models.dart';
-import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/screens/app_navigation_drawer.dart';
 import 'package:unityspace/screens/notifications_screen/pages/archived_notifications_page.dart';
@@ -55,16 +53,10 @@ class NotificationsScreenStore extends WStore {
         keyName: 'spaces',
       );
 
-  Space? getSpaceById(int spaceId) => computedFromStore(
-        store: SpacesStore(),
-        getValue: (store) => store.spaces[spaceId],
-        keyName: 'getSpaceById',
-      );
-
-  Project? getProjectById(int projectId) => computedFromStore(
+  Projects get projects => computedFromStore(
         store: ProjectsStore(),
-        getValue: (store) => store.projectsMap[projectId],
-        keyName: 'getProjectById',
+        getValue: (store) => store.projects,
+        keyName: 'projects',
       );
 
   /// Является ли пользователь владельцем организации
@@ -99,11 +91,10 @@ class NotificationsScreenStore extends WStore {
     }
 
     return locations.map((location) {
-      final space = getSpaceById(location.spaceId);
+      final space = spaces[location.spaceId];
       final spaceName = space?.name ?? '';
-      final project = location.projectId != null
-          ? getProjectById(location.projectId!)
-          : null;
+      final project =
+          location.projectId != null ? projects[location.projectId!] : null;
       final projectName = project?.name ?? '';
 
       return LocationGroup(
