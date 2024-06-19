@@ -222,6 +222,7 @@ class NotificationsScreenStore extends WStore {
   ///Архивирует все уведомления
   void archiveAllNotifications() {
     notificationsStore.archiveAllNotifications();
+    readAllNotifications();
   }
 
   ///Читает все уведомления

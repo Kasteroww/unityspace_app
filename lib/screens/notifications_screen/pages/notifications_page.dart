@@ -82,9 +82,10 @@ class NotificationPageStore extends WStore {
       notificationIds,
       archived,
     );
+    changeReadStatusNotification(notificationList, true);
   }
 
-  ///Изменяет статус прочтения уведомлений из спика
+  ///Изменяет статус прочтения уведомлений из спиcка
   void changeReadStatusNotification(
     List<NotificationModel> notificationList,
     bool unread,
