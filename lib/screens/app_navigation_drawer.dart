@@ -342,18 +342,7 @@ class AppNavigationDrawer extends WStoreWidget<AppNavigationDrawerStore> {
                         },
                       ),
                       if (store.haveUnreadNotifications)
-                        Positioned(
-                          left: 30,
-                          top: 6,
-                          child: Container(
-                            width: 10,
-                            height: 10,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.red,
-                            ),
-                          ),
-                        ),
+                        const AnimatedNotificationCircle(),
                     ],
                   );
                 },
@@ -858,5 +847,56 @@ class DrawerSpaceSkeletonCard extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class AnimatedNotificationCircle extends StatefulWidget {
+  const AnimatedNotificationCircle({super.key});
+
+  @override
+  State<AnimatedNotificationCircle> createState() =>
+      _AnimatedNotificationCircleState();
+}
+
+class _AnimatedNotificationCircleState extends State<AnimatedNotificationCircle>
+    with TickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    _controller = AnimationController(
+      vsync: this,
+      lowerBound: 0.5,
+      duration: const Duration(milliseconds: 750),
+    );
+    _animation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
+    _controller.repeat(reverse: true);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      left: 30,
+      top: 6,
+      child: FadeTransition(
+        opacity: _animation,
+        child: Container(
+          width: 10,
+          height: 10,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.red,
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 }
