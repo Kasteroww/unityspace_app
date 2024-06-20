@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
+import 'package:unityspace/screens/widgets/member_list.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 
 class BottomNavigationButtonComponent extends StatelessWidget {
-  const BottomNavigationButtonComponent({required this.focusNode, super.key});
+  const BottomNavigationButtonComponent({
+    required this.focusNode,
+    required this.userIds,
+    super.key,
+  });
 
+  final List<int> userIds;
   final FocusNode focusNode;
 
   @override
   Widget build(BuildContext context) {
     final localization = LocalizationHelper.getLocalizations(context);
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Column(
         children: [
           TextField(
@@ -41,12 +47,7 @@ class BottomNavigationButtonComponent extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  const UserAvatarWidget(
-                    id: 1,
-                    width: 24,
-                    height: 24,
-                    fontSize: 18,
-                  ),
+                  MembersList(userIds: userIds),
                 ],
               ),
             ],

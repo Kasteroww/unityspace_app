@@ -254,69 +254,78 @@ class ProjectDetail extends WStoreWidget<ProjectDetailStore> {
                   );
                 });
               },
-              child: SingleChildScrollView(
-                child: SafeArea(
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.only(left: 16, top: 16, right: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        WStoreBuilder<ProjectDetailStore>(
-                          watch: (store) => [
-                            store.taskNumberText,
-                          ],
-                          builder: (context, store) {
-                            return HeaderComponent(
-                              taskText: store.taskNumberText,
-                              onCopyButtonTap: () {
-                                store.copy(
-                                  text: '#${store.task?.id}',
-                                  successMessage:
-                                      localization.task_number_copied,
-                                  errorMessage: localization.copy_error,
-                                );
-                              },
-                            );
-                          },
-                        ),
-                        const StatusComponent(),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 12),
-                          child: Text(
-                            store.task?.name ?? '',
-                            style: const TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w500,
-                            ),
+              child: Column(
+                children: [
+                  WStoreBuilder<ProjectDetailStore>(
+                    watch: (store) => [
+                      store.taskNumberText,
+                    ],
+                    builder: (context, store) {
+                      return HeaderComponent(
+                        taskText: store.taskNumberText,
+                        onCopyButtonTap: () {
+                          store.copy(
+                            text: '#${store.task?.id}',
+                            successMessage: localization.task_number_copied,
+                            errorMessage: localization.copy_error,
+                          );
+                        },
+                      );
+                    },
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: SafeArea(
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                            left: 16,
+                            top: 16,
+                            right: 16,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const StatusComponent(),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 12),
+                                child: Text(
+                                  store.task?.name ?? '',
+                                  style: const TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                              const TaskLocationComponent(),
+                              const SizedBox(height: 20),
+                              ResponsiblePart(
+                                spaceId: spaceId,
+                                taskId: store.task?.id,
+                              ),
+                              const SizedBox(height: 10),
+                              ImportanceComponent(task: store.task),
+                              const SizedBox(height: 10),
+                              ColorComponent(
+                                color: store.task?.color,
+                              ),
+                              const SizedBox(height: 10),
+                              const DateComponent(),
+                              const SizedBox(height: 10),
+                              const ShortcutsComponent(),
+                              const AddFieldButtonComponent(),
+                              const MessagesComponent(),
+                              BottomNavigationButtonComponent(
+                                focusNode: FocusNode(),
+                                userIds: store.task?.members ?? [],
+                              ),
+                            ],
                           ),
                         ),
-                        const TaskLocationComponent(),
-                        const SizedBox(height: 20),
-                        ResponsiblePart(
-                          spaceId: spaceId,
-                          taskId: store.task?.id,
-                        ),
-                        const SizedBox(height: 10),
-                        ImportanceComponent(task: store.task),
-                        const SizedBox(height: 10),
-                        ColorComponent(
-                          color: store.task?.color,
-                        ),
-                        const SizedBox(height: 10),
-                        const DateComponent(),
-                        const SizedBox(height: 10),
-                        const ShortcutsComponent(),
-                        const AddFieldButtonComponent(),
-                        const MessagesComponent(),
-                        BottomNavigationButtonComponent(
-                          focusNode: FocusNode(),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
             );
           },
