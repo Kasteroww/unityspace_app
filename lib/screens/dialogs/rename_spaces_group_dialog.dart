@@ -7,12 +7,12 @@ import 'package:unityspace/store/groups_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
 
-Future<int?> showRenameSpacesGroupDialog({
+Future<void> showRenameSpacesGroupDialog({
   required BuildContext context,
   required int groupId,
   required String currentName,
 }) async {
-  return showDialog<int?>(
+  return showDialog(
     context: context,
     builder: (_) {
       return RenameSpacesGroupDialog(

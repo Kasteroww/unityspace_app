@@ -90,6 +90,60 @@ class GroupWithSpaces {
     required this.spaces,
     required this.isOpen,
   });
+
+  GroupWithSpaces copyWith({
+    int? groupId,
+    double? groupOrder,
+    String? name,
+    List<Space>? spaces,
+    bool? isOpen,
+  }) {
+    return GroupWithSpaces(
+      groupId: groupId ?? this.groupId,
+      groupOrder: groupOrder ?? this.groupOrder,
+      name: name ?? this.name,
+      spaces: spaces ?? this.spaces,
+      isOpen: isOpen ?? this.isOpen,
+    );
+  }
+}
+
+class UpdateGroupOrderResponse {
+  final int id;
+  final String order;
+
+  UpdateGroupOrderResponse({
+    required this.id,
+    required this.order,
+  });
+
+  factory UpdateGroupOrderResponse.fromJson(Map<String, dynamic> json) {
+    try {
+      return UpdateGroupOrderResponse(
+        id: json['id'] as int,
+        order: json['order'] as String,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
+  }
+}
+
+class UpdateGroupOrder {
+  final int id;
+  final double order;
+
+  UpdateGroupOrder({
+    required this.id,
+    required this.order,
+  });
+
+  factory UpdateGroupOrder.fromResponse(UpdateGroupOrderResponse data) {
+    return UpdateGroupOrder(
+      id: data.id,
+      order: convertFromOrderResponse(int.parse(data.order)),
+    );
+  }
 }
 
 class UpdateGroupNameResponse {

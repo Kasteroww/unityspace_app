@@ -105,9 +105,26 @@ class GroupsStore extends GStore {
     }
   }
 
+
+  Future<void> updateGroupOrder({
+    required int id,
+    required double order,
+  }) async {
+    final updatedGroupOrder = UpdateGroupOrder.fromResponse(
+      await api.updateGroupOrder(id: id, order: order),
+    );
+    final oldGroup = groups[id];
+    if (oldGroup != null) {
+      final updatedGroup = oldGroup.copyWith(order: updatedGroupOrder.order);
+      setStore(() {
+        groups.add(updatedGroup);
+      });
+    }
+
   void empty() {
     setStore(() {
       groups.clear();
     });
+
   }
 }
