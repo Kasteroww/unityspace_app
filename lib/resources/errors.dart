@@ -100,7 +100,6 @@ enum ProjectBoardsErrors { none, loadingDataError, createStageError }
 enum RenameSpacesGroupErrors {
   none,
   emptyName,
-  newNameMatchesOld,
   renameSpacesGroupError,
 }
 

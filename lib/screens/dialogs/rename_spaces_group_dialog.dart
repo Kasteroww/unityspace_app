@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/resources/errors.dart';
-import 'package:unityspace/resources/l10n/app_localizations.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
 import 'package:unityspace/store/groups_store.dart';
@@ -45,19 +44,11 @@ class RenameSpacesGroupStore extends WStore {
       renameGroupError = RenameSpacesGroupErrors.none;
       status = WStoreStatus.loading;
     });
-    //
-    final String name = newName.trim();
-    if (name.isEmpty) {
+
+    if (newName.trim().isEmpty) {
       setStore(() {
         status = WStoreStatus.error;
         renameGroupError = RenameSpacesGroupErrors.emptyName;
-      });
-      return;
-    }
-    if (name == widget.currentName) {
-      setStore(() {
-        status = WStoreStatus.error;
-        renameGroupError = RenameSpacesGroupErrors.newNameMatchesOld;
       });
       return;
     }
@@ -79,6 +70,12 @@ class RenameSpacesGroupStore extends WStore {
     );
   }
 
+  void initData({required String currentName}) {
+    setStore(() {
+      newName = currentName;
+    });
+  }
+
   @override
   RenameSpacesGroupDialog get widget => super.widget as RenameSpacesGroupDialog;
 }
@@ -92,24 +89,9 @@ class RenameSpacesGroupDialog extends WStoreWidget<RenameSpacesGroupStore> {
   final int groupId;
   final String currentName;
 
-  String getErrorLocalization({
-    required RenameSpacesGroupErrors error,
-    required AppLocalizations localization,
-  }) {
-    switch (error) {
-      case RenameSpacesGroupErrors.emptyName:
-        return localization.rename_spaces_group_empty_name;
-      case RenameSpacesGroupErrors.newNameMatchesOld:
-        return localization.rename_spaces_group_new_name_matches_old;
-      case RenameSpacesGroupErrors.renameSpacesGroupError:
-        return localization.rename_spaces_group_error;
-      default:
-        return '';
-    }
-  }
-
   @override
-  RenameSpacesGroupStore createWStore() => RenameSpacesGroupStore();
+  RenameSpacesGroupStore createWStore() =>
+      RenameSpacesGroupStore()..initData(currentName: currentName);
 
   @override
   Widget build(BuildContext context, RenameSpacesGroupStore store) {
@@ -152,8 +134,6 @@ class RenameSpacesGroupDialog extends WStoreWidget<RenameSpacesGroupStore> {
                 switch (store.renameGroupError) {
                   RenameSpacesGroupErrors.emptyName =>
                     localization.rename_spaces_group_empty_name,
-                  RenameSpacesGroupErrors.newNameMatchesOld =>
-                    localization.rename_spaces_group_new_name_matches_old,
                   RenameSpacesGroupErrors.renameSpacesGroupError =>
                     localization.rename_spaces_group_error,
                   RenameSpacesGroupErrors.none => '',
