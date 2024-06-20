@@ -72,7 +72,8 @@ class NotificationsScreenStore extends WStore {
   /// Поиск пользователя по id
   OrganizationMember? getMemberById(int id) => organizationMembers[id];
 
-  String? getSpaceNameById(int spaceId) => spaces[spaceId]?.name;
+  String? getSpaceNameById(int? spaceId) =>
+      spaceId != null ? spaces[spaceId]?.name : null;
 
   String? reglamentNameByNotificationParentId(int parentId) =>
       reglamentsMap[parentId]?.name;
@@ -154,12 +155,13 @@ class NotificationsScreenStore extends WStore {
           groupsMap[newGroup.groupId] = newGroup;
         }
       } else if (notification.parentType == NotificationParentType.member) {
-        groupId = 'space-${notification.locations[0].spaceId}';
+        groupId =
+            'space-${notification.locations.firstOrNull?.spaceId ?? notification.text}';
         if (groupsMap.containsKey(groupId)) {
           groupsMap[groupId]?.notifications.add(notification);
         } else {
           final String spaceName =
-              getSpaceNameById(notification.locations[0].spaceId) ??
+              getSpaceNameById(notification.locations.firstOrNull?.spaceId) ??
                   notification.text;
           final NotificationsGroup newGroup = NotificationsGroup(
             groupId: groupId,
