@@ -1,6 +1,45 @@
 import 'package:unityspace/models/files_models.dart';
 import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/service/exceptions/data_exceptions.dart';
+import 'package:unityspace/utils/date_time_converter.dart';
+
+class TaskMessage {
+  final DateTime createdAt;
+  final int deleted;
+  final int id;
+  final int senderId;
+  final int taskId;
+  final String text;
+  final DateTime updatedAt;
+  final List<FileTypeResponse> files;
+  final int? messageReplyId;
+
+  TaskMessage({
+    required this.createdAt,
+    required this.deleted,
+    required this.id,
+    required this.senderId,
+    required this.taskId,
+    required this.text,
+    required this.updatedAt,
+    required this.files,
+    required this.messageReplyId,
+  });
+
+  factory TaskMessage.fromResponse(MessageResponse data) {
+    return TaskMessage(
+      createdAt: DateTimeConverter.stringToLocalDateTime(data.createdAt),
+      deleted: data.deleted,
+      id: data.id,
+      senderId: data.senderId,
+      taskId: data.taskId,
+      text: data.text,
+      updatedAt: DateTimeConverter.stringToLocalDateTime(data.updatedAt),
+      files: data.files,
+      messageReplyId: data.messageReplyId,
+    );
+  }
+}
 
 class EditMessageResponse {
   final int deleted;

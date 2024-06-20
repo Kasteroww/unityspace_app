@@ -213,7 +213,7 @@ class TasksStore extends GStore {
     return maxPageCount;
   }
 
-  Future<void> getTaskHistory(int taskId) async {
+  Future<void> getTaskHistory({required int taskId}) async {
     final historyData = await api.getTaskHistory(taskId);
     final List<TaskHistory> newHistory = historyData
         .map((historyResponse) => TaskHistory.fromResponse(historyResponse))

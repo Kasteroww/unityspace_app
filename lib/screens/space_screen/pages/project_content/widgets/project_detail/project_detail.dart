@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/models/spaces_models.dart';
+import 'package:unityspace/models/task_message_models.dart';
 import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_detail/parts/add_field_button_component.dart';
@@ -14,12 +15,27 @@ import 'package:unityspace/screens/space_screen/pages/project_content/widgets/pr
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_detail/parts/status_component.dart';
 import 'package:unityspace/screens/space_screen/pages/project_content/widgets/project_detail/parts/task_location/task_location_component.dart';
 import 'package:unityspace/store/spaces_store.dart';
+import 'package:unityspace/store/task_messages_store.dart';
 import 'package:unityspace/store/tasks_store.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 import 'package:unityspace/utils/mixins/copy_to_clipboard_mixin.dart';
 import 'package:wstore/wstore.dart';
+
+class ChatItem {
+  String id;
+  TaskMessage? message;
+  TaskHistory? history;
+  DateTime date;
+
+  ChatItem({
+    required this.id,
+    required this.date,
+    this.message,
+    this.history,
+  });
+}
 
 class ProjectDetailStore extends WStore with CopyToClipboardMixin {
   @override
@@ -41,16 +57,68 @@ class ProjectDetailStore extends WStore with CopyToClipboardMixin {
         keyName: 'task',
       );
 
+  ///Все истории, что есть в сторе
   Histories get histories => computedFromStore(
         store: TasksStore(),
         getValue: (store) => store.histories,
         keyName: 'histories',
       );
 
-  List<TaskHistory>? get currentHistory => computed(
+  /// Истории, которые только в этом проекте
+  List<TaskHistory> get projectHistory => computed(
         watch: () => [histories],
-        getValue: () => _getCurrentHistory(histories),
-        keyName: 'currentHistory ',
+        getValue: () => _getProjectHistory(histories),
+        keyName: 'projectHistory',
+      );
+
+  ///Все сообщения, что есть в сторе
+  TaskMessages get taskMessages => computedFromStore(
+        store: TaskMessagesStore(),
+        getValue: (store) => store.taskMessages,
+        keyName: 'taskMessages',
+      );
+
+  /// Сообщения, которые только в этом проекте
+  List<TaskMessage> get projectMessages => computed(
+        watch: () => [taskMessages],
+        getValue: () => _getProjectMessages(taskMessages),
+        keyName: 'projectMessages',
+      );
+
+  List<ChatItem> get chatItems => computed(
+        watch: () => [
+          projectHistory,
+          projectMessages,
+        ],
+        getValue: () {
+          // получение сообщений
+          final messages = projectMessages.map(
+            (message) => ChatItem(
+              id: 'message-${message.id}',
+              date: message.createdAt,
+              message: message,
+            ),
+          );
+          // получение историй
+          final history = projectHistory.map(
+            (item) => ChatItem(
+              id: 'history-${item.id}',
+              date: item.updateDate,
+              history: item,
+            ),
+          );
+          // Объединение
+          final combinedList = [
+            ...messages,
+            ...history,
+          ];
+
+          // Сортировка по дате:
+          combinedList.sort((a, b) => a.date.compareTo(b.date));
+
+          return combinedList;
+        },
+        keyName: 'chatItems',
       );
 
   /// Получение списка исполнителей по задаче
@@ -86,7 +154,8 @@ class ProjectDetailStore extends WStore with CopyToClipboardMixin {
       error = ProjectErrors.none;
     });
     try {
-      await TasksStore().getTaskHistory(taskId);
+      await TasksStore().getTaskHistory(taskId: taskId);
+      await TaskMessagesStore().getMessages(taskId: taskId);
       setStore(() {
         status = WStoreStatus.loaded;
       });
@@ -113,9 +182,25 @@ class ProjectDetailStore extends WStore with CopyToClipboardMixin {
       );
   String getUserNameById(int id) => members[id]?.name ?? '';
 
-  List<TaskHistory> _getCurrentHistory(Histories histories) {
+  /// История конкретой задачи
+  List<TaskHistory> _getProjectHistory(
+    Histories histories,
+  ) {
     final allHistory = histories.iterable;
-    return allHistory.where((history) => history.taskId == taskId).toList();
+    return allHistory
+        .where(
+          (history) =>
+              history.taskId == taskId &&
+              history.type != TaskChangesTypes.sendMessage &&
+              history.type != TaskChangesTypes.createTask,
+        )
+        .toList();
+  }
+
+  /// История конкретой задачи
+  List<TaskMessage> _getProjectMessages(TaskMessages messages) {
+    final allMessages = messages.iterable;
+    return allMessages.where((message) => message.taskId == taskId).toList();
   }
 
   @override
@@ -216,13 +301,14 @@ class ProjectDetail extends WStoreWidget<ProjectDetailStore> {
                         const SizedBox(height: 10),
                         ImportanceComponent(task: store.task),
                         const SizedBox(height: 10),
-                        const ColorComponent(),
+                        ColorComponent(
+                          color: store.task?.color,
+                        ),
                         const SizedBox(height: 10),
                         const DateComponent(),
                         const SizedBox(height: 10),
                         const ShortcutsComponent(),
                         const AddFieldButtonComponent(),
-                        Text('history Length: ${store.currentHistory?.length}'),
                         const MessagesComponent(),
                         BottomNavigationButtonComponent(
                           focusNode: FocusNode(),

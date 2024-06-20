@@ -76,6 +76,7 @@ class ProjectContent extends WStoreWidget<ProjectContentStore> {
   @override
   Widget build(BuildContext context, ProjectContentStore store) {
     return Scaffold(
+      backgroundColor: store.project?.color,
       appBar: AppBar(
         title: Text(store.project?.name ?? ' '),
       ),

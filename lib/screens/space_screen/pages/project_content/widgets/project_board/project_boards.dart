@@ -377,7 +377,7 @@ class ProjectBoards extends WStoreWidget<ProjectBoardsStore> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child: Container(
-                            width: 180,
+                            width: 220,
                             decoration: const BoxDecoration(
                               color: Colors.white,
                             ),
@@ -410,6 +410,7 @@ class ProjectBoards extends WStoreWidget<ProjectBoardsStore> {
                                           ),
                                           child: DecoratedBox(
                                             decoration: BoxDecoration(
+                                              color: task.color,
                                               borderRadius:
                                                   BorderRadius.circular(8),
                                               border: Border.all(

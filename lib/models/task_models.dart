@@ -532,20 +532,20 @@ class TaskHistory implements Identifiable {
     required this.commitName,
   });
 
-  factory TaskHistory.fromResponse(TaskHistoryResponse response) {
+  factory TaskHistory.fromResponse(TaskHistoryResponse data) {
     return TaskHistory(
-      id: response.id,
-      state: response.state,
-      taskId: response.taskId,
+      id: data.id,
+      state: data.state,
+      taskId: data.taskId,
       type: TaskChangesTypes.values.firstWhere(
-        (type) => type.value == response.type,
+        (type) => type.value == data.type,
         orElse: () => TaskChangesTypes.defaultValue,
       ),
-      updateDate: DateTimeConverter.stringToLocalDateTime(response.updateDate),
-      userId: response.userId,
-      projectName: response.projectName,
-      taskName: response.taskName,
-      commitName: response.commitName,
+      updateDate: DateTimeConverter.stringToLocalDateTime(data.updateDate),
+      userId: data.userId,
+      projectName: data.projectName,
+      taskName: data.taskName,
+      commitName: data.commitName,
     );
   }
 }
