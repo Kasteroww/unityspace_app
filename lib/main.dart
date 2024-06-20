@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:unityspace/resources/l10n/app_localizations.dart';
 import 'package:unityspace/resources/theme/theme.dart';
@@ -27,6 +28,10 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   await AuthStore().loadUserTokens();
   await initializeDateFormatting(
     'ru_RU',
