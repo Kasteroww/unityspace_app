@@ -199,6 +199,7 @@ class NotificationInfo extends StatelessWidget {
             borderRadius: BorderRadius.circular(4),
           ),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (member != null)
                 Padding(
@@ -211,23 +212,26 @@ class NotificationInfo extends StatelessWidget {
                   ),
                 ),
               Expanded(
-                child: Text(
-                  getNotificationTypeLocalization(
-                    notification: notification,
-                    context: context,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 4,
-                  style: const TextStyle(
-                    color: Color.fromRGBO(
-                      26,
-                      26,
-                      26,
-                      1,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Text(
+                    getNotificationTypeLocalization(
+                      notification: notification,
+                      context: context,
                     ),
-                    height: 16.41 / 14,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 4,
+                    style: const TextStyle(
+                      color: Color.fromRGBO(
+                        26,
+                        26,
+                        26,
+                        1,
+                      ),
+                      height: 16.41 / 14,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                 ),
               ),
