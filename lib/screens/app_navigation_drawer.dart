@@ -11,6 +11,7 @@ import 'package:unityspace/resources/theme/theme.dart';
 import 'package:unityspace/screens/dialogs/add_space_dialog.dart';
 import 'package:unityspace/screens/dialogs/add_space_limit_dialog.dart';
 import 'package:unityspace/screens/dialogs/rename_spaces_group_dialog.dart';
+import 'package:unityspace/screens/drawer_widgets/space_group.dart';
 import 'package:unityspace/screens/widgets/skeleton/skeleton_card.dart';
 import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
 import 'package:unityspace/store/groups_store.dart';
@@ -235,8 +236,9 @@ class AppNavigationDrawerStore extends WStore {
         watch: () => [
           _spacesGroups,
           isOwnerOrAdmin,
+          groups,
         ],
-        keyName: 'spacesGroupsByUserPrivilidges',
+        keyName: 'spacesGroupsByUserPriviledges',
       );
 
   /// возвращает список всех пространств, отсортированный по полю
@@ -268,6 +270,14 @@ class AppNavigationDrawerStore extends WStore {
       name: group.name,
       isOpen: group.isOpen,
     );
+  }
+
+  Future<void> toggleIsOpen({
+    required int id,
+    required bool isOpen,
+    required String name,
+  }) async {
+    await GroupsStore().updateGroupOpen(id: id, isOpen: !isOpen);
   }
 
   Future<void> loadData() async {
@@ -547,146 +557,6 @@ class AppNavigationDrawer extends WStoreWidget<AppNavigationDrawerStore> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class SpaceGroupStore extends WStore {
-  WStoreStatus status = WStoreStatus.init;
-  ToggleSpacesGroupIsOpenErrors error = ToggleSpacesGroupIsOpenErrors.none;
-
-  Groups get groups => computedFromStore(
-        store: GroupsStore(),
-        getValue: (store) => store.groups,
-        keyName: 'groups',
-      );
-
-  Group? get group => computed(
-        getValue: () {
-          if (widget.group.groupId != null) {
-            return groups[widget.group.groupId!];
-          }
-          return null;
-        },
-        watch: () => [groups],
-        keyName: 'group',
-      );
-
-  void toggleIsOpen({required int id, required bool isOpen}) {
-    if (group == null) return;
-    setStore(() {
-      status = WStoreStatus.loading;
-    });
-
-    subscribe(
-      future:
-          GroupsStore().updateGroupOpen(id: group!.id, isOpen: !group!.isOpen),
-      subscriptionId: 1,
-      onData: (id) {
-        setStore(() {
-          status = WStoreStatus.loaded;
-        });
-      },
-      onError: (error, __) {
-        setStore(() {
-          status = WStoreStatus.error;
-          error = ToggleSpacesGroupIsOpenErrors.toggleError;
-        });
-      },
-    );
-  }
-
-  @override
-  SpaceGroup get widget => super.widget as SpaceGroup;
-}
-
-class SpaceGroup extends WStoreWidget<SpaceGroupStore> {
-  const SpaceGroup({
-    required this.group,
-    required this.currentRoute,
-    required this.currentArguments,
-    super.key,
-  });
-
-  final GroupWithSpaces group;
-  final String? currentRoute;
-  final Object? currentArguments;
-
-  String getGroupTitle({
-    required AppLocalizations localization,
-    required String groupName,
-  }) {
-    switch (groupName) {
-      case 'All Spaces':
-        return localization.all_spaces;
-      case 'Favorite':
-        return localization.favorite_spaces;
-      default:
-        return groupName;
-    }
-  }
-
-  @override
-  SpaceGroupStore createWStore() => SpaceGroupStore();
-
-  @override
-  Widget build(BuildContext context, SpaceGroupStore store) {
-    final localization = LocalizationHelper.getLocalizations(context);
-
-    return WStoreValueBuilder<SpaceGroupStore, Group?>(
-      watch: (store) => store.group,
-      builder: (context, store) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            GestureDetector(
-              onTap: () {
-                if (group.groupId != null) {
-                  context.wstore<SpaceGroupStore>().toggleIsOpen(
-                        id: group.groupId!,
-                        isOpen: group.isOpen,
-                      );
-                }
-              },
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  NavigatorMenuListTitle(
-                    groupId: group.groupId,
-                    title: getGroupTitle(
-                      localization: localization,
-                      groupName: group.name,
-                    ),
-                    isOpen: group.isOpen,
-                  ),
-                ],
-              ),
-            ),
-            if (group.isOpen)
-              ...group.spaces.map(
-                (space) => NavigatorMenuItem(
-                  iconAssetName: AppIcons.navigatorSpace,
-                  title: space.name,
-                  selected:
-                      currentRoute == '/space' && currentArguments == space.id,
-                  favorite: space.favorite,
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    if (currentRoute != '/space' ||
-                        currentArguments != space.id) {
-                      Navigator.of(context).pushReplacementNamed(
-                        '/space',
-                        arguments: {
-                          'space': space,
-                        },
-                      );
-                    }
-                  },
-                ),
-              ),
-          ],
-        );
-      },
     );
   }
 }

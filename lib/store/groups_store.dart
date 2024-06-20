@@ -72,6 +72,13 @@ class GroupsStore extends GStore {
     final List<GroupResponse> groupsResponse = await api.getGroups();
     final List<Group> groups =
         groupsResponse.map((response) => Group.fromResponse(response)).toList();
+    groups.sort((a, b) => a.order.compareTo(b.order));
+    for (int i = 1; i < groups.length; i++) {
+      if (groups[i].order == groups[i - 1].order) {
+        groups[i] = groups[i].copyWith(order: groups[i].order + 1);
+      }
+    }
+
     setStore(() {
       this.groups.clear();
       this.groups.addAll(groups);
