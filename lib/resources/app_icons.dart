@@ -37,4 +37,6 @@ abstract class AppIcons {
   static const String add = 'assets/icons/add_1.svg';
   static const String addFolder = 'assets/icons/add_folder.svg';
   static const String addClipBoard = 'assets/icons/add_clipboard.svg';
+  static const String drawerQuestionMark =
+      'assets/icons/drawer_question_mark.svg';
 }

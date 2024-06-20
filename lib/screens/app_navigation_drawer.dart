@@ -10,6 +10,8 @@ import 'package:unityspace/resources/l10n/app_localizations.dart';
 import 'package:unityspace/screens/dialogs/add_space_dialog.dart';
 import 'package:unityspace/screens/dialogs/add_space_limit_dialog.dart';
 import 'package:unityspace/screens/dialogs/rename_spaces_group_dialog.dart';
+import 'package:unityspace/screens/drawer_widgets/add_space_button.dart';
+import 'package:unityspace/screens/drawer_widgets/navigation_menu_item.dart';
 import 'package:unityspace/screens/drawer_widgets/space_group.dart';
 import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
 import 'package:unityspace/store/groups_store.dart';
@@ -492,6 +494,45 @@ class AppNavigationDrawer extends WStoreWidget<AppNavigationDrawerStore> {
                   );
                 },
               ),
+              InkWell(
+                onTap: () {},
+                child: Container(
+                  width: 335,
+                  height: 44,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(12)),
+                  alignment: Alignment.center,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SvgPicture.asset(
+                        AppIcons.drawerQuestionMark,
+                        width: 20,
+                        height: 20,
+                        fit: BoxFit.scaleDown,
+                        theme: const SvgTheme(
+                          currentColor: ColorConstants.grey09,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        localization.main_menu_help_button,
+                        style: const TextStyle(
+                          fontFamily: 'Roboto',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                          height: 18.75 / 16,
+                          color: ColorConstants.grey09,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 16,
+              ),
             ],
           ),
         ),
@@ -530,51 +571,6 @@ class NavigatorMenuEmptySpacesHint extends StatelessWidget {
           height: 1.5,
           fontSize: 16,
         ),
-      ),
-    );
-  }
-}
-
-class AddSpaceButtonWidget extends StatelessWidget {
-  final VoidCallback onTap;
-
-  const AddSpaceButtonWidget({
-    required this.onTap,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final localization = LocalizationHelper.getLocalizations(context);
-    return MaterialButton(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      minWidth: double.infinity,
-      height: 40,
-      elevation: 2,
-      color: const Color(0xFF141314),
-      onPressed: onTap,
-      child: Row(
-        children: [
-          SvgPicture.asset(
-            AppIcons.navigatorPlus,
-            width: 32,
-            height: 32,
-            fit: BoxFit.scaleDown,
-            theme: SvgTheme(
-              currentColor: Colors.white.withOpacity(0.5),
-            ),
-          ),
-          const SizedBox(width: 4),
-          Text(
-            localization.add_space,
-            style: const TextStyle(
-              color: Color(0xE6FFFFFF),
-              fontSize: 16,
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -703,63 +699,6 @@ class NavigatorMenuListTitle extends StatelessWidget {
         ],
       );
     }
-  }
-}
-
-class NavigatorMenuItem extends StatelessWidget {
-  final String title;
-  final bool selected;
-  final bool favorite;
-  final String iconAssetName;
-  final VoidCallback onTap;
-
-  const NavigatorMenuItem({
-    required this.title,
-    required this.selected,
-    required this.iconAssetName,
-    required this.onTap,
-    required this.favorite,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(8)),
-      ),
-      onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-      horizontalTitleGap: 8,
-      selected: selected,
-      selectedTileColor: const Color(0xFF0D362D),
-      leading: SvgPicture.asset(
-        iconAssetName,
-        width: 32,
-        height: 32,
-        fit: BoxFit.scaleDown,
-        theme: SvgTheme(
-          currentColor: selected ? Colors.white : const Color(0xFF908F90),
-        ),
-      ),
-      trailing: favorite
-          ? SvgPicture.asset(
-              AppIcons.navigatorFavorite,
-              width: 12,
-              height: 12,
-              fit: BoxFit.scaleDown,
-            )
-          : null,
-      title: Text(
-        title,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(
-          color: selected ? Colors.white : const Color(0xE6FFFFFF),
-          fontSize: 18,
-        ),
-      ),
-    );
   }
 }
 
