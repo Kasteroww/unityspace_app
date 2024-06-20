@@ -103,3 +103,5 @@ enum RenameSpacesGroupErrors {
   newNameMatchesOld,
   renameSpacesGroupError,
 }
+
+enum ToggleSpacesGroupIsOpenErrors { none, toggleError }

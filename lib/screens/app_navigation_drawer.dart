@@ -24,6 +24,8 @@ import 'package:wstore/wstore.dart';
 class AppNavigationDrawerStore extends WStore {
   WStoreStatus status = WStoreStatus.init;
   DrawerErrors error = DrawerErrors.none;
+  ToggleSpacesGroupIsOpenErrors toggleIsOpenError =
+      ToggleSpacesGroupIsOpenErrors.none;
   bool spaceCreating = false;
   int? newSpaceId;
   String? redirectTo;
@@ -145,6 +147,22 @@ class AppNavigationDrawerStore extends WStore {
         keyName: 'groups',
       );
 
+  Notifications get notifications => computedFromStore(
+        store: NotificationsStore(),
+        getValue: (store) => store.notifications,
+        keyName: 'notifications',
+      );
+
+  bool get haveUnreadNotifications => computed(
+        getValue: () =>
+            notifications.iterable
+                .firstWhereOrNull((notify) => notify.unread)
+                ?.unread ??
+            false,
+        keyName: 'haveUnreadNotifications',
+        watch: () => [notifications],
+      );
+
   /// создает группу, в которой находятся все неархивированные пространства
   GroupWithSpaces get allSpacesGroup => computed(
         getValue: () {
@@ -200,7 +218,7 @@ class AppNavigationDrawerStore extends WStore {
             }
           }
         },
-        watch: () => [_allSpacesSortedByOrder],
+        watch: () => [_allSpacesSortedByOrder, groups],
         keyName: 'spacesGroups',
       );
 
@@ -214,7 +232,10 @@ class AppNavigationDrawerStore extends WStore {
                 .toList();
           }
         },
-        watch: () => [_spacesGroups, isOwnerOrAdmin],
+        watch: () => [
+          _spacesGroups,
+          isOwnerOrAdmin,
+        ],
         keyName: 'spacesGroupsByUserPrivilidges',
       );
 
@@ -233,22 +254,6 @@ class AppNavigationDrawerStore extends WStore {
         },
         watch: () => [spaces],
         keyName: 'allSpacesSortedByOrder',
-      );
-
-  Notifications get notifications => computedFromStore(
-        store: NotificationsStore(),
-        getValue: (store) => store.notifications,
-        keyName: 'notifications',
-      );
-
-  bool get haveUnreadNotifications => computed(
-        getValue: () =>
-            notifications.iterable
-                .firstWhereOrNull((notify) => notify.unread)
-                ?.unread ??
-            false,
-        keyName: 'haveUnreadNotifications',
-        watch: () => [notifications],
       );
 
   GroupWithSpaces _formGroup(Group group) {
@@ -546,7 +551,56 @@ class AppNavigationDrawer extends WStoreWidget<AppNavigationDrawerStore> {
   }
 }
 
-class SpaceGroup extends StatelessWidget {
+class SpaceGroupStore extends WStore {
+  WStoreStatus status = WStoreStatus.init;
+  ToggleSpacesGroupIsOpenErrors error = ToggleSpacesGroupIsOpenErrors.none;
+
+  Groups get groups => computedFromStore(
+        store: GroupsStore(),
+        getValue: (store) => store.groups,
+        keyName: 'groups',
+      );
+
+  Group? get group => computed(
+        getValue: () {
+          if (widget.group.groupId != null) {
+            return groups[widget.group.groupId!];
+          }
+          return null;
+        },
+        watch: () => [groups],
+        keyName: 'group',
+      );
+
+  void toggleIsOpen({required int id, required bool isOpen}) {
+    if (group == null) return;
+    setStore(() {
+      status = WStoreStatus.loading;
+    });
+
+    subscribe(
+      future:
+          GroupsStore().updateGroupOpen(id: group!.id, isOpen: !group!.isOpen),
+      subscriptionId: 1,
+      onData: (id) {
+        setStore(() {
+          status = WStoreStatus.loaded;
+        });
+      },
+      onError: (error, __) {
+        setStore(() {
+          status = WStoreStatus.error;
+          error = ToggleSpacesGroupIsOpenErrors.toggleError;
+        });
+      },
+    );
+  }
+
+  @override
+  SpaceGroup get widget => super.widget as SpaceGroup;
+}
+
+class SpaceGroup extends WStoreWidget<SpaceGroupStore> {
   const SpaceGroup({
     required this.group,
     required this.currentRoute,
@@ -573,38 +627,66 @@ class SpaceGroup extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  SpaceGroupStore createWStore() => SpaceGroupStore();
+
+  @override
+  Widget build(BuildContext context, SpaceGroupStore store) {
     final localization = LocalizationHelper.getLocalizations(context);
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        NavigatorMenuListTitle(
-          groupId: group.groupId,
-          title: getGroupTitle(
-            localization: localization,
-            groupName: group.name,
-          ),
-        ),
-        ...group.spaces.map(
-          (space) => NavigatorMenuItem(
-            iconAssetName: AppIcons.navigatorSpace,
-            title: space.name,
-            selected: currentRoute == '/space' && currentArguments == space.id,
-            favorite: space.favorite,
-            onTap: () {
-              Navigator.of(context).pop();
-              if (currentRoute != '/space' || currentArguments != space.id) {
-                Navigator.of(context).pushReplacementNamed(
-                  '/space',
-                  arguments: {
-                    'space': space,
+
+    return WStoreValueBuilder<SpaceGroupStore, Group?>(
+      watch: (store) => store.group,
+      builder: (context, store) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            GestureDetector(
+              onTap: () {
+                if (group.groupId != null) {
+                  context.wstore<SpaceGroupStore>().toggleIsOpen(
+                        id: group.groupId!,
+                        isOpen: group.isOpen,
+                      );
+                }
+              },
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  NavigatorMenuListTitle(
+                    groupId: group.groupId,
+                    title: getGroupTitle(
+                      localization: localization,
+                      groupName: group.name,
+                    ),
+                    isOpen: group.isOpen,
+                  ),
+                ],
+              ),
+            ),
+            if (group.isOpen)
+              ...group.spaces.map(
+                (space) => NavigatorMenuItem(
+                  iconAssetName: AppIcons.navigatorSpace,
+                  title: space.name,
+                  selected:
+                      currentRoute == '/space' && currentArguments == space.id,
+                  favorite: space.favorite,
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    if (currentRoute != '/space' ||
+                        currentArguments != space.id) {
+                      Navigator.of(context).pushReplacementNamed(
+                        '/space',
+                        arguments: {
+                          'space': space,
+                        },
+                      );
+                    }
                   },
-                );
-              }
-            },
-          ),
-        ),
-      ],
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 }
@@ -692,10 +774,12 @@ class AddSpaceButtonWidget extends StatelessWidget {
 class NavigatorMenuListTitle extends StatelessWidget {
   final int? groupId;
   final String title;
+  final bool isOpen;
 
   const NavigatorMenuListTitle({
     required this.groupId,
     required this.title,
+    required this.isOpen,
     super.key,
   });
 
@@ -732,16 +816,35 @@ class NavigatorMenuListTitle extends StatelessWidget {
       },
       child: SizedBox(
         height: 40,
-        width: double.infinity,
-        child: Text(
-          title,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            color: Colors.white.withOpacity(0.5),
-            fontWeight: FontWeight.w500,
-            fontSize: 16,
-          ),
+        child: Row(
+          children: [
+            Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.5),
+                fontWeight: FontWeight.w500,
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(
+              width: 8,
+            ),
+            if (groupId != null)
+              if (isOpen)
+                const Icon(
+                  Icons.arrow_downward,
+                  size: 16,
+                  color: Colors.white,
+                )
+              else
+                const Icon(
+                  Icons.arrow_forward,
+                  size: 16,
+                  color: Colors.white,
+                ),
+          ],
         ),
       ),
     );

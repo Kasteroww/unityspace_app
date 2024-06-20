@@ -105,21 +105,26 @@ class GroupsStore extends GStore {
     }
   }
 
-
-  Future<void> updateGroupOrder({
-    required int id,
-    required double order,
-  }) async {
-    final updatedGroupOrder = UpdateGroupOrder.fromResponse(
-      await api.updateGroupOrder(id: id, order: order),
+  Future<void> updateGroupOpen({required int id, required bool isOpen}) async {
+    final result = UpdateGroupOpen.fromResponse(
+      await api.updateGroupOpen(id: id, isOpen: isOpen),
     );
-    final oldGroup = groups[id];
-    if (oldGroup != null) {
-      final updatedGroup = oldGroup.copyWith(order: updatedGroupOrder.order);
+    if (result.id == id && groups[id] != null) {
+      final updatedGroup = groups[result.id]!.copyWith(isOpen: result.isOpen);
       setStore(() {
         groups.add(updatedGroup);
       });
+    } else {
+      throw UpdatingNonexistentEntityStoreException(
+        message: 'The group with ID $result.id does not exist in the store.',
+        data: {
+          'request id': id,
+          'response id': result.id,
+        },
+      );
     }
+  }
+
 
   void empty() {
     setStore(() {

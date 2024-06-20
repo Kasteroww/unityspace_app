@@ -183,3 +183,41 @@ class UpdateGroupName {
     );
   }
 }
+
+class UpdateGroupOpenResponse {
+  final int id;
+  final bool isOpen;
+
+  UpdateGroupOpenResponse({
+    required this.id,
+    required this.isOpen,
+  });
+
+  factory UpdateGroupOpenResponse.fromJson(Map<String, dynamic> data) {
+    try {
+      return UpdateGroupOpenResponse(
+        id: data['id'] as int,
+        isOpen: data['isOpen'] as bool,
+      );
+    } catch (e, stack) {
+      throw JsonParsingException('Error parsing Model', e, stack);
+    }
+  }
+}
+
+class UpdateGroupOpen {
+  final int id;
+  final bool isOpen;
+
+  UpdateGroupOpen({
+    required this.id,
+    required this.isOpen,
+  });
+
+  factory UpdateGroupOpen.fromResponse(UpdateGroupOpenResponse data) {
+    return UpdateGroupOpen(
+      id: data.id,
+      isOpen: data.isOpen,
+    );
+  }
+}

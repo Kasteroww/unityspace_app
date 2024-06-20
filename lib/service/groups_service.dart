@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:unityspace/models/groups_models.dart';
 import 'package:unityspace/service/exceptions/handlers.dart';
 import 'package:unityspace/service/exceptions/service_exceptions.dart';
-import 'package:unityspace/utils/helpers.dart';
 
 import 'package:unityspace/utils/http_plugin.dart';
 
@@ -49,26 +48,25 @@ Future<UpdateGroupNameResponse> updateGroupName({
   }
 }
 
-Future<UpdateGroupOrderResponse> updateGroupOrder({
+Future<UpdateGroupOpenResponse> updateGroupOpen({
   required int id,
-  required double order,
+  required bool isOpen,
 }) async {
   try {
-    final response = await HttpPlugin()
-        .patch('/groups/$id/order', {'order': convertToOrderRequest(order)});
-    final jsonData = json.decode(response.body);
-    if (jsonData == null) {
+    final response =
+        await HttpPlugin().patch('/groups/$id/is_open', {'isOpen': isOpen});
+    if (response.body.isEmpty) {
       throw EmptyResponseServiceException(
         message: '''
-                  Failed to update space group order. 
-                  Expected JSON response with the group id
-                  and the new order, 
+                  Failed to update spaces group isOpen. 
+                  Expected JSON response with the new isOpen value
+                  and the group id, 
                   but received an empty response.
                   ''',
         response: response,
       );
     }
-    return UpdateGroupOrderResponse.fromJson(jsonData);
+    return UpdateGroupOpenResponse.fromJson(json.decode(response.body));
   } catch (e) {
     if (e is HttpPluginException) {
       handleDefaultHttpExceptions(e);
