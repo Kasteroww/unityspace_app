@@ -7,6 +7,7 @@ import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/resources/app_icons.dart';
 import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/resources/l10n/app_localizations.dart';
+import 'package:unityspace/resources/theme/theme.dart';
 import 'package:unityspace/screens/dialogs/add_space_dialog.dart';
 import 'package:unityspace/screens/dialogs/add_space_limit_dialog.dart';
 import 'package:unityspace/screens/dialogs/rename_spaces_group_dialog.dart';
@@ -304,6 +305,31 @@ class AppNavigationDrawer extends WStoreWidget<AppNavigationDrawerStore> {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             children: [
+              WStoreBuilder(
+                store: store,
+                watch: (store) => [
+                  store.currentUserName,
+                  store.currentUserId,
+                  store.hasLicense,
+                ],
+                builder: (context, store) {
+                  return NavigatorMenuCurrentUser(
+                    name: store.currentUserName,
+                    currentUserId: store.currentUserId,
+                    selected: currentRoute == '/account',
+                    license: store.hasLicense,
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      if (currentRoute != '/account') {
+                        Navigator.of(context).pushReplacementNamed('/account');
+                      }
+                    },
+                  );
+                },
+              ),
+              const SizedBox(
+                height: 20,
+              ),
               NavigatorMenuItem(
                 iconAssetName: AppIcons.navigatorMain,
                 title: localization.main,
@@ -472,28 +498,6 @@ class AppNavigationDrawer extends WStoreWidget<AppNavigationDrawerStore> {
                 ),
               ),
               const SizedBox(height: 16),
-              WStoreBuilder(
-                store: store,
-                watch: (store) => [
-                  store.currentUserName,
-                  store.currentUserId,
-                  store.hasLicense,
-                ],
-                builder: (context, store) {
-                  return NavigatorMenuCurrentUser(
-                    name: store.currentUserName,
-                    currentUserId: store.currentUserId,
-                    selected: currentRoute == '/account',
-                    license: store.hasLicense,
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      if (currentRoute != '/account') {
-                        Navigator.of(context).pushReplacementNamed('/account');
-                      }
-                    },
-                  );
-                },
-              ),
               InkWell(
                 onTap: () {},
                 child: Container(
@@ -720,36 +724,60 @@ class NavigatorMenuCurrentUser extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(8)),
-      ),
+    return InkWell(
       onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-      horizontalTitleGap: 8,
-      selected: selected,
-      selectedTileColor: const Color(0xFF0D362D),
-      leading: UserAvatarWidget(
-        id: currentUserId,
-        width: 32,
-        height: 32,
-        fontSize: 14,
-      ),
-      trailing: license
-          ? SvgPicture.asset(
-              AppIcons.navigatorLicense,
-              width: 24,
-              height: 24,
-              fit: BoxFit.scaleDown,
-            )
-          : null,
-      title: Text(
-        name,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(
-          color: selected ? Colors.white : const Color(0xE6FFFFFF),
-          fontSize: 18,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(8)),
+        ),
+        child: Column(
+          children: [
+            UserAvatarWidget(
+              id: currentUserId,
+              width: 36,
+              height: 35,
+              fontSize: 16,
+            ),
+            const SizedBox(
+              height: 12,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontFamily: 'Roboto',
+                    color: ColorConstants.grey09,
+                    fontSize: 16,
+                    height: 21 / 16,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                if (license)
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(
+                        width: 8,
+                      ),
+                      SvgPicture.asset(
+                        AppIcons.navigatorLicense,
+                        width: 20,
+                        height: 20,
+                        fit: BoxFit.scaleDown,
+                        theme: const SvgTheme(
+                          currentColor: Color(0xFF85DEAB),
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+          ],
         ),
       ),
     );
