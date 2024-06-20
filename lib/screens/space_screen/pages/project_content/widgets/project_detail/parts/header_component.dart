@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:unityspace/models/task_models.dart';
 
 class HeaderComponent extends StatelessWidget {
-  const HeaderComponent({required this.task, super.key});
+  final void Function()? onCopyButtonTap;
+  const HeaderComponent({
+    required this.taskText,
+    super.key,
+    this.onCopyButtonTap,
+  });
 
-  final Task? task;
+  final String taskText;
 
   @override
   Widget build(BuildContext context) {
@@ -27,28 +31,31 @@ class HeaderComponent extends StatelessWidget {
         ),
         Row(
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: const BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.all(Radius.circular(8)),
-              ),
-              child: Row(
-                children: [
-                  Text(
-                    '#${task?.id}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
+            InkWell(
+              onTap: onCopyButtonTap,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: const BoxDecoration(
+                  color: Colors.grey,
+                  borderRadius: BorderRadius.all(Radius.circular(8)),
+                ),
+                child: Row(
+                  children: [
+                    Text(
+                      taskText,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 5),
-                  const Icon(
-                    Icons.copy,
-                    size: 15,
-                    color: Colors.white,
-                  ),
-                ],
+                    const SizedBox(width: 5),
+                    const Icon(
+                      Icons.copy,
+                      size: 15,
+                      color: Colors.white,
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(width: 10),

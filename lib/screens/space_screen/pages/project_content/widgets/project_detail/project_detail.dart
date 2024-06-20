@@ -16,10 +16,15 @@ import 'package:unityspace/screens/space_screen/pages/project_content/widgets/pr
 import 'package:unityspace/store/spaces_store.dart';
 import 'package:unityspace/store/tasks_store.dart';
 import 'package:unityspace/store/user_store.dart';
+import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
+import 'package:unityspace/utils/mixins/copy_to_clipboard_mixin.dart';
 import 'package:wstore/wstore.dart';
 
-class ProjectDetailStore extends WStore {
+class ProjectDetailStore extends WStore with CopyToClipboardMixin {
+  @override
+  String message = '';
+  String taskNumberText = '';
   ProjectErrors error = ProjectErrors.none;
   WStoreStatus status = WStoreStatus.init;
 
@@ -95,6 +100,12 @@ class ProjectDetailStore extends WStore {
     }
   }
 
+  void setTaskNumberText(String newText) {
+    setStore(() {
+      taskNumberText = newText;
+    });
+  }
+
   OrganizationMembers get members => computedFromStore(
         store: UserStore(),
         getValue: (store) => store.organizationMembers,
@@ -126,6 +137,7 @@ class ProjectDetail extends WStoreWidget<ProjectDetailStore> {
 
   @override
   Widget build(BuildContext context, ProjectDetailStore store) {
+    final localization = LocalizationHelper.getLocalizations(context);
     return WStoreStatusBuilder(
       store: store,
       watch: (store) => store.status,
@@ -136,50 +148,87 @@ class ProjectDetail extends WStoreWidget<ProjectDetailStore> {
         return const SizedBox.expand();
       },
       builderLoaded: (context) {
+        store.setTaskNumberText(
+          '#${store.task?.id}',
+        );
         return WStoreBuilder<ProjectDetailStore>(
-          watch: (store) => [store.task],
+          watch: (store) => [
+            store.task,
+          ],
           builder: (context, store) {
-            return SingleChildScrollView(
-              child: SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 16, top: 16, right: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      HeaderComponent(task: store.task),
-                      const StatusComponent(),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 12),
-                        child: Text(
-                          store.task?.name ?? '',
-                          style: const TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w500,
+            return WStoreStringListener<ProjectDetailStore>(
+              watch: (store) => store.message,
+              reset: (store) => store.message = '',
+              onNotEmpty: (context, message) async {
+                store.setTaskNumberText(
+                  localization.copied,
+                );
+                Future.delayed(const Duration(seconds: 3), () {
+                  store.setTaskNumberText(
+                    '#${store.task?.id}',
+                  );
+                });
+              },
+              child: SingleChildScrollView(
+                child: SafeArea(
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.only(left: 16, top: 16, right: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        WStoreBuilder<ProjectDetailStore>(
+                          watch: (store) => [
+                            store.taskNumberText,
+                          ],
+                          builder: (context, store) {
+                            return HeaderComponent(
+                              taskText: store.taskNumberText,
+                              onCopyButtonTap: () {
+                                store.copy(
+                                  text: '#${store.task?.id}',
+                                  successMessage:
+                                      localization.task_number_copied,
+                                  errorMessage: localization.copy_error,
+                                );
+                              },
+                            );
+                          },
+                        ),
+                        const StatusComponent(),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 12),
+                          child: Text(
+                            store.task?.name ?? '',
+                            style: const TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
-                      ),
-                      const TaskLocationComponent(),
-                      const SizedBox(height: 20),
-                      ResponsiblePart(
-                        spaceId: spaceId,
-                        taskId: store.task?.id,
-                      ),
-                      const SizedBox(height: 10),
-                      ImportanceComponent(task: store.task),
-                      const SizedBox(height: 10),
-                      const ColorComponent(),
-                      const SizedBox(height: 10),
-                      const DateComponent(),
-                      const SizedBox(height: 10),
-                      const ShortcutsComponent(),
-                      const AddFieldButtonComponent(),
-                      Text('history Length: ${store.currentHistory?.length}'),
-                      const MessagesComponent(),
-                      BottomNavigationButtonComponent(
-                        focusNode: FocusNode(),
-                      ),
-                    ],
+                        const TaskLocationComponent(),
+                        const SizedBox(height: 20),
+                        ResponsiblePart(
+                          spaceId: spaceId,
+                          taskId: store.task?.id,
+                        ),
+                        const SizedBox(height: 10),
+                        ImportanceComponent(task: store.task),
+                        const SizedBox(height: 10),
+                        const ColorComponent(),
+                        const SizedBox(height: 10),
+                        const DateComponent(),
+                        const SizedBox(height: 10),
+                        const ShortcutsComponent(),
+                        const AddFieldButtonComponent(),
+                        Text('history Length: ${store.currentHistory?.length}'),
+                        const MessagesComponent(),
+                        BottomNavigationButtonComponent(
+                          focusNode: FocusNode(),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

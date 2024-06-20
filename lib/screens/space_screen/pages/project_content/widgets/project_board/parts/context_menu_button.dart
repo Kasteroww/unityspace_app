@@ -116,9 +116,8 @@ class ContextMenuButton extends StatelessWidget {
             ),
           ),
           PopupMenuItem(
-            onTap: () => store.deleteTaskFromStage(
+            onTap: () => store.deleteTask(
               taskId: task.id,
-              stageId: stage.id,
             ),
             child: PopupMenuItemChild(
               text: localization.delete,

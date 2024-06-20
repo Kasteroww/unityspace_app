@@ -141,12 +141,12 @@ class TasksStore extends GStore {
     return taskResponse.task.id;
   }
 
-  Future<void> deleteTaskFromStage({
+  Future<void> deleteTask({
     required int taskId,
-    required int stageId,
   }) async {
-    final deleteTaskResponse =
-        await api.deleteTaskFromStage(taskId: taskId, stageId: stageId);
+    final deleteTaskResponse = await api.deleteTask(
+      taskId: taskId,
+    );
 
     final deletedTask = Task.fromResponse(deleteTaskResponse.task);
     final newHistory = TaskHistory.fromResponse(deleteTaskResponse.history);

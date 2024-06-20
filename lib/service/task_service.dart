@@ -118,13 +118,12 @@ Future getProjectTasks({
   }
 }
 
-Future<DeleteTaskResponse> deleteTaskFromStage({
+Future<DeleteTaskResponse> deleteTask({
   required int taskId,
-  required int stageId,
 }) async {
   try {
     final response = await HttpPlugin().delete(
-      '/tasks/$taskId/stages/$stageId',
+      '/tasks/$taskId',
     );
     final result = json.decode(response.body);
     return DeleteTaskResponse.fromJson(result);

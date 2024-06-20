@@ -224,14 +224,12 @@ class ProjectBoardsStore extends WStore {
     });
   }
 
-  Future<void> deleteTaskFromStage({
+  Future<void> deleteTask({
     required int taskId,
-    required int stageId,
   }) async {
     try {
-      await TasksStore().deleteTaskFromStage(
+      await TasksStore().deleteTask(
         taskId: taskId,
-        stageId: stageId,
       );
     } catch (e, stack) {
       logger.d('''

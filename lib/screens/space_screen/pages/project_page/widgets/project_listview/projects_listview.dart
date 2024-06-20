@@ -35,8 +35,11 @@ class ProjectsByColumnListView extends StatelessWidget {
                     // Вершина с именем проекта
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding:
-                            const EdgeInsets.only(left: 12, right: 12, top: 24),
+                        padding: const EdgeInsets.only(
+                          left: 12,
+                          right: 12,
+                          top: 24,
+                        ),
                         child: Text(
                           maxLines: 3,
                           store.isArchivedPage
@@ -58,6 +61,7 @@ class ProjectsByColumnListView extends StatelessWidget {
                           top: 4,
                           left: 12,
                           right: 12,
+                          bottom: 22,
                         ),
                         child: ListView.builder(
                           shrinkWrap: true,

@@ -135,7 +135,8 @@ class SendMessageResponse {
         message:
             MessageResponse.fromJson(json['message'] as Map<String, dynamic>),
         history: TaskHistoryResponse.fromJson(
-            json['history'] as Map<String, dynamic>),
+          json['history'] as Map<String, dynamic>,
+        ),
       );
     } catch (e, stack) {
       throw JsonParsingException('Error parsing Model', e, stack);

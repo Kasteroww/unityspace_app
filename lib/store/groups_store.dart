@@ -125,11 +125,9 @@ class GroupsStore extends GStore {
     }
   }
 
-
   void empty() {
     setStore(() {
       groups.clear();
     });
-
   }
 }
