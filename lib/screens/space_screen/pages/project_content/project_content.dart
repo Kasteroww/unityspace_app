@@ -92,7 +92,7 @@ class ProjectContent extends WStoreWidget<ProjectContentStore> {
                     projectId: projectId,
                   )
                 else
-                  const WorkInProgressStub(),
+                  const Expanded(child: WorkInProgressStub()),
               ],
             ),
           );
