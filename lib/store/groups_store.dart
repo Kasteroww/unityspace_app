@@ -53,7 +53,9 @@ class Groups with GStoreChangeObjectMixin {
   }
 
   Group? operator [](int id) => _groupsMap[id];
+
   Iterable<Group> get list => _groupsMap.values;
+
   int get length => _groupsMap.length;
 }
 
@@ -101,5 +103,11 @@ class GroupsStore extends GStore {
         },
       );
     }
+  }
+
+  void empty() {
+    setStore(() {
+      groups.clear();
+    });
   }
 }

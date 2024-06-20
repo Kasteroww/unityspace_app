@@ -6,6 +6,13 @@ import 'package:unityspace/resources/constants.dart';
 import 'package:unityspace/service/auth_service.dart' as api;
 import 'package:unityspace/service/exceptions/http_exceptions.dart';
 import 'package:unityspace/service/websync_service.dart';
+import 'package:unityspace/store/groups_store.dart';
+import 'package:unityspace/store/notifications_store.dart';
+import 'package:unityspace/store/projects_store.dart';
+import 'package:unityspace/store/reglaments_store.dart';
+import 'package:unityspace/store/spaces_store.dart';
+import 'package:unityspace/store/task_messages_store.dart';
+import 'package:unityspace/store/tasks_store.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/http_plugin.dart';
 import 'package:wstore/wstore.dart';
@@ -39,6 +46,9 @@ class AuthStore extends GStore {
 
     // разрываем подключение c сервером через socket
     disconnect();
+
+    // чистим все сторы при выходе из аккаунта
+    _clearAllStores();
   }
 
   Future<void> setUserTokens(
@@ -146,5 +156,16 @@ class AuthStore extends GStore {
     } else {
       HttpPlugin().setAuthorizationHeader('${ConstantStrings.bearer} $token');
     }
+  }
+
+  void _clearAllStores() {
+    GroupsStore().empty();
+    NotificationsStore().empty();
+    ProjectsStore().empty();
+    ReglamentsStore().empty();
+    SpacesStore().empty();
+    TaskMessagesStore().empty();
+    TasksStore().empty();
+    UserStore().empty();
   }
 }
