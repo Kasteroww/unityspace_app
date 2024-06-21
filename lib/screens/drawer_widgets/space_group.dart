@@ -4,6 +4,7 @@ import 'package:unityspace/resources/app_icons.dart';
 import 'package:unityspace/resources/l10n/app_localizations.dart';
 import 'package:unityspace/screens/app_navigation_drawer.dart';
 import 'package:unityspace/screens/drawer_widgets/navigation_menu_item.dart';
+import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
 
@@ -25,7 +26,7 @@ class SpaceGroup extends StatelessWidget {
   }) {
     switch (groupName) {
       case 'All Spaces':
-        return localization.all_spaces;
+        return localization.all_spaces.capitalizeWords();
       case 'Favorite':
         return localization.favorite_spaces;
       default:

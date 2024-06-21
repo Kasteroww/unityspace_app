@@ -38,6 +38,8 @@ abstract class AppIcons {
   static const String drawerNotifications =
       'assets/icons/drawer_notifications.svg';
   static const String drawerSearch = 'assets/icons/drawer_search.svg';
+  static const String drawerArrowRight = 'assets/icons/drawer_arrow_right.svg';
+  static const String drawerArrowDown = 'assets/icons/drawer_arrow_down.svg';
   static const String drawerQuestionMark =
       'assets/icons/drawer_question_mark.svg';
 }

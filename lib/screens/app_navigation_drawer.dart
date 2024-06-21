@@ -6,14 +6,13 @@ import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/resources/app_icons.dart';
 import 'package:unityspace/resources/errors.dart';
-import 'package:unityspace/resources/l10n/app_localizations.dart';
 import 'package:unityspace/resources/theme/theme.dart';
 import 'package:unityspace/screens/dialogs/add_space_dialog.dart';
 import 'package:unityspace/screens/dialogs/add_space_limit_dialog.dart';
-import 'package:unityspace/screens/dialogs/rename_spaces_group_dialog.dart';
 import 'package:unityspace/screens/drawer_widgets/add_space_button.dart';
 import 'package:unityspace/screens/drawer_widgets/animated_notification_circle.dart';
 import 'package:unityspace/screens/drawer_widgets/current_user.dart';
+import 'package:unityspace/screens/drawer_widgets/empty_spaces_hint.dart';
 import 'package:unityspace/screens/drawer_widgets/navigation_menu_item.dart';
 import 'package:unityspace/screens/drawer_widgets/space_group.dart';
 import 'package:unityspace/store/groups_store.dart';
@@ -537,8 +536,9 @@ class AppNavigationDrawer extends WStoreWidget<AppNavigationDrawerStore> {
                         width: 20,
                         height: 20,
                         fit: BoxFit.scaleDown,
-                        theme: const SvgTheme(
-                          currentColor: ColorConstants.grey09,
+                        colorFilter: const ColorFilter.mode(
+                          ColorConstants.grey09,
+                          BlendMode.srcIn,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -564,166 +564,5 @@ class AppNavigationDrawer extends WStoreWidget<AppNavigationDrawerStore> {
         ),
       ),
     );
-  }
-}
-
-class NavigatorMenuEmptySpacesHint extends StatelessWidget {
-  final bool isOrganizationOwner;
-
-  const NavigatorMenuEmptySpacesHint({
-    required this.isOrganizationOwner,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final localization = LocalizationHelper.getLocalizations(context);
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF111012),
-        border: Border.all(
-          color: const Color(0xFF0C5B35),
-        ),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 12,
-      ),
-      child: Text(
-        isOrganizationOwner ? localization.owner_text : localization.empt_text,
-        style: TextStyle(
-          color: Colors.white.withOpacity(0.95),
-          height: 1.5,
-          fontSize: 16,
-        ),
-      ),
-    );
-  }
-}
-
-class NavigatorMenuListTitle extends StatelessWidget {
-  final int? groupId;
-  final String title;
-  final bool isOpen;
-
-  const NavigatorMenuListTitle({
-    required this.groupId,
-    required this.title,
-    required this.isOpen,
-    super.key,
-  });
-
-  bool isShowGroupOptions({required String groupName}) {
-    return (groupName == 'All Spaces' || groupName == 'Favorite')
-        ? false
-        : true;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final localization = LocalizationHelper.getLocalizations(context);
-    final isOwnerOrAdmin =
-        context.wstore<AppNavigationDrawerStore>().isOwnerOrAdmin;
-    return GestureDetector(
-      onLongPressStart: (details) {
-        if (isOwnerOrAdmin &&
-            isShowGroupOptions(groupName: title) &&
-            groupId != null) {
-          showCustomSpaceGroupMenu(
-            context: context,
-            position: details.globalPosition,
-            localization: localization,
-            groupName: title,
-            onTapRename: () {
-              showRenameSpacesGroupDialog(
-                context: context,
-                groupId: groupId!,
-                currentName: title,
-              );
-            },
-          );
-        }
-      },
-      child: SizedBox(
-        height: 40,
-        child: Row(
-          children: [
-            Text(
-              title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.5),
-                fontWeight: FontWeight.w500,
-                fontSize: 16,
-              ),
-            ),
-            const SizedBox(
-              width: 8,
-            ),
-            if (groupId != null)
-              if (isOpen)
-                const Icon(
-                  Icons.arrow_downward,
-                  size: 16,
-                  color: Colors.white,
-                )
-              else
-                const Icon(
-                  Icons.arrow_forward,
-                  size: 16,
-                  color: Colors.white,
-                ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Future<void> showCustomSpaceGroupMenu({
-    required BuildContext context,
-    required Offset position,
-    required AppLocalizations localization,
-    required String groupName,
-    Function()? onTapRename,
-    Function()? onTapDelete,
-  }) async {
-    final RenderBox? overlay =
-        Overlay.of(context).context.findRenderObject() as RenderBox?;
-
-    if (overlay != null) {
-      await showMenu(
-        context: context,
-        position: RelativeRect.fromRect(
-          position & const Size(40, 40),
-          Offset.zero & overlay.size,
-        ),
-        items: [
-          PopupMenuItem(
-            onTap: () => onTapRename != null ? onTapRename() : {},
-            child: Text(
-              localization.rename_group,
-              style: const TextStyle(
-                color: Color.fromRGBO(51, 51, 51, 1),
-                fontWeight: FontWeight.w400,
-                fontSize: 12,
-              ),
-            ),
-          ),
-          PopupMenuItem(
-            onTap: () => onTapDelete,
-            child: Text(
-              localization.delele_group,
-              style: const TextStyle(
-                color: Colors.red,
-                fontWeight: FontWeight.w400,
-                fontSize: 12,
-              ),
-            ),
-          ),
-        ],
-      );
-    }
   }
 }
