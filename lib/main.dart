@@ -8,6 +8,7 @@ import 'package:unityspace/resources/theme/theme.dart';
 import 'package:unityspace/screens/account_screen/account_screen.dart';
 import 'package:unityspace/screens/administration_screen/administration_screen.dart';
 import 'package:unityspace/screens/confirm_screen/confirm_screen.dart';
+import 'package:unityspace/screens/global_search_screen/global_search_screen.dart';
 import 'package:unityspace/screens/home_screen/home_screen.dart';
 import 'package:unityspace/screens/loading_screen/loading_screen.dart';
 import 'package:unityspace/screens/login_by_email_screen/login_by_email_screen.dart';
@@ -116,6 +117,7 @@ class MyApp extends WStoreWidget<MyAppStore> {
           '/login': (context) => const LoginScreen(),
           '/email': (context) => const LoginByEmailScreen(),
           '/home': (context) => const HomeScreen(),
+          '/global_search': (context) => const GlobalSearchScreen(),
           '/loading': (context) => const LoadingScreen(),
           '/restore': (context) => const RestorePasswordScreen(),
           '/register': (context) => const RegisterScreen(),

@@ -12,9 +12,10 @@ import 'package:unityspace/screens/dialogs/add_space_dialog.dart';
 import 'package:unityspace/screens/dialogs/add_space_limit_dialog.dart';
 import 'package:unityspace/screens/dialogs/rename_spaces_group_dialog.dart';
 import 'package:unityspace/screens/drawer_widgets/add_space_button.dart';
+import 'package:unityspace/screens/drawer_widgets/animated_notification_circle.dart';
+import 'package:unityspace/screens/drawer_widgets/current_user.dart';
 import 'package:unityspace/screens/drawer_widgets/navigation_menu_item.dart';
 import 'package:unityspace/screens/drawer_widgets/space_group.dart';
-import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
 import 'package:unityspace/store/groups_store.dart';
 import 'package:unityspace/store/notifications_store.dart';
 import 'package:unityspace/store/spaces_store.dart';
@@ -331,7 +332,7 @@ class AppNavigationDrawer extends WStoreWidget<AppNavigationDrawerStore> {
                 height: 20,
               ),
               NavigatorMenuItem(
-                iconAssetName: AppIcons.navigatorMain,
+                iconAssetName: AppIcons.drawerHome,
                 title: localization.main,
                 selected: currentRoute == '/home',
                 favorite: false,
@@ -348,7 +349,7 @@ class AppNavigationDrawer extends WStoreWidget<AppNavigationDrawerStore> {
                   return Stack(
                     children: [
                       NavigatorMenuItem(
-                        iconAssetName: AppIcons.navigatorNotifications,
+                        iconAssetName: AppIcons.drawerNotifications,
                         title: localization.notifications,
                         selected: currentRoute == '/notifications',
                         favorite: false,
@@ -359,11 +360,24 @@ class AppNavigationDrawer extends WStoreWidget<AppNavigationDrawerStore> {
                                 .pushReplacementNamed('/notifications');
                           }
                         },
+                        isShowBadge: store.haveUnreadNotifications,
+                        badge: const AnimatedNotificationBadge(),
                       ),
-                      if (store.haveUnreadNotifications)
-                        const AnimatedNotificationCircle(),
                     ],
                   );
+                },
+              ),
+              NavigatorMenuItem(
+                iconAssetName: AppIcons.drawerSearch,
+                title: localization.search,
+                selected: currentRoute == '/global_search',
+                favorite: false,
+                onTap: () {
+                  Navigator.of(context).pop();
+                  if (currentRoute != '/global_search') {
+                    Navigator.of(context)
+                        .pushReplacementNamed('/global_search');
+                  }
                 },
               ),
               if (store.isOrganizationOwner || store.isAdmin)
@@ -703,134 +717,5 @@ class NavigatorMenuListTitle extends StatelessWidget {
         ],
       );
     }
-  }
-}
-
-class NavigatorMenuCurrentUser extends StatelessWidget {
-  final String name;
-  final bool selected;
-  final bool license;
-  final int currentUserId;
-  final VoidCallback onTap;
-
-  const NavigatorMenuCurrentUser({
-    required this.name,
-    required this.selected,
-    required this.onTap,
-    required this.license,
-    required this.currentUserId,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(8)),
-        ),
-        child: Column(
-          children: [
-            UserAvatarWidget(
-              id: currentUserId,
-              width: 36,
-              height: 35,
-              fontSize: 16,
-            ),
-            const SizedBox(
-              height: 12,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontFamily: 'Roboto',
-                    color: ColorConstants.grey09,
-                    fontSize: 16,
-                    height: 21 / 16,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                if (license)
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      SvgPicture.asset(
-                        AppIcons.navigatorLicense,
-                        width: 20,
-                        height: 20,
-                        fit: BoxFit.scaleDown,
-                        theme: const SvgTheme(
-                          currentColor: Color(0xFF85DEAB),
-                        ),
-                      ),
-                    ],
-                  ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class AnimatedNotificationCircle extends StatefulWidget {
-  const AnimatedNotificationCircle({super.key});
-
-  @override
-  State<AnimatedNotificationCircle> createState() =>
-      _AnimatedNotificationCircleState();
-}
-
-class _AnimatedNotificationCircleState extends State<AnimatedNotificationCircle>
-    with TickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
-
-  @override
-  void initState() {
-    _controller = AnimationController(
-      vsync: this,
-      lowerBound: 0.5,
-      duration: const Duration(milliseconds: 750),
-    );
-    _animation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
-    _controller.repeat(reverse: true);
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Positioned(
-      left: 30,
-      top: 6,
-      child: FadeTransition(
-        opacity: _animation,
-        child: Container(
-          width: 10,
-          height: 10,
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.red,
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 }

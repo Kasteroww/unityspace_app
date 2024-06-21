@@ -5,9 +5,6 @@ abstract class AppIcons {
   static const String navigatorFavorite = 'assets/icons/navigator_favorite.svg';
   static const String navigatorPlus = 'assets/icons/navigator_plus.svg';
   static const String navigatorSpace = 'assets/icons/navigator_space.svg';
-  static const String navigatorNotifications =
-      'assets/icons/navigator_notifications.svg';
-  static const String navigatorMain = 'assets/icons/navigator_main.svg';
   static const String appIcon = 'assets/icons/app_icon.svg';
   static const String menu = 'assets/icons/menu.svg';
   static const String email = 'assets/icons/email.svg';
@@ -37,6 +34,10 @@ abstract class AppIcons {
   static const String add = 'assets/icons/add_1.svg';
   static const String addFolder = 'assets/icons/add_folder.svg';
   static const String addClipBoard = 'assets/icons/add_clipboard.svg';
+  static const String drawerHome = 'assets/icons/drawer_home.svg';
+  static const String drawerNotifications =
+      'assets/icons/drawer_notifications.svg';
+  static const String drawerSearch = 'assets/icons/drawer_search.svg';
   static const String drawerQuestionMark =
       'assets/icons/drawer_question_mark.svg';
 }
