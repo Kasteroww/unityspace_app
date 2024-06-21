@@ -72,12 +72,6 @@ class GroupsStore extends GStore {
     final List<GroupResponse> groupsResponse = await api.getGroups();
     final List<Group> groups =
         groupsResponse.map((response) => Group.fromResponse(response)).toList();
-    groups.sort((a, b) => a.order.compareTo(b.order));
-    for (int i = 1; i < groups.length; i++) {
-      if (groups[i].order == groups[i - 1].order) {
-        groups[i] = groups[i].copyWith(order: groups[i].order + 1);
-      }
-    }
 
     setStore(() {
       this.groups.clear();
@@ -113,23 +107,11 @@ class GroupsStore extends GStore {
   }
 
   Future<void> updateGroupOpen({required int id, required bool isOpen}) async {
-    final result = UpdateGroupOpen.fromResponse(
-      await api.updateGroupOpen(id: id, isOpen: isOpen),
-    );
-    if (result.id == id && groups[id] != null) {
-      final updatedGroup = groups[result.id]!.copyWith(isOpen: result.isOpen);
-      setStore(() {
-        groups.add(updatedGroup);
-      });
-    } else {
-      throw UpdatingNonexistentEntityStoreException(
-        message: 'The group with ID $result.id does not exist in the store.',
-        data: {
-          'request id': id,
-          'response id': result.id,
-        },
-      );
-    }
+    final updatedGroup = groups[id]!.copyWith(isOpen: isOpen);
+    setStore(() {
+      groups.add(updatedGroup);
+    });
+    await api.updateGroupOpen(id: id, isOpen: isOpen);
   }
 
   void empty() {

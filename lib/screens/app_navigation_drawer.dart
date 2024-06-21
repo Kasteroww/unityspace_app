@@ -212,7 +212,15 @@ class AppNavigationDrawerStore extends WStore {
                   .map<GroupWithSpaces>((group) => _formGroup(group))
                   .toList();
 
-              groupTree.sort((a, b) => a.groupOrder.compareTo(b.groupOrder));
+              groupTree.sort((a, b) {
+                final int orderComparison =
+                    a.groupOrder.compareTo(b.groupOrder);
+                if (orderComparison != 0) {
+                  return orderComparison;
+                } else {
+                  return a.name.compareTo(b.name);
+                }
+              });
 
               return groupTree;
             } else {
@@ -251,7 +259,7 @@ class AppNavigationDrawerStore extends WStore {
             if (compareByStagesOrder != 0) {
               return compareByStagesOrder > 0 ? 1 : -1;
             }
-            return 0;
+            return a.name.compareTo(b.name);
           });
           return spaces;
         },
