@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:unityspace/models/notification_models.dart';
+import 'package:unityspace/screens/notifications_screen/notifications_screen.dart';
 import 'package:unityspace/screens/notifications_screen/utils/notification_helper.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_info.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/parts/locations.dart';
 import 'package:unityspace/utils/date_time_converter.dart';
 import 'package:unityspace/utils/helpers.dart';
+import 'package:wstore/wstore.dart';
 
 class NotificationsInfoCard extends StatelessWidget {
   NotificationsInfoCard({
@@ -102,7 +104,10 @@ class NotificationsInfoCard extends StatelessWidget {
               const SizedBox(
                 height: 4,
               ),
-              NotificationInfo(notificationGroup: notificationsGroup),
+              NotificationInfo(
+                notificationGroup: notificationsGroup,
+                store: context.wstore<NotificationsScreenStore>(),
+              ),
             ],
           ),
         ),
@@ -120,7 +125,7 @@ class NotificationsInfoCard extends StatelessWidget {
     List<NotificationModel> notifications,
   ) {
     final List<NotificationModel> sortedNotifications = notifications;
-    // сортировка уведомлений от новейшего к более старому
+    // сортировка уведомлений в списке от старого к более новому
     sortedNotifications.sort((a, b) => a.createdAt.compareTo(b.createdAt));
 
     return sortedNotifications;

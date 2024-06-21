@@ -8,8 +8,6 @@ class ConstantStrings {
   static const String google = 'Google';
   static const String error = 'Error';
   static const String hiddenPassword = '********';
-  static const String privacyPolicyUrl =
-      'https://www.unityspace.ru/privacy-policy';
   static const String incorrectUserName = 'Incorrect user name';
   static const String existUser = 'User already exists';
   static const String nonExistEmail = 'non-exist Email';
@@ -19,7 +17,12 @@ class ConstantStrings {
   static const String incorrectOldPassword = 'Incorrect old password';
   static const String paidTariffError = 'paid tariff';
   static const String incorrectCodeError = 'Error while entering code';
+}
+
+class ConstantLinks {
+  static const String privacyPolicyUrl =
+      'https://www.unityspace.ru/privacy-policy';
   static const String unitySpaceAppUrl = 'https://app.unityspace.ru';
-  static const String spaceInviteUrl = 'https://www.app.unityspace.ru/join/';
+  static const String spaceInviteUrl = 'https://www.app.unityspace.ru/join';
   static const String unitySpaceAppServerApi = 'https://server.unityspace.ru';
 }

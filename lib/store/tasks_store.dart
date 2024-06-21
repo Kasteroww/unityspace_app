@@ -1,10 +1,100 @@
-import 'dart:collection';
-
 import 'package:unityspace/models/task_models.dart';
 import 'package:unityspace/service/task_service.dart' as api;
-import 'package:unityspace/utils/extensions/gstore_extension.dart';
-import 'package:unityspace/utils/helpers.dart';
 import 'package:wstore/wstore.dart';
+
+class Tasks with GStoreChangeObjectMixin {
+  final Map<int, Task> _tasksMap = {};
+
+  Tasks();
+
+  void add(Task task) {
+    _setTask(task);
+    incrementObjectChangeCount();
+  }
+
+  void addAll(Iterable<Task> all) {
+    if (all.isNotEmpty) {
+      for (final task in all) {
+        _setTask(task);
+      }
+      incrementObjectChangeCount();
+    }
+  }
+
+  void remove(int taskId) {
+    _removeTask(taskId);
+    incrementObjectChangeCount();
+  }
+
+  void clear() {
+    if (_tasksMap.isNotEmpty) {
+      _tasksMap.clear();
+      incrementObjectChangeCount();
+    }
+  }
+
+  void _setTask(Task task) {
+    _removeTask(task.id);
+    _tasksMap[task.id] = task;
+  }
+
+  void _removeTask(int id) {
+    _tasksMap.remove(id);
+  }
+
+  Task? operator [](int id) => _tasksMap[id];
+
+  Iterable<Task> get iterable => _tasksMap.values;
+
+  int get length => _tasksMap.length;
+}
+
+class Histories with GStoreChangeObjectMixin {
+  final Map<int, TaskHistory> _historyMap = {};
+
+  Histories();
+
+  void add(TaskHistory history) {
+    _setHistory(history);
+    incrementObjectChangeCount();
+  }
+
+  void addAll(Iterable<TaskHistory> all) {
+    if (all.isNotEmpty) {
+      for (final history in all) {
+        _setHistory(history);
+      }
+      incrementObjectChangeCount();
+    }
+  }
+
+  void remove(int historyId) {
+    _removeHistory(historyId);
+    incrementObjectChangeCount();
+  }
+
+  void clear() {
+    if (_historyMap.isNotEmpty) {
+      _historyMap.clear();
+      incrementObjectChangeCount();
+    }
+  }
+
+  void _setHistory(TaskHistory history) {
+    _removeHistory(history.id);
+    _historyMap[history.id] = history;
+  }
+
+  void _removeHistory(int id) {
+    _historyMap.remove(id);
+  }
+
+  TaskHistory? operator [](int id) => _historyMap[id];
+
+  Iterable<TaskHistory> get iterable => _historyMap.values;
+
+  int get length => _historyMap.length;
+}
 
 class TasksStore extends GStore {
   static TasksStore? _instance;
@@ -13,17 +103,9 @@ class TasksStore extends GStore {
 
   TasksStore._();
 
-  List<TaskHistory>? history;
-  List<Task>? tasks;
+  Histories histories = Histories();
+  Tasks tasks = Tasks();
   List<Task> searchedTasks = [];
-
-  Map<int, Task> get tasksMap {
-    return createMapById(tasks);
-  }
-
-  Map<int, TaskHistory> get historyMap {
-    return createMapById(history);
-  }
 
   /// Создание задачи в проекте
   Future<int> createTask({
@@ -52,46 +134,26 @@ class TasksStore extends GStore {
     final newHistory = TaskHistory.fromResponse(taskResponse.history);
 
     setStore(() {
-      tasks = List<Task>.from(
-        updateLocally(
-          [newTask],
-          tasksMap,
-        ),
-      );
-      history = List<TaskHistory>.from(
-        updateLocally(
-          [newHistory],
-          historyMap,
-        ),
-      );
+      tasks.add(newTask);
+      histories.add(newHistory);
     });
 
     return taskResponse.task.id;
   }
 
-  Future<void> deleteTaskFromStage({
+  Future<void> deleteTask({
     required int taskId,
-    required int stageId,
   }) async {
-    final deleteTaskResponse =
-        await api.deleteTaskFromStage(taskId: taskId, stageId: stageId);
+    final deleteTaskResponse = await api.deleteTask(
+      taskId: taskId,
+    );
 
     final deletedTask = Task.fromResponse(deleteTaskResponse.task);
     final newHistory = TaskHistory.fromResponse(deleteTaskResponse.history);
 
     setStore(() {
-      tasks = List<Task>.from(
-        deleteLocally(
-          deletedTask,
-          tasksMap,
-        ),
-      );
-      history = List<TaskHistory>.from(
-        updateLocally(
-          [newHistory],
-          historyMap,
-        ),
-      );
+      tasks.remove(deletedTask.id);
+      histories.add(newHistory);
     });
   }
 
@@ -113,19 +175,9 @@ class TasksStore extends GStore {
     );
 
     final movedTask = Task.fromResponse(response);
-    final newListTasks = List<Task>.from(
-      updateLocally(
-        [
-          // Удаляем старую запись по id
-          ...deleteLocally(movedTask, tasksMap),
-          movedTask,
-        ],
-        tasksMap,
-      ),
-    );
 
     setStore(() {
-      tasks = newListTasks;
+      tasks.add(movedTask);
     });
   }
 
@@ -148,18 +200,8 @@ class TasksStore extends GStore {
     );
 
     final movedTask = Task.fromResponse(response);
-    final newListTasks = List<Task>.from(
-      updateLocally(
-        [
-          movedTask,
-          ...deleteLocally(movedTask, tasksMap),
-        ],
-        tasksMap,
-      ),
-    );
-
     setStore(() {
-      tasks = newListTasks;
+      tasks.add(movedTask);
     });
   }
 
@@ -171,30 +213,22 @@ class TasksStore extends GStore {
     return maxPageCount;
   }
 
-  Task? getTaskById(int id) {
-    return tasksMap[id];
+  Future<void> getTaskHistory({required int taskId}) async {
+    final historyData = await api.getTaskHistory(taskId);
+    final List<TaskHistory> newHistory = historyData
+        .map((historyResponse) => TaskHistory.fromResponse(historyResponse))
+        .toList();
+    setStore(() {
+      histories.addAll(newHistory);
+    });
   }
 
   void _setTasks(MyTaskHistoryResponse response) {
     final tasksResponse = response.tasks;
     final List<Task> tasksList =
         tasksResponse.map((res) => Task.fromResponse(res)).toList();
-    final HashMap<int, Task>? tasksMap = tasks != null
-        ? HashMap.fromIterable(
-            tasks!,
-            key: (element) => element is Task ? element.id : throw Exception,
-            value: (element) => element,
-          )
-        : null;
-
     setStore(() {
-      if (tasksMap == null || tasksMap.isEmpty) {
-        tasks = tasksList;
-      } else {
-        final List<Task> updatedTasksList =
-            List<Task>.from(updateLocally(tasksList, tasksMap));
-        tasks = updatedTasksList;
-      }
+      tasks.addAll(tasksList);
     });
   }
 
@@ -202,27 +236,8 @@ class TasksStore extends GStore {
     final historyResponse = response.history;
     final historyPage =
         historyResponse.map((res) => TaskHistory.fromResponse(res)).toList();
-
-    final HashMap<int, TaskHistory>? historyMap = history != null
-        ? HashMap.fromIterable(
-            history!,
-            key: (element) => element is TaskHistory
-                ? element.id
-                : throw Exception('Value has wrong type'),
-            value: (element) => element,
-          )
-        : null;
-
     setStore(() {
-      if (historyMap == null || historyMap.isEmpty) {
-        history = historyPage;
-      } else {
-        final List<TaskHistory> updatedHistoryList =
-            List<TaskHistory>.from(updateLocally(historyPage, historyMap));
-
-        updatedHistoryList.sort((a, b) => a.updateDate.compareTo(b.updateDate));
-        history = updatedHistoryList.reversed.toList();
-      }
+      histories.addAll(historyPage);
     });
   }
 
@@ -237,7 +252,7 @@ class TasksStore extends GStore {
         tasksResponse.map((res) => Task.fromResponse(res)).toList();
     setStore(() {
       // задачи в сторе перезаписываются полученными
-      tasks = allTasks;
+      tasks.addAll(allTasks);
     });
     return allTasks;
   }
@@ -252,7 +267,7 @@ class TasksStore extends GStore {
         tasksResponse.map((res) => Task.fromResponse(res)).toList();
     setStore(() {
       // задачи в сторе перезаписываются полученными
-      tasks = allTasks;
+      tasks.addAll(allTasks);
     });
     return allTasks;
   }
@@ -263,10 +278,58 @@ class TasksStore extends GStore {
     });
   }
 
+  /// Добавляем исполнителя
+  Future<void> addTaskResponsible({
+    required int taskId,
+    required int responsibleId,
+  }) async {
+    final response = await api.addTaskResponsible(
+      taskId: taskId,
+      responsibleId: responsibleId,
+    );
+
+    _updateTaskLocally(response);
+  }
+
+  /// Удаляем выбранного исполнителя
+  Future<void> deleteTaskResponsible({
+    required int taskId,
+    required int responsibleId,
+  }) async {
+    final response = await api.deleteTaskResponsible(
+      taskId: taskId,
+      responsibleId: responsibleId,
+    );
+
+    _updateTaskLocally(response);
+  }
+
+  /// Обновляем текущего исполнителя
+  Future<void> updateTaskResponsible({
+    required int taskId,
+    required int currentResponsibleId,
+    required int responsibleId,
+  }) async {
+    final response = await api.updateTaskResponsible(
+      taskId: taskId,
+      currentResponsibleId: currentResponsibleId,
+      responsibleId: responsibleId,
+    );
+
+    _updateTaskLocally(response);
+  }
+
+  void _updateTaskLocally(TaskResponse taskResponse) {
+    final newTask = Task.fromResponse(taskResponse);
+    setStore(() {
+      tasks.add(newTask);
+    });
+  }
+
   void empty() {
     setStore(() {
-      history = null;
-      tasks = null;
+      histories.clear();
+      tasks.clear();
       searchedTasks = [];
     });
   }

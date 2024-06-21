@@ -55,9 +55,16 @@ Future<List<ProjectResponse>> changeProjectColumn({
   }
 }
 
-Future<ProjectResponse> addProject(AddProject project) async {
+Future<ProjectResponse> addProject({
+  required String name,
+  required int spaceColumnId,
+}) async {
   try {
-    final response = await HttpPlugin().post('/projects', project.toJson());
+    final response = await HttpPlugin().post('/projects', {
+      'name': name,
+      'spaceColumnId': spaceColumnId,
+      'postponingTaskDayCount': 3,
+    });
     final Map<String, dynamic> jsonData = json.decode(response.body);
     return ProjectResponse.fromJson(jsonData);
   } catch (e) {

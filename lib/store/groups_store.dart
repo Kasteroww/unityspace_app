@@ -1,5 +1,6 @@
 import 'package:unityspace/models/groups_models.dart';
 import 'package:unityspace/service/groups_service.dart' as api;
+import 'package:unityspace/store/store_exceptions.dart';
 import 'package:wstore/wstore.dart';
 
 class Groups with GStoreChangeObjectMixin {
@@ -52,7 +53,9 @@ class Groups with GStoreChangeObjectMixin {
   }
 
   Group? operator [](int id) => _groupsMap[id];
+
   Iterable<Group> get list => _groupsMap.values;
+
   int get length => _groupsMap.length;
 }
 
@@ -69,9 +72,51 @@ class GroupsStore extends GStore {
     final List<GroupResponse> groupsResponse = await api.getGroups();
     final List<Group> groups =
         groupsResponse.map((response) => Group.fromResponse(response)).toList();
+
     setStore(() {
       this.groups.clear();
       this.groups.addAll(groups);
+    });
+  }
+
+  Future<void> updateGroupName({
+    required int id,
+    required String newName,
+  }) async {
+    final UpdateGroupName result = UpdateGroupName.fromResponse(
+      await api.updateGroupName(
+        id: id,
+        newName: newName,
+      ),
+    );
+
+    if (result.id == id && groups[id] != null) {
+      final updatedGroup = groups[result.id]!.copyWith(name: result.name);
+      setStore(() {
+        groups.add(updatedGroup);
+      });
+    } else {
+      throw UpdatingNonexistentEntityStoreException(
+        message: 'The group with ID $result.id does not exist in the store.',
+        data: {
+          'request id': id,
+          'response id': result.id,
+        },
+      );
+    }
+  }
+
+  Future<void> updateGroupOpen({required int id, required bool isOpen}) async {
+    final updatedGroup = groups[id]!.copyWith(isOpen: isOpen);
+    setStore(() {
+      groups.add(updatedGroup);
+    });
+    await api.updateGroupOpen(id: id, isOpen: isOpen);
+  }
+
+  void empty() {
+    setStore(() {
+      groups.clear();
     });
   }
 }

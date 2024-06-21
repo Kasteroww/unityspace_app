@@ -19,8 +19,8 @@ class AddTaskButton extends StatelessWidget {
     final localization = LocalizationHelper.getLocalizations(context);
     return InkWell(
       onTap: onTapButton,
-      child: ColoredBox(
-        color: Colors.blue,
+      child: Padding(
+        padding: const EdgeInsets.all(8),
         child: Center(
           child: focusedIndex == buttonIdex
               ? TextField(

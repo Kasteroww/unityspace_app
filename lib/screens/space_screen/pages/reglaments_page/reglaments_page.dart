@@ -5,6 +5,7 @@ import 'package:unityspace/resources/constants.dart';
 import 'package:unityspace/screens/space_screen/pages/reglaments_page/widgets/dialogs/add_reglament_dialog.dart';
 import 'package:unityspace/screens/space_screen/pages/reglaments_page/widgets/reglament_listview.dart';
 import 'package:unityspace/screens/space_screen/widgets/delete_no_rules_dialog.dart';
+import 'package:unityspace/screens/widgets/stubs/work_in_progress_stub.dart';
 import 'package:unityspace/store/reglaments_store.dart';
 import 'package:unityspace/store/user_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
@@ -12,6 +13,7 @@ import 'package:unityspace/utils/mixins/copy_to_clipboard_mixin.dart';
 import 'package:wstore/wstore.dart';
 
 class ReglamentsPageStore extends WStore with CopyToClipboardMixin {
+  bool isWorkInProgress = true;
   @override
   String message = '';
   late Space currentSpace;
@@ -109,7 +111,7 @@ class ReglamentsPageStore extends WStore with CopyToClipboardMixin {
   ///Копирование ссылки на регламент
   String getReglamentLink({required int reglamentId}) {
     //Пример: 'https://app.unityspace.ru/spaces/2/reglaments/32627';
-    return '${ConstantStrings.unitySpaceAppUrl}/spaces/${currentSpace.id}/reglaments/$reglamentId';
+    return '${ConstantLinks.unitySpaceAppUrl}/spaces/${currentSpace.id}/reglaments/$reglamentId';
   }
 
   Map<int, List<Reglament>> _columnReglaments(List<Reglament> spaceReglaments) {
@@ -178,116 +180,119 @@ class ReglamentsPage extends WStoreWidget<ReglamentsPageStore> {
   Widget build(BuildContext context, ReglamentsPageStore store) {
     final localization = LocalizationHelper.getLocalizations(context);
     final width = MediaQuery.of(context).size.width;
-    return WStoreStringListener(
-      store: store,
-      watch: (store) => store.message,
-      reset: (store) => store.message = '',
-      onNotEmpty: (context, message) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(message),
-          ),
-        );
-      },
-      child: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            WStoreBuilder(
-              store: store,
-              watch: (store) => [store.chosenColumn, store.isInArchive],
-              builder: (context, store) {
-                if (store.isInArchive) {
-                  return const SizedBox.shrink();
-                }
-                return SizedBox(
-                  height: 40,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: store.reglamentColumns.length,
-                    separatorBuilder: (BuildContext context, int index) {
-                      return const SizedBox(
-                        width: 4,
-                      );
-                    },
-                    itemBuilder: (BuildContext context, int index) {
-                      final reglamentColumn = store.reglamentColumns[index];
-                      return Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: InkWell(
-                          onTap: () {
-                            store.chooseColumn(
-                              newChosenColumn: reglamentColumn,
+    return store.isWorkInProgress
+        ? const WorkInProgressStub()
+        : WStoreStringListener(
+            store: store,
+            watch: (store) => store.message,
+            reset: (store) => store.message = '',
+            onNotEmpty: (context, message) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(message),
+                ),
+              );
+            },
+            child: SafeArea(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  WStoreBuilder(
+                    store: store,
+                    watch: (store) => [store.chosenColumn, store.isInArchive],
+                    builder: (context, store) {
+                      if (store.isInArchive) {
+                        return const SizedBox.shrink();
+                      }
+                      return SizedBox(
+                        height: 40,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: store.reglamentColumns.length,
+                          separatorBuilder: (BuildContext context, int index) {
+                            return const SizedBox(
+                              width: 4,
                             );
                           },
-                          child: Text(
-                            reglamentColumn.name,
-                            style: TextStyle(
-                              color: reglamentColumn == store.chosenColumn
-                                  ? Colors.red
-                                  : Colors.blue,
-                            ),
-                          ),
+                          itemBuilder: (BuildContext context, int index) {
+                            final reglamentColumn =
+                                store.reglamentColumns[index];
+                            return Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: InkWell(
+                                onTap: () {
+                                  store.chooseColumn(
+                                    newChosenColumn: reglamentColumn,
+                                  );
+                                },
+                                child: Text(
+                                  reglamentColumn.name,
+                                  style: TextStyle(
+                                    color: reglamentColumn == store.chosenColumn
+                                        ? Colors.red
+                                        : Colors.blue,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       );
                     },
                   ),
-                );
-              },
-            ),
-            WStoreBuilder(
-              store: store,
-              watch: (store) => [
-                store.isInArchive,
-                store.archiveReglaments,
-              ],
-              builder: (context, store) {
-                return InkWell(
-                  onTap: store.changeInArchiveStatus,
-                  child: Text(
-                    store.isInArchive
-                        ? localization.exit_from_archive
-                        : '${localization.reglament_count_in_archive}: ${store.archiveReglaments.length}',
+                  WStoreBuilder(
+                    store: store,
+                    watch: (store) => [
+                      store.isInArchive,
+                      store.archiveReglaments,
+                    ],
+                    builder: (context, store) {
+                      return InkWell(
+                        onTap: store.changeInArchiveStatus,
+                        child: Text(
+                          store.isInArchive
+                              ? localization.exit_from_archive
+                              : '${localization.reglament_count_in_archive}: ${store.archiveReglaments.length}',
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
-            const SizedBox(
-              height: 12,
-            ),
-            WStoreBuilder(
-              store: store,
-              watch: (store) => [
-                store.chosenColumn,
-                store.archiveReglaments,
-                store.isInArchive,
-              ],
-              builder: (context, store) {
-                return ReglamentListView(
-                  columnReglaments: store.isInArchive
-                      ? store.archiveReglaments
-                      : store.columnReglaments,
-                );
-              },
-            ),
-            InkWell(
-              onTap: () {
-                showAddReglamentDialog(context, store.chosenColumn.id);
-              },
-              child: Container(
-                height: 40,
-                width: width,
-                color: Colors.blue,
-                child: Center(
-                  child: Text(
-                    '+ ${localization.add_reglament}',
+                  const SizedBox(
+                    height: 12,
                   ),
-                ),
+                  WStoreBuilder(
+                    store: store,
+                    watch: (store) => [
+                      store.chosenColumn,
+                      store.archiveReglaments,
+                      store.isInArchive,
+                    ],
+                    builder: (context, store) {
+                      return ReglamentListView(
+                        columnReglaments: store.isInArchive
+                            ? store.archiveReglaments
+                            : store.columnReglaments,
+                      );
+                    },
+                  ),
+                  InkWell(
+                    onTap: () {
+                      showAddReglamentDialog(context, store.chosenColumn.id);
+                    },
+                    child: Container(
+                      height: 40,
+                      width: width,
+                      color: Colors.blue,
+                      child: Center(
+                        child: Text(
+                          '+ ${localization.add_reglament}',
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
+          );
   }
 }

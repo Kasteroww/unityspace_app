@@ -4,6 +4,7 @@ import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/resources/theme/theme.dart';
 import 'package:unityspace/screens/space_screen/pages/project_page/project_page.dart';
 import 'package:unityspace/screens/widgets/circular_progress_indicator_with_percentage/circular_progress_indicator_with_percentage.dart';
+import 'package:unityspace/screens/widgets/member_list.dart';
 import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
 
 class ProjectCardInfo extends StatelessWidget {
@@ -105,36 +106,7 @@ class ProjectCardInfo extends StatelessWidget {
         Positioned(
           top: 4,
           right: 8,
-          child: SizedBox(
-            height: 24,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: projectWithUsersOnline.userIds.length,
-              itemBuilder: (
-                BuildContext context,
-                int index,
-              ) {
-                return Transform.translate(
-                  offset: Offset(
-                    _calculateOffset(
-                      itemCount: projectWithUsersOnline.userIds.length,
-                      index: index,
-                      cardOffset: 8,
-                    ),
-                    0,
-                  ),
-                  child: UserAvatarWidget(
-                    id: projectWithUsersOnline.userIds[index],
-                    width: 24,
-                    height: 24,
-                    fontSize: 10,
-                  ),
-                );
-              },
-            ),
-          ),
+          child: MembersList(userIds: projectWithUsersOnline.userIds),
         ),
       ],
     );
@@ -152,19 +124,5 @@ class ProjectCardInfo extends StatelessWidget {
   Color _getForegroundColor(Color? color) {
     const defaultColor = Color(0xFF606062);
     return color ?? defaultColor;
-  }
-
-  ///Расчитывается следующим образом:
-  /// toRightOffset -  то, на сколько нужно сместить карсточки вправо
-  /// cartOffset - непосредственно расчитывается какой offset будет для
-  /// наезда одной карточки на другую
-  double _calculateOffset({
-    required int itemCount,
-    required int index,
-    required double cardOffset,
-  }) {
-    final toRightOffset = cardOffset * (itemCount - 1);
-    final cartOffset = -cardOffset * index;
-    return toRightOffset + cartOffset;
   }
 }

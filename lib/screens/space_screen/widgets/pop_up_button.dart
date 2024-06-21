@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:unityspace/screens/space_screen/space_screen.dart';
+import 'package:unityspace/screens/widgets/pop_up_button.dart/default_pop_up_button.dart';
+import 'package:unityspace/screens/widgets/pop_up_button.dart/pop_up_menu_child.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 
 class PopUpSpacesScreenButton extends StatelessWidget {
@@ -13,13 +15,7 @@ class PopUpSpacesScreenButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localization = LocalizationHelper.getLocalizations(context);
-
-    return PopupMenuButton<SpacesScreenTab>(
-      elevation: 1,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      color: Colors.white,
+    return DefaultPopUpButton(
       onSelected: onSelected,
       itemBuilder: (BuildContext context) {
         return <PopupMenuEntry<SpacesScreenTab>>[
@@ -65,27 +61,6 @@ class PopUpSpacesScreenButton extends StatelessWidget {
         height: 55,
         width: 55,
         child: SvgPicture.asset('assets/icons/settings.svg'),
-      ),
-    );
-  }
-}
-
-class PopupMenuItemChild extends StatelessWidget {
-  final String text;
-  const PopupMenuItemChild({
-    required this.text,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
-        height: 16.41 / 14,
-        color: Color.fromRGBO(77, 77, 77, 1),
       ),
     );
   }

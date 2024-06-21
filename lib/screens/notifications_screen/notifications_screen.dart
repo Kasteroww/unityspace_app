@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/models/notification_models.dart';
-import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/models/reglament_models.dart';
-import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/models/user_models.dart';
 import 'package:unityspace/screens/app_navigation_drawer.dart';
 import 'package:unityspace/screens/notifications_screen/pages/archived_notifications_page.dart';
@@ -55,16 +53,10 @@ class NotificationsScreenStore extends WStore {
         keyName: 'spaces',
       );
 
-  Space? getSpaceById(int spaceId) => computedFromStore(
-        store: SpacesStore(),
-        getValue: (store) => store.spaces[spaceId],
-        keyName: 'getSpaceById',
-      );
-
-  Project? getProjectById(int projectId) => computedFromStore(
+  Projects get projects => computedFromStore(
         store: ProjectsStore(),
-        getValue: (store) => store.projectsMap[projectId],
-        keyName: 'getProjectById',
+        getValue: (store) => store.projects,
+        keyName: 'projects',
       );
 
   /// Является ли пользователь владельцем организации
@@ -80,7 +72,8 @@ class NotificationsScreenStore extends WStore {
   /// Поиск пользователя по id
   OrganizationMember? getMemberById(int id) => organizationMembers[id];
 
-  String? getSpaceNameById(int spaceId) => spaces[spaceId]?.name;
+  String? getSpaceNameById(int? spaceId) =>
+      spaceId != null ? spaces[spaceId]?.name : null;
 
   String? reglamentNameByNotificationParentId(int parentId) =>
       reglamentsMap[parentId]?.name;
@@ -99,11 +92,10 @@ class NotificationsScreenStore extends WStore {
     }
 
     return locations.map((location) {
-      final space = getSpaceById(location.spaceId);
+      final space = spaces[location.spaceId];
       final spaceName = space?.name ?? '';
-      final project = location.projectId != null
-          ? getProjectById(location.projectId!)
-          : null;
+      final project =
+          location.projectId != null ? projects[location.projectId!] : null;
       final projectName = project?.name ?? '';
 
       return LocationGroup(
@@ -116,7 +108,7 @@ class NotificationsScreenStore extends WStore {
     }).toList();
   }
 
-  ///Сортировка уведомлений по ParentData
+  ///Группировка уведомлений по ParentData
   List<NotificationsGroup> groupNotificationsByObject(
     List<NotificationModel> notifications,
   ) {
@@ -163,12 +155,13 @@ class NotificationsScreenStore extends WStore {
           groupsMap[newGroup.groupId] = newGroup;
         }
       } else if (notification.parentType == NotificationParentType.member) {
-        groupId = 'space-${notification.locations[0].spaceId}';
+        groupId =
+            'space-${notification.locations.firstOrNull?.spaceId ?? notification.text}';
         if (groupsMap.containsKey(groupId)) {
           groupsMap[groupId]?.notifications.add(notification);
         } else {
           final String spaceName =
-              getSpaceNameById(notification.locations[0].spaceId) ??
+              getSpaceNameById(notification.locations.firstOrNull?.spaceId) ??
                   notification.text;
           final NotificationsGroup newGroup = NotificationsGroup(
             groupId: groupId,
@@ -220,17 +213,19 @@ class NotificationsScreenStore extends WStore {
   }
 
   ///Архивирует все уведомления
-  void archiveAllNotifications() {
-    notificationsStore.archiveAllNotifications();
+  Future<void> archiveAllNotifications() async {
+    await readAllNotifications();
+    await notificationsStore.archiveAllNotifications();
   }
 
   ///Читает все уведомления
-  void readAllNotifications() {
-    notificationsStore.readAllNotifications();
+  Future<void> readAllNotifications() async {
+    await notificationsStore.readAllNotifications();
   }
 
   List<NotificationsScreenTab> get currentUserTabs =>
       NotificationsScreenTab.values.toList();
+
   @override
   NotificationsScreen get widget => super.widget as NotificationsScreen;
 }
@@ -255,6 +250,7 @@ class NotificationsScreen extends WStoreWidget<NotificationsScreenStore> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 16),
           WStoreBuilder(
             store: store,
             watch: (store) => [store.selectedTab, store.currentUserTabs],
@@ -277,7 +273,7 @@ class NotificationsScreen extends WStoreWidget<NotificationsScreenStore> {
               ],
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 24),
           Expanded(
             child: WStoreValueBuilder(
               store: store,

@@ -34,10 +34,16 @@ class ProjectBoardsStore extends WStore {
         keyName: 'project',
       );
 
-  List<Task> get tasks => computedFromStore(
+  Tasks get tasks => computedFromStore(
         store: TasksStore(),
-        getValue: (store) => store.tasks ?? [],
+        getValue: (store) => store.tasks,
         keyName: 'tasks',
+      );
+
+  List<Task> get tasksList => computed(
+        watch: () => [tasks],
+        getValue: () => tasks.iterable.toList(),
+        keyName: 'tasksList',
       );
 
   User? get user => computedFromStore(
@@ -50,7 +56,7 @@ class ProjectBoardsStore extends WStore {
         getValue: () {
           if (projectStages.isEmpty) return [];
 
-          final projectTasks = tasks.where((task) {
+          final projectTasks = tasksList.where((task) {
             final isTaskInProject = task.stages
                 .any((taskStage) => taskStage.projectId == project?.id);
 
@@ -92,7 +98,7 @@ class ProjectBoardsStore extends WStore {
 
           return stages;
         },
-        watch: () => [project, projectStages, tasks, user],
+        watch: () => [project, projectStages, tasksList, user],
         keyName: ' tasksTree',
       );
 
@@ -218,14 +224,12 @@ class ProjectBoardsStore extends WStore {
     });
   }
 
-  Future<void> deleteTaskFromStage({
+  Future<void> deleteTask({
     required int taskId,
-    required int stageId,
   }) async {
     try {
-      await TasksStore().deleteTaskFromStage(
+      await TasksStore().deleteTask(
         taskId: taskId,
-        stageId: stageId,
       );
     } catch (e, stack) {
       logger.d('''
@@ -373,7 +377,7 @@ class ProjectBoards extends WStoreWidget<ProjectBoardsStore> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child: Container(
-                            width: 180,
+                            width: 220,
                             decoration: const BoxDecoration(
                               color: Colors.white,
                             ),
@@ -394,7 +398,7 @@ class ProjectBoards extends WStoreWidget<ProjectBoardsStore> {
                                           context,
                                           builder: (BuildContext context) =>
                                               ProjectDetail(
-                                            task: task,
+                                            taskId: task.id,
                                             spaceId: store.project?.spaceId,
                                           ),
                                         ),
@@ -406,6 +410,7 @@ class ProjectBoards extends WStoreWidget<ProjectBoardsStore> {
                                           ),
                                           child: DecoratedBox(
                                             decoration: BoxDecoration(
+                                              color: task.color,
                                               borderRadius:
                                                   BorderRadius.circular(8),
                                               border: Border.all(

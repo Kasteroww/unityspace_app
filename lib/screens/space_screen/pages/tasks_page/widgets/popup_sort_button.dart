@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/tasks_page.dart';
 import 'package:unityspace/screens/space_screen/pages/tasks_page/utils/enums.dart';
+import 'package:unityspace/screens/widgets/pop_up_button.dart/default_pop_up_button.dart';
 import 'package:unityspace/utils/extensions/localization_extensions.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
@@ -17,12 +18,7 @@ class PopUpTaskSortButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final localization = LocalizationHelper.getLocalizations(context);
     final store = context.wstore<TasksPageStore>();
-    return PopupMenuButton<String>(
-      elevation: 1,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      color: Colors.white,
+    return DefaultPopUpButton(
       child: Text(
         value.localize(localization: localization),
         overflow: TextOverflow.ellipsis,

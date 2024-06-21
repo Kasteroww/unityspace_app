@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:unityspace/models/project_models.dart';
 import 'package:unityspace/resources/errors.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
@@ -46,7 +45,8 @@ class AddProjectDialogStore extends WStore {
 
     subscribe(
       future: ProjectsStore().addProject(
-        AddProject(name: projectName, spaceColumnId: widget.columnId),
+        name: projectName,
+        spaceColumnId: widget.columnId,
       ),
       subscriptionId: 1,
       onData: (_) {

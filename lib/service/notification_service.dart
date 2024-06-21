@@ -163,3 +163,20 @@ Future<DeleteNotificationsResponse> deleteNotification({
     rethrow;
   }
 }
+
+/// Получает массив с 1 непрочитанный уведомлением
+/// чтобы отображать индикатор непрочитанных уведомлений
+Future<List<NotificationResponse>> getFirstUnreadNotification() async {
+  try {
+    final response = await HttpPlugin().get('/notifications/firstUnread');
+    final List jsonData = json.decode(response.body);
+    return jsonData
+        .map((element) => NotificationResponse.fromJson(element))
+        .toList();
+  } catch (e) {
+    if (e is HttpPluginException) {
+      handleDefaultHttpExceptions(e);
+    }
+    rethrow;
+  }
+}

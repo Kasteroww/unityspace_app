@@ -7,11 +7,12 @@ import 'package:unityspace/utils/localization_helper.dart';
 class ImportanceComponent extends StatelessWidget {
   const ImportanceComponent({required this.task, super.key});
 
-  final Task task;
+  final Task? task;
 
   @override
   Widget build(BuildContext context) {
     final localization = LocalizationHelper.getLocalizations(context);
+    final taskImportance = task?.importance ?? TaskImportance.normal;
     return ProjectActionTile(
       label: localization.importance,
       trailing: Row(
@@ -19,7 +20,7 @@ class ImportanceComponent extends StatelessWidget {
           const Icon(Icons.flag),
           const SizedBox(width: 5),
           Text(
-            task.importance.localize(localization: localization),
+            taskImportance.localize(localization: localization),
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,

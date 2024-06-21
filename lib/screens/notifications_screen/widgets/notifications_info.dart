@@ -12,19 +12,18 @@ import 'package:unityspace/utils/extensions/localization_extensions.dart';
 import 'package:unityspace/utils/helpers.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
-import 'package:wstore/wstore.dart';
 
 class NotificationInfo extends StatelessWidget {
   NotificationInfo({
     required this.notificationGroup,
+    required this.store,
     this.isShowCreatedAt = false,
-    this.store,
     super.key,
   });
 
   final bool isShowCreatedAt;
   final NotificationsGroup notificationGroup;
-  final NotificationsScreenStore? store;
+  final NotificationsScreenStore store;
 
   final notificationHelper = NotificationHelper();
 
@@ -33,7 +32,7 @@ class NotificationInfo extends StatelessWidget {
     required NotificationModel notification,
   }) {
     final localization = LocalizationHelper.getLocalizations(context);
-    final store = this.store ?? context.wstore<NotificationsScreenStore>();
+    final store = this.store;
     try {
       switch (notification.notificationType) {
         case NotificationType.reglamentCreated:
@@ -55,6 +54,8 @@ class NotificationInfo extends StatelessWidget {
           return notification.text.isNotEmpty
               ? '$message\r\n"${notification.text}"'
               : message;
+        case NotificationType.newAchievement:
+          return notification.text.isNotEmpty ? notification.text : '???';
         case NotificationType.message:
           // убираем кавычки в начале и в конце
           // заменяем упоминания на осмысленный текст
@@ -135,6 +136,10 @@ class NotificationInfo extends StatelessWidget {
 
         case NotificationType.taskDelegated:
           localization.task_delegated;
+        case NotificationType.taskStageChanged:
+          return localization.task_stage_chagned(
+            notification.text.isNotEmpty ? notification.text : '???',
+          );
         case NotificationType.memberDeleted:
           localization.member_deleted;
         case NotificationType.memberDeletedForOwner:
@@ -183,16 +188,14 @@ class NotificationInfo extends StatelessWidget {
       itemCount: notificationGroup.notifications.length,
       itemBuilder: (BuildContext context, int index) {
         final notification = notifications[index];
-        final member = store?.getMemberById(notification.initiatorId) ??
-            context
-                .wstore<NotificationsScreenStore>()
-                .getMemberById(notification.initiatorId);
+        final member = store.getMemberById(notification.initiatorId);
         return DecoratedBox(
           decoration: BoxDecoration(
             color: const Color.fromRGBO(249, 249, 249, 1),
             borderRadius: BorderRadius.circular(4),
           ),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (member != null)
                 Padding(
@@ -205,23 +208,26 @@ class NotificationInfo extends StatelessWidget {
                   ),
                 ),
               Expanded(
-                child: Text(
-                  getNotificationTypeLocalization(
-                    notification: notification,
-                    context: context,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 4,
-                  style: const TextStyle(
-                    color: Color.fromRGBO(
-                      26,
-                      26,
-                      26,
-                      1,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Text(
+                    getNotificationTypeLocalization(
+                      notification: notification,
+                      context: context,
                     ),
-                    height: 16.41 / 14,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 4,
+                    style: const TextStyle(
+                      color: Color.fromRGBO(
+                        26,
+                        26,
+                        26,
+                        1,
+                      ),
+                      height: 16.41 / 14,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                 ),
               ),

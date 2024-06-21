@@ -23,9 +23,15 @@ class ActionsPageStore extends WStore {
   @override
   ActionsPage get widget => super.widget as ActionsPage;
 
-  List<TaskHistory>? get history => computedFromStore(
+  Histories get histories => computedFromStore(
         store: TasksStore(),
-        getValue: (store) => store.history,
+        getValue: (store) => store.histories,
+        keyName: 'histories',
+      );
+
+  List<TaskHistory> get history => computed(
+        watch: () => [histories],
+        getValue: () => histories.iterable.toList(),
         keyName: 'history',
       );
 
@@ -45,7 +51,7 @@ class ActionsPageStore extends WStore {
   }
 
   String? getTaskNameById(int id) {
-    return TasksStore().getTaskById(id)?.name;
+    return TasksStore().tasks[id]?.name;
   }
 
   Future<void> loadNextPage() async {
@@ -164,7 +170,7 @@ class _ActionsListState extends State<ActionsList> {
       watch: (store) => [store.history, store.needToLoadNextPage],
       store: context.wstore<ActionsPageStore>(),
       builder: (context, store) {
-        final List<TaskHistory> history = store.history ?? [];
+        final List<TaskHistory> history = store.history;
         return ListView.builder(
           controller: _scrollController,
           itemCount:

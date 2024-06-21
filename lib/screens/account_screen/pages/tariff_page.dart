@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:unityspace/screens/widgets/stubs/work_in_progress_stub.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
 
 class TariffPageStore extends WStore {
-  // TODO: add data here...
+  bool isWorkInProgress = true;
 
   @override
   TariffPage get widget => super.widget as TariffPage;
@@ -20,11 +21,8 @@ class TariffPage extends WStoreWidget<TariffPageStore> {
   @override
   Widget build(BuildContext context, TariffPageStore store) {
     final localization = LocalizationHelper.getLocalizations(context);
-    return ColoredBox(
-      color: Colors.blue,
-      child: Center(
-        child: Text(localization.payment_and_tariffs),
-      ),
-    );
+    return store.isWorkInProgress
+        ? const WorkInProgressStub()
+        : Text(localization.payment_and_tariffs);
   }
 }

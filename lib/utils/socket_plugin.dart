@@ -5,7 +5,7 @@ import 'package:unityspace/store/auth_store.dart';
 import 'package:unityspace/utils/logger_plugin.dart';
 
 class SocketPlugin {
-  static const serverURL = ConstantStrings.unitySpaceAppServerApi;
+  static const serverURL = ConstantLinks.unitySpaceAppServerApi;
   static SocketPlugin? _instance;
 
   factory SocketPlugin() => _instance ??= SocketPlugin._();

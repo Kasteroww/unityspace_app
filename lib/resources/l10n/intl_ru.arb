@@ -1,4 +1,16 @@
 {
+  "search": "Поиск",
+
+  "main_menu_help_button": "Помощь и начало работы",
+
+  "rename_spaces_group_empty_name": "Название группы не может быть пустым",
+  "rename_spaces_group_new_name_matches_old": "Название группы не может совпадать со старым",
+  "rename_spaces_group_error": "Ошибка переименования группы",
+  "rename_spaces_group_dialog_title": "Переименовать группу",
+  "spaces_group_name": "Название группы",
+  
+  "rename_group": "Переименовать",
+  "delele_group": "Расформировать",
 
   "favorite_spaces": "Избранные",
 
@@ -30,6 +42,15 @@
   },
   "reglament_required_unset": "Отметил(а) регламент как необязательный",
   "reglament_update": "Обновил(а) регламент и сбросил(а) участников, прошедших регламент",
+  "new_achievement": "Получил(а) новое достижение: {name}",
+  "@new_achievement": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Автор регламентов"
+      }
+    }
+  },
   "ping_to_all": "@Всем",
   "ping_to_performer": "@Исполнитель",
   "task_added_responsible": "Установил(а) исполнителя: {name}",
@@ -73,6 +94,15 @@
       }
     }
   },
+  "task_stage_chagned": "Переместил(а) задачу в колонку: {stage}",
+  "@task_stage_chagned": {
+    "placeholders": {
+      "stage": {
+        "type": "String",
+        "example": "В работе"
+      }
+    }
+  },
   "task_block_reason_unset": "Снял(а) с задачи статус \"Требует внимания\"",
   "task_block_reason_set": "Установил(а) задаче статус \"Требует внимания\": {reason}",
   "@task_block_reason_set": {
@@ -93,7 +123,7 @@
     }
   },
   "task_delegated": "Поручил(а) Вам задачу",
-  "member_deleted": "Убрал(а) Вам доступ к пространству",
+  "member_deleted": "Исключил(а) Вас из пространства",
   "member_deleted_themselves_for_owner": "Вышел(а) из пространства",
   "member_deleted_for_owner": "Исключил(а) пользователя {name} из пространства",
   "@member_deleted_for_owner": {
@@ -391,7 +421,7 @@
   "logout_from_account": "Выйти из аккаунта",
   "notifications": "Уведомления",
   "all_spaces": "Все пространства",
-  "owner_text": "Кажется, у вас нет ни одного пространства.Создайте пространство, чтобы приступить к работе",
+  "owner_text": "Кажется, у вас нет ни одного пространства. Создайте пространство, чтобы приступить к работе.",
   "empt_text": "Кажется, у вас нет доступных пространств. Свяжитесь с администратором, чтобы получить доступ и приступить к работе",
   "to_complete_the_registration": "Чтобы завершить регистрацию, введите код, отправленный на Ваш адрес электронной почты",
   "not_right_email_register_new": "Не тот email? Зарегистрируйтесь на другой",
@@ -427,7 +457,6 @@
   "spaces": "Пространства",
   "name": "Имя",
   "not_specified": "Не указано",
-  "tap_to_copy_error":"Нажмите, чтобы скопировать это сообщение об ошибке и передать его в службу поддержки",
   "copied": "Скопировано",
   "name_copied_to_clipboard": "Имя скопировано в буфер обмена",
   "date_of_birth": "День рождения",
@@ -451,7 +480,7 @@
   "payment_and_tariffs": "Оплата и тарифы",
   "problem_uploading_data_try_again": "При загрузке данных возникла проблема, пожалуйста, попробуйте ещё раз",
   "archive": "архивировать",
-  "restore_from_archive": "восстановить из архива",
+  "restore_from_archive": "Восстановить из архива",
   "archive_all": "Архивировать все",
   "read_all": "Прочитать все",
   "delete": "Удалить",
@@ -701,5 +730,14 @@
   "go_to_reglament":"Перейти в регламент",
   "go_to_task":"Перейти к задаче",
   "go_to_achievements": "К достижениям",
-  "go_to":"Перейти"
+  "go_to":"Перейти",
+  "group_name": "Название группы",
+  "empty_group_name_error": "Название группы не может быть пустым",
+  "create_group_error": "При создании группы возникла проблема, пожалуйста, попробуйте ещё раз",
+  "your_archive_is_empty":"Ваш архив пуст",
+  "this_section_store_archive_notifications" : "В этом разделе будут храниться уведомления, которые вы архивировали",
+  "you_aware_all_the_work" : "Вы в курсе всей работы в Пространствах",
+  "important_notifications_will_shown_in_this_section":"В этом разделе будут показаны важные уведомления, когда что-нибудь произойдёт",
+  "oops_page_is_unavailable":"Упс! Данная страница сейчас не доступна. Мы работаем над её появлением, зайдите позднее",
+  "in_development":"В разработке"
 }

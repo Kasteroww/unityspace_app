@@ -58,74 +58,91 @@ class _ProjectActionButtonState extends State<ProjectActionButton>
   @override
   Widget build(BuildContext context) {
     final localization = LocalizationHelper.getLocalizations(context);
-    return Padding(
-      padding: const EdgeInsets.only(right: 16, bottom: 16),
-      child: Stack(
-        children: [
-          Align(
-            alignment: Alignment.bottomRight,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(28),
-              child: GestureDetector(
-                onTap: () {
-                  _toggleMenu();
-                },
-                child: Container(
-                  width: 56,
-                  height: 56,
-                  decoration: const BoxDecoration(
-                    color: ColorConstants.main,
-                  ),
-                  child: Center(
-                    child: AnimatedBuilder(
-                      animation: _rotationAnimation,
-                      builder: (context, child) {
-                        return Transform.rotate(
-                          angle: _rotationAnimation.value * 2 * math.pi,
-                          child: SvgPicture.asset(
-                            AppIcons.add,
-                          ),
-                        );
-                      },
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
+    return Stack(
+      children: [
+        if (_menuVisible)
+          InkWell(
+            onTap: () {
+              _toggleMenu();
+            },
+            child: Container(
+              width: width,
+              height: height,
+              color: Colors.white.withOpacity(0.4),
+            ),
+          ),
+        Padding(
+          padding: const EdgeInsets.only(right: 16, bottom: 16),
+          child: Stack(
+            children: [
+              Align(
+                alignment: Alignment.bottomRight,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(28),
+                  child: GestureDetector(
+                    onTap: () {
+                      _toggleMenu();
+                    },
+                    child: Container(
+                      width: 56,
+                      height: 56,
+                      decoration: const BoxDecoration(
+                        color: ColorConstants.main,
+                      ),
+                      child: Center(
+                        child: AnimatedBuilder(
+                          animation: _rotationAnimation,
+                          builder: (context, child) {
+                            return Transform.rotate(
+                              angle: _rotationAnimation.value * 2 * math.pi,
+                              child: SvgPicture.asset(
+                                AppIcons.add,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
+              if (_menuVisible)
+                Positioned(
+                  right: 8,
+                  bottom: 72,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      AnimatedButton(
+                        text: localization.new_group,
+                        onPressed: () {
+                          _toggleMenu();
+                          showAddSpaceColumnDialog(context, widget.spaceId);
+                        },
+                        assetName: AppIcons.addFolder,
+                        controller: _controller,
+                      ),
+                      AnimatedButton(
+                        text: localization.add_project,
+                        onPressed: () {
+                          showAddProjectDialog(
+                            context,
+                            widget.columnId,
+                          );
+                          _toggleMenu();
+                        },
+                        assetName: AppIcons.addClipBoard,
+                        controller: _controller,
+                      ),
+                    ],
+                  ),
+                ),
+            ],
           ),
-          if (_menuVisible)
-            Positioned(
-              right: 8,
-              bottom: 72,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  AnimatedButton(
-                    text: localization.new_group,
-                    onPressed: () {
-                      _toggleMenu();
-                      showAddSpaceColumnDialog(context, widget.spaceId);
-                    },
-                    assetName: AppIcons.addFolder,
-                    controller: _controller,
-                  ),
-                  AnimatedButton(
-                    text: localization.add_project,
-                    onPressed: () {
-                      showAddProjectDialog(
-                        context,
-                        widget.columnId,
-                      );
-                      _toggleMenu();
-                    },
-                    assetName: AppIcons.addClipBoard,
-                    controller: _controller,
-                  ),
-                ],
-              ),
-            ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

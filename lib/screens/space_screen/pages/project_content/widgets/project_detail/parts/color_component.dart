@@ -3,18 +3,29 @@ import 'package:unityspace/screens/space_screen/pages/project_content/widgets/pr
 import 'package:unityspace/utils/localization_helper.dart';
 
 class ColorComponent extends StatelessWidget {
-  const ColorComponent({super.key});
+  final Color? color;
+  const ColorComponent({required this.color, super.key});
 
   @override
   Widget build(BuildContext context) {
     final localization = LocalizationHelper.getLocalizations(context);
     return ProjectActionTile(
       label: localization.color,
-      trailing: const Row(
+      trailing: Row(
         children: [
-          Icon(Icons.color_lens_outlined),
-          SizedBox(width: 5),
-          Text(
+          if (color != null)
+            Container(
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              width: 25,
+              height: 25,
+            )
+          else
+            const Icon(Icons.color_lens_outlined),
+          const SizedBox(width: 5),
+          const Text(
             '-',
             style: TextStyle(
               fontSize: 16,

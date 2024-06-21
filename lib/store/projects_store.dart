@@ -135,8 +135,14 @@ class ProjectsStore extends GStore {
     }
   }
 
-  Future<void> addProject(AddProject project) async {
-    final projectsData = await api.addProject(project);
+  Future<void> addProject({
+    required String name,
+    required int spaceColumnId,
+  }) async {
+    final projectsData = await api.addProject(
+      name: name,
+      spaceColumnId: spaceColumnId,
+    );
     final newProject = Project.fromResponse(projectsData);
     _addProjectLocally(newProject);
   }

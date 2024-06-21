@@ -22,10 +22,24 @@ void disconnect() {
 
 Future<void> onEvent(Map<String, dynamic> data) async {
   final jsonData = NotificationEventResponse.fromJson(data);
-  final responseData = NotificationEvent.fromResponse(jsonData);
-  return switch (responseData.event) {
-    'notification_created' => await notificationCreated(responseData.data),
-    'notification_readed' => await notificationReaded(responseData.data),
-    _ => logger.e('Websync ${responseData.event} is unknown'),
-  };
+  switch (jsonData.event) {
+    case 'notification_created':
+      await notificationCreated(jsonData.data);
+    case 'notification_readed':
+      await notificationReadStatusChanged(
+        jsonData.data,
+      );
+    case 'notification_archived':
+      await notificationArchived(jsonData.data);
+    case 'notification_read_all':
+      if (jsonData.data is List) {
+        await notificationReadedAll(
+          jsonData.data,
+        );
+      }
+    case 'notification_task_name_changed':
+      logger.e('${jsonData.data}');
+    default:
+      logger.e('Websync ${jsonData.event} is unknown');
+  }
 }

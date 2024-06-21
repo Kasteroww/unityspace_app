@@ -44,6 +44,8 @@ enum DeleteProjectTabErrors { none, deleteProjectTabError }
 
 enum CreateProjectErrors { none, emptyName, createError }
 
+enum CreateSpaceColumnErrors { none, emptyName, createError }
+
 enum AddSpaceErrors { none, emptyName, paidTariffError, createError }
 
 enum ChangeGitHubLinkErrors { none, invalidLink, changeLinkError }
@@ -62,7 +64,12 @@ enum ChangePasswordErrors {
 
 enum ChangeTgLinkErrors { none, invalidLink, changeLinkError }
 
-enum LoginByEmailErrors { none, loginError, invalidEmailOrPassword }
+enum LoginErrors {
+  none,
+  loginError,
+  invalidEmailOrPassword,
+  loginWithGoogleError,
+}
 
 enum RenameReglamentErrors { none, emptyName, problemUploadingData }
 
@@ -89,3 +96,11 @@ enum ConfirmEmailErrors { none, confirmEmailError, incorrectCode }
 enum DrawerErrors { none, groupsLoadingError, drawerError }
 
 enum ProjectBoardsErrors { none, loadingDataError, createStageError }
+
+enum RenameSpacesGroupErrors {
+  none,
+  emptyName,
+  renameSpacesGroupError,
+}
+
+enum ToggleSpacesGroupIsOpenErrors { none, toggleError }

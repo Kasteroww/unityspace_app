@@ -62,6 +62,24 @@ Future<MyTaskHistoryResponse> getMyTasksHistory(int page) async {
   }
 }
 
+Future<List<TaskHistoryResponse>> getTaskHistory(int taskId) async {
+  try {
+    final response = await HttpPlugin().get(
+      'tasks/$taskId/history',
+    );
+    final List jsonDataList = json.decode(response.body);
+
+    return jsonDataList
+        .map((data) => TaskHistoryResponse.fromJson(data))
+        .toList();
+  } catch (e) {
+    if (e is HttpPluginException) {
+      handleDefaultHttpExceptions(e);
+    }
+    rethrow;
+  }
+}
+
 /// Получение задач во всем пространстве по spaceId и статусам
 Future<List<TaskResponse>> getSpaceTasks({
   required int spaceId,
@@ -100,13 +118,12 @@ Future getProjectTasks({
   }
 }
 
-Future<DeleteTaskResponse> deleteTaskFromStage({
+Future<DeleteTaskResponse> deleteTask({
   required int taskId,
-  required int stageId,
 }) async {
   try {
     final response = await HttpPlugin().delete(
-      '/tasks/$taskId/stages/$stageId',
+      '/tasks/$taskId',
     );
     final result = json.decode(response.body);
     return DeleteTaskResponse.fromJson(result);

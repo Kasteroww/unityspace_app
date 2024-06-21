@@ -74,7 +74,7 @@ class NotificationsList extends StatelessWidget {
                     padding: const EdgeInsets.only(bottom: 12),
                     child: GestureDetector(
                       onLongPressStart: (LongPressStartDetails details) {
-                        showCustomMenu(
+                        showCustomNotificationCardMenu(
                           context: context,
                           position: details.globalPosition,
                           list: notificationsGroup.notifications,
@@ -124,7 +124,7 @@ class NotificationsList extends StatelessWidget {
     }
   }
 
-  Future<void> showCustomMenu({
+  Future<void> showCustomNotificationCardMenu({
     required BuildContext context,
     required Offset position,
     required List<NotificationModel> list,
@@ -164,7 +164,7 @@ class NotificationsList extends StatelessWidget {
             ),
           ),
         ],
-      ).then((value) {});
+      );
     }
   }
 

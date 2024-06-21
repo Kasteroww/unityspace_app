@@ -1,28 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/models/spaces_models.dart';
 import 'package:unityspace/models/task_models.dart';
+import 'package:unityspace/screens/dialogs/unknown_error_dialog.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_input_field.dart';
 import 'package:unityspace/screens/widgets/app_dialog/app_dialog_with_buttons.dart';
 import 'package:unityspace/screens/widgets/user_avatar_widget.dart';
 import 'package:unityspace/store/spaces_store.dart';
-import 'package:unityspace/store/task_detail_store.dart';
+import 'package:unityspace/store/tasks_store.dart';
 import 'package:unityspace/utils/localization_helper.dart';
 import 'package:wstore/wstore.dart';
 
 Future<void> showResponsibleDialog({
   required BuildContext context,
-  required int spaceId,
-  required int taskId,
+  required int? spaceId,
+  required int? taskId,
   int? currentResponsibleId,
-}) {
+}) async {
   return showDialog(
     context: context,
     builder: (BuildContext context) {
-      return ResponsibleDialog(
-        spaceId: spaceId,
-        taskId: taskId,
-        currentResponsibleId: currentResponsibleId,
-      );
+      if (spaceId != null && taskId != null) {
+        return ResponsibleDialog(
+          spaceId: spaceId,
+          taskId: taskId,
+          currentResponsibleId: currentResponsibleId,
+        );
+      } else {
+        return const UnknownErrorDialog();
+      }
     },
   );
 }
@@ -30,9 +35,16 @@ Future<void> showResponsibleDialog({
 class ResponsibleDialogStore extends WStore {
   String searchQuery = '';
 
-  Task? get task => computedFromStore(
-        store: TaskDetailStore(),
-        getValue: (store) => store.task,
+  int get taskId => widget.taskId;
+
+  Tasks get tasks => computedFromStore(
+        store: TasksStore(),
+        getValue: (store) => store.tasks,
+        keyName: 'tasks',
+      );
+  Task? get task => computed(
+        getValue: () => tasks[taskId],
+        watch: () => [tasks],
         keyName: 'task',
       );
 
@@ -71,7 +83,7 @@ class ResponsibleDialogStore extends WStore {
     required int taskId,
     required int responsibleId,
   }) {
-    TaskDetailStore().addTaskResponsible(
+    TasksStore().addTaskResponsible(
       taskId: taskId,
       responsibleId: responsibleId,
     );
@@ -81,7 +93,7 @@ class ResponsibleDialogStore extends WStore {
     required int taskId,
     required int responsibleId,
   }) {
-    TaskDetailStore().deleteTaskResponsible(
+    TasksStore().deleteTaskResponsible(
       taskId: taskId,
       responsibleId: responsibleId,
     );
@@ -92,7 +104,7 @@ class ResponsibleDialogStore extends WStore {
     required int currentResponsibleId,
     required int responsibleId,
   }) {
-    TaskDetailStore().updateTaskResponsible(
+    TasksStore().updateTaskResponsible(
       taskId: taskId,
       currentResponsibleId: currentResponsibleId,
       responsibleId: responsibleId,

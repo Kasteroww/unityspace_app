@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unityspace/models/notification_models.dart';
 import 'package:unityspace/resources/errors.dart';
+import 'package:unityspace/screens/notifications_screen/widgets/empty_notifications_stub.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/notifications_list/notifications_list.dart';
 import 'package:unityspace/screens/notifications_screen/widgets/skeleton_listview/notification_skeleton_card.dart';
 import 'package:unityspace/screens/widgets/paddings.dart';
@@ -35,8 +36,16 @@ class NotificationPageStore extends WStore {
 
   List<NotificationModel> get notifications => computedFromStore(
         store: _notificationsStore,
-        getValue: (store) => store.notifications,
+        getValue: (store) => store.notifications.reverseSortedlist,
         keyName: 'notifications',
+      );
+
+  // Получение актуальных уведомлений
+  List<NotificationModel> get unarchivedNotifications => computed(
+        getValue: () =>
+            notifications.where((notify) => !notify.archived).toList(),
+        watch: () => [notifications],
+        keyName: 'unarchivedNotifications',
       );
 
   OrganizationMembers get organizationMembers => computedFromStore(
@@ -73,9 +82,10 @@ class NotificationPageStore extends WStore {
       notificationIds,
       archived,
     );
+    changeReadStatusNotification(notificationList, true);
   }
 
-  ///Изменяет статус прочтения уведомлений из спика
+  ///Изменяет статус прочтения уведомлений из спиcка
   void changeReadStatusNotification(
     List<NotificationModel> notificationList,
     bool unread,
@@ -166,10 +176,16 @@ class NotificationsPage extends WStoreWidget<NotificationPageStore> {
       },
       builderLoaded: (context) {
         return WStoreBuilder<NotificationPageStore>(
-          watch: (store) => [store.notifications],
+          watch: (store) => [store.unarchivedNotifications],
           store: context.wstore<NotificationPageStore>(),
           builder: (context, store) {
-            final List<NotificationModel> notifications = store.notifications;
+            final List<NotificationModel> notifications =
+                store.unarchivedNotifications;
+            if (notifications.isEmpty) {
+              return const EmptyNotificationsStub(
+                isArchivePage: false,
+              );
+            }
             return NotificationsList(
               needToLoadNextPage: store.needToLoadNextPage,
               items: notifications,
