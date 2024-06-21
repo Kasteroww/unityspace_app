@@ -18,20 +18,6 @@ class NotificationEventResponse {
   }
 }
 
-class NotificationEvent {
-  final Map<String, dynamic> data;
-
-  NotificationEvent({required this.data});
-
-  factory NotificationEvent.fromResponse(
-    final dynamic responseData,
-  ) {
-    return NotificationEvent(
-      data: responseData as Map<String, dynamic>,
-    );
-  }
-}
-
 class NotificationReadUnreadResponse {
   final int id;
   final bool status;

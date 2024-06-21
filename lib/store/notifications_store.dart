@@ -84,7 +84,7 @@ class NotificationsStore extends GStore {
   /// Возвращает отформатированный список,
   /// в котором обновлен статус прочитано/непрочитано у
   /// уведомления
-  void readLocally({
+  void changeReadStatusLocally({
     required int id,
     required bool status,
   }) {
@@ -152,7 +152,7 @@ class NotificationsStore extends GStore {
       status: !isUnread,
     );
     for (final notification in readList) {
-      readLocally(id: notification.id, status: !isUnread);
+      changeReadStatusLocally(id: notification.id, status: !isUnread);
     }
   }
 
@@ -177,7 +177,7 @@ class NotificationsStore extends GStore {
   Future<void> readAllNotifications() async {
     final readList = await api.readAllNotifications();
     for (final notification in readList) {
-      readLocally(id: notification.id, status: false);
+      changeReadStatusLocally(id: notification.id, status: false);
     }
   }
 
