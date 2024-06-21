@@ -2,7 +2,7 @@ import 'package:unityspace/service/exceptions/data_exceptions.dart';
 
 class NotificationEventResponse {
   final String event;
-  final Map<String, dynamic> data;
+  final dynamic data;
 
   NotificationEventResponse({required this.event, required this.data});
 
@@ -10,7 +10,7 @@ class NotificationEventResponse {
     try {
       return NotificationEventResponse(
         event: map['event'] as String,
-        data: map['data'] as Map<String, dynamic>,
+        data: map['data'] as dynamic,
       );
     } catch (e, stack) {
       throw JsonParsingException('Error parsing Model', e, stack);
@@ -19,17 +19,15 @@ class NotificationEventResponse {
 }
 
 class NotificationEvent {
-  final String event;
   final Map<String, dynamic> data;
 
-  NotificationEvent({required this.event, required this.data});
+  NotificationEvent({required this.data});
 
   factory NotificationEvent.fromResponse(
-    final NotificationEventResponse responseData,
+    final dynamic responseData,
   ) {
     return NotificationEvent(
-      event: responseData.event,
-      data: responseData.data,
+      data: responseData as Map<String, dynamic>,
     );
   }
 }

@@ -213,14 +213,14 @@ class NotificationsScreenStore extends WStore {
   }
 
   ///Архивирует все уведомления
-  void archiveAllNotifications() {
-    notificationsStore.archiveAllNotifications();
-    readAllNotifications();
+  Future<void> archiveAllNotifications() async {
+    await readAllNotifications();
+    await notificationsStore.archiveAllNotifications();
   }
 
   ///Читает все уведомления
-  void readAllNotifications() {
-    notificationsStore.readAllNotifications();
+  Future<void> readAllNotifications() async {
+    await notificationsStore.readAllNotifications();
   }
 
   List<NotificationsScreenTab> get currentUserTabs =>
