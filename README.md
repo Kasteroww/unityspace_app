@@ -1,3 +1,4 @@
+[![Codemagic build status](https://api.codemagic.io/apps/667049ceac2945fd7b7162e3/667049ceac2945fd7b7162e2/status_badge.svg)](https://codemagic.io/app/667049ceac2945fd7b7162e3/667049ceac2945fd7b7162e2/latest_build)
 # Unity Space
 Пространства теперь на Android, IOS, Desktop
 ## Ручная сборка проекта:
